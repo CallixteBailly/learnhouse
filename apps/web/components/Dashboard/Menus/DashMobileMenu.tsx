@@ -67,7 +67,12 @@ function DashMobileMenu() {
     plan
 
   const rf = org?.config?.config?.resolved_features
-  const isEnabled = (f: string) => rf?.[f]?.enabled === true
+  // DÉSACTIVÉ — OrdIA Learning : seuls Cours et Library (Formations) sont actifs.
+  // Pour réactiver : remplacer "false" par "rf?.[feature]?.enabled === true"
+  const isEnabled = (f: string) => {
+    if (['communities', 'podcasts', 'boards', 'playgrounds', 'payments'].includes(f)) return false
+    return rf?.[f]?.enabled === true
+  }
 
   const isActive = (path: string) => {
     if (path === '/dash') return pathname === '/dash' || pathname === '/dash/'
@@ -235,7 +240,7 @@ function DashMobileMenu() {
 
                 <PanelItem href="/account/general" icon={<Gear size={15} weight="fill" />} label={t('common.settings')} active={isActive('/account')} onClick={close} />
 
-                {/* Language picker */}
+                {/* DÉSACTIVÉ — Sélecteur de langue (OrdIA Learning : FR uniquement)
                 <button
                   onClick={() => setLangExpanded(v => !v)}
                   className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"
@@ -258,6 +263,7 @@ function DashMobileMenu() {
                     ))}
                   </div>
                 )}
+                */}
 
                 <a href="https://docs.learnhouse.app" target="_blank" rel="noopener noreferrer"
                   className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"

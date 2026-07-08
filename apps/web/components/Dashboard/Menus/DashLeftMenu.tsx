@@ -226,12 +226,14 @@ function DashLeftMenu() {
   const rf = org?.config?.config?.resolved_features
   const isEnabled = (feature: string) => rf?.[feature]?.enabled === true
 
+  // DÉSACTIVÉ — OrdIA Learning : seuls Cours et Library (Formations) sont actifs.
+  // Pour réactiver : remplacer "false" par "isEnabled('...')"
   const showLibrary = isEnabled('folders')
-  const showCommunities = isEnabled('communities')
-  const showPodcasts = isEnabled('podcasts')
-  const showBoards = isEnabled('boards')
-  const showPlaygrounds = isEnabled('playgrounds')
-  const showPayments = isEnabled('payments')
+  const showCommunities = false
+  const showPodcasts = false
+  const showBoards = false
+  const showPlaygrounds = false
+  const showPayments = false
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -1056,7 +1058,7 @@ function DashLeftMenu() {
             </Tooltip>
           )}
 
-          {/* Language Switcher with hover menu */}
+          {/* DÉSACTIVÉ — Sélecteur de langue (OrdIA Learning : FR uniquement)
           <HoverMenu
             align="end"
             content={
@@ -1094,6 +1096,7 @@ function DashLeftMenu() {
               )}
             </button>
           </HoverMenu>
+          */}
 
           {/* Help with hover menu */}
           <HoverMenu
