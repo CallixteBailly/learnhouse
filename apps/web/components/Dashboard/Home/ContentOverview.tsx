@@ -29,7 +29,10 @@ export default function ContentOverview() {
   const orgId = org?.id
   const rf = org?.config?.config?.resolved_features
   const features = org?.config?.config?.features
+  // DÉSACTIVÉ — OrdIA Learning : communities, podcasts, boards, playgrounds masqués.
+  // Pour réactiver : supprimer ce bloc et restaurer l'original ci-dessous.
   const isEnabled = (feature: string, defaultDisabled = false) => {
+    if (['communities', 'podcasts', 'boards', 'playgrounds'].includes(feature)) return false
     if (rf?.[feature]) return rf[feature].enabled
     const v1 = features?.[feature]
     return defaultDisabled ? v1?.enabled === true : v1?.enabled !== false

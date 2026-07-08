@@ -102,25 +102,27 @@ export default function UsageOverview() {
       enabled: orgFeatures?.courses?.enabled !== false,
       href: '/dash/courses',
     },
+    // DÉSACTIVÉ — OrdIA Learning : communities, podcasts, boards masqués.
+    // Pour réactiver : passer "enabled" à true ou restaurer la condition originale.
     {
       key: 'communities',
       label: t('dashboard.home.communities'),
       icon: ChatCircle,
-      enabled: orgFeatures?.communities?.enabled !== false,
+      enabled: false,
       href: '/dash/communities',
     },
     {
       key: 'podcasts',
       label: t('dashboard.home.podcasts'),
       icon: Microphone,
-      enabled: orgFeatures?.podcasts?.enabled === true,
+      enabled: false,
       href: '/dash/podcasts',
     },
     {
       key: 'boards',
       label: t('dashboard.home.boards'),
       icon: Chalkboard,
-      enabled: orgFeatures?.boards?.enabled === true,
+      enabled: false,
       href: '/dash/boards',
     },
   ]
