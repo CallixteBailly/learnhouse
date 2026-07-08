@@ -1,0 +1,93 @@
+services:
+  learnhouse-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ordia-learning:latest
+    container_name: learnhouse-app-prod
+    restart: unless-stopped
+    environment:
+      - HOSTNAME=0.0.0.0
+      - LEARNHOUSE_API_URL=http://localhost:9000
+      - LEARNHOUSE_DOMAIN=${LEARNHOUSE_DOMAIN:-localhost}
+      - HTTP_PORT=80
+      - NEXT_PUBLIC_LEARNHOUSE_API_URL=${NEXT_PUBLIC_LEARNHOUSE_API_URL:-http://localhost:3001/api/v1/}
+      - NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL=${NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL:-http://localhost:3001/}
+      - NEXT_PUBLIC_LEARNHOUSE_DOMAIN=${NEXT_PUBLIC_LEARNHOUSE_DOMAIN:-localhost}
+      - NEXT_PUBLIC_LEARNHOUSE_TOP_DOMAIN=${NEXT_PUBLIC_LEARNHOUSE_TOP_DOMAIN:-localhost}
+      - NEXT_PUBLIC_LEARNHOUSE_MULTI_ORG=False
+      - NEXT_PUBLIC_LEARNHOUSE_DEFAULT_ORG=default
+      - NEXT_PUBLIC_LEARNHOUSE_HTTPS=${NEXT_PUBLIC_LEARNHOUSE_HTTPS:-false}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3001}
+      - LEARNHOUSE_SQL_CONNECTION_STRING=postgresql://learnhouse:${DB_PASSWORD:-learnhouse_secure_2024}@db:5432/learnhouse
+      - LEARNHOUSE_REDIS_CONNECTION_STRING=redis://redis:6379/learnhouse
+      - LEARNHOUSE_REDIS_URL=redis://redis:6379
+      - LEARNHOUSE_PORT=9000
+      - LEARNHOUSE_AUTH_JWT_SECRET_KEY=${JWT_SECRET:-changeme_min_32_chars_secret_key}
+      - LEARNHOUSE_INITIAL_ADMIN_EMAIL=${ADMIN_EMAIL:-admin@learnhouse.local}
+      - LEARNHOUSE_INITIAL_ADMIN_PASSWORD=${ADMIN_PASSWORD:-AdminLearnHouse2024!}
+      - LEARNHOUSE_INITIAL_ORG_NAME=OrdIA Learning
+      - LEARNHOUSE_INITIAL_ORG_SLUG=default
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-changeme_nextauth_secret}
+      - COLLAB_INTERNAL_KEY=${COLLAB_KEY:-changeme_collab_key}
+      - NEXT_PUBLIC_COLLAB_URL=${COLLAB_URL:-ws://localhost:3001/collab}
+      - LEARNHOUSE_DEVELOPMENT_MODE=False
+      - LEARNHOUSE_IS_AI_ENABLED=True
+      - LEARNHOUSE_AI_PROVIDER=openai
+      - LEARNHOUSE_AI_API_KEY=${AI_API_KEY}
+      - LEARNHOUSE_AI_BASE_URL=https://api.z.ai/api/coding/paas/v4/
+      - LEARNHOUSE_AI_MODEL_FAST=GLM-5-Turbo
+      - LEARNHOUSE_AI_MODEL_STANDARD=glm-5.2
+      - LEARNHOUSE_AI_MODEL_PRO=GLM-5
+      - LEARNHOUSE_CONTENT_DELIVERY_TYPE=filesystem
+      - LEARNHOUSE_OSS=true
+      - NEXT_PUBLIC_LEARNHOUSE_OSS=true
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - learnhouse_content:/app/api/content
+    ports:
+      - "3001:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: learnhouse-db-prod
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=learnhouse
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-learnhouse_secure_2024}
+      - POSTGRES_DB=learnhouse
+    volumes:
+      - learnhouse_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U learnhouse"]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+  redis:
+    image: redis:7.2.3-alpine
+    container_name: learnhouse-redis-prod
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - learnhouse_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+volumes:
+  learnhouse_db_data:
+  learnhouse_redis_data:
+  learnhouse_content:
