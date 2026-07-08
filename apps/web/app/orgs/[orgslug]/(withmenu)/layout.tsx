@@ -38,15 +38,18 @@ function OrgFooter() {
       <div className="flex flex-col items-center justify-center space-y-4">
         {footerText && <p className="text-sm text-gray-500">{footerText}</p>}
         {showWatermark && (
-          <Link href="https://learnhouse.app" target="_blank" rel="noopener noreferrer">
-            <Image
-              src="/lrn.svg"
-              alt="LearnHouse"
-              width={24}
-              height={24}
-              style={{ height: 'auto' }}
-              className="opacity-15 hover:opacity-40 transition-opacity duration-300 cursor-pointer"
-            />
+          <Link href="https://ordria.fr" target="_blank" rel="noopener noreferrer">
+            <span
+              style={{
+                fontFamily: 'Sora, system-ui, sans-serif',
+                fontWeight: 600,
+                fontSize: '13px',
+                color: 'var(--muted-foreground)',
+              }}
+              className="opacity-40 hover:opacity-70 transition-opacity duration-300"
+            >
+              OrdIA Learning
+            </span>
           </Link>
         )}
       </div>

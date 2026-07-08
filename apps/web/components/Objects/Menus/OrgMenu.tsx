@@ -201,8 +201,8 @@ export const OrgMenu = (props: any) => {
                 </TooltipProvider>
               </div>
             </AuthenticatedClientElement>
-            {/* Boards */}
-            {rf?.boards?.enabled && (
+            {/* Boards — disabled for OrdIA Learning */}
+            {false && rf?.boards?.enabled && (
               <AuthenticatedClientElement checkMethod="authentication">
                 <div className="hidden md:flex">
                   <TooltipProvider delayDuration={0}>
@@ -326,7 +326,7 @@ export const OrgMenu = (props: any) => {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <a
-                        href="https://learnhouse.app"
+                        href="https://ordria.fr"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2"
@@ -559,12 +559,17 @@ const CopilotMenuButton = ({
 
 const LearnHouseLogo = ({ logoFilter }: { logoFilter: string }) => {
   return (
-    <Image
-      src="/lrn-text.svg"
-      alt="LearnHouse logo"
-      width={133}
-      height={40}
-      style={{ height: 'auto', filter: logoFilter }}
-    />
+    <span
+      style={{
+        fontFamily: 'Sora, system-ui, sans-serif',
+        fontWeight: 700,
+        fontSize: '22px',
+        letterSpacing: '-0.02em',
+        filter: logoFilter,
+        color: 'inherit',
+      }}
+    >
+      OrdIA Learning
+    </span>
   )
 }
