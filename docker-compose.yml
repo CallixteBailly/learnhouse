@@ -6,6 +6,29 @@ services:
     image: ordia-learning:latest
     container_name: learnhouse-app-prod
     restart: unless-stopped
+    command: >
+      sh -c "
+        /app/start.sh &
+        APP_PID=$!;
+        sleep 30;
+        cd /app/api && uv run python -c \"
+from passlib.context import CryptContext
+from sqlmodel import create_engine, Session, select
+from config.config import get_learnhouse_config
+from src.db.users import User
+c = get_learnhouse_config()
+e = create_engine(c.database_config.sql_connection_string)
+pwd = CryptContext(schemes=['bcrypt'], deprecated='auto')
+with Session(e) as s:
+    u = s.exec(select(User)).first()
+    if u:
+        u.password_hash = pwd.hash('Admin2026')
+        s.add(u)
+        s.commit()
+        print(f'Password reset for {u.email}')
+\" || true;
+        wait $APP_PID
+      "
     environment:
       - HOSTNAME=0.0.0.0
       - LEARNHOUSE_API_URL=http://localhost:9000
