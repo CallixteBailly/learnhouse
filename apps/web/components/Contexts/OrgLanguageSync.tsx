@@ -7,6 +7,17 @@ import i18n, { changeLanguage } from '@/lib/i18n'
 const USER_PICKED_KEY = 'i18nextLng_userPicked'
 
 export default function OrgLanguageSync() {
+  // DÉSACTIVÉ — OrdIA Learning : Français forcé, ignorer la config org.
+  // Pour réactiver : supprimer ce bloc et décommenter ci-dessous.
+  useEffect(() => {
+    if (i18n.language.split('-')[0] !== 'fr') {
+      i18n.changeLanguage('fr')
+    }
+  }, [])
+  return null
+
+  /* eslint-disable */
+  /*
   const org = useOrg() as any
 
   const orgDefault: string | undefined =
@@ -28,4 +39,5 @@ export default function OrgLanguageSync() {
   }, [orgDefault])
 
   return null
+  */
 }

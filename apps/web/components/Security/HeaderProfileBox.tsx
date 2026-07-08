@@ -302,6 +302,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   </>
                 )}
                 <DropdownMenuSeparator />
+                {/* DÉSACTIVÉ — Sélecteur de langue (OrdIA Learning : FR uniquement)
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="flex items-center gap-2 space-x-2">
                     <Globe size={14} weight="fill" />
@@ -310,7 +311,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
                       {AVAILABLE_LANGUAGES.map((language) => (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           key={language.code}
                           onClick={() => changeLanguage(language.code)}
                           className="flex items-center justify-between"
@@ -323,6 +324,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
                 <DropdownMenuSeparator />
+                */}
                 <DropdownMenuItem
                   onClick={() => {
                     track(AnalyticsEvent.LogoutClicked, { source: 'header_profile' })

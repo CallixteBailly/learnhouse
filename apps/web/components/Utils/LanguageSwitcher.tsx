@@ -14,10 +14,16 @@ import {
 } from "@components/ui/dropdown-menu"
 import { getMenuColorClasses } from '@services/utils/ts/colorUtils'
 
-const LanguageSwitcher = ({ primaryColor = '' }: { primaryColor?: string }) => {
+const LanguageSwitcher = (props: { primaryColor?: string }) => {
+  // DÉSACTIVÉ — OrdIA Learning : Français uniquement.
+  // Pour réactiver : supprimer le return null ci-dessous et décommenter le bloc.
+  return null
+
+  /* eslint-disable */
+  /*
   const { i18n } = useTranslation()
   const { track } = useLHAnalytics()
-  const colors = getMenuColorClasses(primaryColor)
+  const colors = getMenuColorClasses(props.primaryColor || '')
   const [mounted, setMounted] = React.useState(false)
   React.useEffect(() => setMounted(true), [])
 
@@ -44,7 +50,7 @@ const LanguageSwitcher = ({ primaryColor = '' }: { primaryColor?: string }) => {
             onClick={() => {
               try {
                 localStorage.setItem('i18nextLng_userPicked', '1')
-              } catch { /* ignore */ }
+              } catch { }
               track(AnalyticsEvent.LanguageChanged, {
                 language_code: language.code,
                 source: 'language_switcher',
@@ -62,6 +68,7 @@ const LanguageSwitcher = ({ primaryColor = '' }: { primaryColor?: string }) => {
       </DropdownMenuContent>
     </DropdownMenu>
   )
+  */
 }
 
 export default LanguageSwitcher
