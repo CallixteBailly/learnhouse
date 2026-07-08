@@ -23,6 +23,7 @@ interface VideoActivityProps {
     content: {
       filename?: string
       uri?: string
+      description?: string
     }
     details?: VideoDetails
     extra_metadata?: {
@@ -151,6 +152,13 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
             </div>
           )}
         </>
+      )}
+      {activity?.content?.description && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+            {activity.content.description}
+          </p>
+        </div>
       )}
     </div>
   )
