@@ -1,6 +1,8 @@
 /*
   ---break---
 */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
 @plugin 'tailwindcss-animate';
 
 @import 'tailwindcss';
@@ -310,30 +312,32 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 228 56% 14%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 228 56% 14%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --popover-foreground: 228 56% 14%;
+    --primary: 187 81% 49%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 53% 94%;
+    --secondary-foreground: 228 56% 14%;
+    --muted: 210 53% 94%;
+    --muted-foreground: 225 14% 44%;
+    --accent: 187 81% 49%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --border: 225 29% 78%;
+    --input: 225 29% 78%;
+    --ring: 187 81% 49%;
+    --chart-1: 187 81% 49%;
+    --chart-2: 189 91% 36%;
+    --chart-3: 228 56% 14%;
+    --chart-4: 210 53% 94%;
+    --chart-5: 225 14% 44%;
     --radius: 0.5rem;
+    --font-display: 'Sora', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
     /* Z-Index Layering System */
     --z-behind: -10;
