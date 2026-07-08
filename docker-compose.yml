@@ -68,6 +68,26 @@ services:
       learnhouse-app:
         condition: service_started
 
+  init-admin:
+    image: ordia-learning:latest
+    container_name: learnhouse-init-admin
+    depends_on:
+      learnhouse-app:
+        condition: service_healthy
+    environment:
+      - LEARNHOUSE_SQL_CONNECTION_STRING=postgresql://learnhouse:learnhouse_secure_2024@db:5432/learnhouse
+      - LEARNHOUSE_AUTH_JWT_SECRET_KEY=ezr60eWBaqfkom4JoqP3q57UezYI6evWmQ/12oGcFJ4=
+      - LEARNHOUSE_INITIAL_ADMIN_EMAIL=admin@ordia.fr
+      - LEARNHOUSE_INITIAL_ADMIN_PASSWORD=OrdIA2026
+      - LEARNHOUSE_INITIAL_ORG_NAME=OrdIA Learning
+      - LEARNHOUSE_INITIAL_ORG_SLUG=default
+      - LEARNHOUSE_REDIS_CONNECTION_STRING=redis://redis:6379/learnhouse
+      - LEARNHOUSE_DEVELOPMENT_MODE=false
+      - LEARNHOUSE_OSS=true
+    command: >
+      sh -c "sleep 25 && cd /app/api && uv run python cli.py install --short && echo 'INIT ADMIN DONE'"
+    restart: "no"
+
   db:
     image: pgvector/pgvector:pg16
     container_name: learnhouse-db-prod
@@ -77,7 +97,7 @@ services:
       - POSTGRES_PASSWORD=learnhouse_secure_2024
       - POSTGRES_DB=learnhouse
     volumes:
-      - learnhouse_db_data_fresh:/var/lib/postgresql/data
+      - learnhouse_db_final_v4:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U learnhouse"]
       interval: 5s
@@ -98,6 +118,6 @@ services:
       retries: 5
 
 volumes:
-  learnhouse_db_data_fresh:
+  learnhouse_db_final_v4:
   learnhouse_redis_data:
   learnhouse_content:
