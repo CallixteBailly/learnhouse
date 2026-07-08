@@ -6,13 +6,6 @@ services:
     image: ordia-learning:latest
     container_name: learnhouse-app-prod
     restart: unless-stopped
-    command: >
-      sh -c "
-        sleep 5 &&
-        cd /app/api && uv run python -c \"from sqlalchemy import create_engine,text;from config.config import get_learnhouse_config;e=create_engine(get_learnhouse_config().database_config.sql_connection_string);c=e.connect();c.execute(text('DROP SCHEMA IF EXISTS public CASCADE'));c.execute(text('CREATE SCHEMA public'));c.commit();print('DB WIPED')\" || true &&
-        cd /app &&
-        /app/start.sh
-      "
     environment:
       - HOSTNAME=0.0.0.0
       - LEARNHOUSE_API_URL=http://localhost:9000
