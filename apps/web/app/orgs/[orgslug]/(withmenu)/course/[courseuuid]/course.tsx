@@ -10,7 +10,7 @@ import GeneralWrapperStyled from '@components/Objects/StyledElements/Wrappers/Ge
 import {
   getCourseThumbnailMediaDirectory,
 } from '@services/media/media'
-import { ArrowRight, Backpack, Check, File, StickyNote, Video, Square, Image as ImageIcon, Layers, BookCopy, Lock } from 'lucide-react'
+import { ArrowRight, Backpack, Check, File, StickyNote, Video, Square, Image as ImageIcon, BookCopy, Lock } from 'lucide-react'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { CourseProvider } from '@components/Contexts/CourseContext'
 import { useMediaQuery } from 'usehooks-ts'
@@ -305,6 +305,16 @@ const CourseClient = (props: any) => {
 
   const jsonLd = generateJsonLd()
 
+  const totalModules = course?.chapters?.length || 0
+  const totalActivitiesCount = (course?.chapters ?? []).reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0)
+  const completedActivitiesCount = (course?.chapters ?? []).reduce((sum: number, ch: any) => {
+    return sum + (ch.activities?.filter((a: any) => isActivityDone(a)).length || 0)
+  }, 0)
+  const progressPercent = totalActivitiesCount > 0 ? Math.round((completedActivitiesCount / totalActivitiesCount) * 100) : 0
+  const completedModules = (course?.chapters ?? []).filter((ch: any) =>
+    ch.activities?.length > 0 && ch.activities.every((a: any) => isActivityDone(a))
+  ).length
+
   return (
     <>
       {jsonLd && (
@@ -531,162 +541,239 @@ const CourseClient = (props: any) => {
               )
             })()}
 
-            {/* Course Progress Section */}
+            {/* Course Progress + Learning Path */}
             <div className="w-full my-5 mb-2">
-              <div className="bg-[var(--ordria-surface)] rounded-2xl p-4 mb-6">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-sm" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.course_progress', 'Progression du cours')}</span>
-                  <span className="font-mono font-bold text-lg text-[var(--ordria-accent-secondary)]">
-                    {(() => {
-                      const totalActivities = (course.chapters ?? []).reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0)
-                      const completedActivities = (course.chapters ?? []).reduce((sum: number, ch: any) => {
-                        return sum + (ch.activities?.filter((a: any) => isActivityDone(a)).length || 0)
-                      }, 0)
-                      return totalActivities > 0 ? Math.round((completedActivities / totalActivities) * 100) : 0
-                    })()}%
-                  </span>
-                </div>
-                <div className="duo-progress-bar">
-                  <div className="duo-progress-fill" style={{ width: `${(() => {
-                    const totalActivities = (course.chapters ?? []).reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0)
-                    const completedActivities = (course.chapters ?? []).reduce((sum: number, ch: any) => {
-                      return sum + (ch.activities?.filter((a: any) => isActivityDone(a)).length || 0)
-                    }, 0)
-                    return totalActivities > 0 ? Math.round((completedActivities / totalActivities) * 100) : 0
-                  })()}%` }}></div>
-                </div>
-              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
+                {/* Main: Progress + Learning Path */}
+                <div>
+                  {/* Progress section */}
+                  <div className="bg-[var(--ordria-surface)] rounded-2xl p-4 mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold text-sm" style={{ fontFamily: 'var(--ordria-font-display)' }}>
+                        {completedModules} sur {totalModules} modules terminés
+                      </span>
+                      <span className="font-mono font-bold text-lg text-[var(--ordria-accent-secondary)]">
+                        {progressPercent}%
+                      </span>
+                    </div>
+                    <div className="duo-progress-bar" style={{ height: '10px' }}>
+                      <div className="duo-progress-fill" style={{ width: `${progressPercent}%` }}></div>
+                    </div>
+                  </div>
 
-              <h2 className="py-5 text-xl md:text-2xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.course_lessons')}</h2>
-              <div className="bg-white rounded-2xl border-2 border-[var(--ordria-border)] duo-card-hover overflow-hidden">
-                {(course.chapters ?? []).map((chapter: any, idx: number) => {
-                  const isExpanded = expandedChapters[chapter.chapter_uuid] ?? (idx === 0); // Default to expanded for first chapter
-                  return (
-                    <div key={chapter.chapter_uuid || `chapter-${chapter.name}`} className="">
-                      <div 
-                        className="flex items-start py-4 px-4 border-b-2 border-[var(--ordria-border)] font-bold bg-[var(--ordria-surface)] text-[var(--ordria-foreground)] cursor-pointer hover:bg-[var(--ordria-accent-bg)] transition-colors"
-                        onClick={() => setExpandedChapters(prev => ({
-                          ...prev,
-                          [chapter.chapter_uuid]: !isExpanded
-                        }))}
-                      >
-                        {/* Chevron on the far left, vertically centered with the title */}
-                        <div className="flex flex-col justify-center mr-3 pt-1">
-                          <svg 
-                            className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-                            fill="none" 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                        {/* Title and badge column */}
-                        <div className="flex flex-col items-start w-full">
-                          <div className="flex items-center mb-1 w-full min-w-0">
-                            {/* Numbered badge */}
-                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[var(--ordria-accent)] text-white text-xs font-bold mr-2 border-2 border-white flex-shrink-0" style={{ fontFamily: 'var(--ordria-font-display)' }}>
-                              {idx + 1}
+                  {/* Learning Path */}
+                  <div className="relative flex flex-col items-center py-4">
+                    {/* SVG curvy path */}
+                    <svg
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-full pointer-events-none z-0"
+                      viewBox="0 0 120 700"
+                      preserveAspectRatio="none"
+                    >
+                      <path
+                        d="M 60 36 Q 120 80, 60 130 Q 0 180, 60 230 Q 120 280, 60 330 Q 0 380, 60 430 Q 120 480, 60 530 Q 0 580, 60 630"
+                        fill="none"
+                        stroke="var(--ordria-accent-border)"
+                        strokeWidth="4"
+                        strokeDasharray="8 6"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+
+                    {(course.chapters ?? []).map((chapter: any, index: number) => {
+                      const chapterActivities = chapter.activities || []
+                      const isChapterCompleted = chapterActivities.length > 0 && chapterActivities.every((a: any) => isActivityDone(a))
+
+                      const firstNonCompletedIdx = (course.chapters ?? []).findIndex((ch: any) => {
+                        const chActs = ch.activities || []
+                        return !(chActs.length > 0 && chActs.every((a: any) => isActivityDone(a)))
+                      })
+                      const isCurrent = firstNonCompletedIdx === index && !isChapterCompleted
+                      const isLocked = !isChapterCompleted && !isCurrent
+
+                      const firstActivity = chapterActivities[0]
+                      const chapterLink = firstActivity
+                        ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`)
+                        : '#'
+
+                      return (
+                        <div
+                          key={chapter.chapter_uuid || `chapter-${index}`}
+                          className="relative z-10 flex items-center gap-4 mb-12 last:mb-0 w-full max-w-md"
+                        >
+                          {/* Circle */}
+                          {isLocked ? (
+                            <div className="flex-shrink-0" aria-disabled="true">
+                              <div
+                                className={`w-[72px] h-[72px] max-md:w-[60px] max-md:h-[60px] rounded-full flex items-center justify-center text-2xl font-bold transition-all border-4 cursor-not-allowed
+                                  bg-[var(--ordria-surface)] border-[var(--ordria-border)] text-[var(--ordria-muted)]`}
+                              >
+                                🔒
+                              </div>
+                            </div>
+                          ) : (
+                            <Link href={chapterLink} className="flex-shrink-0 hover:scale-105 transition-transform" prefetch={false}>
+                              <div
+                                className={`w-[72px] h-[72px] max-md:w-[60px] max-md:h-[60px] rounded-full flex items-center justify-center text-2xl font-bold transition-all border-4
+                                  ${isChapterCompleted
+                                    ? 'bg-[var(--ordria-accent)] border-[var(--ordria-accent-secondary)] text-white shadow-[0_4px_16px_rgba(24,200,224,0.3)]'
+                                    : 'bg-[var(--ordria-accent)] border-[var(--ordria-accent-hover)] text-white duo-pulse'
+                                  }`}
+                              >
+                                {isChapterCompleted ? '✓' : '▶'}
+                              </div>
+                            </Link>
+                          )}
+
+                          {/* Label */}
+                          <div className="flex-1 min-w-0">
+                            <span className="text-xs font-mono text-[var(--ordria-muted)] uppercase tracking-wider">
+                              Module {index + 1}
                             </span>
-                            <h3 className="text-lg font-bold leading-tight truncate min-w-0 flex-1 sm:text-base md:text-lg" style={{ lineHeight: '1.2', fontFamily: 'var(--ordria-font-display)' }}>{chapter.name}</h3>
-                            {chapter.is_locked && (
-                              <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-semibold">
-                                <Lock size={10} />
-                                {t('course.locked', 'Locked')}
+                            <h3
+                              className="font-bold text-base text-[var(--ordria-foreground)] truncate"
+                              style={{ fontFamily: 'var(--ordria-font-display)' }}
+                            >
+                              {chapter.name}
+                            </h3>
+                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                              <span className="text-xs text-[var(--ordria-muted)]">
+                                {chapter.activities.length} {t('activities.activities')}
                               </span>
+                              {isChapterCompleted && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] font-semibold">
+                                  Terminé
+                                </span>
+                              )}
+                              {isCurrent && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] font-semibold">
+                                  En cours
+                                </span>
+                              )}
+                              {isLocked && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--ordria-surface)] text-[var(--ordria-muted)] font-semibold">
+                                  Verrouillé
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Show activities for current and completed modules */}
+                            {(isCurrent || isChapterCompleted) && chapterActivities.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {chapterActivities.map((activity: any, actIdx: number) => {
+                                  const activityCleanUuid = activity.activity_uuid?.replace('activity_', '')
+                                  const actCompleted = isActivityDone(activity)
+                                  const actLocked = !!activity.is_locked
+                                  const activityLink = getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${activityCleanUuid}`)
+
+                                  if (actLocked) {
+                                    return (
+                                      <div
+                                        key={actIdx}
+                                        className="flex items-center gap-2 p-2 rounded-lg opacity-60 cursor-not-allowed select-none"
+                                        title={t('course.activity_locked_hint', 'Sign in or join the right user group to unlock this.')}
+                                      >
+                                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 bg-gray-200 text-gray-400">
+                                          <Lock size={12} />
+                                        </span>
+                                        <span className="text-sm text-[var(--ordria-muted)] truncate">{activity.name}</span>
+                                      </div>
+                                    )
+                                  }
+
+                                  return (
+                                    <Link
+                                      key={actIdx}
+                                      href={activityLink}
+                                      prefetch={false}
+                                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--ordria-surface)] transition-colors"
+                                      onMouseEnter={() => handleActivityMouseEnter(activity)}
+                                    >
+                                      <span
+                                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0
+                                          ${actCompleted ? 'bg-[var(--ordria-success)] text-white' : 'bg-[var(--ordria-surface)] text-[var(--ordria-muted)]'}`}
+                                      >
+                                        {actCompleted
+                                          ? '✓'
+                                          : activity.activity_type === 'TYPE_VIDEO'
+                                            ? '🎬'
+                                            : activity.activity_type === 'TYPE_ASSIGNMENT'
+                                              ? '🎯'
+                                              : '📄'}
+                                      </span>
+                                      <span className="text-sm text-[var(--ordria-foreground)] truncate">{activity.name}</span>
+                                    </Link>
+                                  )
+                                })}
+                              </div>
                             )}
                           </div>
-                          <div className="flex items-center space-x-1 text-sm text-[var(--ordria-muted)] font-normal">
-                            <Layers size={16} className="mr-1" />
-                            <span>{chapter.activities.length} {t('activities.activities')}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Sidebar (desktop only) */}
+                <div className="hidden lg:block">
+                  <div className="bg-[var(--ordria-surface)] rounded-2xl p-5 sticky top-20">
+                    <h3
+                      className="font-bold text-sm uppercase tracking-wider text-[var(--ordria-muted)] mb-4"
+                      style={{ fontFamily: 'var(--ordria-font-display)' }}
+                    >
+                      {t('courses.course_info', 'Informations du cours')}
+                    </h3>
+
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center text-lg">📚</div>
+                        <div>
+                          <div className="text-xs text-[var(--ordria-muted)]">{t('courses.modules', 'Modules')}</div>
+                          <div className="text-sm font-semibold text-[var(--ordria-foreground)]">
+                            {totalModules} {t('courses.modules_unit', 'modules')}
                           </div>
                         </div>
                       </div>
-                      <div className={`transition-all duration-200 ${isExpanded ? 'block' : 'hidden'}`}>
-                        <div className="">
-                          {chapter.activities.map((activity: any) => {
-                            const locked = !!activity.is_locked
-                            const activityBorderColor = activity.activity_type === 'TYPE_VIDEO' ? 'var(--ordria-accent)' : activity.activity_type === 'TYPE_ASSIGNMENT' ? 'var(--ordria-success)' : activity.activity_type === 'TYPE_DOCUMENT' ? 'var(--ordria-warning)' : 'var(--cat-artisan, #8b5cf6)'
-                            const RowInner = (
-                              <div className="flex space-x-3 items-center border-l-4 pl-3" style={{ borderColor: activityBorderColor }}>
-                                  <div className="flex items-center">
-                                    {locked ? (
-                                      <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
-                                        <Lock size={14} className="stroke-[2]" />
-                                      </div>
-                                    ) : isActivityDone(activity) ? (
-                                      <div className="w-7 h-7 rounded-full bg-[var(--ordria-success)] flex items-center justify-center text-white text-sm font-bold">
-                                        ✓
-                                      </div>
-                                    ) : (
-                                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm" style={{ background: activityBorderColor }}>
-                                        {activity.activity_type === 'TYPE_VIDEO' && '🎬'}
-                                        {activity.activity_type === 'TYPE_DYNAMIC' && '📄'}
-                                        {activity.activity_type === 'TYPE_ASSIGNMENT' && '🎯'}
-                                        {activity.activity_type === 'TYPE_DOCUMENT' && '📝'}
-                                      </div>
-                                    )}
-                                  </div>
-                                <div className="flex flex-col grow">
-                                  <div className="flex items-center space-x-2 w-full">
-                                    <p className={`font-semibold transition-colors ${locked ? 'text-[var(--ordria-muted)]' : 'text-[var(--ordria-foreground)] group-hover:text-[var(--ordria-accent-secondary)]'}`}>{activity.name}</p>
-                                    {locked && (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-semibold">
-                                        <Lock size={10} />
-                                        {t('course.locked', 'Locked')}
-                                      </span>
-                                    )}
-                                    {!locked && isActivityCurrent(activity) && (
-                                      <div className="flex items-center space-x-1 text-[var(--ordria-accent-secondary)] bg-[var(--ordria-accent-bg)] px-2 py-0.5 rounded-full text-xs font-semibold duo-pulse">
-                                        <span>{t('activities.current')}</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="flex items-center space-x-1.5 mt-0.5 text-[var(--ordria-muted)]">
-                                    <span className="text-xs font-medium">{getActivityTypeLabel(activity.activity_type)}</span>
-                                  </div>
-                                </div>
-                                <div className={`transition-colors text-sm font-medium ${locked ? 'text-[var(--ordria-border)]' : 'text-[var(--ordria-muted)] group-hover:text-[var(--ordria-accent)] cursor-pointer'}`}>
-                                  {locked ? null : <ArrowRight size={16} />}
-                                </div>
-                              </div>
-                            )
-
-                            if (locked) {
-                              return (
-                                <div
-                                  key={activity.activity_uuid}
-                                  className="block activity-container px-4 py-4 cursor-not-allowed select-none border-l-4 opacity-60"
-                                  style={{ borderColor: activityBorderColor }}
-                                  title={t('course.activity_locked_hint', 'Sign in or join the right user group to unlock this.')}
-                                >
-                                  {RowInner}
-                                </div>
-                              )
-                            }
-
-                            return (
-                              <Link
-                                key={activity.activity_uuid}
-                                href={
-                                  getUriWithOrg(orgslug, '') +
-                                  `/course/${courseuuid}/activity/${activity.activity_uuid.replace('activity_', '')}`
-                                }
-                                rel="noopener noreferrer"
-                                prefetch={false}
-                                className="block group activity-container transition-all duration-200 px-4 py-4 border-l-4"
-                                style={{ borderColor: activityBorderColor }}
-                                onMouseEnter={() => handleActivityMouseEnter(activity)}
-                              >
-                                {RowInner}
-                              </Link>
-                            )
-                          })}
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center text-lg">📝</div>
+                        <div>
+                          <div className="text-xs text-[var(--ordria-muted)]">{t('activities.activities', 'Activités')}</div>
+                          <div className="text-sm font-semibold text-[var(--ordria-foreground)]">
+                            {totalActivitiesCount} {t('activities.activities')}
+                          </div>
+                        </div>
+                      </div>
+                      {course.authors?.[0] && (
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center text-lg">👤</div>
+                          <div>
+                            <div className="text-xs text-[var(--ordria-muted)]">{t('courses.instructor', 'Formateur')}</div>
+                            <div className="text-sm font-semibold text-[var(--ordria-foreground)]">
+                              @{course.authors[0].user?.username || 'admin'}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center text-lg">📊</div>
+                        <div>
+                          <div className="text-xs text-[var(--ordria-muted)]">{t('courses.progress', 'Progression')}</div>
+                          <div className="text-sm font-semibold text-[var(--ordria-foreground)]">{progressPercent}%</div>
                         </div>
                       </div>
                     </div>
-                  )
-                })}
+
+                    {/* Certificate preview */}
+                    <div className="p-4 rounded-xl border-2 border-amber-300 bg-amber-50">
+                      <div className="text-2xl mb-1">🏆</div>
+                      <div className="font-bold text-sm text-[var(--ordria-warning)]">
+                        {t('courses.certificate', 'Certificat')}
+                      </div>
+                      <div className="text-xs text-[var(--ordria-muted)] mt-1">
+                        {t('courses.certificate_desc', 'Obtenez votre certificat en terminant tous les modules')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
