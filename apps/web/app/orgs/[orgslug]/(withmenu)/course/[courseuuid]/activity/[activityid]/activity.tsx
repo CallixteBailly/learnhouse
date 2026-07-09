@@ -819,6 +819,20 @@ function ActivityClient(props: ActivityClientProps) {
                           trailData={trailData}
                         />
 
+                        {/* Activity Type Tabs — Duolingo style */}
+                        <div className="flex gap-1 bg-[var(--ordria-surface)] rounded-2xl p-1.5 mb-4">
+                          <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_VIDEO' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)]'}`}>
+                            <span>🎬</span> <span className="hidden sm:inline">Vidéo</span>
+                            {activity?.activity_type === 'TYPE_VIDEO' && <span className="text-[10px] font-mono bg-[var(--ordria-accent)] text-white px-1.5 py-0.5 rounded">5 min</span>}
+                          </div>
+                          <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_DYNAMIC' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)]'}`}>
+                            <span>📝</span> <span className="hidden sm:inline">Lecture</span>
+                          </div>
+                          <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_ASSIGNMENT' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)] opacity-50'}`}>
+                            <span>🎯</span> <span className="hidden sm:inline">Quiz</span>
+                          </div>
+                        </div>
+
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-3">
                           <div className="flex flex-1 items-center space-x-3 min-w-0">
                             <div className="flex flex-col -space-y-1 min-w-0">
@@ -962,27 +976,72 @@ function ActivityClient(props: ActivityClientProps) {
                           {activity.content.paid_access == false ? (
                             <PaidCourseActivityDisclaimer course={course} />
                           ) : (
-                            <div className="flex gap-6">
-                              <div className={`flex-1 min-w-0 ${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-3 sm:p-7 rounded-2xl border border-[var(--ordria-border)]'} ${bgColor} relative isolate`} style={{ zIndex: 'var(--z-base)' }}>
-                                <button
-                                  onClick={() => setIsFocusMode(true)}
-                                  className={`absolute ${activity.activity_type === 'TYPE_SCORM' ? 'top-2 right-2' : 'top-4 right-4'} hidden sm:flex bg-[var(--ordria-surface)] hover:bg-[var(--ordria-accent-bg)] border border-[var(--ordria-border)] p-2 rounded-full cursor-pointer transition-all duration-200 group overflow-hidden pointer-events-auto`}
-                                  style={{ zIndex: 'var(--z-interactive)' }}
-                                  title={t('activities.focus_mode')}
-                                >
-                                  <div className="flex items-center">
-                                    <Maximize2 size={16} className="text-[var(--ordria-foreground)]" />
-                                    <span className="text-xs font-bold text-[var(--ordria-foreground)] opacity-0 group-hover:opacity-100 transition-all duration-200 w-0 group-hover:w-auto group-hover:ml-2 whitespace-nowrap">
-                                      {t('activities.focus_mode')}
-                                    </span>
+                            <>
+                              {/* Hearts indicator for assignments/quizzes — Duolingo style */}
+                              {activity?.activity_type === 'TYPE_ASSIGNMENT' && (
+                                <div className="flex items-center gap-1.5 mb-3">
+                                  <span className="text-lg">❤️</span>
+                                  <span className="text-lg">❤️</span>
+                                  <span className="text-lg">❤️</span>
+                                </div>
+                              )}
+
+                              {/* Progress bar — activity position — Duolingo style */}
+                              {allActivities.length > 0 && (
+                                <div className="mb-4">
+                                  <div className="flex justify-between items-center mb-1.5">
+                                    <span className="text-xs font-semibold text-[var(--ordria-muted)]">Étape {currentIndex + 1} sur {allActivities.length}</span>
+                                    <span className="text-xs font-mono text-[var(--ordria-accent-secondary)]">{Math.round(((currentIndex + 1) / allActivities.length) * 100)}%</span>
                                   </div>
-                                </button>
-                                {activityContent}
+                                  <div className="duo-progress-bar" style={{ height: '6px' }}>
+                                    <div className="duo-progress-fill" style={{ width: `${((currentIndex + 1) / allActivities.length) * 100}%` }}></div>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="flex gap-6">
+                                <div className={`flex-1 min-w-0 ${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-3 sm:p-7 rounded-2xl border border-[var(--ordria-border)]'} ${bgColor} relative isolate`} style={{ zIndex: 'var(--z-base)' }}>
+                                  <button
+                                    onClick={() => setIsFocusMode(true)}
+                                    className={`absolute ${activity.activity_type === 'TYPE_SCORM' ? 'top-2 right-2' : 'top-4 right-4'} hidden sm:flex bg-[var(--ordria-surface)] hover:bg-[var(--ordria-accent-bg)] border border-[var(--ordria-border)] p-2 rounded-full cursor-pointer transition-all duration-200 group overflow-hidden pointer-events-auto`}
+                                    style={{ zIndex: 'var(--z-interactive)' }}
+                                    title={t('activities.focus_mode')}
+                                  >
+                                    <div className="flex items-center">
+                                      <Maximize2 size={16} className="text-[var(--ordria-foreground)]" />
+                                      <span className="text-xs font-bold text-[var(--ordria-foreground)] opacity-0 group-hover:opacity-100 transition-all duration-200 w-0 group-hover:w-auto group-hover:ml-2 whitespace-nowrap">
+                                        {t('activities.focus_mode')}
+                                      </span>
+                                    </div>
+                                  </button>
+                                  {activityContent}
+                                </div>
+                                <Suspense fallback={null}>
+                                  <AISidePanelInline activity={activity} />
+                                </Suspense>
                               </div>
-                              <Suspense fallback={null}>
-                                <AISidePanelInline activity={activity} />
-                              </Suspense>
-                            </div>
+
+                              {/* Key Takeaways Box — Duolingo style */}
+                              {activity && (activity.activity_type === 'TYPE_VIDEO' || activity.activity_type === 'TYPE_DYNAMIC') && (
+                                <div className="mt-4 p-4 rounded-2xl border border-[var(--ordria-accent-border)] bg-[var(--ordria-accent-bg)]">
+                                  <h4 className="flex items-center gap-2 text-sm font-bold text-[var(--ordria-accent-secondary)] mb-3">💡 Ce que vous allez retenir</h4>
+                                  <ul className="space-y-1.5">
+                                    <li className="flex items-start gap-2 text-sm text-[var(--ordria-foreground)]">
+                                      <span className="text-[var(--ordria-success)] font-bold">✓</span>
+                                      <span>Les concepts clés de cette leçon appliqués à votre métier</span>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-[var(--ordria-foreground)]">
+                                      <span className="text-[var(--ordria-success)] font-bold">✓</span>
+                                      <span>Des exemples concrets à reproduire immédiatement</span>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-[var(--ordria-foreground)]">
+                                      <span className="text-[var(--ordria-success)] font-bold">✓</span>
+                                      <span>Une base solide pour l'évaluation qui suit</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              )}
+                            </>
                           )}
                         </>
                       ) : null}
