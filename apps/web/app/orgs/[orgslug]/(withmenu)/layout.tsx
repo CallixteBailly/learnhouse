@@ -121,8 +121,8 @@ function LayoutContent({ children, orgslug }: { children: ReactNode; orgslug: st
       <div className="flex-1 relative" style={{ zIndex: 'var(--z-content)' }}>
         {children}
       </div>
-      {!isFullBleedPage && !chromeless && <OrgFooter />}
-      {!isFullBleedPage && !chromeless && <Watermark />}
+      {!isFullBleedPage && !chromeless && <div className="hidden md:block"><OrgFooter /></div>}
+      {!isFullBleedPage && !chromeless && <div className="hidden md:block"><Watermark /></div>}
     </div>
   )
 }

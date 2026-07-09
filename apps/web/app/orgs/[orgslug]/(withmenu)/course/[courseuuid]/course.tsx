@@ -326,7 +326,7 @@ const CourseClient = (props: any) => {
       {!course || !org ? null : (
         <>
           <GeneralWrapperStyled>
-            <div className="pb-4">
+            <div className="pb-4 hidden md:block">
               <Breadcrumbs items={[
                 { label: t('courses.courses'), href: getUriWithOrg(orgslug, '/courses'), icon: <BookCopy size={14} /> },
                 { label: course.name }
@@ -346,9 +346,9 @@ const CourseClient = (props: any) => {
                   const showVideo = course.thumbnail_type === 'video' || (course.thumbnail_type === 'both' && activeThumbnailType === 'video');
                   const showImage = course.thumbnail_type === 'image' || (course.thumbnail_type === 'both' && activeThumbnailType === 'image') || !course.thumbnail_type;
 
-                  if (showVideo && course.thumbnail_video) {
+                    if (showVideo && course.thumbnail_video) {
                     return (
-                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[200px] md:h-[400px]">
+                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[120px] md:h-[400px]">
                         {course.thumbnail_type === 'both' && (
                           <div className="absolute top-3 right-3 z-10">
                             <div className="bg-black/20 backdrop-blur-sm rounded-lg p-1 flex space-x-1">
@@ -394,9 +394,9 @@ const CourseClient = (props: any) => {
                         </div>
                       </div>
                     );
-                  } else if (showImage && course.thumbnail_image) {
+                    } else if (showImage && course.thumbnail_image) {
                     return (
-                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[200px] md:h-[400px] bg-cover bg-center"
+                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[120px] md:h-[400px] bg-cover bg-center"
                         style={{
                           backgroundImage: `url(${getCourseThumbnailMediaDirectory(
                             org?.org_uuid,
@@ -444,10 +444,10 @@ const CourseClient = (props: any) => {
                         )}
                       </div>
                     );
-                  } else {
+                    } else {
                     return (
                       <div
-                        className="inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl relative w-full h-[400px] bg-cover bg-center"
+                        className="inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl relative w-full h-[120px] md:h-[400px] bg-cover bg-center"
                         style={{
                           backgroundImage: `url('/empty_thumbnail.png')`,
                           backgroundSize: 'auto',
@@ -475,7 +475,7 @@ const CourseClient = (props: any) => {
                   />
                 )}
 
-                <div className="course_metadata_left space-y-2">
+                <div className="course_metadata_left space-y-2 hidden md:block">
                   <div className="">
                     <p className="py-5 whitespace-pre-line break-words w-full leading-relaxed tracking-normal text-pretty hyphens-auto text-[var(--ordria-foreground)]">{course.about}</p>
                   </div>
@@ -502,7 +502,7 @@ const CourseClient = (props: any) => {
               })
               if (displayLearnings.length === 0) return null
               return (
-                <div className="w-full">
+                <div className="w-full hidden md:block">
                   <h2 className="py-5 text-xl md:text-2xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.what_you_will_learn')}</h2>
                   <div className="bg-white rounded-2xl border-2 border-[var(--ordria-border)] duo-card-hover overflow-hidden px-5 py-5 space-y-2">
                     {displayLearnings.map((learning: any) => {

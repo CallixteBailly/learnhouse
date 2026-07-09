@@ -389,14 +389,7 @@ export const OrgMenu = (props: any) => {
         }}
       >
         <div className="flex flex-col px-4 py-3 space-y-4 justify-center items-center">
-          {/* Mobile Search */}
-          <div className="w-full px-2">
-            <SearchBar orgslug={orgslug} isMobile={true} />
-          </div>
-          <div className='py-4'>
-            <MenuLinks orgslug={orgslug} />
-          </div>
-          <div className="border-t border-gray-200">
+          <div className="border-t border-gray-200 w-full pt-3">
             <HeaderProfileBox />
           </div>
         </div>

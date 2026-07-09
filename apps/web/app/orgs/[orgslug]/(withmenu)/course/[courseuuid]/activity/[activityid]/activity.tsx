@@ -242,6 +242,7 @@ function ActivityClient(props: ActivityClientProps) {
   const [bgColor, setBgColor] = React.useState('bg-white rounded-2xl border border-[var(--ordria-border)]')
   const [assignment, setAssignment] = React.useState(null) as any;
   const [_markStatusButtonActive, setMarkStatusButtonActive] = React.useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)')
   const [isFocusMode, setIsFocusMode] = React.useState(false);
   const isInitialRender = useRef(true);
   const { contributorStatus } = useContributorStatus(courseuuid);
@@ -288,6 +289,15 @@ function ActivityClient(props: ActivityClientProps) {
   // Get previous and next activities
   const prevActivity = currentIndex > 0 ? allActivities[currentIndex - 1] : null;
   const nextActivity = currentIndex < allActivities.length - 1 ? allActivities[currentIndex + 1] : null;
+
+  const isCurrentActivityDone = React.useMemo(() => {
+    if (!trailData?.runs || !activity?.activity_uuid) return false;
+    const run = trailData.runs.find((r: any) => r.course_uuid === course?.course_uuid);
+    if (!run?.steps) return false;
+    return !!run.steps.find((step: any) => step.activity_uuid === activity.activity_uuid && step.complete);
+  }, [trailData, activity, course]);
+
+  const canNavigateNext = !isMobile || isCurrentActivityDone;
 
   // Memoize activity content
   const activityContent = useMemo(() => {
@@ -372,13 +382,16 @@ function ActivityClient(props: ActivityClientProps) {
     router.push(getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/${activity.cleanUuid}`);
   };
 
-  // Initialize focus mode from localStorage
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('globalFocusMode');
-      setIsFocusMode(saved === 'true');
+      if (saved !== null) {
+        setIsFocusMode(saved === 'true');
+      } else if (isMobile) {
+        setIsFocusMode(true);
+      }
     }
-  }, []);
+  }, [isMobile]);
 
   // Save focus mode to localStorage
   React.useEffect(() => {
@@ -543,7 +556,7 @@ function ActivityClient(props: ActivityClientProps) {
                   >
                     <div className="container mx-auto px-4 py-2">
                       <div className="flex items-center justify-between h-14">
-                        {/* Progress Indicator - Moved to left */}
+                        {!isMobile && (
                         <motion.div 
                           initial={isInitialRender.current ? false : { opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -582,8 +595,9 @@ function ActivityClient(props: ActivityClientProps) {
                             {trailData?.runs?.find((run: any) => run.course_uuid === course.course_uuid)?.steps?.filter((step: any) => step.complete)?.length || 0} {t('common.of')} {course.chapters?.reduce((acc: number, chapter: any) => acc + chapter.activities.length, 0) || 0}
                           </div>
                         </motion.div>
+                        )}
                         
-                        {/* Center Course Info */}
+                        {!isMobile && (
                         <motion.div 
                           initial={isInitialRender.current ? false : { opacity: 0, y: -20 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -615,6 +629,19 @@ function ActivityClient(props: ActivityClientProps) {
                             </h1>
                           </div>
                         </motion.div>
+                        )}
+
+                        {isMobile && (
+                          <motion.div
+                            initial={isInitialRender.current ? false : { opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                          >
+                            <Link href={getUriWithOrg(orgslug, '') + `/course/${courseuuid}`}>
+                              <span className="text-sm font-bold text-gray-700">{t('common.back')}</span>
+                            </Link>
+                          </motion.div>
+                        )}
 
                         {/* Minimize and Chapters - Moved to right */}
                         <motion.div
@@ -723,14 +750,14 @@ function ActivityClient(props: ActivityClientProps) {
                               trailData={trailData}
                             />
                             <button
-                              onClick={() => navigateToActivity(nextActivity)}
-                              className={`flex items-center space-x-1.5 p-2 rounded-md transition-all duration-200 cursor-pointer ${
-                                nextActivity
-                                  ? 'text-gray-700'
+                              onClick={() => canNavigateNext && navigateToActivity(nextActivity)}
+                              className={`flex items-center space-x-1.5 p-2 rounded-md transition-all duration-200 ${
+                                nextActivity && canNavigateNext
+                                  ? 'text-gray-700 cursor-pointer'
                                   : 'opacity-50 text-gray-400 cursor-not-allowed'
                               }`}
-                              disabled={!nextActivity}
-                              title={nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity')}
+                              disabled={!nextActivity || !canNavigateNext}
+                              title={!canNavigateNext && nextActivity ? t('activities.complete_to_unlock', 'Complete this activity to unlock the next') : (nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity'))}
                             >
                               <div className="flex flex-col items-end">
                                 <span className="text-xs text-gray-500">{t('common.next')}</span>
@@ -738,7 +765,11 @@ function ActivityClient(props: ActivityClientProps) {
                                   {nextActivity ? nextActivity.name : t('activities.no_next_activity')}
                                 </span>
                               </div>
-                              <ChevronRight size={20} className="text-gray-800 shrink-0" />
+                              {isMobile && nextActivity && !canNavigateNext ? (
+                                <Lock size={16} className="text-gray-400 shrink-0" />
+                              ) : (
+                                <ChevronRight size={20} className="text-gray-800 shrink-0" />
+                              )}
                             </button>
                           </div>
                         </div>
@@ -819,7 +850,7 @@ function ActivityClient(props: ActivityClientProps) {
                           trailData={trailData}
                         />
 
-                        {/* Activity Type Tabs — Duolingo style */}
+                        {!isMobile && (
                         <div className="flex gap-1 bg-[var(--ordria-surface)] rounded-2xl p-1.5 mb-4">
                           <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_VIDEO' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)]'}`}>
                             <span>🎬</span> <span className="hidden sm:inline">Vidéo</span>
@@ -832,6 +863,7 @@ function ActivityClient(props: ActivityClientProps) {
                             <span>🎯</span> <span className="hidden sm:inline">Quiz</span>
                           </div>
                         </div>
+                        )}
 
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-3">
                           <div className="flex flex-1 items-center space-x-3 min-w-0">
@@ -1021,8 +1053,7 @@ function ActivityClient(props: ActivityClientProps) {
                                 </Suspense>
                               </div>
 
-                              {/* Key Takeaways Box — Duolingo style */}
-                              {activity && (activity.activity_type === 'TYPE_VIDEO' || activity.activity_type === 'TYPE_DYNAMIC') && (
+                              {!isMobile && activity && (activity.activity_type === 'TYPE_VIDEO' || activity.activity_type === 'TYPE_DYNAMIC') && (
                                 <div className="mt-4 p-4 rounded-2xl border border-[var(--ordria-accent-border)] bg-[var(--ordria-accent-bg)]">
                                   <h4 className="flex items-center gap-2 text-sm font-bold text-[var(--ordria-accent-secondary)] mb-3">💡 Ce que vous allez retenir</h4>
                                   <ul className="space-y-1.5">
