@@ -23,12 +23,12 @@ import RecentMembers from './RecentMembers'
 import ContentOverview from './ContentOverview'
 import UsageOverview from './UsageOverview'
 
-const PLAN_COLORS: Record<string, { bg: string; text: string }> = {
-  free: { bg: 'bg-gray-100', text: 'text-gray-600' },
-  oss: { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-  standard: { bg: 'bg-blue-100', text: 'text-blue-700' },
-  pro: { bg: 'bg-purple-100', text: 'text-purple-700' },
-  enterprise: { bg: 'bg-amber-100', text: 'text-amber-700' },
+const PLAN_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  free: { bg: 'bg-gray-100', text: 'text-gray-600', border: 'border-gray-200' },
+  oss: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
+  standard: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
+  pro: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-200' },
+  enterprise: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-200' },
 }
 
 export default function DashboardHome() {
@@ -52,53 +52,56 @@ export default function DashboardHome() {
   const planStyle = PLAN_COLORS[plan] || PLAN_COLORS.free
 
   return (
-    <div className="h-full w-full bg-[#f8f8f8]">
+    <div className="h-full w-full bg-[#f7f7f7]">
       <div className="px-4 sm:px-10 pt-8 pb-10">
         <div className="space-y-6 max-w-[1600px] mx-auto w-full">
-          {/* Welcome Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {t('dashboard.home.welcome_back')}{username ? `, ${username}` : ''}
+              <h1 className="text-3xl font-black text-[#3c3c3c]" style={{ fontFamily: 'var(--font-display, Nunito)' }}>
+                {t('dashboard.home.welcome_back')}{username ? `, ${username}` : ''}!
               </h1>
-              <div className="flex items-center gap-2 mt-1.5">
+              <div className="flex items-center gap-2 mt-2">
                 <span
-                  className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize ${planStyle.bg} ${planStyle.text}`}
+                  className={`text-[11px] font-bold px-2.5 py-1 rounded-full capitalize ${planStyle.bg} ${planStyle.text} border-2 ${planStyle.border}`}
                 >
                   {plan === 'oss' ? 'OSS' : `${plan} ${t('dashboard.home.plan')}`}
                 </span>
                 {org?.name && (
-                  <span className="text-xs text-gray-400">{org.name}</span>
+                  <span className="text-xs text-[#afafaf] font-semibold">{org.name}</span>
                 )}
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <Link
-                href="/dash/courses?new=true"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors"
+              <button
+                onClick={() => window.location.href = '/dash/courses?new=true'}
+                className="duo-btn-success"
+                style={{ height: '40px', fontSize: '13px' }}
               >
-                <PlusCircle size={14} weight="bold" />
+                <PlusCircle size={16} weight="bold" />
                 {t('dashboard.home.create_course')}
-              </Link>
+              </button>
               <Link
                 href="/dash/analytics"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-600 bg-white rounded-lg nice-shadow hover:bg-gray-50 transition-colors"
+                className="duo-btn-white"
+                style={{ height: '40px', fontSize: '13px' }}
               >
-                <ChartBar size={14} weight="bold" />
+                <ChartBar size={16} weight="bold" />
                 {t('dashboard.home.analytics')}
               </Link>
               <Link
                 href="/dash/users/settings/users"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-600 bg-white rounded-lg nice-shadow hover:bg-gray-50 transition-colors"
+                className="duo-btn-white"
+                style={{ height: '40px', fontSize: '13px' }}
               >
-                <Users size={14} weight="bold" />
+                <Users size={16} weight="bold" />
                 {t('dashboard.home.members')}
               </Link>
               <Link
                 href="/dash/org/settings/general"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-600 bg-white rounded-lg nice-shadow hover:bg-gray-50 transition-colors"
+                className="duo-btn-white"
+                style={{ height: '40px', fontSize: '13px' }}
               >
-                <GearSix size={14} weight="bold" />
+                <GearSix size={16} weight="bold" />
                 {t('dashboard.home.settings')}
               </Link>
             </div>

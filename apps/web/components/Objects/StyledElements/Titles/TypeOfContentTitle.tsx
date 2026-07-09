@@ -14,17 +14,17 @@ function TypeOfContentTitle({ title, type }: TypeOfContentTitleProps) {
   const getIcon = () => {
     switch (type) {
       case 'col':
-        return <SquareLibrary className="w-4 h-4 text-black" />
+        return <SquareLibrary className="w-4 h-4 text-[#58cc02]" />
       case 'cou':
-        return <BookCopy className="w-4 h-4 text-black" />
+        return <BookCopy className="w-4 h-4 text-[#58cc02]" />
       case 'tra':
-        return <Signpost className="w-4 h-4 text-black" />
+        return <Signpost className="w-4 h-4 text-[#1cb0f6]" />
       case 'pod':
-        return <Headphones className="w-4 h-4 text-black" />
+        return <Headphones className="w-4 h-4 text-[#ce82ff]" />
       case 'board':
-        return <ChalkboardSimple size={16} className="text-black" weight="fill" />
+        return <ChalkboardSimple size={16} className="text-[#ce82ff]" weight="fill" />
       case 'pg':
-        return <Cube size={16} className="text-black" weight="fill" />
+        return <Cube size={16} className="text-[#ff9600]" weight="fill" />
       default:
         return null
     }
@@ -32,10 +32,10 @@ function TypeOfContentTitle({ title, type }: TypeOfContentTitleProps) {
 
   return (
     <div className="flex items-center gap-2.5 my-4 group cursor-default">
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white nice-shadow">
+      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#f7f7f7] border-2 border-[#e5e5e5]">
         {getIcon()}
       </div>
-      <h1 className="text-xl font-bold text-gray-900 tracking-tight">
+      <h1 className="text-2xl font-black text-[#3c3c3c] tracking-tight" style={{ fontFamily: 'var(--font-display, Nunito)' }}>
         {title}
       </h1>
     </div>

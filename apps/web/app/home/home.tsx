@@ -71,56 +71,49 @@ function HomeClient() {
   }, [isAuthenticated, orgs, router])
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white overflow-y-auto">
+    <div className="fixed inset-0 z-[100] bg-[#fff] overflow-y-auto">
       <div className="relative min-h-screen">
-        {/* Blueprint grid — fades in from bottom */}
         <div
           className="absolute inset-0 pointer-events-none z-0"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(0,0,0,0.035) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0,0,0,0.035) 1px, transparent 1px),
-              linear-gradient(rgba(0,0,0,0.018) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0,0,0,0.018) 1px, transparent 1px)
+              radial-gradient(circle at 20% 20%, rgba(88,204,2,0.06) 0%, transparent 40%),
+              radial-gradient(circle at 80% 60%, rgba(28,176,246,0.06) 0%, transparent 40%),
+              radial-gradient(circle at 50% 90%, rgba(206,130,255,0.05) 0%, transparent 40%),
             `,
-            backgroundSize: '80px 80px, 80px 80px, 16px 16px, 16px 16px',
-            maskImage: 'linear-gradient(to top, black 0%, transparent 60%)',
-            WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 60%)',
           }}
         />
 
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
           <div className="w-full max-w-md flex flex-col items-center">
-            {/* Brand */}
             <div className="flex flex-col items-center mb-10">
               { }
               <img
                 src="/lrn.svg"
                 alt="LearnHouse"
-                width={44}
-                height={44}
-                className="opacity-90"
+                width={56}
+                height={56}
+                className="opacity-90 duo-bounce"
               />
-              <h1 className="mt-6 font-black tracking-tight text-2xl text-gray-900 text-center">
+              <h1 className="mt-6 font-black tracking-tight text-3xl text-[#3c3c3c] text-center" style={{ fontFamily: 'var(--font-display, Nunito)' }}>
                 {t('common.your_organizations')}
               </h1>
-              <p className="mt-1.5 text-sm text-black/40 text-center">
+              <p className="mt-2 text-sm text-[#afafaf] text-center font-semibold">
                 {t('common.choose_an_organization_to_continue', {
                   defaultValue: 'Choose an organization to continue',
                 })}
               </p>
             </div>
 
-            {/* User strip */}
             {isAuthenticated && (
-              <div className="w-full mb-6 flex items-center justify-between bg-white rounded-2xl nice-shadow px-4 py-3">
+              <div className="w-full mb-6 flex items-center justify-between bg-white rounded-2xl border-2 border-[#e5e5e5] px-4 py-3" style={{ boxShadow: '0 4px 0 #e5e5e5' }}>
                 <div className="flex items-center gap-3 min-w-0">
                   <UserAvatar border="border-2" rounded="rounded-full" width={36} />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-semibold text-gray-900 truncate capitalize">
+                    <span className="text-sm font-bold text-[#3c3c3c] truncate capitalize">
                       {session?.data?.user?.first_name} {session?.data?.user?.last_name}
                     </span>
-                    <span className="text-xs text-black/40 truncate">
+                    <span className="text-xs text-[#afafaf] truncate font-semibold">
                       {session?.data?.user?.email}
                     </span>
                   </div>
@@ -129,7 +122,7 @@ function HomeClient() {
                   <DropdownMenuTrigger asChild>
                     <button
                       aria-label={t('common.settings')}
-                      className="p-2 rounded-lg text-black/40 hover:text-black hover:bg-black/[0.04] transition-colors"
+                      className="p-2 rounded-lg text-[#afafaf] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-colors"
                     >
                       <Settings size={16} />
                     </button>
@@ -137,10 +130,10 @@ function HomeClient() {
                   <DropdownMenuContent className="w-56" align="end">
                     <DropdownMenuLabel>
                       <div className="flex flex-col">
-                        <p className="text-sm font-medium">
+                        <p className="text-sm font-bold">
                           {session?.data?.user?.first_name} {session?.data?.user?.last_name}
                         </p>
-                        <p className="text-xs text-gray-500">{session?.data?.user?.email}</p>
+                        <p className="text-xs text-[#afafaf] font-semibold">{session?.data?.user?.email}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -169,7 +162,7 @@ function HomeClient() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => signOut({ redirect: true, callbackUrl: '/login' })}
-                      className="flex items-center space-x-2 text-red-600 focus:text-red-600"
+                      className="flex items-center space-x-2 text-[#ff4b4b] focus:text-[#ff4b4b]"
                     >
                       <LogOut size={16} />
                       <span>{t('user.sign_out')}</span>
@@ -179,33 +172,32 @@ function HomeClient() {
               </div>
             )}
 
-            {/* Org list */}
-            <div className="w-full space-y-2.5">
+            <div className="w-full space-y-3">
               {(isLoading || (isAuthenticated && orgsLoading)) && (
                 <>
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
-                      className="h-[68px] w-full rounded-2xl bg-black/[0.03] animate-pulse"
+                      className="h-[72px] w-full rounded-2xl bg-[#f7f7f7] animate-pulse"
                     />
                   ))}
                 </>
               )}
 
               {!isLoading && !isAuthenticated && (
-                <Link
-                  href="/login"
-                  className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-gray-900 text-white rounded-2xl font-semibold text-sm nice-shadow hover:bg-gray-800 transition-colors"
+                <button
+                  onClick={() => router.push('/login')}
+                  className="w-full duo-btn-blue"
                 >
-                  <LogIn size={16} />
+                  <LogIn size={18} />
                   {t('auth.sign_in', { defaultValue: 'Sign in' })}
-                </Link>
+                </button>
               )}
 
               {isAuthenticated && orgs && orgs.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-14 px-6 bg-white rounded-2xl nice-shadow">
-                  <TentTree className="text-black/10" size={64} />
-                  <p className="mt-4 text-sm font-semibold text-black/50 text-center">
+                <div className="flex flex-col items-center justify-center py-14 px-6 bg-white rounded-2xl border-2 border-dashed border-[#e5e5e5]">
+                  <TentTree className="text-[#afafaf]" size={64} />
+                  <p className="mt-4 text-sm font-bold text-[#777] text-center">
                     {t('common.no_orgs_message')}
                   </p>
                 </div>
@@ -217,33 +209,31 @@ function HomeClient() {
                   <OrgRow key={org.id ?? org.slug} org={org} access_token={access_token} />
                 ))}
 
-              {/* Create organization — prominent entry into the hub */}
               {isAuthenticated && orgs && (
-                <Link
-                  href="/new"
-                  className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-gray-900 text-white rounded-2xl font-semibold text-sm nice-shadow hover:bg-gray-800 transition-colors"
+                <button
+                  onClick={() => router.push('/new')}
+                  className="w-full duo-btn-success"
                 >
-                  <Plus size={16} />
+                  <Plus size={18} />
                   {t('common.create_organization', { defaultValue: 'Create organization' })}
-                </Link>
+                </button>
               )}
             </div>
 
-            {/* Footer */}
             {platformUrl ? (
               <a
                 href={platformUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-10 flex items-center gap-1.5 text-[11px] text-black/30 hover:text-black/60 transition-colors"
+                className="mt-10 flex items-center gap-1.5 text-[11px] text-[#afafaf] hover:text-[#3c3c3c] transition-colors font-semibold"
               >
                 <span>{t('common.powered_by', { defaultValue: 'Powered by' })}</span>
-                <span className="font-semibold tracking-tight text-black/50 group-hover:text-black/70">LearnHouse</span>
+                <span className="font-extrabold tracking-tight text-[#777]">LearnHouse</span>
               </a>
             ) : (
-              <div className="mt-10 flex items-center gap-1.5 text-[11px] text-black/30">
+              <div className="mt-10 flex items-center gap-1.5 text-[11px] text-[#afafaf] font-semibold">
                 <span>{t('common.powered_by', { defaultValue: 'Powered by' })}</span>
-                <span className="font-semibold tracking-tight text-black/50">LearnHouse</span>
+                <span className="font-extrabold tracking-tight text-[#777]">LearnHouse</span>
               </div>
             )}
             <CopyrightFooter year={new Date().getFullYear()} className="mt-4 pt-0" />
@@ -314,7 +304,7 @@ function OrgRow({ org, access_token }: { org: any; access_token: string }) {
   }
 
   return (
-    <div className="relative flex items-center p-4 bg-white rounded-2xl nice-shadow hover:shadow-lg transition-all group">
+    <div className="relative flex items-center p-4 bg-white rounded-2xl border-2 border-[#e5e5e5] hover:border-[#58cc02] transition-all group duo-card-hover" style={{ boxShadow: '0 4px 0 #e5e5e5' }}>
       <Link
         href={getUriWithOrg(org.slug, '/')}
         className="flex items-center flex-1 min-w-0"
@@ -324,28 +314,28 @@ function OrgRow({ org, access_token }: { org: any; access_token: string }) {
           <img
             src={getOrgLogoMediaDirectory(org.org_uuid, org.logo_image)}
             alt={org.name}
-            className="w-11 h-11 rounded-xl object-cover flex-shrink-0 ring-1 ring-inset ring-black/5"
+            className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border-2 border-[#f7f7f7]"
           />
         ) : (
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg flex-shrink-0 ring-1 ring-inset ring-black/5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#e5f9d8] to-[#ddf4ff] flex items-center justify-center text-[#58cc02] font-black text-xl flex-shrink-0 border-2 border-[#e5e5e5]">
             {initial}
           </div>
         )}
 
         <div className="ml-3 flex-1 min-w-0">
-          <div className="font-semibold text-gray-900 tracking-tight truncate">
+          <div className="font-bold text-[#3c3c3c] tracking-tight truncate">
             {org.name}
           </div>
           {org.description ? (
-            <p className="text-xs text-black/40 truncate mt-0.5">{org.description}</p>
+            <p className="text-xs text-[#afafaf] truncate mt-0.5 font-semibold">{org.description}</p>
           ) : (
-            <p className="text-xs text-black/30 truncate mt-0.5">{org.slug}</p>
+            <p className="text-xs text-[#afafaf] truncate mt-0.5 font-semibold">{org.slug}</p>
           )}
         </div>
 
         <ChevronRight
-          size={18}
-          className="ml-3 text-black/25 group-hover:text-black/60 group-hover:translate-x-0.5 transition-all flex-shrink-0"
+          size={20}
+          className="ml-3 text-[#afafaf] group-hover:text-[#58cc02] group-hover:translate-x-0.5 transition-all flex-shrink-0"
         />
       </Link>
 

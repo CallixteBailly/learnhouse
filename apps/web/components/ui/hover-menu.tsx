@@ -119,7 +119,7 @@ const HoverMenuContent = React.forwardRef<HTMLDivElement, HoverMenuContentProps>
       <div
         ref={ref}
         className={cn(
-          "min-w-[200px] rounded-lg border bg-[#0f0f10] border-white/10 shadow-xl shadow-black/30 py-1",
+          "min-w-[200px] rounded-2xl border-2 border-[#e5e5e5] bg-white shadow-xl shadow-black/10 py-1",
           className
         )}
       >
@@ -152,7 +152,7 @@ const HoverMenuItem = React.forwardRef<HTMLDivElement, HoverMenuItemProps>(
         ref={ref}
         onClick={onClick}
         className={cn(
-          "px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/[0.08] cursor-pointer transition-colors",
+          "px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors",
           className
         )}
       >
@@ -174,7 +174,7 @@ const HoverMenuLabel = React.forwardRef<HTMLDivElement, HoverMenuLabelProps>(
       <div
         ref={ref}
         className={cn(
-          "px-3 py-2 text-xs font-medium text-white/50",
+          "px-3 py-2 text-xs font-bold text-[#afafaf] uppercase tracking-wide",
           className
         )}
       >
@@ -190,7 +190,7 @@ const HoverMenuSeparator = React.forwardRef<HTMLDivElement, { className?: string
     return (
       <div
         ref={ref}
-        className={cn("my-1 h-px bg-white/10", className)}
+        className={cn("my-1 h-px bg-[#e5e5e5]", className)}
       />
     )
   }

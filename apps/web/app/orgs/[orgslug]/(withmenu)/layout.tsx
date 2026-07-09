@@ -41,8 +41,8 @@ function OrgFooter() {
           <Link href="https://ordria.fr" target="_blank" rel="noopener noreferrer">
             <span
               style={{
-                fontFamily: 'Sora, system-ui, sans-serif',
-                fontWeight: 600,
+                fontFamily: 'Nunito, system-ui, sans-serif',
+                fontWeight: 800,
                 fontSize: '13px',
                 color: 'var(--muted-foreground)',
               }}

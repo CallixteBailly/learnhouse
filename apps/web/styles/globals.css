@@ -1,7 +1,7 @@
 /*
   ---break---
 */
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @plugin 'tailwindcss-animate';
 
@@ -184,11 +184,11 @@
 
 @layer utilities {
   .nice-shadow {
-    @apply shadow-md shadow-gray-300/25 outline outline-1 outline-neutral-200/40;
+    @apply shadow-md shadow-gray-200/60 outline outline-1 outline-neutral-200/30;
   }
 
   .light-shadow {
-    @apply shadow-lg shadow-gray-300/15 outline outline-1 outline-neutral-200/30;
+    @apply shadow-lg shadow-gray-200/40 outline outline-1 outline-neutral-200/20;
   }
 
   /* Hide scrollbar while maintaining scroll functionality */
@@ -217,8 +217,9 @@
     padding: 0;
     margin: 0;
     scrollbar-gutter: stable;
-    font-family: var(--font-default, 'Wix Madefor Text'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    letter-spacing: -0.02em;
+    font-family: var(--font-default, 'Nunito'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    letter-spacing: 0;
+    font-weight: 600;
   }
 
   a {
@@ -310,16 +311,28 @@
 
   /* Duolingo-style progress bar */
   .duo-progress-bar {
-    height: 8px;
-    background: var(--ordria-surface, #e8f0f8);
-    border-radius: 4px;
+    height: 12px;
+    background: var(--duo-surface-2);
+    border-radius: 999px;
     overflow: hidden;
+    position: relative;
   }
   .duo-progress-bar .duo-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--cat-coiffeur, #18c8e0), var(--ordria-accent-secondary, #0898b0));
-    border-radius: 4px;
-    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--duo-green);
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+  .duo-progress-bar .duo-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 8px;
+    right: 8px;
+    height: 3px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 999px;
   }
 
   /* Duolingo-style card hover */
@@ -339,35 +352,136 @@
     padding: 4px 10px;
     border-radius: 8px;
     font-size: 11px;
-    font-weight: 600;
-    font-family: var(--font-display, 'Sora');
+    font-weight: 700;
+    font-family: var(--font-display, 'Nunito');
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
-  /* Duolingo-style green button */
   .duo-btn-success {
-    background: var(--ordria-success, #2ea36b);
+    background: var(--duo-green);
     color: #fff;
     border: none;
-    border-radius: var(--radius-btn, 12px);
+    border-radius: var(--duo-btn-radius);
     padding: 0 20px;
-    height: 44px;
-    font-family: var(--font-display, 'Sora');
-    font-size: 14px;
-    font-weight: 700;
+    height: var(--duo-btn-height);
+    font-family: var(--font-display, 'Nunito');
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    box-shadow: var(--shadow-success);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--duo-green-dark);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.15s ease;
   }
   .duo-btn-success:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(46, 163, 107, 0.35);
+    filter: brightness(1.05);
   }
   .duo-btn-success:active {
-    transform: translateY(0);
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--duo-green-dark);
+  }
+
+  .duo-btn-blue {
+    background: var(--duo-blue);
+    color: #fff;
+    border: none;
+    border-radius: var(--duo-btn-radius);
+    padding: 0 20px;
+    height: var(--duo-btn-height);
+    font-family: var(--font-display, 'Nunito');
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--duo-blue-dark);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.15s ease;
+  }
+  .duo-btn-blue:hover { filter: brightness(1.05); }
+  .duo-btn-blue:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--duo-blue-dark);
+  }
+
+  .duo-btn-red {
+    background: var(--duo-red);
+    color: #fff;
+    border: none;
+    border-radius: var(--duo-btn-radius);
+    padding: 0 20px;
+    height: var(--duo-btn-height);
+    font-family: var(--font-display, 'Nunito');
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--duo-red-dark);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.15s ease;
+  }
+  .duo-btn-red:hover { filter: brightness(1.05); }
+  .duo-btn-red:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--duo-red-dark);
+  }
+
+  .duo-btn-white {
+    background: #fff;
+    color: var(--duo-foreground);
+    border: 2px solid var(--duo-border);
+    border-radius: var(--duo-btn-radius);
+    padding: 0 20px;
+    height: var(--duo-btn-height);
+    font-family: var(--font-display, 'Nunito');
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--duo-border);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+  }
+  .duo-btn-white:hover { background: var(--duo-surface); }
+  .duo-btn-white:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--duo-border);
+  }
+
+  .duo-btn-disabled {
+    background: var(--duo-surface-2);
+    color: var(--duo-muted-light);
+    border: none;
+    border-radius: var(--duo-btn-radius);
+    padding: 0 20px;
+    height: var(--duo-btn-height);
+    font-family: var(--font-display, 'Nunito');
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: not-allowed;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--duo-border-dark);
   }
 
   /* Pulse animation for current items */
@@ -415,27 +529,27 @@
     --card-foreground: 228 56% 14%;
     --popover: 0 0% 100%;
     --popover-foreground: 228 56% 14%;
-    --primary: 187 81% 49%;
+    --primary: 86 79% 40%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 53% 94%;
-    --secondary-foreground: 228 56% 14%;
-    --muted: 210 53% 94%;
-    --muted-foreground: 225 14% 44%;
-    --accent: 187 81% 49%;
+    --secondary: 86 79% 94%;
+    --secondary-foreground: 86 79% 20%;
+    --muted: 0 0% 97%;
+    --muted-foreground: 0 0% 47%;
+    --accent: 199 89% 55%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 225 29% 78%;
-    --input: 225 29% 78%;
-    --ring: 187 81% 49%;
-    --chart-1: 187 81% 49%;
-    --chart-2: 189 91% 36%;
-    --chart-3: 228 56% 14%;
-    --chart-4: 210 53% 94%;
-    --chart-5: 225 14% 44%;
-    --radius: 0.5rem;
-    --font-display: 'Sora', system-ui, -apple-system, sans-serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 86 79% 40%;
+    --chart-1: 86 79% 40%;
+    --chart-2: 199 89% 36%;
+    --chart-3: 0 0% 24%;
+    --chart-4: 0 0% 94%;
+    --chart-5: 0 0% 47%;
+    --radius: 0.75rem;
+    --font-display: 'Nunito', system-ui, -apple-system, sans-serif;
+    --font-body: 'Nunito', system-ui, -apple-system, sans-serif;
 
     /* Z-Index Layering System */
     --z-behind: -10;
@@ -463,38 +577,85 @@
     --z-critical: 400;
     --z-max: 9999;
 
-    /* Ordria design tokens (Duolingo-style) */
+    /* Duolingo design tokens */
+    --duo-green: #58cc02;
+    --duo-green-dark: #58a700;
+    --duo-green-light: #d7ffb8;
+    --duo-green-bg: #e5f9d8;
+    --duo-blue: #1cb0f6;
+    --duo-blue-dark: #1899d6;
+    --duo-blue-light: #ddf4ff;
+    --duo-blue-bg: #e8f7ff;
+    --duo-purple: #ce82ff;
+    --duo-purple-dark: #a560e8;
+    --duo-purple-light: #f5e6ff;
+    --duo-purple-bg: #faf0ff;
+    --duo-red: #ff4b4b;
+    --duo-red-dark: #ea2b2b;
+    --duo-red-light: #ffdfe0;
+    --duo-red-bg: #ffebeb;
+    --duo-yellow: #ffc800;
+    --duo-yellow-dark: #e6a700;
+    --duo-yellow-light: #fff4cc;
+    --duo-yellow-bg: #fff9e0;
+    --duo-orange: #ff9600;
+    --duo-orange-dark: #e08600;
+    --duo-orange-bg: #fff3e0;
+    --duo-pink: #ff86d0;
+    --duo-pink-dark: #e070b8;
+    --duo-teal: #4fc1a0;
+    --duo-teal-dark: #3da8885;
+
+    --duo-bg: #ffffff;
+    --duo-surface: #f7f7f7;
+    --duo-surface-2: #efefef;
+    --duo-foreground: #3c3c3c;
+    --duo-ink: #3c3c3c;
+    --duo-muted: #777777;
+    --duo-muted-light: #afafaf;
+    --duo-border: #e5e5e5;
+    --duo-border-dark: #d0d0d0;
+
+    /* Backwards-compatible Ordria aliases (mapped to Duolingo palette) */
     --ordria-background: #ffffff;
-    --ordria-surface: #e8f0f8;
-    --ordria-surface-lavender: #d0d8f0;
-    --ordria-foreground: #101838;
-    --ordria-ink: #101838;
-    --ordria-muted: #606880;
-    --ordria-border: #b8c0d8;
-    --ordria-accent: #18c8e0;
-    --ordria-accent-secondary: #0898b0;
-    --ordria-accent-hover: #3ad4e6;
-    --ordria-accent-bg: #e6f9fb;
-    --ordria-accent-border: #aee9f0;
-    --ordria-success: #2ea36b;
-    --ordria-warning: #d99a2b;
-    --ordria-error: #d9534f;
+    --ordria-surface: #f7f7f7;
+    --ordria-surface-lavender: #f0e6ff;
+    --ordria-foreground: #3c3c3c;
+    --ordria-ink: #3c3c3c;
+    --ordria-muted: #777777;
+    --ordria-border: #e5e5e5;
+    --ordria-accent: #58cc02;
+    --ordria-accent-secondary: #58a700;
+    --ordria-accent-hover: #6fdb2e;
+    --ordria-accent-bg: #e5f9d8;
+    --ordria-accent-border: #c5e8a0;
+    --ordria-success: #58cc02;
+    --ordria-warning: #ffc800;
+    --ordria-error: #ff4b4b;
 
     /* Duolingo-style extras */
-    --radius-card: 16px;
-    --radius-btn: 12px;
-    --radius-input: 8px;
-    --shadow-soft: 0 2px 8px rgba(16, 24, 56, 0.08);
-    --shadow-hover: 0 4px 16px rgba(24, 200, 224, 0.25);
-    --shadow-success: 0 4px 16px rgba(46, 163, 107, 0.25);
-    --shadow-error: 0 4px 16px rgba(217, 83, 79, 0.2);
+    --radius-card: 20px;
+    --radius-btn: 16px;
+    --radius-input: 12px;
+    --shadow-soft: 0 2px 0 #e5e5e5;
+    --shadow-hover: 0 4px 0 #e5e5e5;
+    --shadow-success: 0 4px 0 var(--duo-green-dark);
+    --shadow-error: 0 4px 0 var(--duo-red-dark);
+    --shadow-blue: 0 4px 0 var(--duo-blue-dark);
+    --shadow-purple: 0 4px 0 var(--duo-purple-dark);
 
-    /* Category colors */
-    --cat-coiffeur: #18c8e0;
-    --cat-garagiste: #0898b0;
-    --cat-restaurateur: #e87a2b;
-    --cat-artisan: #8b5cf6;
-    --cat-barbier: #2ea36b;
+    /* Category colors — mapped to Duolingo palette */
+    --cat-coiffeur: #1cb0f6;
+    --cat-garagiste: #1899d6;
+    --cat-restaurateur: #ff9600;
+    --cat-artisan: #ce82ff;
+    --cat-barbier: #58cc02;
+
+    /* Duolingo button system */
+    --duo-btn-height: 48px;
+    --duo-btn-radius: 16px;
+    --duo-btn-shadow: 0 4px;
+    --duo-btn-active-shadow: 0 2px;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -529,8 +690,9 @@
   html,
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-default, 'Wix Madefor Text'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    letter-spacing: -0.02em;
+    font-family: var(--font-default, 'Nunito'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    letter-spacing: 0;
+    font-weight: 600;
   }
 }
 

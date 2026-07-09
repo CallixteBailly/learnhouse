@@ -1,12 +1,13 @@
 import '../styles/globals.css'
 import React from 'react'
 import Providers from '@components/Providers'
-import { Wix_Madefor_Text } from 'next/font/google'
+import { Nunito } from 'next/font/google'
 
-const wixMadeforText = Wix_Madefor_Text({
+const nunito = Nunito({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-default',
+  weight: ['400', '600', '700', '800', '900'],
 })
 
 export default function RootLayout({
@@ -15,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html className={wixMadeforText.variable} lang="en" suppressHydrationWarning>
+    <html className={nunito.variable} lang="en" suppressHydrationWarning>
       <head>
         {/* Synchronous script — blocks parsing to guarantee window.__RUNTIME_CONFIG__ exists before any JS runs.
             Next.js <Script strategy="beforeInteractive"> is not truly blocking in all browsers (Safari). */}

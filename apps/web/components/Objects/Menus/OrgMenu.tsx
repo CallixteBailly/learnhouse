@@ -561,8 +561,8 @@ const LearnHouseLogo = ({ logoFilter }: { logoFilter: string }) => {
   return (
     <span
       style={{
-        fontFamily: 'Sora, system-ui, sans-serif',
-        fontWeight: 700,
+        fontFamily: 'Nunito, system-ui, sans-serif',
+        fontWeight: 900,
         fontSize: '22px',
         letterSpacing: '-0.02em',
         filter: logoFilter,
