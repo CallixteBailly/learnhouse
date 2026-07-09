@@ -174,8 +174,8 @@ const CertificationBadge = memo(({
     >
       <div className={`w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] rounded-full flex items-center justify-center text-xs font-medium transition-all border-2 border-white ${
         isCompleted
-          ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-          : 'bg-gray-200 text-gray-400'
+          ? 'bg-[var(--ordria-warning)] text-white duo-pulse'
+          : 'bg-[var(--ordria-border)] text-[var(--ordria-muted)]'
       }`}>
         <Trophy size={10} />
       </div>
@@ -261,11 +261,11 @@ const MobileChapterSelector = memo(({
                       }`}
                     >
                       <div className={`w-[6px] h-[6px] rounded-full shrink-0 ${
-                        isDone ? 'bg-teal-500' : isCurrent ? 'bg-gray-500 animate-pulse' : 'bg-zinc-200'
+                        isDone ? 'bg-[var(--ordria-success)]' : isCurrent ? 'bg-[var(--ordria-accent)] duo-pulse' : 'bg-[var(--ordria-border)]'
                       }`} />
                       <ActivityTypeIcon activityType={activity.activity_type} />
                       <span className="truncate">{activity.name}</span>
-                      {isDone && <Check size={12} className="text-teal-500 ml-auto shrink-0" />}
+                      {isDone && <Check size={12} className="text-[var(--ordria-success)] ml-auto shrink-0" />}
                     </Link>
                   )
                 })}
@@ -288,9 +288,9 @@ function ActivityIndicators(props: Props) {
   const enableNavigation = props.enableNavigation || false
   const router = useRouter()
 
-  const done_activity_style = 'bg-teal-500 hover:bg-teal-600'
-  const black_activity_style = 'bg-zinc-200/80 hover:bg-zinc-300'
-  const current_activity_style = 'bg-gray-500 animate-pulse hover:bg-gray-600'
+  const done_activity_style = 'bg-[var(--ordria-success)] hover:opacity-90'
+  const black_activity_style = 'bg-[var(--ordria-border)] hover:opacity-70'
+  const current_activity_style = 'bg-[var(--ordria-accent)] duo-pulse hover:opacity-90'
 
   // Flatten all activities for navigation and rendering
   const allActivities = useMemo(() => {
@@ -429,9 +429,9 @@ function ActivityIndicators(props: Props) {
             />
             <span>{completedCount}/{totalCount}</span>
           </div>
-          <div className="w-full bg-zinc-200/80 rounded-full h-[6px] overflow-hidden">
+          <div className="duo-progress-bar w-full rounded-full">
             <div
-              className="h-full bg-teal-500 rounded-full transition-all duration-300"
+              className="duo-progress-fill"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -498,8 +498,8 @@ function ActivityIndicators(props: Props) {
                     <Link href={chapterLinkHref} prefetch={false} className="relative z-10 shrink-0 flex items-center cursor-pointer focus:outline-none">
                       <div className={`w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold transition-all border-2 border-white ${
                         isChapterComplete
-                          ? 'bg-teal-500 text-white'
-                          : 'bg-gray-200 text-gray-500'
+                          ? 'bg-[var(--ordria-accent)] text-white'
+                          : 'bg-[var(--ordria-border)] text-[var(--ordria-muted)]'
                       }`}>
                         {chapterIndex + 1}
                       </div>
@@ -508,8 +508,8 @@ function ActivityIndicators(props: Props) {
                     <div className="relative z-10 shrink-0 flex items-center cursor-not-allowed">
                       <div className={`w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold transition-all border-2 border-white ${
                         isChapterComplete
-                          ? 'bg-teal-500 text-white'
-                          : 'bg-gray-200 text-gray-500'
+                          ? 'bg-[var(--ordria-accent)] text-white'
+                          : 'bg-[var(--ordria-border)] text-[var(--ordria-muted)]'
                       }`}>
                         {chapterIndex + 1}
                       </div>
@@ -548,7 +548,7 @@ function ActivityIndicators(props: Props) {
                           className={`${isCurrent ? 'flex-2' : 'flex-1'} min-w-[12px] ${!isLast ? 'border-r-[1.5px] border-white' : ''}`}
                         >
                           <div
-                            className={`h-[7px] ${getActivityClass(activity)} ${isLast ? 'rounded-r-full' : ''} transition-all hover:brightness-110`}
+                            className={`h-[8px] rounded-full ${getActivityClass(activity)} ${isLast ? 'rounded-r-full' : ''} ${activityIndex === 0 ? 'rounded-l-full' : ''} transition-all hover:brightness-110`}
                           ></div>
                         </Link>
                       </ToolTip>

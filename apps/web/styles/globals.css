@@ -307,6 +307,104 @@
       opacity 300ms,
       transform 300ms;
   }
+
+  /* Duolingo-style progress bar */
+  .duo-progress-bar {
+    height: 8px;
+    background: var(--ordria-surface, #e8f0f8);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .duo-progress-bar .duo-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cat-coiffeur, #18c8e0), var(--ordria-accent-secondary, #0898b0));
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Duolingo-style card hover */
+  .duo-card-hover {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .duo-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Duolingo-style category badge */
+  .duo-category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-display, 'Sora');
+  }
+
+  /* Duolingo-style green button */
+  .duo-btn-success {
+    background: var(--ordria-success, #2ea36b);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-btn, 12px);
+    padding: 0 20px;
+    height: 44px;
+    font-family: var(--font-display, 'Sora');
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: var(--shadow-success);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .duo-btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(46, 163, 107, 0.35);
+  }
+  .duo-btn-success:active {
+    transform: translateY(0);
+  }
+
+  /* Pulse animation for current items */
+  @keyframes duo-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(24, 200, 224, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(24, 200, 224, 0); }
+  }
+  .duo-pulse {
+    animation: duo-pulse 2s ease-in-out infinite;
+  }
+
+  /* Bounce animation */
+  @keyframes duo-bounce {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .duo-bounce {
+    animation: duo-bounce 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Shake animation */
+  @keyframes duo-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .duo-shake {
+    animation: duo-shake 0.4s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .duo-pulse, .duo-bounce, .duo-shake, .duo-card-hover {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 }
 
 @layer base {
@@ -364,6 +462,39 @@
     --z-notification: 310;
     --z-critical: 400;
     --z-max: 9999;
+
+    /* Ordria design tokens (Duolingo-style) */
+    --ordria-background: #ffffff;
+    --ordria-surface: #e8f0f8;
+    --ordria-surface-lavender: #d0d8f0;
+    --ordria-foreground: #101838;
+    --ordria-ink: #101838;
+    --ordria-muted: #606880;
+    --ordria-border: #b8c0d8;
+    --ordria-accent: #18c8e0;
+    --ordria-accent-secondary: #0898b0;
+    --ordria-accent-hover: #3ad4e6;
+    --ordria-accent-bg: #e6f9fb;
+    --ordria-accent-border: #aee9f0;
+    --ordria-success: #2ea36b;
+    --ordria-warning: #d99a2b;
+    --ordria-error: #d9534f;
+
+    /* Duolingo-style extras */
+    --radius-card: 16px;
+    --radius-btn: 12px;
+    --radius-input: 8px;
+    --shadow-soft: 0 2px 8px rgba(16, 24, 56, 0.08);
+    --shadow-hover: 0 4px 16px rgba(24, 200, 224, 0.25);
+    --shadow-success: 0 4px 16px rgba(46, 163, 107, 0.25);
+    --shadow-error: 0 4px 16px rgba(217, 83, 79, 0.2);
+
+    /* Category colors */
+    --cat-coiffeur: #18c8e0;
+    --cat-garagiste: #0898b0;
+    --cat-restaurateur: #e87a2b;
+    --cat-artisan: #8b5cf6;
+    --cat-barbier: #2ea36b;
   }
   .dark {
     --background: 0 0% 3.9%;

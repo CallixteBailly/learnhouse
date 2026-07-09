@@ -425,15 +425,15 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
             height={height}
             numberOfPieces={200}
             recycle={false}
-            colors={['#6366f1', '#10b981', '#3b82f6']}
+            colors={['#18c8e0', '#2ea36b', '#d99a2b', '#8b5cf6', '#0898b0']}
           />
         </div>
         
-        <div className="bg-white rounded-2xl p-8 nice-shadow max-w-4xl w-full space-y-6 relative z-10">
+        <div className="bg-white rounded-2xl p-8 border-2 border-[var(--ordria-border)] max-w-4xl w-full space-y-6 relative z-10" style={{ boxShadow: 'var(--shadow-soft)' }}>
           <div className="flex flex-col items-center space-y-6">
             {thumbnailImage && (
               <img
-                className="w-[200px] h-[114px] rounded-lg shadow-md object-cover"
+                className="w-[200px] h-[114px] rounded-2xl shadow-md object-cover"
                 src={`${getCourseThumbnailMediaDirectory(
                   org?.org_uuid,
                   courseUuid,
@@ -443,28 +443,28 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
               />
             )}
             
-            <div className="bg-emerald-100 p-4 rounded-full">
-              <Trophy className="w-16 h-16 text-emerald-600" />
+            <div className="bg-[var(--ordria-accent-bg)] p-4 rounded-full duo-pulse border-2 border-[var(--ordria-accent-border)]">
+              <Trophy className="w-16 h-16 text-[var(--ordria-warning)]" />
             </div>
           </div>
           
-          <h1 className="text-4xl font-bold text-gray-900">
+          <h1 className="text-4xl font-bold text-[var(--ordria-foreground)]" style={{ fontFamily: 'var(--ordria-font-display)' }}>
             {t('courses.congratulations')}
           </h1>
           
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-[var(--ordria-muted)]">
             {t('courses.successfully_completed')}
-            <span className="font-semibold text-gray-900"> {courseName}</span>
+            <span className="font-semibold text-[var(--ordria-foreground)]"> {courseName}</span>
           </p>
           
-          <p className="text-gray-500">
+          <p className="text-[var(--ordria-muted)]">
             {t('certificate.dedication_message')}
           </p>
 
           {isLoadingCertificate ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">{t('certificate.loading_certificate')}</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ordria-accent)]"></div>
+              <span className="ml-3 text-[var(--ordria-muted)]">{t('certificate.loading_certificate')}</span>
             </div>
           ) : certificateError ? (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
@@ -474,7 +474,7 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
             </div>
           ) : userCertificate ? (
             <div className="space-y-4">
-              <h2 className="text-2xl font-semibold text-gray-900">{t('certificate.your_certificate')}</h2>
+              <h2 className="text-2xl font-semibold text-[var(--ordria-foreground)]" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('certificate.your_certificate')}</h2>
               <div className="max-w-2xl mx-auto" id="certificate-preview">
                 <div id="certificate-content">
                   <CertificatePreview
@@ -496,7 +496,7 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={downloadCertificate}
-                  className="inline-flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition duration-200"
+                  className="duo-btn-success inline-flex items-center space-x-2 px-6 py-3"
                 >
                   <Download className="w-5 h-5" />
                   <span>{t('certificate.download_certificate')}</span>
@@ -505,7 +505,7 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
                   href={getUriWithOrg(orgslug, `/certificates/${userCertificate.certificate_user.user_certification_uuid}/verify`)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition duration-200"
+                  className="inline-flex items-center space-x-2 bg-[var(--ordria-surface)] text-[var(--ordria-foreground)] border border-[var(--ordria-border)] rounded-xl px-6 py-3 hover:bg-[var(--ordria-accent-bg)] transition duration-200"
                 >
                   <Shield className="w-5 h-5" />
                   <span>{t('certificate.verify_certificate')}</span>
@@ -523,7 +523,7 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
           <div className="pt-6">
             <Link
               href={getUriWithOrg(orgslug, `/course/${courseUuid.replace('course_', '')}`)}
-              className="inline-flex items-center space-x-2 bg-gray-800 text-white px-6 py-3 rounded-full hover:bg-gray-700 transition duration-200"
+              className="inline-flex items-center space-x-2 bg-[var(--ordria-foreground)] text-white px-6 py-3 rounded-xl hover:opacity-90 transition duration-200"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>{t('courses.back_to_course')}</span>
@@ -536,11 +536,11 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
     // Show progress and encouragement for incomplete course
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-        <div className="bg-white rounded-2xl p-8 nice-shadow max-w-2xl w-full space-y-6">
+        <div className="bg-white rounded-2xl p-8 border-2 border-[var(--ordria-border)] max-w-2xl w-full space-y-6" style={{ boxShadow: 'var(--shadow-soft)' }}>
           <div className="flex flex-col items-center space-y-6">
             {thumbnailImage && (
               <img
-                className="w-[200px] h-[114px] rounded-lg shadow-md object-cover"
+                className="w-[200px] h-[114px] rounded-2xl shadow-md object-cover"
                 src={`${getCourseThumbnailMediaDirectory(
                   org?.org_uuid,
                   courseUuid,
@@ -550,55 +550,55 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
               />
             )}
             
-            <div className="bg-blue-100 p-4 rounded-full">
-              <Target className="w-16 h-16 text-blue-600" />
+            <div className="bg-[var(--ordria-accent-bg)] p-4 rounded-full border-2 border-[var(--ordria-accent-border)]">
+              <Target className="w-16 h-16 text-[var(--ordria-accent)]" />
             </div>
           </div>
           
-          <h1 className="text-4xl font-bold text-gray-900">
+          <h1 className="text-4xl font-bold text-[var(--ordria-foreground)]" style={{ fontFamily: 'var(--ordria-font-display)' }}>
             {t('courses.keep_going')}
           </h1>
           
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-[var(--ordria-muted)]">
             {t('courses.making_great_progress')}
-            <span className="font-semibold text-gray-900"> {courseName}</span>
+            <span className="font-semibold text-[var(--ordria-foreground)]"> {courseName}</span>
           </p>
           
           {progressInfo && (
-            <div className="bg-gray-50 rounded-lg p-6 space-y-4">
+            <div className="bg-[var(--ordria-surface)] rounded-2xl border border-[var(--ordria-border)] p-6 space-y-4">
               <div className="flex items-center justify-center space-x-2">
-                <BookOpen className="w-5 h-5 text-gray-600" />
-                <span className="text-lg font-semibold text-gray-700">{t('courses.course_progress')}</span>
+                <BookOpen className="w-5 h-5 text-[var(--ordria-muted)]" />
+                <span className="text-lg font-semibold text-[var(--ordria-foreground)]" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.course_progress')}</span>
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">{t('courses.progress')}</span>
-                  <span className="font-semibold text-gray-900">{progressInfo.percentage}%</span>
+                  <span className="text-[var(--ordria-muted)]">{t('courses.progress')}</span>
+                  <span className="font-semibold text-[var(--ordria-accent-secondary)]" style={{ fontFamily: 'var(--ordria-font-mono)' }}>{progressInfo.percentage}%</span>
                 </div>
                 
-                <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="duo-progress-bar w-full rounded-full">
                   <div 
-                    className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                    className="duo-progress-fill"
                     style={{ width: `${progressInfo.percentage}%` }}
                   ></div>
                 </div>
                 
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-[var(--ordria-muted)]">
                   {t('courses.completed_of', { completed: progressInfo.completed, total: progressInfo.total })}
                 </div>
               </div>
             </div>
           )}
           
-          <p className="text-gray-500">
+          <p className="text-[var(--ordria-muted)]">
             {t('courses.keep_going_description')}
           </p>
 
           <div className="pt-6">
             <Link
               href={getUriWithOrg(orgslug, `/course/${courseUuid.replace('course_', '')}`)}
-              className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition duration-200"
+              className="duo-btn-success inline-flex items-center space-x-2 px-6 py-3"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>{t('courses.continue_learning')}</span>

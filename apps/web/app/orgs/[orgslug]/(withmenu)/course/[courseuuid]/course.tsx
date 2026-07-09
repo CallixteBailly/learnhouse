@@ -323,7 +323,7 @@ const CourseClient = (props: any) => {
               ]} />
             </div>
             <div className="pb-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-              <h1 className="text-3xl md:text-3xl font-bold">{course.name}</h1>
+              <h1 className="text-3xl md:text-3xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)' }}>{course.name}</h1>
               <CourseShare
                 courseName={course.name}
                 courseUrl={getUriWithOrg(orgslug, `/course/${courseuuid}`)}
@@ -467,7 +467,7 @@ const CourseClient = (props: any) => {
 
                 <div className="course_metadata_left space-y-2">
                   <div className="">
-                    <p className="py-5 whitespace-pre-line break-words w-full leading-relaxed tracking-normal text-pretty hyphens-auto">{course.about}</p>
+                    <p className="py-5 whitespace-pre-line break-words w-full leading-relaxed tracking-normal text-pretty hyphens-auto text-[var(--ordria-foreground)]">{course.about}</p>
                   </div>
                 </div>
               </div>
@@ -477,7 +477,7 @@ const CourseClient = (props: any) => {
                 <CoursesActions courseuuid={courseuuid} orgslug={orgslug} course={course} trailData={trailData} />
                 
                 {/* Authors & Updates Box */}
-                <div className="bg-white shadow-md shadow-gray-300/25 outline outline-1 outline-neutral-200/40 rounded-lg overflow-hidden p-4">
+                <div className="bg-white rounded-2xl border-2 border-[var(--ordria-border)] duo-card-hover overflow-hidden p-4">
                   <CourseProvider courseuuid={course.course_uuid}>
                     <CourseAuthors authors={course.authors} />
                   </CourseProvider>
@@ -493,8 +493,8 @@ const CourseClient = (props: any) => {
               if (displayLearnings.length === 0) return null
               return (
                 <div className="w-full">
-                  <h2 className="py-5 text-xl md:text-2xl font-bold">{t('courses.what_you_will_learn')}</h2>
-                  <div className="bg-white shadow-md shadow-gray-300/25 outline outline-1 outline-neutral-200/40 rounded-lg overflow-hidden px-5 py-5 space-y-2">
+                  <h2 className="py-5 text-xl md:text-2xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.what_you_will_learn')}</h2>
+                  <div className="bg-white rounded-2xl border-2 border-[var(--ordria-border)] duo-card-hover overflow-hidden px-5 py-5 space-y-2">
                     {displayLearnings.map((learning: any) => {
                       const learningText = typeof learning === 'string' ? learning : learning.text
                       const learningEmoji = typeof learning === 'string' ? null : learning.emoji
@@ -502,13 +502,13 @@ const CourseClient = (props: any) => {
                       return (
                         <div
                           key={learningId}
-                          className="flex space-x-2 items-center font-semibold text-gray-500"
+                          className="flex space-x-2 items-center font-semibold text-[var(--ordria-foreground)]"
                         >
-                          <div className="px-2 py-2 rounded-full">
+                          <div className="px-2 py-2 rounded-full bg-[var(--ordria-accent-bg)]">
                             {learningEmoji ? (
                               <span>{learningEmoji}</span>
                             ) : (
-                              <Check className="text-gray-400" size={15} />
+                              <Check className="text-[var(--ordria-success)]" size={15} />
                             )}
                           </div>
                           <p>{learningText}</p>
@@ -532,14 +532,14 @@ const CourseClient = (props: any) => {
             })()}
 
             <div className="w-full my-5 mb-10">
-              <h2 className="py-5 text-xl md:text-2xl font-bold">{t('courses.course_lessons')}</h2>
-              <div className="bg-white shadow-md shadow-gray-300/25 outline outline-1 outline-neutral-200/40 rounded-lg overflow-hidden">
+              <h2 className="py-5 text-xl md:text-2xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.course_lessons')}</h2>
+              <div className="bg-white rounded-2xl border-2 border-[var(--ordria-border)] duo-card-hover overflow-hidden">
                 {(course.chapters ?? []).map((chapter: any, idx: number) => {
                   const isExpanded = expandedChapters[chapter.chapter_uuid] ?? (idx === 0); // Default to expanded for first chapter
                   return (
                     <div key={chapter.chapter_uuid || `chapter-${chapter.name}`} className="">
                       <div 
-                        className="flex items-start py-4 px-4 outline outline-1 outline-neutral-200/40 font-bold bg-neutral-50 text-neutral-600 cursor-pointer hover:bg-neutral-100 transition-colors"
+                        className="flex items-start py-4 px-4 border-b-2 border-[var(--ordria-border)] font-bold bg-[var(--ordria-surface)] text-[var(--ordria-foreground)] cursor-pointer hover:bg-[var(--ordria-accent-bg)] transition-colors"
                         onClick={() => setExpandedChapters(prev => ({
                           ...prev,
                           [chapter.chapter_uuid]: !isExpanded
@@ -560,10 +560,10 @@ const CourseClient = (props: any) => {
                         <div className="flex flex-col items-start w-full">
                           <div className="flex items-center flex-wrap mb-1 w-full min-w-0">
                             {/* Numbered badge */}
-                            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-neutral-200 text-neutral-600 text-xs font-semibold mr-2 border border-neutral-300 flex-shrink-0">
+                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[var(--ordria-accent)] text-white text-xs font-bold mr-2 border-2 border-white flex-shrink-0" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                               {idx + 1}
                             </span>
-                            <h3 className="text-lg font-bold leading-tight truncate min-w-0 sm:text-base md:text-lg" style={{lineHeight: '1.2'}}>{chapter.name}</h3>
+                            <h3 className="text-lg font-bold leading-tight truncate min-w-0 sm:text-base md:text-lg" style={{ lineHeight: '1.2', fontFamily: 'var(--ordria-font-display)' }}>{chapter.name}</h3>
                             {chapter.is_locked && (
                               <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-semibold">
                                 <Lock size={10} />
@@ -571,7 +571,7 @@ const CourseClient = (props: any) => {
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center space-x-1 text-sm text-neutral-400 font-normal">
+                          <div className="flex items-center space-x-1 text-sm text-[var(--ordria-muted)] font-normal">
                             <Layers size={16} className="mr-1" />
                             <span>{chapter.activities.length} {t('activities.activities')}</span>
                           </div>
@@ -581,27 +581,28 @@ const CourseClient = (props: any) => {
                         <div className="">
                           {chapter.activities.map((activity: any) => {
                             const locked = !!activity.is_locked
+                            const activityBorderColor = activity.activity_type === 'TYPE_VIDEO' ? 'var(--ordria-accent)' : activity.activity_type === 'TYPE_ASSIGNMENT' ? 'var(--ordria-success)' : activity.activity_type === 'TYPE_DOCUMENT' ? 'var(--ordria-warning)' : 'var(--cat-artisan, #8b5cf6)'
                             const RowInner = (
-                              <div className="flex space-x-3 items-center">
-                                <div className="flex items-center">
-                                  {locked ? (
-                                    <div className="text-rose-400">
-                                      <Lock size={14} className="stroke-[2]" />
-                                    </div>
-                                  ) : isActivityDone(activity) ? (
-                                    <div className="relative cursor-pointer">
-                                      <Square size={16} className="stroke-[2] text-teal-600" />
-                                      <Check size={16} className="stroke-[2.5] text-teal-600 absolute top-0 left-0" />
-                                    </div>
-                                  ) : (
-                                    <div className="text-neutral-300 cursor-pointer">
-                                      <Square size={16} className="stroke-[2]" />
-                                    </div>
-                                  )}
-                                </div>
+                              <div className="flex space-x-3 items-center border-l-4 pl-3" style={{ borderColor: activityBorderColor }}>
+                                  <div className="flex items-center">
+                                    {locked ? (
+                                      <div className="text-rose-400">
+                                        <Lock size={14} className="stroke-[2]" />
+                                      </div>
+                                    ) : isActivityDone(activity) ? (
+                                      <div className="relative cursor-pointer">
+                                        <Square size={16} className="stroke-[2] text-[var(--ordria-success)]" />
+                                        <Check size={16} className="stroke-[2.5] text-[var(--ordria-success)] absolute top-0 left-0" />
+                                      </div>
+                                    ) : (
+                                      <div className="text-[var(--ordria-border)] cursor-pointer">
+                                        <Square size={16} className="stroke-[2]" />
+                                      </div>
+                                    )}
+                                  </div>
                                 <div className="flex flex-col grow">
                                   <div className="flex items-center space-x-2 w-full">
-                                    <p className={`font-semibold transition-colors ${locked ? 'text-neutral-400' : 'text-neutral-600 group-hover:text-neutral-800'}`}>{activity.name}</p>
+                                    <p className={`font-semibold transition-colors ${locked ? 'text-[var(--ordria-muted)]' : 'text-[var(--ordria-foreground)] group-hover:text-[var(--ordria-accent-secondary)]'}`}>{activity.name}</p>
                                     {locked && (
                                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-semibold">
                                         <Lock size={10} />
@@ -609,12 +610,13 @@ const CourseClient = (props: any) => {
                                       </span>
                                     )}
                                     {!locked && isActivityCurrent(activity) && (
-                                      <div className="flex items-center space-x-1 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full text-xs font-semibold animate-pulse">
+                                      <div className="flex items-center space-x-1 text-[var(--ordria-accent-secondary)] bg-[var(--ordria-accent-bg)] px-2 py-0.5 rounded-full text-xs font-semibold duo-pulse">
                                         <span>{t('activities.current')}</span>
                                       </div>
                                     )}
                                   </div>
-                                  <div className="flex items-center space-x-1.5 mt-0.5 text-neutral-400">
+                                  <div className="flex items-center space-x-1.5 mt-0.5 text-[var(--ordria-muted)]">
+                                    <div className="flex items-center justify-center w-5 h-5 rounded-md text-white" style={{ background: activityBorderColor }}>
                                     {activity.activity_type === 'TYPE_DYNAMIC' && (
                                       <StickyNote size={10} />
                                     )}
@@ -627,10 +629,11 @@ const CourseClient = (props: any) => {
                                     {activity.activity_type === 'TYPE_ASSIGNMENT' && (
                                       <Backpack size={10} />
                                     )}
+                                    </div>
                                     <span className="text-xs font-medium">{getActivityTypeLabel(activity.activity_type)}</span>
                                   </div>
                                 </div>
-                                <div className={`transition-colors ${locked ? 'text-neutral-200' : 'text-neutral-300 group-hover:text-neutral-400 cursor-pointer'}`}>
+                                <div className={`transition-colors ${locked ? 'text-[var(--ordria-border)]' : 'text-[var(--ordria-muted)] group-hover:text-[var(--ordria-accent)] cursor-pointer'}`}>
                                   <ArrowRight size={14} />
                                 </div>
                               </div>
@@ -640,7 +643,8 @@ const CourseClient = (props: any) => {
                               return (
                                 <div
                                   key={activity.activity_uuid}
-                                  className="block activity-container px-4 py-4 cursor-not-allowed select-none"
+                                  className="block activity-container px-4 py-4 cursor-not-allowed select-none border-l-4"
+                                  style={{ borderColor: activityBorderColor }}
                                   title={t('course.activity_locked_hint', 'Sign in or join the right user group to unlock this.')}
                                 >
                                   {RowInner}
@@ -657,7 +661,8 @@ const CourseClient = (props: any) => {
                                 }
                                 rel="noopener noreferrer"
                                 prefetch={false}
-                                className="block group activity-container transition-all duration-200 px-4 py-4"
+                                className="block group activity-container transition-all duration-200 px-4 py-4 border-l-4"
+                                style={{ borderColor: activityBorderColor }}
                                 onMouseEnter={() => handleActivityMouseEnter(activity)}
                               >
                                 {RowInner}

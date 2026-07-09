@@ -33,12 +33,12 @@ import {
 type ResourceType = 'courses' | 'podcasts' | 'communities' | 'boards' | 'playgrounds' | 'media'
 
 const TYPE_TONE: Record<string, string> = {
-  courses: 'bg-blue-50 text-blue-500',
-  media: 'bg-amber-50 text-amber-500',
-  podcasts: 'bg-rose-50 text-rose-500',
-  communities: 'bg-emerald-50 text-emerald-500',
-  boards: 'bg-indigo-50 text-indigo-500',
-  playgrounds: 'bg-fuchsia-50 text-fuchsia-500',
+  courses: 'bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)]',
+  media: 'bg-amber-50 text-amber-600',
+  podcasts: 'bg-rose-50 text-rose-600',
+  communities: 'bg-emerald-50 text-emerald-600',
+  boards: 'bg-indigo-50 text-indigo-600',
+  playgrounds: 'bg-fuchsia-50 text-fuchsia-600',
 }
 
 function mediaIcon(resource: any): React.ComponentType<IconProps> {
@@ -63,7 +63,7 @@ function typeIcon(type: string, resource: any): React.ComponentType<IconProps> {
   }
 }
 
-const CARD = 'group relative bg-white nice-shadow rounded-xl p-3 hover:bg-gray-50/50 transition-colors'
+const CARD = 'group relative bg-gradient-to-br from-[var(--ordria-accent-bg)] to-[var(--ordria-surface)] border-2 border-[var(--ordria-accent-border)] rounded-2xl p-4 duo-card-hover'
 
 export function FolderCard({ folder, orgslug }: { folder: any; orgslug: string }) {
   const { t } = useTranslation()
@@ -90,12 +90,12 @@ export function FolderCard({ folder, orgslug }: { folder: any; orgslug: string }
         {thumb ? (
           <div className="w-10 h-10 rounded-lg bg-cover bg-center flex-shrink-0 ring-1 ring-inset ring-black/5" style={{ backgroundImage: `url(${thumb})` }} />
         ) : (
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${folderTone(folder.color)}`}>
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-[var(--ordria-accent)] to-[var(--ordria-accent-secondary)] text-white">
             <FolderSimple size={22} weight="fill" />
           </div>
         )}
         <div className="flex flex-col min-w-0">
-          <h3 className="text-[15px] font-bold text-gray-900 truncate leading-tight">{folder.name}</h3>
+          <h3 className="text-[15px] font-bold text-gray-900 truncate leading-tight" style={{ fontFamily: 'var(--font-display, Sora)' }}>{folder.name}</h3>
           <span className="text-xs text-gray-400">{count} {t('library.items')}</span>
         </div>
       </div>
@@ -158,7 +158,7 @@ export function LibraryItemCard({ item, orgslug }: { item: any; orgslug: string 
     </>
   )
 
-  const BIG = 'group relative flex flex-col bg-white rounded-xl nice-shadow overflow-hidden w-full transition-all hover:bg-gray-50/40'
+  const BIG = 'group relative flex flex-col bg-white rounded-2xl border-2 border-[var(--ordria-border)] overflow-hidden w-full duo-card-hover'
   if (href && external) return <a href={href} target="_blank" rel="noopener noreferrer" className={BIG}>{body}</a>
   if (href) return <Link href={href} className={BIG}>{body}</Link>
   return <div className={BIG}>{body}</div>

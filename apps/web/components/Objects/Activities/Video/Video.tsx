@@ -81,7 +81,7 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
         <>
           {activity.activity_sub_type === 'SUBTYPE_VIDEO_HOSTED' && (
             <div className="my-0 sm:my-3 md:my-5 w-full">
-              <div className="relative w-full aspect-video sm:rounded-lg overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none">
+              <div className="relative w-full aspect-video sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none">
                 {(() => {
                   const { src, isHls } = getVideoSource()
                   const thumbnails = isHls
@@ -125,7 +125,7 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
           )}
           {activity.activity_sub_type === 'SUBTYPE_VIDEO_YOUTUBE' && (
             <div className="my-0 sm:my-3 md:my-5 w-full">
-              <div className="relative w-full aspect-video sm:rounded-lg overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none">
+              <div className="relative w-full aspect-video sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none">
                 <YouTube
                   className="w-full h-full"
                   opts={{
@@ -154,8 +154,8 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
         </>
       )}
       {activity?.content?.description && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+        <div className="mt-4 p-4 bg-[var(--ordria-surface)] rounded-xl border border-[var(--ordria-border)]">
+          <p className="text-sm text-[var(--ordria-foreground)] whitespace-pre-wrap leading-relaxed">
             {activity.content.description}
           </p>
         </div>

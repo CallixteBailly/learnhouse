@@ -239,7 +239,7 @@ function ActivityClient(props: ActivityClientProps) {
   const session = useLHSession() as any;
   const pathname = usePathname()
   const access_token = session?.data?.tokens?.access_token;
-  const [bgColor, setBgColor] = React.useState('bg-white nice-shadow')
+  const [bgColor, setBgColor] = React.useState('bg-white rounded-2xl border border-[var(--ordria-border)]')
   const [assignment, setAssignment] = React.useState(null) as any;
   const [_markStatusButtonActive, setMarkStatusButtonActive] = React.useState(false);
   const [isFocusMode, setIsFocusMode] = React.useState(false);
@@ -413,15 +413,15 @@ function ActivityClient(props: ActivityClientProps) {
   useEffect(() => {
     if (!activity) return;
     if (activity.activity_type == 'TYPE_DYNAMIC' || activity.activity_type == 'TYPE_SCORM') {
-      setBgColor(isFocusMode ? 'bg-white' : 'bg-white nice-shadow');
+      setBgColor(isFocusMode ? 'bg-white' : 'bg-white rounded-2xl border border-[var(--ordria-border)]');
     }
     else if (activity.activity_type == 'TYPE_ASSIGNMENT') {
       setMarkStatusButtonActive(false);
-      setBgColor(isFocusMode ? 'bg-white' : 'bg-white nice-shadow');
+      setBgColor(isFocusMode ? 'bg-white' : 'bg-white rounded-2xl border border-[var(--ordria-border)]');
       getAssignmentUI();
     }
     else {
-      setBgColor(isFocusMode ? 'bg-zinc-950' : 'bg-zinc-950 nice-shadow');
+      setBgColor(isFocusMode ? 'bg-zinc-950' : 'bg-zinc-950 rounded-2xl border border-[var(--ordria-border)]');
     }
   }
     , [activity, pathname, isFocusMode])
@@ -667,7 +667,7 @@ function ActivityClient(props: ActivityClientProps) {
                               initial={isInitialRender.current ? false : { scale: 0.95, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
                               transition={{ delay: 0.3 }}
-                              className={`${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-7 rounded-lg'} ${bgColor} mt-4`}
+                              className={`${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-7 rounded-2xl border border-[var(--ordria-border)]'} ${bgColor} mt-4`}
                             >
                               {/* Activity Types */}
                               <div className={activity.activity_type === 'TYPE_SCORM' ? 'overflow-hidden' : ''}>
@@ -791,7 +791,7 @@ function ActivityClient(props: ActivityClientProps) {
                             </div>
                             <div className="flex flex-col -space-y-1">
                               <p className="font-bold text-gray-700 text-xs sm:text-md">{t('search.course')} </p>
-                              <h1 className="font-bold text-gray-950 text-lg sm:text-3xl first-letter:uppercase">
+                              <h1 className="font-bold text-gray-950 text-lg sm:text-3xl first-letter:uppercase" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                                 {course.name}
                               </h1>
                             </div>
@@ -825,9 +825,23 @@ function ActivityClient(props: ActivityClientProps) {
                               <p className="font-bold text-gray-700 text-xs sm:text-md">
                                 {getChapterNameByActivityId(course, activity?.id) ?? chapterNameFromCourse}
                               </p>
-                              <h1 className="font-bold text-gray-950 text-base sm:text-2xl first-letter:uppercase">
+                              <div className="flex items-center gap-2">
+                              <h1 className="font-bold text-gray-950 text-base sm:text-2xl first-letter:uppercase" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                                 {displayName}
                               </h1>
+                              {activity && activity.activity_type === 'TYPE_VIDEO' && (
+                                <span className="duo-category-badge bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)]">🎬 {t('activities.video')}</span>
+                              )}
+                              {activity && activity.activity_type === 'TYPE_DOCUMENT' && (
+                                <span className="duo-category-badge bg-amber-50 text-[var(--ordria-warning)]">📝 {t('activities.document')}</span>
+                              )}
+                              {activity && activity.activity_type === 'TYPE_ASSIGNMENT' && (
+                                <span className="duo-category-badge bg-green-50 text-[var(--ordria-success)]">🎯 {t('activities.assignment')}</span>
+                              )}
+                              {activity && activity.activity_type === 'TYPE_DYNAMIC' && (
+                                <span className="duo-category-badge bg-purple-50 text-purple-600">📄 {t('activities.page')}</span>
+                              )}
+                              </div>
                               {/* Authors and Dates Section */}
                               <div className="flex flex-wrap items-center gap-3 mt-2">
                                 {/* Avatars */}
@@ -949,16 +963,16 @@ function ActivityClient(props: ActivityClientProps) {
                             <PaidCourseActivityDisclaimer course={course} />
                           ) : (
                             <div className="flex gap-6">
-                              <div className={`flex-1 min-w-0 ${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-3 sm:p-7 rounded-lg'} ${bgColor} relative isolate`} style={{ zIndex: 'var(--z-base)' }}>
+                              <div className={`flex-1 min-w-0 ${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-3 sm:p-7 rounded-2xl border border-[var(--ordria-border)]'} ${bgColor} relative isolate`} style={{ zIndex: 'var(--z-base)' }}>
                                 <button
                                   onClick={() => setIsFocusMode(true)}
-                                  className={`absolute ${activity.activity_type === 'TYPE_SCORM' ? 'top-2 right-2' : 'top-4 right-4'} hidden sm:flex bg-white/80 hover:bg-white nice-shadow p-2 rounded-full cursor-pointer transition-all duration-200 group overflow-hidden pointer-events-auto`}
+                                  className={`absolute ${activity.activity_type === 'TYPE_SCORM' ? 'top-2 right-2' : 'top-4 right-4'} hidden sm:flex bg-[var(--ordria-surface)] hover:bg-[var(--ordria-accent-bg)] border border-[var(--ordria-border)] p-2 rounded-full cursor-pointer transition-all duration-200 group overflow-hidden pointer-events-auto`}
                                   style={{ zIndex: 'var(--z-interactive)' }}
                                   title={t('activities.focus_mode')}
                                 >
                                   <div className="flex items-center">
-                                    <Maximize2 size={16} className="text-gray-700" />
-                                    <span className="text-xs font-bold text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-200 w-0 group-hover:w-auto group-hover:ml-2 whitespace-nowrap">
+                                    <Maximize2 size={16} className="text-[var(--ordria-foreground)]" />
+                                    <span className="text-xs font-bold text-[var(--ordria-foreground)] opacity-0 group-hover:opacity-100 transition-all duration-200 w-0 group-hover:w-auto group-hover:ml-2 whitespace-nowrap">
                                       {t('activities.focus_mode')}
                                     </span>
                                   </div>
