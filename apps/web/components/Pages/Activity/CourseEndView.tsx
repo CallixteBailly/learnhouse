@@ -417,6 +417,7 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
 
   if (isCourseCompleted) {
     // Show congratulations for completed course
+    const score = 100; // Course is fully completed
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 relative overflow-hidden">
         <div className="fixed inset-0 pointer-events-none">
@@ -429,36 +430,46 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
           />
         </div>
         
-        <div className="bg-white rounded-2xl p-8 border-2 border-[var(--ordria-border)] max-w-4xl w-full space-y-6 relative z-10" style={{ boxShadow: 'var(--shadow-soft)' }}>
-          <div className="flex flex-col items-center space-y-6">
-            {thumbnailImage && (
-              <img
-                className="w-[200px] h-[114px] rounded-2xl shadow-md object-cover"
-                src={`${getCourseThumbnailMediaDirectory(
-                  org?.org_uuid,
-                  courseUuid,
-                  thumbnailImage
-                )}`}
-                alt={courseName}
-              />
-            )}
-            
-            <div className="bg-[var(--ordria-accent-bg)] p-4 rounded-full duo-pulse border-2 border-[var(--ordria-accent-border)]">
-              <Trophy className="w-16 h-16 text-[var(--ordria-warning)]" />
+        <div className="bg-white rounded-2xl p-8 border-2 border-[var(--ordria-border)] max-w-4xl w-full space-y-4 relative z-10" style={{ boxShadow: 'var(--shadow-soft)' }}>
+          {/* Celebration header */}
+          <div className="text-center mb-8">
+            <span className="text-6xl block mb-3">🎉</span>
+            <h1 className="text-3xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>
+              {t('courses.congratulations')}
+            </h1>
+          </div>
+
+          {/* Score circle */}
+          <div className="w-32 h-32 rounded-full mx-auto mb-8 relative flex items-center justify-center"
+            style={{
+              background: `conic-gradient(var(--ordria-accent) 0deg, var(--ordria-accent) ${score * 3.6}deg, var(--ordria-surface) ${score * 3.6}deg)`,
+            }}>
+            <div className="absolute w-24 h-24 rounded-full bg-white flex items-center justify-center">
+              <span className="text-2xl font-bold font-mono text-[var(--ordria-accent-secondary)]">{score}%</span>
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="flex justify-center gap-3 mb-6 flex-wrap">
+            <div className="flex items-center gap-2 px-4 py-2 bg-[var(--ordria-surface)] rounded-full text-sm font-semibold">
+              <span>⭐</span> <span className="font-mono">{score} points</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-[var(--ordria-surface)] rounded-full text-sm font-semibold">
+              <span>🔥</span> <span className="font-mono">3 jour(s)</span>
+            </div>
+          </div>
+
+          {/* Badge earned */}
+          <div className="text-center mb-6">
+            <div className="duo-pulse inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-[var(--ordria-warning)] bg-amber-50">
+              <span className="text-2xl">🏆</span>
+              <span className="font-bold text-[var(--ordria-warning)]">{t('certificate.badge_unlocked', 'Badge débloqué')}</span>
             </div>
           </div>
           
-          <h1 className="text-4xl font-bold text-[var(--ordria-foreground)]" style={{ fontFamily: 'var(--ordria-font-display)' }}>
-            {t('courses.congratulations')}
-          </h1>
-          
-          <p className="text-xl text-[var(--ordria-muted)]">
+          <p className="text-xl text-[var(--ordria-muted)] mb-6">
             {t('courses.successfully_completed')}
             <span className="font-semibold text-[var(--ordria-foreground)]"> {courseName}</span>
-          </p>
-          
-          <p className="text-[var(--ordria-muted)]">
-            {t('certificate.dedication_message')}
           </p>
 
           {isLoadingCertificate ? (
@@ -474,8 +485,16 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
             </div>
           ) : userCertificate ? (
             <div className="space-y-4">
-              <h2 className="text-2xl font-semibold text-[var(--ordria-foreground)]" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('certificate.your_certificate')}</h2>
-              <div className="max-w-2xl mx-auto" id="certificate-preview">
+              {/* Certificate preview as navy card with gold border */}
+              <div className="max-w-md mx-auto p-6 rounded-2xl border-4 border-amber-400" style={{ background: 'var(--ordria-foreground)' }}>
+                <p className="text-center text-amber-300 text-sm font-semibold uppercase tracking-wider mb-2">{t('certificate.certificate', 'Certificat de Réussite')}</p>
+                <p className="text-center text-white/70 text-sm mb-1">{t('certificate.certifies_that', 'OrdIA Learning certifie que')}</p>
+                <p className="text-center text-white text-lg font-bold mb-2">{session?.data?.user?.full_name || session?.data?.user?.name || ''}</p>
+                <p className="text-center text-white/70 text-sm">{t('certificate.has_completed', 'a complété le cours')}</p>
+                <p className="text-center text-amber-300 text-sm font-semibold mt-1">{courseName}</p>
+              </div>
+              {/* Full certificate preview (hidden, used for PDF generation) */}
+              <div className="max-w-2xl mx-auto hidden" id="certificate-preview">
                 <div id="certificate-content">
                   <CertificatePreview
                     certificationName={userCertificate.certification.config.certification_name}
@@ -493,14 +512,14 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
                   />
                 </div>
               </div>
-              <div className="flex justify-center space-x-4">
-                <button
-                  onClick={downloadCertificate}
-                  className="duo-btn-success inline-flex items-center space-x-2 px-6 py-3"
-                >
-                  <Download className="w-5 h-5" />
-                  <span>{t('certificate.download_certificate')}</span>
-                </button>
+              {/* Download button */}
+              <button
+                onClick={downloadCertificate}
+                className="duo-btn-success w-full mt-6"
+              >
+                📥 {t('certificate.download_certificate')}
+              </button>
+              <div className="flex justify-center">
                 <Link
                   href={getUriWithOrg(orgslug, `/certificates/${userCertificate.certificate_user.user_certification_uuid}/verify`)}
                   target="_blank"

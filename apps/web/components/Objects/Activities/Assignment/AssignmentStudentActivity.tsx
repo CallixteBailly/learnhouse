@@ -88,6 +88,31 @@ function AssignmentStudentActivity() {
         </div>
       </div>
       
+      {/* Hearts indicator (decorative) */}
+      <div className="flex items-center justify-center gap-2 mb-2">
+        <span className="text-lg">❤️</span>
+        <span className="text-lg">❤️</span>
+        <span className="text-lg">❤️</span>
+      </div>
+      
+      {/* Progress bar */}
+      {(() => {
+        const totalTasks = assignments?.assignment_tasks?.length || 0
+        const completedTasks = taskSubmissionsMap ? Object.keys(taskSubmissionsMap).length : 0
+        const progressPct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
+        return totalTasks > 0 ? (
+          <div className="mb-6">
+            <div className="flex justify-between mb-2">
+              <span className="text-sm font-semibold text-[var(--ordria-muted)]">{completedTasks} sur {totalTasks}</span>
+              <span className="font-mono text-[var(--ordria-accent-secondary)]">{progressPct}%</span>
+            </div>
+            <div className="duo-progress-bar">
+              <div className="duo-progress-fill" style={{ width: `${progressPct}%` }}></div>
+            </div>
+          </div>
+        ) : null
+      })()}
+      
       
       
       {assignments?.assignment_object?.description && (
@@ -152,52 +177,32 @@ function AssignmentStudentActivity() {
               </div>
             </div>
             {isGraded && taskSubmission && (
-              <div className={`relative overflow-hidden rounded-2xl border-2 ${
+              <div className={`mt-4 p-4 rounded-2xl border-2 ${
                 taskPassed
                   ? 'border-[var(--ordria-success)] bg-green-50'
                   : 'border-[var(--ordria-error)] bg-red-50'
               }`}>
-                <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-40 ${
-                  taskPassed ? 'bg-[var(--ordria-success)]' : 'bg-[var(--ordria-error)]'
-                }`} />
-                <div className='relative p-4 flex flex-col gap-3'>
-                  <div className='flex items-center justify-between gap-3'>
-                    <div className='flex items-center gap-2.5'>
-                      <div className={`w-9 h-9 rounded-full flex items-center justify-center duo-bounce ${
-                        taskPassed ? 'bg-[var(--ordria-success)] text-white' : 'bg-[var(--ordria-error)] text-white'
-                      }`}>
-                        {taskPassed ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
-                      </div>
-                      <div className='flex flex-col leading-tight'>
-                        <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${
-                          taskPassed ? 'text-[var(--ordria-success)]' : 'text-[var(--ordria-error)]'
-                        }`}>
-                          {taskPassed ? t('assignments.task_passed') : t('assignments.task_not_passed')}
-                        </span>
-                        <span className='text-[11px] text-[var(--ordria-muted)] font-medium' style={{ fontFamily: 'var(--ordria-font-mono)' }}>
-                          {taskPercentage}% {t('assignments.score')}
-                        </span>
-                      </div>
-                    </div>
-                    <div className='flex items-baseline gap-1 px-3 py-1.5 rounded-lg bg-white border border-[var(--ordria-border)]'>
-                      <span className='text-xl font-black text-[var(--ordria-accent-secondary)] leading-none tabular-nums' style={{ fontFamily: 'var(--ordria-font-mono)' }}>{taskGrade}</span>
-                      <span className='text-xs font-semibold text-[var(--ordria-muted)] leading-none'>/ {taskMax}</span>
-                    </div>
+                <div className='flex items-center gap-4'>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-xl duo-bounce flex-shrink-0 ${
+                    taskPassed ? 'bg-[var(--ordria-success)]' : 'bg-[var(--ordria-error)]'
+                  }`}>
+                    {taskPassed ? '✓' : '✗'}
                   </div>
-                  {/* Progress fill */}
-                  <div className='duo-progress-bar rounded-full'>
-                    <div
-                      className={`duo-progress-fill ${taskPassed ? '' : ''}`}
-                      style={{ width: `${Math.max(0, Math.min(100, taskPercentage))}%`, background: taskPassed ? 'var(--ordria-success)' : 'var(--ordria-error)' }}
-                    />
+                  <div className='flex-1'>
+                    <p className={`font-bold ${taskPassed ? 'text-[var(--ordria-success)]' : 'text-[var(--ordria-error)]'}`}>
+                      {taskPassed ? t('assignments.task_passed', 'Excellent !') : t('assignments.task_not_passed', 'Presque !')}
+                    </p>
+                    <p className="text-sm text-[var(--ordria-muted)]">
+                      {taskGrade}/{taskMax} {t('assignments.score')} · {taskPercentage}%
+                    </p>
                   </div>
-                  {taskFeedback && (
-                    <div className='flex items-start gap-2 p-3 rounded-lg bg-white/70 border border-white'>
-                      <MessageSquare size={13} className='shrink-0 mt-0.5 text-slate-400' />
-                      <p className='text-xs text-slate-700 leading-relaxed whitespace-pre-wrap'>{taskFeedback}</p>
-                    </div>
-                  )}
                 </div>
+                {taskFeedback && (
+                  <div className='mt-3 flex items-start gap-2 p-3 rounded-lg bg-white/70 border border-white'>
+                    <MessageSquare size={13} className="shrink-0 mt-0.5 text-slate-400" />
+                    <p className='text-xs text-slate-700 leading-relaxed whitespace-pre-wrap'>{taskFeedback}</p>
+                  </div>
+                )}
               </div>
             )}
             <div className='w-full'>

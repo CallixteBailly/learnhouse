@@ -36,6 +36,7 @@ type Course = {
   update_date: string
   public?: boolean
   published?: boolean
+  tags?: string[]
   authors?: Array<{
     user: {
       id: string
@@ -153,6 +154,17 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
 
   const courseLink = customLink ? customLink : getUriWithOrg(orgslug, `/course/${removeCoursePrefix(course.course_uuid)}`)
 
+  const categoryEmoji = (() => {
+    const name = (course.name || '').toLowerCase();
+    const tags = course.tags || [];
+    if (name.includes('coiffeur') || tags.includes('coiffeur')) return '✂️';
+    if (name.includes('garagist') || tags.includes('garagiste')) return '🔧';
+    if (name.includes('restaurat') || tags.includes('restaurateur')) return '🍽️';
+    if (name.includes('artisan') || tags.includes('artisan')) return '🔨';
+    if (name.includes('barbier') || tags.includes('barbier')) return '🎯';
+    return '📚';
+  })();
+
   return (
     <div onMouseEnter={handleMouseEnter} className={`group relative flex flex-col bg-white rounded-2xl border-2 border-[var(--ordria-border)] overflow-hidden w-full duo-card-hover ${isSelected ? 'ring-2 ring-[var(--ordria-accent)] ring-offset-2' : ''}`}>
       {/* Selection checkbox - visible on hover or when selected (dashboard only) */}
@@ -200,6 +212,9 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
           className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
           style={{ backgroundImage: `url(${thumbnailImage})` }}
         />
+        <div className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-semibold shadow-sm">
+          <span>{categoryEmoji}</span>
+        </div>
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
         {isDashboard && (
           <div className="absolute bottom-2 left-2">
@@ -235,54 +250,52 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
           </p>
         )}
 
-        <div className="pt-1.5 flex items-center justify-between border-t border-[var(--ordria-border)]">
-          <div className="flex items-center gap-2">
-            {displayedAuthors.length > 0 && (
-              <div className="flex -space-x-2 items-center">
-                {displayedAuthors.map((author, index) => (
-                  <div 
-                    key={author.user.user_uuid} 
-                    className="relative"
-                    style={{ zIndex: displayedAuthors.length - index }}
-                  >
-                    <UserAvatar
-                      border="border-2"
-                      rounded="rounded-full"
-                      avatar_url={author.user.avatar_image ? getUserAvatarMediaDirectory(author.user.user_uuid, author.user.avatar_image) : ''}
-                      predefined_avatar={author.user.avatar_image ? undefined : 'empty'}
-                      width={20}
-                      showProfilePopup={true}
-                      userId={author.user.id}
-                    />
-                  </div>
-                ))}
-                {hasMoreAuthors && (
-                  <div className="relative z-0">
-                    <div className="flex items-center justify-center w-[20px] h-[20px] text-[8px] font-bold text-gray-600 bg-gray-100 border-2 border-white rounded-full">
-                      +{remainingAuthorsCount}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            {course.update_date && (
-              <span className="text-[9px] font-bold text-[var(--ordria-muted)] uppercase tracking-widest">
-                {new Date(course.update_date).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric' })}
-              </span>
-            )}
-          </div>
-          
-          <Link
-            prefetch={false}
-            href={courseLink}
-            onClick={handleCardOpen}
-            className="duo-btn-success"
-            style={{ height: '32px', fontSize: '12px', padding: '0 14px' }}
-          >
-            {t('courses.start_learning')}
-          </Link>
+        <div className="duo-progress-bar mt-2">
+          <div className="duo-progress-fill" style={{ width: '0%' }}></div>
         </div>
+
+        <div className="pt-1.5 flex items-center gap-2 border-t border-[var(--ordria-border)]">
+          {displayedAuthors.length > 0 && (
+            <div className="flex -space-x-2 items-center">
+              {displayedAuthors.map((author, index) => (
+                <div 
+                  key={author.user.user_uuid} 
+                  className="relative"
+                  style={{ zIndex: displayedAuthors.length - index }}
+                >
+                  <UserAvatar
+                    border="border-2"
+                    rounded="rounded-full"
+                    avatar_url={author.user.avatar_image ? getUserAvatarMediaDirectory(author.user.user_uuid, author.user.avatar_image) : ''}
+                    predefined_avatar={author.user.avatar_image ? undefined : 'empty'}
+                    width={20}
+                    showProfilePopup={true}
+                    userId={author.user.id}
+                  />
+                </div>
+              ))}
+              {hasMoreAuthors && (
+                <div className="relative z-0">
+                  <div className="flex items-center justify-center w-[20px] h-[20px] text-[8px] font-bold text-gray-600 bg-gray-100 border-2 border-white rounded-full">
+                    +{remainingAuthorsCount}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {course.update_date && (
+            <span className="text-[9px] font-bold text-[var(--ordria-muted)] uppercase tracking-widest">
+              {new Date(course.update_date).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric' })}
+            </span>
+          )}
+        </div>
+        
+        <Link prefetch={false} href={courseLink} onClick={handleCardOpen} className="block">
+          <button className="duo-btn-success w-full mt-2" style={{ height: '40px', fontSize: '13px' }}>
+            {t('courses.start_learning')}
+          </button>
+        </Link>
       </div>
     </div>
   )

@@ -531,7 +531,32 @@ const CourseClient = (props: any) => {
               )
             })()}
 
-            <div className="w-full my-5 mb-10">
+            {/* Course Progress Section */}
+            <div className="w-full my-5 mb-2">
+              <div className="bg-[var(--ordria-surface)] rounded-2xl p-4 mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold text-sm" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.course_progress', 'Progression du cours')}</span>
+                  <span className="font-mono font-bold text-lg text-[var(--ordria-accent-secondary)]">
+                    {(() => {
+                      const totalActivities = (course.chapters ?? []).reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0)
+                      const completedActivities = (course.chapters ?? []).reduce((sum: number, ch: any) => {
+                        return sum + (ch.activities?.filter((a: any) => isActivityDone(a)).length || 0)
+                      }, 0)
+                      return totalActivities > 0 ? Math.round((completedActivities / totalActivities) * 100) : 0
+                    })()}%
+                  </span>
+                </div>
+                <div className="duo-progress-bar">
+                  <div className="duo-progress-fill" style={{ width: `${(() => {
+                    const totalActivities = (course.chapters ?? []).reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0)
+                    const completedActivities = (course.chapters ?? []).reduce((sum: number, ch: any) => {
+                      return sum + (ch.activities?.filter((a: any) => isActivityDone(a)).length || 0)
+                    }, 0)
+                    return totalActivities > 0 ? Math.round((completedActivities / totalActivities) * 100) : 0
+                  })()}%` }}></div>
+                </div>
+              </div>
+
               <h2 className="py-5 text-xl md:text-2xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.course_lessons')}</h2>
               <div className="bg-white rounded-2xl border-2 border-[var(--ordria-border)] duo-card-hover overflow-hidden">
                 {(course.chapters ?? []).map((chapter: any, idx: number) => {
@@ -586,17 +611,19 @@ const CourseClient = (props: any) => {
                               <div className="flex space-x-3 items-center border-l-4 pl-3" style={{ borderColor: activityBorderColor }}>
                                   <div className="flex items-center">
                                     {locked ? (
-                                      <div className="text-rose-400">
+                                      <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
                                         <Lock size={14} className="stroke-[2]" />
                                       </div>
                                     ) : isActivityDone(activity) ? (
-                                      <div className="relative cursor-pointer">
-                                        <Square size={16} className="stroke-[2] text-[var(--ordria-success)]" />
-                                        <Check size={16} className="stroke-[2.5] text-[var(--ordria-success)] absolute top-0 left-0" />
+                                      <div className="w-7 h-7 rounded-full bg-[var(--ordria-success)] flex items-center justify-center text-white text-sm font-bold">
+                                        ✓
                                       </div>
                                     ) : (
-                                      <div className="text-[var(--ordria-border)] cursor-pointer">
-                                        <Square size={16} className="stroke-[2]" />
+                                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm" style={{ background: activityBorderColor }}>
+                                        {activity.activity_type === 'TYPE_VIDEO' && '🎬'}
+                                        {activity.activity_type === 'TYPE_DYNAMIC' && '📄'}
+                                        {activity.activity_type === 'TYPE_ASSIGNMENT' && '🎯'}
+                                        {activity.activity_type === 'TYPE_DOCUMENT' && '📝'}
                                       </div>
                                     )}
                                   </div>
@@ -616,25 +643,11 @@ const CourseClient = (props: any) => {
                                     )}
                                   </div>
                                   <div className="flex items-center space-x-1.5 mt-0.5 text-[var(--ordria-muted)]">
-                                    <div className="flex items-center justify-center w-5 h-5 rounded-md text-white" style={{ background: activityBorderColor }}>
-                                    {activity.activity_type === 'TYPE_DYNAMIC' && (
-                                      <StickyNote size={10} />
-                                    )}
-                                    {activity.activity_type === 'TYPE_VIDEO' && (
-                                      <Video size={10} />
-                                    )}
-                                    {activity.activity_type === 'TYPE_DOCUMENT' && (
-                                      <File size={10} />
-                                    )}
-                                    {activity.activity_type === 'TYPE_ASSIGNMENT' && (
-                                      <Backpack size={10} />
-                                    )}
-                                    </div>
                                     <span className="text-xs font-medium">{getActivityTypeLabel(activity.activity_type)}</span>
                                   </div>
                                 </div>
-                                <div className={`transition-colors ${locked ? 'text-[var(--ordria-border)]' : 'text-[var(--ordria-muted)] group-hover:text-[var(--ordria-accent)] cursor-pointer'}`}>
-                                  <ArrowRight size={14} />
+                                <div className={`transition-colors text-sm font-medium ${locked ? 'text-[var(--ordria-border)]' : 'text-[var(--ordria-muted)] group-hover:text-[var(--ordria-accent)] cursor-pointer'}`}>
+                                  {locked ? null : <ArrowRight size={16} />}
                                 </div>
                               </div>
                             )
@@ -643,7 +656,7 @@ const CourseClient = (props: any) => {
                               return (
                                 <div
                                   key={activity.activity_uuid}
-                                  className="block activity-container px-4 py-4 cursor-not-allowed select-none border-l-4"
+                                  className="block activity-container px-4 py-4 cursor-not-allowed select-none border-l-4 opacity-60"
                                   style={{ borderColor: activityBorderColor }}
                                   title={t('course.activity_locked_hint', 'Sign in or join the right user group to unlock this.')}
                                 >
