@@ -558,12 +558,12 @@ const CourseClient = (props: any) => {
                         </div>
                         {/* Title and badge column */}
                         <div className="flex flex-col items-start w-full">
-                          <div className="flex items-center flex-wrap mb-1 w-full min-w-0">
+                          <div className="flex items-center mb-1 w-full min-w-0">
                             {/* Numbered badge */}
                             <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[var(--ordria-accent)] text-white text-xs font-bold mr-2 border-2 border-white flex-shrink-0" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                               {idx + 1}
                             </span>
-                            <h3 className="text-lg font-bold leading-tight truncate min-w-0 sm:text-base md:text-lg" style={{ lineHeight: '1.2', fontFamily: 'var(--ordria-font-display)' }}>{chapter.name}</h3>
+                            <h3 className="text-lg font-bold leading-tight truncate min-w-0 flex-1 sm:text-base md:text-lg" style={{ lineHeight: '1.2', fontFamily: 'var(--ordria-font-display)' }}>{chapter.name}</h3>
                             {chapter.is_locked && (
                               <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-semibold">
                                 <Lock size={10} />

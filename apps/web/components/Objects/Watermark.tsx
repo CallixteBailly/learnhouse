@@ -24,8 +24,8 @@ function Watermark() {
     if (!showWatermark) return null
 
     return (
-        <div className='fixed bottom-8 right-8 z-50'>
-            <Link href={`https://ordria.fr`} className="flex items-center cursor-pointer bg-white/80 backdrop-blur-lg text-gray-700 rounded-2xl p-2 light-shadow text-xs px-5 font-semibold space-x-2">
+        <div className='fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50'>
+            <Link href={`https://ordria.fr`} className="flex items-center cursor-pointer bg-white/80 backdrop-blur-lg text-gray-700 rounded-xl sm:rounded-2xl p-1.5 sm:p-2 light-shadow text-[10px] sm:text-xs px-3 sm:px-5 font-semibold space-x-1.5 sm:space-x-2">
                 <p>{t('common.made_with')}</p>
                 <span style={{ fontFamily: 'Sora, system-ui, sans-serif', fontWeight: 600 }}>
                     OrdIA Learning

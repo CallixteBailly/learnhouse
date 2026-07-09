@@ -825,21 +825,21 @@ function ActivityClient(props: ActivityClientProps) {
                               <p className="font-bold text-gray-700 text-xs sm:text-md">
                                 {getChapterNameByActivityId(course, activity?.id) ?? chapterNameFromCourse}
                               </p>
-                              <div className="flex items-center gap-2">
-                              <h1 className="font-bold text-gray-950 text-base sm:text-2xl first-letter:uppercase" style={{ fontFamily: 'var(--ordria-font-display)' }}>
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 w-full">
+                              <h1 className="font-bold text-gray-950 text-base sm:text-2xl first-letter:uppercase w-full" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                                 {displayName}
                               </h1>
                               {activity && activity.activity_type === 'TYPE_VIDEO' && (
-                                <span className="duo-category-badge bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)]">🎬 {t('activities.video')}</span>
+                                <span className="duo-category-badge bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0">🎬 {t('activities.video')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_DOCUMENT' && (
-                                <span className="duo-category-badge bg-amber-50 text-[var(--ordria-warning)]">📝 {t('activities.document')}</span>
+                                <span className="duo-category-badge bg-amber-50 text-[var(--ordria-warning)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0">📝 {t('activities.document')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_ASSIGNMENT' && (
-                                <span className="duo-category-badge bg-green-50 text-[var(--ordria-success)]">🎯 {t('activities.assignment')}</span>
+                                <span className="duo-category-badge bg-green-50 text-[var(--ordria-success)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0">🎯 {t('activities.assignment')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_DYNAMIC' && (
-                                <span className="duo-category-badge bg-purple-50 text-purple-600">📄 {t('activities.page')}</span>
+                                <span className="duo-category-badge bg-purple-50 text-purple-600 shrink-0 self-start sm:self-auto mt-1 sm:mt-0">📄 {t('activities.page')}</span>
                               )}
                               </div>
                               {/* Authors and Dates Section */}

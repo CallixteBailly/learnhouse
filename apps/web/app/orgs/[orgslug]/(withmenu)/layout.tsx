@@ -34,9 +34,9 @@ function OrgFooter() {
   const showWatermark = isFree || watermarkConfig !== false
 
   return (
-    <footer className="w-full py-8 mt-12">
-      <div className="flex flex-col items-center justify-center space-y-4">
-        {footerText && <p className="text-sm text-gray-500">{footerText}</p>}
+    <footer className="w-full py-6 sm:py-8 mt-8 sm:mt-12 px-4">
+      <div className="flex flex-col items-center justify-center space-y-3 sm:space-y-4 text-center">
+        {footerText && <p className="text-xs sm:text-sm text-gray-500">{footerText}</p>}
         {showWatermark && (
           <Link href="https://ordria.fr" target="_blank" rel="noopener noreferrer">
             <span
