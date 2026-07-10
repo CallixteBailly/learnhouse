@@ -70,7 +70,7 @@ function DashMobileMenu() {
   // DÉSACTIVÉ — OrdIA Learning : seuls Cours et Library (Formations) sont actifs.
   // Pour réactiver : remplacer "false" par "rf?.[feature]?.enabled === true"
   const isEnabled = (f: string) => {
-    if (['communities', 'podcasts', 'boards', 'playgrounds', 'payments'].includes(f)) return false
+    if (['communities', 'podcasts', 'boards', 'playgrounds', 'payments'].includes(f)) return rf?.[f]?.enabled === true
     return rf?.[f]?.enabled === true
   }
 
@@ -238,30 +238,28 @@ function DashMobileMenu() {
 
                 <PanelItem href="/account/general" icon={<Gear size={15} weight="fill" />} label={t('common.settings')} active={isActive('/account')} onClick={close} />
 
-                {/* DÉSACTIVÉ — Sélecteur de langue (OrdIA Learning : FR uniquement)
                 <button
                   onClick={() => setLangExpanded(v => !v)}
-                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"
+                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-all"
                 >
                   <Globe size={15} weight="fill" />
                   <span className="text-sm font-medium flex-1 text-left">{t('common.language')}</span>
                   <CaretDown size={10} weight="bold" className={cn('transition-transform', langExpanded && 'rotate-180')} />
                 </button>
                 {langExpanded && (
-                  <div className="ml-2 pl-3 border-l border-white/[0.05] space-y-px">
+                  <div className="ml-2 pl-3 border-l border-[#e5e5e5] space-y-px">
                     {AVAILABLE_LANGUAGES.map(lang => (
                       <button
                         key={lang.code}
                         onClick={() => { changeLanguage(lang.code); setLangExpanded(false) }}
-                        className="flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-sm text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"
+                        className="flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-all"
                       >
                         <span className="font-medium">{lang.nativeName}</span>
-                        {i18n.language.split('-')[0] === lang.code && <Check size={11} weight="bold" className="text-green-500" />}
+                        {i18n.language.split('-')[0] === lang.code && <Check size={11} weight="bold" className="text-[var(--ordria-accent)]" />}
                       </button>
                     ))}
                   </div>
                 )}
-                */}
 
                 <a href="https://docs.learnhouse.app" target="_blank" rel="noopener noreferrer"
                   className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-all"

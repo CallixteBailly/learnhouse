@@ -15,12 +15,6 @@ import {
 import { getMenuColorClasses } from '@services/utils/ts/colorUtils'
 
 const LanguageSwitcher = (props: { primaryColor?: string }) => {
-  // DÉSACTIVÉ — OrdIA Learning : Français uniquement.
-  // Pour réactiver : supprimer le return null ci-dessous et décommenter le bloc.
-  return null
-
-  /* eslint-disable */
-  /*
   const { i18n } = useTranslation()
   const { track } = useLHAnalytics()
   const colors = getMenuColorClasses(props.primaryColor || '')
@@ -68,7 +62,6 @@ const LanguageSwitcher = (props: { primaryColor?: string }) => {
       </DropdownMenuContent>
     </DropdownMenu>
   )
-  */
 }
 
 export default LanguageSwitcher

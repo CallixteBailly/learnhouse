@@ -202,7 +202,7 @@ export const OrgMenu = (props: any) => {
               </div>
             </AuthenticatedClientElement>
             {/* Boards — disabled for OrdIA Learning */}
-            {false && rf?.boards?.enabled && (
+            {rf?.boards?.enabled && (
               <AuthenticatedClientElement checkMethod="authentication">
                 <div className="hidden md:flex">
                   <TooltipProvider delayDuration={0}>
