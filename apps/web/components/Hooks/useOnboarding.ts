@@ -116,7 +116,7 @@ function loadState(): OnboardingState {
 function saveState(state: OnboardingState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-    window.dispatchEvent(new Event('lh_onboarding_change'))
+    queueMicrotask(() => window.dispatchEvent(new Event('lh_onboarding_change')))
   } catch {
     /* ignore */
   }
