@@ -589,126 +589,64 @@ const CourseClient = (props: any) => {
                     </div>
                   </div>
 
-                  {/* Learning Path — Duolingo zigzag with fixed-height nodes */}
-                  {(() => {
-                    const chapters = course.chapters ?? []
-                    const NODE_HEIGHT = 140 // fixed px per node so SVG aligns perfectly
-                    const CIRCLE_SIZE = 72
-                    const totalHeight = chapters.length * NODE_HEIGHT
+                  {/* Learning Path — simple vertical timeline */}
+                  <div className="flex flex-col items-center py-6">
+                    {(course.chapters ?? []).map((chapter: any, index: number) => {
+                      const chapterActivities = chapter.activities || []
+                      const isChapterCompleted = chapterActivities.length > 0 && chapterActivities.every((a: any) => isActivityDone(a))
+                      const firstNonCompletedIdx = (course.chapters ?? []).findIndex((ch: any) => {
+                        const chActs = ch.activities || []
+                        return !(chActs.length > 0 && chActs.every((a: any) => isActivityDone(a)))
+                      })
+                      const isCurrent = firstNonCompletedIdx === index && !isChapterCompleted
+                      const isLocked = !isChapterCompleted && !isCurrent
+                      const firstActivity = chapterActivities[0]
+                      const chapterLink = firstActivity
+                        ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`)
+                        : '#'
+                      const isLast = index === (course.chapters ?? []).length - 1
 
-                    return (
-                      <div
-                        className="relative w-full max-w-sm mx-auto py-6"
-                        style={{ minHeight: `${totalHeight}px` }}
-                      >
-                        {/* SVG path — connects exact circle center positions */}
-                        <svg
-                          className="absolute top-0 left-0 w-full pointer-events-none z-0"
-                          style={{ height: `${totalHeight}px` }}
-                          preserveAspectRatio="none"
-                        >
-                          {chapters.map((chapter: any, i: number) => {
-                            if (i === chapters.length - 1) return null
-                            // Circle centers: even=left(30%), odd=right(70%)
-                            const x1 = i % 2 === 0 ? '30%' : '70%'
-                            const x2 = (i + 1) % 2 === 0 ? '30%' : '70%'
-                            // Y = center of each node (NODE_HEIGHT/2 + i*NODE_HEIGHT)
-                            const y1 = NODE_HEIGHT / 2 + i * NODE_HEIGHT
-                            const y2 = NODE_HEIGHT / 2 + (i + 1) * NODE_HEIGHT
-                            const midY = (y1 + y2) / 2
-
-                            const chActs = chapters[i].activities || []
-                            const isSegCompleted = chActs.length > 0 && chActs.every((a: any) => isActivityDone(a))
-
-                            return (
-                              <path
-                                key={i}
-                                d={`M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`}
-                                fill="none"
-                                stroke={isSegCompleted ? '#58cc02' : '#e5e5e5'}
-                                strokeWidth="5"
-                                strokeDasharray={isSegCompleted ? 'none' : '8 6'}
-                                strokeLinecap="round"
-                                vectorEffect="non-scaling-stroke"
-                              />
-                            )
-                          })}
-                        </svg>
-
-                        {/* Circles — each in a fixed-height container */}
-                        {chapters.map((chapter: any, index: number) => {
-                          const chapterActivities = chapter.activities || []
-                          const isChapterCompleted = chapterActivities.length > 0 && chapterActivities.every((a: any) => isActivityDone(a))
-
-                          const firstNonCompletedIdx = chapters.findIndex((ch: any) => {
-                            const chActs = ch.activities || []
-                            return !(chActs.length > 0 && chActs.every((a: any) => isActivityDone(a)))
-                          })
-                          const isCurrent = firstNonCompletedIdx === index && !isChapterCompleted
-                          const isLocked = !isChapterCompleted && !isCurrent
-
-                          const firstActivity = chapterActivities[0]
-                          const chapterLink = firstActivity
-                            ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`)
-                            : '#'
-
-                          return (
+                      return (
+                        <div key={chapter.chapter_uuid || `ch-${index}`} className="flex flex-col items-center">
+                          {/* Circle */}
+                          {isLocked ? (
                             <div
-                              key={chapter.chapter_uuid || `chapter-${index}`}
-                              className="relative z-10 flex items-center justify-center"
-                              style={{ height: `${NODE_HEIGHT}px` }}
-                            >
-                              {/* Circle + label container — alternates left/right */}
+                              className="w-16 h-16 rounded-full flex items-center justify-center text-2xl bg-[#e5e5e5] text-[#afafaf]"
+                              style={{ boxShadow: '0 4px 0 #d9d9d9' }}
+                            >🔒</div>
+                          ) : (
+                            <Link href={chapterLink} prefetch={false}>
                               <div
-                                className="flex items-center gap-3"
-                                style={{
-                                  alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
-                                  paddingLeft: index % 2 === 0 ? 'calc(30% - 36px)' : '0',
-                                  paddingRight: index % 2 !== 0 ? 'calc(30% - 36px)' : '0',
-                                }}
+                                className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1 ${isChapterCompleted ? 'bg-[#58cc02] text-white' : 'bg-[#1cb0f6] text-white duo-pulse'}`}
+                                style={{ boxShadow: `0 4px 0 ${isChapterCompleted ? '#46a302' : '#1899d6'}` }}
                               >
-                                {/* Circle */}
-                                {isLocked ? (
-                                  <div
-                                    className="flex-shrink-0 rounded-full flex items-center justify-center text-2xl cursor-not-allowed bg-[#e5e5e5] text-[#afafaf]"
-                                    style={{ width: `${CIRCLE_SIZE}px`, height: `${CIRCLE_SIZE}px`, boxShadow: '0 4px 0 #d9d9d9' }}
-                                  >
-                                    🔒
-                                  </div>
-                                ) : (
-                                  <Link href={chapterLink} prefetch={false} className="block flex-shrink-0">
-                                    <div
-                                      className={`rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1
-                                        ${isChapterCompleted
-                                          ? 'bg-[#58cc02] text-white'
-                                          : 'bg-[#1cb0f6] text-white duo-pulse'
-                                        }`}
-                                      style={{ width: `${CIRCLE_SIZE}px`, height: `${CIRCLE_SIZE}px`, boxShadow: `0 4px 0 ${isChapterCompleted ? '#46a302' : '#1899d6'}` }}
-                                    >
-                                      {isChapterCompleted ? '✓' : '▶'}
-                                    </div>
-                                  </Link>
-                                )}
-
-                                {/* Title only — no duplicate "Module N", no badges, no activities */}
-                                <div className="min-w-0 max-w-[160px]">
-                                  <h3
-                                    className="font-bold text-sm text-[#3c3c3c] truncate"
-                                    style={{ fontFamily: 'Nunito, sans-serif' }}
-                                  >
-                                    {chapter.name}
-                                  </h3>
-                                  <span className="text-xs text-[#afafaf]">
-                                    {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
-                                  </span>
-                                </div>
+                                {isChapterCompleted ? '✓' : '▶'}
                               </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })()}
+                            </Link>
+                          )}
+
+                          {/* Title */}
+                          <h3 className="font-bold text-sm text-[#3c3c3c] mt-2 text-center px-4" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                            {chapter.name}
+                          </h3>
+                          <span className="text-xs text-[#afafaf] mb-4">
+                            {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
+                          </span>
+
+                          {/* Connector line — simple CSS, not SVG */}
+                          {!isLast && (
+                            <div
+                              className="w-1 rounded-full mb-4"
+                              style={{
+                                height: '32px',
+                                background: isChapterCompleted ? '#58cc02' : '#e5e5e5',
+                              }}
+                            />
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
 
                 {/* Sidebar (desktop only) */}
