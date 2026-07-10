@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import React, { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { getUriWithOrg } from '@services/config/config'
 import { getCourseMetadata } from '@services/courses/courses'
 import { useTrail } from '@/hooks/queries/useTrail'
@@ -10,7 +10,7 @@ import GeneralWrapperStyled from '@components/Objects/StyledElements/Wrappers/Ge
 import {
   getCourseThumbnailMediaDirectory,
 } from '@services/media/media'
-import { ArrowRight, Backpack, Check, File, StickyNote, Video, Square, Image as ImageIcon, BookCopy, Lock } from 'lucide-react'
+import { ArrowRight, Check, Video, Image as ImageIcon, BookCopy, Lock } from 'lucide-react'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { CourseProvider } from '@components/Contexts/CourseContext'
 import { useMediaQuery } from 'usehooks-ts'
@@ -347,10 +347,10 @@ const CourseClient = (props: any) => {
               ]} />
             </div>
             {/* Mobile: Commencer / Continuer button at the very top */}
-            <Link href={continueLink} className="md:hidden block w-full mb-3">
-              <button className="duo-btn-success w-full" style={{ height: '52px' }}>
-                {isStarted ? 'Continuer' : 'Commencer'}
-              </button>
+            <Link href={continueLink} className="md:hidden block w-full mb-4 no-underline">
+              <div className="w-full bg-[#58cc02] text-white font-bold text-center py-3.5 rounded-2xl text-base active:translate-y-0.5 transition-transform" style={{ fontFamily: 'Nunito, sans-serif', boxShadow: '0 4px 0 #46a302' }}>
+                {isStarted ? '▶ Continuer' : '★ Commencer'}
+              </div>
             </Link>
 
             <div className="pb-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
@@ -572,38 +572,57 @@ const CourseClient = (props: any) => {
                 {/* Main: Progress + Learning Path */}
                 <div>
                   {/* Progress section */}
-                  <div className="bg-[var(--ordria-surface)] rounded-2xl p-4 mb-6">
+                  <div className="bg-gradient-to-r from-[#58cc02]/10 to-[#1cb0f6]/10 rounded-2xl p-4 mb-8 border-2 border-[#58cc02]/20">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-semibold text-sm" style={{ fontFamily: 'var(--ordria-font-display)' }}>
+                      <span className="font-bold text-sm text-[#3c3c3c]" style={{ fontFamily: 'Nunito, sans-serif' }}>
                         {completedModules} sur {totalModules} modules terminés
                       </span>
-                      <span className="font-mono font-bold text-lg text-[var(--ordria-accent-secondary)]">
+                      <span className="font-mono font-black text-2xl text-[#58cc02]">
                         {progressPercent}%
                       </span>
                     </div>
-                    <div className="duo-progress-bar" style={{ height: '10px' }}>
-                      <div className="duo-progress-fill" style={{ width: `${progressPercent}%` }}></div>
+                    <div className="h-3 bg-white rounded-full overflow-hidden border border-[#58cc02]/20">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${progressPercent}%`, background: 'linear-gradient(90deg, #58cc02, #1cb0f6)' }}
+                      />
                     </div>
                   </div>
 
-                  {/* Learning Path */}
-                  <div className="relative flex flex-col items-center py-4">
-                    {/* SVG curvy path */}
+                  {/* Learning Path — Duolingo zigzag style */}
+                  <div className="relative w-full max-w-md mx-auto py-8">
+                    {/* SVG connecting paths between alternating positions */}
                     <svg
-                      className="absolute top-0 left-1/2 -translate-x-1/2 w-[140px] h-full pointer-events-none z-0"
-                      viewBox="0 0 120 700"
+                      className="absolute inset-0 w-full h-full pointer-events-none z-0"
+                      viewBox="0 0 100 100"
                       preserveAspectRatio="none"
                     >
-                      <path
-                        d="M 60 40 Q 120 90, 60 140 Q 0 190, 60 240 Q 120 290, 60 340 Q 0 390, 60 440 Q 120 490, 60 540 Q 0 590, 60 640"
-                        fill="none"
-                        stroke="var(--ordria-accent-border)"
-                        strokeWidth="6"
-                        strokeDasharray="10 8"
-                        strokeLinecap="round"
-                      />
+                      {(course.chapters ?? []).map((_: any, i: number) => {
+                        if (i === (course.chapters ?? []).length - 1) return null;
+                        const x1 = i % 2 === 0 ? 15 : 85;
+                        const x2 = (i + 1) % 2 === 0 ? 15 : 85;
+                        const total = (course.chapters ?? []).length;
+                        const y1 = (i / total) * 100;
+                        const y2 = ((i + 1) / total) * 100;
+                        const midY = (y1 + y2) / 2;
+                        const chActs = (course.chapters ?? [])[i].activities || [];
+                        const isSegCompleted = chActs.length > 0 && chActs.every((a: any) => isActivityDone(a));
+                        return (
+                          <path
+                            key={i}
+                            d={`M ${x1} ${y1} Q 50 ${midY} ${x2} ${y2}`}
+                            fill="none"
+                            stroke={isSegCompleted ? '#58cc02' : '#b8c0d8'}
+                            strokeWidth="6"
+                            strokeDasharray={isSegCompleted ? 'none' : '10 8'}
+                            strokeLinecap="round"
+                            vectorEffect="non-scaling-stroke"
+                          />
+                        );
+                      })}
                     </svg>
 
+                    {/* Circles with zigzag positioning */}
                     {(course.chapters ?? []).map((chapter: any, index: number) => {
                       const chapterActivities = chapter.activities || []
                       const isChapterCompleted = chapterActivities.length > 0 && chapterActivities.every((a: any) => isActivityDone(a))
@@ -623,67 +642,65 @@ const CourseClient = (props: any) => {
                       return (
                         <div
                           key={chapter.chapter_uuid || `chapter-${index}`}
-                          className="relative z-10 flex flex-col md:flex-row items-center gap-4 mb-20 last:mb-0 w-full max-w-md"
+                          className="relative z-10 flex flex-col items-center mb-16 last:mb-0"
+                          style={{ marginLeft: index % 2 === 0 ? '0' : 'auto', marginRight: index % 2 === 0 ? 'auto' : '0', width: 'fit-content' }}
                         >
-                          {/* Circle */}
-                          {isLocked ? (
-                            <div className="flex-shrink-0" aria-disabled="true">
+                          {/* Circle — Duolingo 3D button style */}
+                          <div className="relative">
+                            {/* Shadow underneath for 3D effect */}
+                            <div className="absolute inset-0 rounded-full translate-y-1.5" style={{ background: isLocked ? '#d9d9d9' : 'rgba(0,0,0,0.15)' }} />
+                            {/* Main circle */}
+                            {isLocked ? (
                               <div
-                                className="w-[80px] h-[80px] md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center text-2xl font-bold transition-transform border-4 cursor-not-allowed
-                                  bg-[var(--ordria-surface)] border-[var(--ordria-border)] text-[var(--ordria-muted)]"
+                                className="relative w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold transition-all border-4 cursor-not-allowed bg-[#e5e5e5] border-[#e5e5e5] text-[#afafaf] shadow-[0_4px_0_#d9d9d9]"
                               >
                                 🔒
                               </div>
-                            </div>
-                          ) : (
-                            <Link href={chapterLink} className="flex-shrink-0 transition-transform hover:scale-110 active:scale-95" prefetch={false}>
-                              <div
-                                className={`w-[80px] h-[80px] md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center text-2xl font-bold transition-all border-4
-                                  ${isChapterCompleted
-                                    ? 'bg-[var(--ordria-accent)] border-[var(--ordria-accent-secondary)] text-white shadow-[0_4px_16px_rgba(24,200,224,0.3)]'
-                                    : 'bg-[var(--ordria-accent)] border-[var(--ordria-accent-hover)] text-white duo-pulse'
-                                  }`}
-                              >
-                                {isChapterCompleted ? '✓' : '▶'}
-                              </div>
-                            </Link>
-                          )}
+                            ) : (
+                              <Link href={chapterLink} className="block" prefetch={false}>
+                                <div
+                                  className={`relative w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold transition-all border-4 active:translate-y-1
+                                    ${isChapterCompleted
+                                      ? 'bg-[#58cc02] border-[#58cc02] text-white shadow-[0_4px_0_#46a302]'
+                                      : 'bg-[#1cb0f6] border-[#1cb0f6] text-white shadow-[0_4px_0_#1899d6] duo-pulse'
+                                    }`}
+                                >
+                                  {isChapterCompleted ? '✓' : '★'}
+                                </div>
+                              </Link>
+                            )}
+                          </div>
 
-                          {/* Label */}
-                          <div className="flex-1 min-w-0 text-center md:text-left">
-                            <span className="text-xs font-mono text-[var(--ordria-muted)] uppercase tracking-wider">
+                          {/* Label below circle */}
+                          <div className="mt-3 text-center max-w-[200px]">
+                            <span className="text-xs font-bold uppercase tracking-wider text-[#777]">
                               Module {index + 1}
                             </span>
-                            <h3
-                              className="font-bold text-base text-[var(--ordria-foreground)] truncate"
-                              style={{ fontFamily: 'var(--ordria-font-display)' }}
-                            >
+                            <h3 className="font-bold text-base text-[#3c3c3c] mt-0.5" style={{ fontFamily: 'Nunito, sans-serif' }}>
                               {chapter.name}
                             </h3>
-                            <div className="flex items-center gap-2 mt-1 flex-wrap justify-center md:justify-start">
-                              <span className="text-xs text-[var(--ordria-muted)]">
-                                {chapter.activities.length} {t('activities.activities')}
-                              </span>
+                            {/* Status badge */}
+                            <div className="mt-1">
                               {isChapterCompleted && (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold border border-green-200">
+                                <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-[#58cc02]/10 text-[#58cc02] border-2 border-[#58cc02]/20">
                                   ✓ Terminé
                                 </span>
                               )}
                               {isCurrent && (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-600 font-semibold border border-green-200">
-                                  En cours
+                                <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-[#1cb0f6]/10 text-[#1cb0f6] border-2 border-[#1cb0f6]/20">
+                                  ▶ En cours
                                 </span>
                               )}
                               {isLocked && (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 font-semibold border border-gray-200">
-                                  Verrouillé
+                                <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-gray-100 text-[#afafaf] border-2 border-gray-200">
+                                  🔒 Verrouillé
                                 </span>
                               )}
                             </div>
 
-                            {/* Show activities for current and completed modules */}
+                            {/* Activities list for current/completed modules */}
                             {(isCurrent || isChapterCompleted) && chapterActivities.length > 0 && (
-                              <div className="mt-2 space-y-1">
+                              <div className="mt-3 space-y-1.5 text-left">
                                 {chapterActivities.map((activity: any, actIdx: number) => {
                                   const activityCleanUuid = activity.activity_uuid?.replace('activity_', '')
                                   const actCompleted = isActivityDone(activity)
@@ -697,10 +714,10 @@ const CourseClient = (props: any) => {
                                         className="flex items-center gap-2 p-2 rounded-lg opacity-60 cursor-not-allowed select-none"
                                         title={t('course.activity_locked_hint', 'Sign in or join the right user group to unlock this.')}
                                       >
-                                        <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0 bg-gray-200 text-gray-400">
+                                        <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0 bg-gray-200 text-gray-400">
                                           <Lock size={14} />
                                         </span>
-                                        <span className="text-sm text-[var(--ordria-muted)] truncate">{activity.name}</span>
+                                        <span className="text-sm text-[#777] truncate">{activity.name}</span>
                                       </div>
                                     )
                                   }
@@ -710,12 +727,12 @@ const CourseClient = (props: any) => {
                                       key={actIdx}
                                       href={activityLink}
                                       prefetch={false}
-                                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--ordria-surface)] transition-colors"
+                                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors"
                                       onMouseEnter={() => handleActivityMouseEnter(activity)}
                                     >
                                       <span
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0
-                                          ${actCompleted ? 'bg-[var(--ordria-success)] text-white' : 'bg-[var(--ordria-surface)] text-[var(--ordria-muted)]'}`}
+                                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0
+                                          ${actCompleted ? 'bg-[#58cc02] text-white' : 'bg-gray-100 text-[#777]'}`}
                                       >
                                         {actCompleted
                                           ? '✓'
@@ -725,7 +742,7 @@ const CourseClient = (props: any) => {
                                               ? '🎯'
                                               : '📄'}
                                       </span>
-                                      <span className="text-sm text-[var(--ordria-foreground)] truncate">{activity.name}</span>
+                                      <span className="text-sm text-[#3c3c3c] truncate">{activity.name}</span>
                                     </Link>
                                   )
                                 })}

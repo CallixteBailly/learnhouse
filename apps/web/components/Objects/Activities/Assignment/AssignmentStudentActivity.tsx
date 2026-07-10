@@ -10,9 +10,9 @@ import TaskCodeObject from 'app/orgs/[orgslug]/dash/assignments/[assignmentuuid]
 import TaskShortAnswerObject from 'app/orgs/[orgslug]/dash/assignments/[assignmentuuid]/_components/TaskEditor/Subs/TaskTypes/TaskShortAnswerObject'
 import TaskNumberAnswerObject from 'app/orgs/[orgslug]/dash/assignments/[assignmentuuid]/_components/TaskEditor/Subs/TaskTypes/TaskNumberAnswerObject'
 import toast from 'react-hot-toast';
-import { Backpack, Calendar, CheckCircle2, Download, EllipsisVertical, Info, MessageSquare, RotateCcw, XCircle } from 'lucide-react';
+import { Backpack, Calendar, Download, EllipsisVertical, Info, MessageSquare, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next';
 
 function AssignmentStudentActivity() {
@@ -86,35 +86,7 @@ function AssignmentStudentActivity() {
             )}
           </div>
         </div>
-      </div>
-      
-      {/* Hearts indicator (decorative) */}
-      <div className="hidden md:flex items-center justify-center gap-2 mb-2">
-        <span className="text-lg">❤️</span>
-        <span className="text-lg">❤️</span>
-        <span className="text-lg">❤️</span>
-      </div>
-      
-      {/* Progress bar */}
-      {(() => {
-        const totalTasks = assignments?.assignment_tasks?.length || 0
-        const completedTasks = taskSubmissionsMap ? Object.keys(taskSubmissionsMap).length : 0
-        const progressPct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
-        return totalTasks > 0 ? (
-          <div className="mb-6">
-            <div className="flex justify-between mb-2">
-              <span className="text-sm font-semibold text-[var(--ordria-muted)]">{completedTasks} sur {totalTasks}</span>
-              <span className="font-mono text-[var(--ordria-accent-secondary)]">{progressPct}%</span>
-            </div>
-            <div className="duo-progress-bar">
-              <div className="duo-progress-fill" style={{ width: `${progressPct}%` }}></div>
-            </div>
-          </div>
-        ) : null
-      })()}
-      
-      
-      
+      </div>       
       {assignments?.assignment_object?.description && (
         <div className='hidden md:flex flex-col space-y-2 p-4 md:p-6 bg-[var(--ordria-surface)] rounded-2xl border border-[var(--ordria-border)]'>
           <div className='flex flex-col space-y-3'>

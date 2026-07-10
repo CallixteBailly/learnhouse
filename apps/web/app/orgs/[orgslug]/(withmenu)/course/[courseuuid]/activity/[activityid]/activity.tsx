@@ -1043,28 +1043,6 @@ function ActivityClient(props: ActivityClientProps) {
                             <PaidCourseActivityDisclaimer course={course} />
                           ) : (
                             <>
-                              {/* Hearts indicator for assignments/quizzes — Duolingo style */}
-                              {activity?.activity_type === 'TYPE_ASSIGNMENT' && (
-                                <div className="flex items-center gap-1.5 mb-3">
-                                  <span className="text-lg">❤️</span>
-                                  <span className="text-lg">❤️</span>
-                                  <span className="text-lg">❤️</span>
-                                </div>
-                              )}
-
-                              {/* Progress bar — activity position — Duolingo style */}
-                              {allActivities.length > 0 && (
-                                <div className="mb-4 hidden md:block">
-                                  <div className="flex justify-between items-center mb-1.5">
-                                    <span className="text-xs font-semibold text-[var(--ordria-muted)]">Étape {currentIndex + 1} sur {allActivities.length}</span>
-                                    <span className="text-xs font-mono text-[var(--ordria-accent-secondary)]">{Math.round(((currentIndex + 1) / allActivities.length) * 100)}%</span>
-                                  </div>
-                                  <div className="duo-progress-bar" style={{ height: '6px' }}>
-                                    <div className="duo-progress-fill" style={{ width: `${((currentIndex + 1) / allActivities.length) * 100}%` }}></div>
-                                  </div>
-                                </div>
-                              )}
-
                               <div className="flex gap-6">
                                 <div className={`flex-1 min-w-0 ${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-3 sm:p-7 rounded-2xl border border-[var(--ordria-border)]'} ${bgColor} relative isolate`} style={{ zIndex: 'var(--z-base)' }}>
                                   <button
