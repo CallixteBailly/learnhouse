@@ -2,7 +2,7 @@
 import { useOrg } from '@components/Contexts/OrgContext'
 import AuthenticatedClientElement from '@components/Security/AuthenticatedClientElement'
 import ConfirmationModal from '@components/Objects/StyledElements/ConfirmationModal/ConfirmationModal'
-import Modal from '@components/Objects/StyledElements/Modal'
+import Modal from '@components/Objects/StyledElements/Modal/Modal'
 import ManageAccessPopover from '@components/Dashboard/Library/ManageAccessPopover'
 import { getUriWithOrg } from '@services/config/config'
 import { deleteCourseFromBackend, cloneCourse } from '@services/courses/courses'
