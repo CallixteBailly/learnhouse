@@ -86,7 +86,22 @@ function AssignmentStudentActivity() {
             )}
           </div>
         </div>
-      </div>       
+      </div>      
+      {allowRetries && maxRetries > 0 && currentAttempt >= maxRetries && (
+        <div className="p-4 rounded-2xl border-2 border-[var(--ordria-warning)] bg-amber-50">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <p className="font-bold text-sm" style={{ color: 'var(--ordria-warning)' }}>
+                Tentatives épuisées ({maxRetries}/{maxRetries})
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--ordria-muted)' }}>
+                Vous avez utilisé toutes vos tentatives. Contactez votre formateur pour réinitialiser ou passez aux autres activités du module.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       {assignments?.assignment_object?.description && (
         <div className='hidden md:flex flex-col space-y-2 p-4 md:p-6 bg-[var(--ordria-surface)] rounded-2xl border border-[var(--ordria-border)]'>
           <div className='flex flex-col space-y-3'>

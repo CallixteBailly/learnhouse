@@ -616,7 +616,7 @@ const CourseClient = (props: any) => {
                           ) : (
                             <Link href={chapterLink} prefetch={false}>
                               <div
-                                className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1 ${isChapterCompleted ? 'duo-pulse' : 'duo-pulse'}`}
+                                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1 duo-pulse"
                                 style={{
                                   background: isChapterCompleted ? 'var(--ordria-success)' : 'var(--ordria-accent)',
                                   color: '#fff',
@@ -631,9 +631,62 @@ const CourseClient = (props: any) => {
                           <h3 className="font-bold text-sm mt-2 text-center px-4" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>
                             {chapter.name}
                           </h3>
-                          <span className="text-xs mb-4" style={{ color: 'var(--ordria-muted)' }}>
-                            {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
-                          </span>
+
+                          {/* Show activity checklist for current module */}
+                          {isCurrent && chapterActivities.length > 0 && (
+                            <div className="mt-2 w-full max-w-[260px] space-y-1">
+                              {chapterActivities.map((activity: any, actIdx: number) => {
+                                const actDone = isActivityDone(activity)
+                                const actCleanUuid = activity.activity_uuid?.replace('activity_', '')
+                                const actLink = getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${actCleanUuid}`)
+                                return (
+                                  <Link
+                                    key={actIdx}
+                                    href={actLink}
+                                    prefetch={false}
+                                    className="flex items-center gap-2 p-2 rounded-lg transition-colors hover:bg-[var(--ordria-surface)]"
+                                  >
+                                    <span
+                                      className="w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 font-bold"
+                                      style={actDone
+                                        ? { background: 'var(--ordria-success)', color: '#fff' }
+                                        : { background: 'var(--ordria-surface)', color: 'var(--ordria-muted)' }
+                                      }
+                                    >
+                                      {actDone ? '✓' : activity.activity_type === 'TYPE_VIDEO' ? '🎬' : activity.activity_type === 'TYPE_ASSIGNMENT' ? '🎯' : '📄'}
+                                    </span>
+                                    <span className="text-xs truncate" style={{ color: actDone ? 'var(--ordria-muted)' : 'var(--ordria-foreground)', textDecoration: actDone ? 'line-through' : 'none' }}>
+                                      {activity.name}
+                                    </span>
+                                  </Link>
+                                )
+                              })}
+                              {(() => {
+                                const remaining = chapterActivities.filter((a: any) => !isActivityDone(a)).length
+                                return remaining > 0 ? (
+                                  <p className="text-xs text-center pt-1" style={{ color: 'var(--ordria-accent-secondary)' }}>
+                                    {remaining} activité{remaining > 1 ? 's' : ''} restante{remaining > 1 ? 's' : ''}
+                                  </p>
+                                ) : null
+                              })()}
+                            </div>
+                          )}
+
+                          {isChapterCompleted && (
+                            <span className="text-xs mb-3 font-semibold" style={{ color: 'var(--ordria-success)' }}>
+                              ✓ {chapterActivities.length} activités terminées
+                            </span>
+                          )}
+                          {isLocked && (
+                            <span className="text-xs mb-4" style={{ color: 'var(--ordria-muted)' }}>
+                              {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
+                            </span>
+                          )}
+                          {isCurrent && (
+                            <span className="text-xs mb-4" style={{ color: 'var(--ordria-muted)' }}>
+                              {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
+                            </span>
+                          )}
 
                           {!isLast && (
                             <div
