@@ -348,17 +348,10 @@ const CourseClient = (props: any) => {
               ]} />
             </div>
 
-            {/* Desktop: Commencer/Continuer button — prominent, top-right */}
+            {/* Desktop: title + share only (Commencer button is in CoursesActions sidebar) */}
             <div className="hidden md:flex justify-between items-center mb-2">
               <h1 className="text-3xl font-bold truncate" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>{course.name}</h1>
-              <div className="flex items-center gap-3">
-                <CourseShare courseName={course.name} courseUrl={getUriWithOrg(orgslug, `/course/${courseuuid}`)} />
-                <Link href={continueLink} prefetch={false} className="no-underline">
-                  <div className="px-8 py-3 rounded-xl font-bold text-base active:translate-y-0.5 transition-all" style={{ fontFamily: 'var(--ordria-font-display)', background: 'var(--ordria-accent)', color: '#fff', boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}>
-                    {isStarted ? '▶ Continuer' : '★ Commencer'}
-                  </div>
-                </Link>
-              </div>
+              <CourseShare courseName={course.name} courseUrl={getUriWithOrg(orgslug, `/course/${courseuuid}`)} />
             </div>
 
             {/* Mobile: title only (sticky Commencer button added at bottom) */}
