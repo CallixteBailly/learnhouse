@@ -80,9 +80,10 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
       const runUuid = r.course?.course_uuid?.replace('course_', '')
       return runUuid === cleanUuid
     })
-    if (!run || !run.steps?.length) return 0
-    const completed = run.steps.filter((s: any) => s.complete).length
-    return run.steps.length > 0 ? Math.round((completed / run.steps.length) * 100) : 0
+    if (!run?.steps?.length) return 0
+    const totalActivities = course.chapters?.reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0) || run.steps.length
+    const completedCount = run.steps.filter((s: any) => s.complete).length
+    return totalActivities > 0 ? Math.round((completedCount / totalActivities) * 100) : 0
   })()
 
   const handleCardOpen = () => {
