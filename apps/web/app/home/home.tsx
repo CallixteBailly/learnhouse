@@ -304,7 +304,7 @@ function OrgRow({ org, access_token }: { org: any; access_token: string }) {
   }
 
   return (
-    <div className="relative flex items-center p-4 bg-white rounded-2xl border-2 border-[#e5e5e5] hover:border-[#58cc02] transition-all group duo-card-hover" style={{ boxShadow: '0 4px 0 #e5e5e5' }}>
+    <div className="relative flex items-center p-4 bg-white rounded-2xl border-2 border-[#e5e5e5] hover:border-[var(--ordria-accent)] transition-all group duo-card-hover" style={{ boxShadow: '0 4px 0 #e5e5e5' }}>
       <Link
         href={getUriWithOrg(org.slug, '/')}
         className="flex items-center flex-1 min-w-0"
@@ -317,7 +317,7 @@ function OrgRow({ org, access_token }: { org: any; access_token: string }) {
             className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border-2 border-[#f7f7f7]"
           />
         ) : (
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#e5f9d8] to-[#ddf4ff] flex items-center justify-center text-[#58cc02] font-black text-xl flex-shrink-0 border-2 border-[#e5e5e5]">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#e5f9d8] to-[#ddf4ff] flex items-center justify-center text-[var(--ordria-accent)] font-black text-xl flex-shrink-0 border-2 border-[#e5e5e5]">
             {initial}
           </div>
         )}
@@ -335,7 +335,7 @@ function OrgRow({ org, access_token }: { org: any; access_token: string }) {
 
         <ChevronRight
           size={20}
-          className="ml-3 text-[#afafaf] group-hover:text-[#58cc02] group-hover:translate-x-0.5 transition-all flex-shrink-0"
+          className="ml-3 text-[#afafaf] group-hover:text-[var(--ordria-accent)] group-hover:translate-x-0.5 transition-all flex-shrink-0"
         />
       </Link>
 

@@ -605,11 +605,11 @@
     --shadow-purple: 0 4px 0 #6b21a8;
 
     /* Category colors — mapped to Duolingo palette */
-    --cat-coiffeur: #1cb0f6;
-    --cat-garagiste: #1899d6;
+    --cat-coiffeur: #18c8e0;
+    --cat-garagiste: #0898b0;
     --cat-restaurateur: #ff9600;
     --cat-artisan: #ce82ff;
-    --cat-barbier: #58cc02;
+    --cat-barbier: #2ea36b;
 
     /* Duolingo button system */
     --duo-btn-height: 48px;

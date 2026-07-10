@@ -346,22 +346,22 @@ const CourseClient = (props: any) => {
                 { label: course.name }
               ]} />
             </div>
-            {/* Mobile: Commencer / Continuer button at the very top */}
-            <Link href={continueLink} className="md:hidden block w-full mb-4 no-underline">
-              <div className="w-full text-white font-bold text-center py-3.5 rounded-2xl text-base active:translate-y-0.5 transition-transform" style={{ fontFamily: 'var(--ordria-font-display)', background: 'var(--ordria-accent)', color: 'var(--ordria-ink)', boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}>
-                {isStarted ? '▶ Continuer' : '★ Commencer'}
-              </div>
-            </Link>
 
-            <div className="pb-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-              <h1 className="text-xl md:text-3xl font-bold truncate" style={{ fontFamily: 'var(--ordria-font-display)' }}>{course.name}</h1>
-              <div className="hidden md:block">
-                <CourseShare
-                  courseName={course.name}
-                  courseUrl={getUriWithOrg(orgslug, `/course/${courseuuid}`)}
-                />
+            {/* Desktop: Commencer/Continuer button — prominent, top-right */}
+            <div className="hidden md:flex justify-between items-center mb-2">
+              <h1 className="text-3xl font-bold truncate" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>{course.name}</h1>
+              <div className="flex items-center gap-3">
+                <CourseShare courseName={course.name} courseUrl={getUriWithOrg(orgslug, `/course/${courseuuid}`)} />
+                <Link href={continueLink} prefetch={false} className="no-underline">
+                  <div className="px-8 py-3 rounded-xl font-bold text-base active:translate-y-0.5 transition-all" style={{ fontFamily: 'var(--ordria-font-display)', background: 'var(--ordria-accent)', color: '#fff', boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}>
+                    {isStarted ? '▶ Continuer' : '★ Commencer'}
+                  </div>
+                </Link>
               </div>
             </div>
+
+            {/* Mobile: title only (sticky Commencer button added at bottom) */}
+            <h1 className="md:hidden text-xl font-bold truncate mb-3" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>{course.name}</h1>
 
             <div className="flex flex-col md:flex-row gap-8 pt-2">
               <div className="w-full md:w-3/4 space-y-4">
@@ -490,7 +490,7 @@ const CourseClient = (props: any) => {
                   );
                   return run;
                 })() && (
-                  <div className="hidden md:block">
+                  <div className="hidden">
                     <ActivityIndicators
                       course_uuid={course.course_uuid}
                       orgslug={orgslug}
@@ -834,6 +834,15 @@ const CourseClient = (props: any) => {
               </div>
             )}
           </GeneralWrapperStyled>
+
+          {/* Mobile: Sticky Commencer/Continuer button */}
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 p-3" style={{ background: 'linear-gradient(to top, var(--ordria-background) 60%, transparent)' }}>
+            <Link href={continueLink} prefetch={false} className="block no-underline">
+              <div className="w-full text-center py-3.5 rounded-xl font-bold text-base active:translate-y-0.5 transition-all" style={{ fontFamily: 'var(--ordria-font-display)', background: 'var(--ordria-accent)', color: '#fff', boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}>
+                {isStarted ? '▶ Continuer' : '★ Commencer'}
+              </div>
+            </Link>
+          </div>
 
           {/* Mobile Actions Box */}
           {isMobile && (

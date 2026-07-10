@@ -14,11 +14,11 @@ function TypeOfContentTitle({ title, type }: TypeOfContentTitleProps) {
   const getIcon = () => {
     switch (type) {
       case 'col':
-        return <SquareLibrary className="w-4 h-4 text-[#58cc02]" />
+        return <SquareLibrary className="w-4 h-4 text-[var(--ordria-accent)]" />
       case 'cou':
-        return <BookCopy className="w-4 h-4 text-[#58cc02]" />
+        return <BookCopy className="w-4 h-4 text-[var(--ordria-accent)]" />
       case 'tra':
-        return <Signpost className="w-4 h-4 text-[#1cb0f6]" />
+        return <Signpost className="w-4 h-4 text-[var(--ordria-accent)]" />
       case 'pod':
         return <Headphones className="w-4 h-4 text-[#ce82ff]" />
       case 'board':

@@ -334,7 +334,7 @@ const PillLink = ({
     href={href}
     className={cn(
       'flex items-center justify-center p-2.5 rounded-full transition-all duration-200',
-      active ? 'bg-[#e5f9d8] text-[#58cc02]' : 'text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7]',
+      active ? 'bg-[#e5f9d8] text-[var(--ordria-accent)]' : 'text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7]',
       className
     )}
   >
@@ -367,7 +367,7 @@ const PanelItem = ({
     {active && (
       <span
         aria-hidden="true"
-        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-4 w-[2px] bg-[#58cc02] rounded-full"
+        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-4 w-[2px] bg-[var(--ordria-accent)] rounded-full"
       />
     )}
     {icon}

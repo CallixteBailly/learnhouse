@@ -385,7 +385,7 @@ function DashLeftMenu() {
                     {active && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[#58cc02] rounded-full"
+                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[var(--ordria-accent)] rounded-full"
                       />
                     )}
                     <span className="relative flex items-center justify-center">
@@ -459,7 +459,7 @@ function DashLeftMenu() {
                     {active && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[#58cc02] rounded-full"
+                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[var(--ordria-accent)] rounded-full"
                       />
                     )}
                     <span className="relative flex items-center justify-center">
@@ -581,7 +581,7 @@ function DashLeftMenu() {
                     {active && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[#58cc02] rounded-full"
+                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[var(--ordria-accent)] rounded-full"
                       />
                     )}
                     <span className="relative flex items-center justify-center">
@@ -676,7 +676,7 @@ function DashLeftMenu() {
                     {active && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[#58cc02] rounded-full"
+                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[var(--ordria-accent)] rounded-full"
                       />
                     )}
                     <span className="relative flex items-center justify-center">
@@ -753,7 +753,7 @@ function DashLeftMenu() {
                     {active && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[#58cc02] rounded-full"
+                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[var(--ordria-accent)] rounded-full"
                       />
                     )}
                     <span className="relative flex items-center justify-center">
@@ -812,7 +812,7 @@ function DashLeftMenu() {
                     {active && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[#58cc02] rounded-full"
+                        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-[var(--ordria-accent)] rounded-full"
                       />
                     )}
                     <span className="relative flex items-center justify-center">
@@ -1203,7 +1203,7 @@ function DashLeftMenu() {
                   ))}
                   <HoverMenuSeparator />
                   <HoverMenuItem asChild>
-                    <a href={getMainDomainUri('/new')} className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-[#58cc02] hover:text-[#58a700] hover:bg-[#e5f9d8] cursor-pointer transition-colors">
+                    <a href={getMainDomainUri('/new')} className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-[var(--ordria-accent)] hover:text-[var(--ordria-accent-secondary)] hover:bg-[#e5f9d8] cursor-pointer transition-colors">
                       <Plus size={16} weight="bold" />
                       <span>{t('common.create_organization', { defaultValue: 'Create organization' })}</span>
                     </a>
