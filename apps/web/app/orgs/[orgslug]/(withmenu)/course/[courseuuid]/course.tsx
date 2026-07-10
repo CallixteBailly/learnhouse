@@ -348,7 +348,7 @@ const CourseClient = (props: any) => {
             </div>
             {/* Mobile: Commencer / Continuer button at the very top */}
             <Link href={continueLink} className="md:hidden block w-full mb-4 no-underline">
-              <div className="w-full bg-[#58cc02] text-white font-bold text-center py-3.5 rounded-2xl text-base active:translate-y-0.5 transition-transform" style={{ fontFamily: 'Nunito, sans-serif', boxShadow: '0 4px 0 #46a302' }}>
+              <div className="w-full text-white font-bold text-center py-3.5 rounded-2xl text-base active:translate-y-0.5 transition-transform" style={{ fontFamily: 'var(--ordria-font-display)', background: 'var(--ordria-accent)', color: 'var(--ordria-ink)', boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}>
                 {isStarted ? '▶ Continuer' : '★ Commencer'}
               </div>
             </Link>
@@ -572,24 +572,24 @@ const CourseClient = (props: any) => {
                 {/* Main: Progress + Learning Path */}
                 <div>
                   {/* Progress section */}
-                  <div className="bg-gradient-to-r from-[#58cc02]/10 to-[#1cb0f6]/10 rounded-2xl p-4 mb-8 border-2 border-[#58cc02]/20">
+                  <div className="rounded-2xl p-4 mb-8" style={{ background: 'var(--ordria-surface)', border: '2px solid var(--ordria-border)' }}>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-bold text-sm text-[#3c3c3c]" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                      <span className="font-bold text-sm" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>
                         {completedModules} sur {totalModules} modules terminés
                       </span>
-                      <span className="font-mono font-black text-2xl text-[#58cc02]">
+                      <span className="font-mono font-black text-2xl" style={{ color: 'var(--ordria-accent-secondary)' }}>
                         {progressPercent}%
                       </span>
                     </div>
-                    <div className="h-3 bg-white rounded-full overflow-hidden border border-[#58cc02]/20">
+                    <div className="h-3 rounded-full overflow-hidden" style={{ background: 'var(--ordria-background)', border: '1px solid var(--ordria-border)' }}>
                       <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${progressPercent}%`, background: 'linear-gradient(90deg, #58cc02, #1cb0f6)' }}
+                        style={{ width: `${progressPercent}%`, background: 'linear-gradient(90deg, var(--ordria-accent), var(--ordria-accent-secondary))' }}
                       />
                     </div>
                   </div>
 
-                  {/* Learning Path — simple vertical timeline */}
+                  {/* Learning Path — simple vertical timeline with Ordria tokens */}
                   <div className="flex flex-col items-center py-6">
                     {(course.chapters ?? []).map((chapter: any, index: number) => {
                       const chapterActivities = chapter.activities || []
@@ -608,44 +608,96 @@ const CourseClient = (props: any) => {
 
                       return (
                         <div key={chapter.chapter_uuid || `ch-${index}`} className="flex flex-col items-center">
-                          {/* Circle */}
                           {isLocked ? (
                             <div
-                              className="w-16 h-16 rounded-full flex items-center justify-center text-2xl bg-[#e5e5e5] text-[#afafaf]"
-                              style={{ boxShadow: '0 4px 0 #d9d9d9' }}
+                              className="w-16 h-16 rounded-full flex items-center justify-center text-2xl"
+                              style={{ background: 'var(--ordria-surface)', color: 'var(--ordria-muted)', boxShadow: '0 4px 0 var(--ordria-border)' }}
                             >🔒</div>
                           ) : (
                             <Link href={chapterLink} prefetch={false}>
                               <div
-                                className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1 ${isChapterCompleted ? 'bg-[#58cc02] text-white' : 'bg-[#1cb0f6] text-white duo-pulse'}`}
-                                style={{ boxShadow: `0 4px 0 ${isChapterCompleted ? '#46a302' : '#1899d6'}` }}
+                                className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1 ${isChapterCompleted ? 'duo-pulse' : 'duo-pulse'}`}
+                                style={{
+                                  background: isChapterCompleted ? 'var(--ordria-success)' : 'var(--ordria-accent)',
+                                  color: '#fff',
+                                  boxShadow: `0 4px 0 ${isChapterCompleted ? '#1e7a4d' : 'var(--ordria-accent-secondary)'}`,
+                                }}
                               >
                                 {isChapterCompleted ? '✓' : '▶'}
                               </div>
                             </Link>
                           )}
 
-                          {/* Title */}
-                          <h3 className="font-bold text-sm text-[#3c3c3c] mt-2 text-center px-4" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                          <h3 className="font-bold text-sm mt-2 text-center px-4" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>
                             {chapter.name}
                           </h3>
-                          <span className="text-xs text-[#afafaf] mb-4">
+                          <span className="text-xs mb-4" style={{ color: 'var(--ordria-muted)' }}>
                             {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
                           </span>
 
-                          {/* Connector line — simple CSS, not SVG */}
                           {!isLast && (
                             <div
                               className="w-1 rounded-full mb-4"
-                              style={{
-                                height: '32px',
-                                background: isChapterCompleted ? '#58cc02' : '#e5e5e5',
-                              }}
+                              style={{ height: '32px', background: isChapterCompleted ? 'var(--ordria-success)' : 'var(--ordria-border)' }}
                             />
                           )}
                         </div>
                       )
                     })}
+
+                    {/* Certificate node — shows when all modules are completed OR as a locked goal */}
+                    {(() => {
+                      const allDone = (course.chapters ?? []).every((ch: any) => {
+                        const acts = ch.activities || []
+                        return acts.length > 0 && acts.every((a: any) => isActivityDone(a))
+                      })
+                      const endLink = getUriWithOrg(orgslug, `/course/${courseuuid}/activity/end`)
+
+                      return (
+                        <>
+                          {/* Connector to certificate */}
+                          <div className="w-1 rounded-full mb-4" style={{ height: '32px', background: allDone ? 'var(--ordria-success)' : 'var(--ordria-border)' }} />
+
+                          {/* Certificate circle */}
+                          {allDone ? (
+                            <Link href={endLink} prefetch={false}>
+                              <div
+                                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all active:translate-y-1 duo-pulse"
+                                style={{ background: 'var(--ordria-warning)', color: '#fff', boxShadow: '0 4px 0 #8a6420' }}
+                              >
+                                🏆
+                              </div>
+                            </Link>
+                          ) : (
+                            <div
+                              className="w-16 h-16 rounded-full flex items-center justify-center text-2xl"
+                              style={{ background: 'var(--ordria-surface)', color: 'var(--ordria-muted)', boxShadow: '0 4px 0 var(--ordria-border)' }}
+                            >
+                              🔒
+                            </div>
+                          )}
+
+                          <h3 className="font-bold text-sm mt-2 text-center px-4" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>
+                            {allDone ? 'Certificat débloqué !' : 'Certificat'}
+                          </h3>
+                          <span className="text-xs text-center" style={{ color: 'var(--ordria-muted)' }}>
+                            {allDone ? 'Touchez pour récupérer votre certificat' : 'Terminez tous les modules'}
+                          </span>
+
+                          {/* Info message for stuck users */}
+                          {!allDone && (
+                            <div className="mt-6 p-3 rounded-xl text-xs text-center max-w-xs" style={{ background: 'var(--ordria-surface)', color: 'var(--ordria-muted)' }}>
+                              💡 Terminez toutes les activités d'un module pour débloquer le suivant.
+                              {progressPercent > 0 && progressPercent < 100 && (
+                                <span className="block mt-1 font-semibold" style={{ color: 'var(--ordria-accent-secondary)' }}>
+                                  Plus que {100 - progressPercent}% avant le certificat !
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      )
+                    })()}
                   </div>
                 </div>
 
