@@ -842,7 +842,9 @@ const CourseClient = (props: any) => {
 
           {/* Mobile Actions Box */}
           {isMobile && (
-            <CourseActionsMobile courseuuid={courseuuid} orgslug={orgslug} course={course} trailData={trailData} />
+            <div className="pb-24">
+              <CourseActionsMobile courseuuid={courseuuid} orgslug={orgslug} course={course} trailData={trailData} />
+            </div>
           )}
         </>
       )}

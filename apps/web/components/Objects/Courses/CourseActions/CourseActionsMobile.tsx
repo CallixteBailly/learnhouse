@@ -329,11 +329,16 @@ const CourseActionsMobile = ({ courseuuid, orgslug, course, trailData }: CourseA
           <button
             onClick={handleCourseAction}
             disabled={isActionLoading}
-            className={`w-full py-2 px-4 rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${
+            className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
               isStarted
                 ? 'bg-red-500 text-white hover:bg-red-600 disabled:bg-red-400'
-                : 'bg-neutral-900 text-white hover:bg-neutral-800 disabled:bg-neutral-700'
+                : ''
             }`}
+            style={isStarted ? {} : {
+              background: 'var(--ordria-accent)',
+              color: '#fff',
+              boxShadow: '0 4px 0 var(--ordria-accent-secondary)',
+            }}
           >
             {isActionLoading ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
