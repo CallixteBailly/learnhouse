@@ -835,14 +835,16 @@ const CourseClient = (props: any) => {
             )}
           </GeneralWrapperStyled>
 
-          {/* Mobile: Sticky Commencer/Continuer button */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 p-3" style={{ background: 'linear-gradient(to top, var(--ordria-background) 60%, transparent)' }}>
-            <Link href={continueLink} prefetch={false} className="block no-underline">
-              <div className="w-full text-center py-3.5 rounded-xl font-bold text-base active:translate-y-0.5 transition-all" style={{ fontFamily: 'var(--ordria-font-display)', background: 'var(--ordria-accent)', color: '#fff', boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}>
-                {isStarted ? '▶ Continuer' : '★ Commencer'}
-              </div>
-            </Link>
-          </div>
+          {/* Mobile: Sticky Commencer/Continuer button — only if NOT enrolled yet */}
+          {!isStarted && (
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 p-3" style={{ background: 'linear-gradient(to top, var(--ordria-background) 70%, transparent)' }}>
+              <Link href={continueLink} prefetch={false} className="block no-underline">
+                <div className="w-full text-center py-3.5 rounded-xl font-bold text-base active:translate-y-0.5 transition-all" style={{ fontFamily: 'var(--ordria-font-display)', background: 'var(--ordria-accent)', color: '#fff', boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}>
+                  ★ Commencer
+                </div>
+              </Link>
+            </div>
+          )}
 
           {/* Mobile Actions Box */}
           {isMobile && (

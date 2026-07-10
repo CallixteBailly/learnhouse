@@ -1475,7 +1475,28 @@ function NextActivityButton({ course, currentActivityId, orgslug }: { course: an
 
   const nextActivity = findNextActivity();
 
-  if (!nextActivity) return null;
+  const isLastActivity = !nextActivity;
+
+  const navigateToEnd = () => {
+    const cleanCourseUuid = course.course_uuid?.replace('course_', '');
+    router.push(getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/end`);
+  };
+
+  if (isLastActivity) {
+    return (
+      <div
+        onClick={navigateToEnd}
+        className="rounded-xl px-3 sm:px-5 p-2 sm:p-2.5 text-white hover:cursor-pointer transition-all active:translate-y-0.5"
+        style={{ background: 'var(--ordria-accent)', boxShadow: '0 3px 0 var(--ordria-accent-secondary)' }}
+      >
+        <span className="text-[10px] font-bold mb-1 uppercase block opacity-80">Terminer</span>
+        <div className="flex items-center space-x-1">
+          <span className="text-xs sm:text-sm font-bold">🏆 Certificat</span>
+          <ChevronRight size={17} className="shrink-0" />
+        </div>
+      </div>
+    );
+  }
 
   const navigateToActivity = () => {
     const cleanCourseUuid = course.course_uuid?.replace('course_', '');
