@@ -48,8 +48,8 @@ function LandingClassic({ courses, orgslug, org_id }: LandingClassicProps) {
   }
 
   const getProgressPercent = (run: any) => {
-    const total = run.steps?.length || 1
     const completed = run.steps?.filter((s: any) => s.complete)?.length || 0
+    const total = run.course_total_steps || run.steps?.length || 1
     return Math.round((completed / total) * 100)
   }
 

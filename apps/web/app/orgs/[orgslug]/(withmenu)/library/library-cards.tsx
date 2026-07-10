@@ -83,9 +83,10 @@ export function FolderCard({ folder, orgslug }: { folder: any; orgslug: string }
     for (const item of courseItems) {
       const courseUuid = item.resource?.course_uuid?.replace('course_', '')
       const run = trailData.runs.find((r: any) => r.course?.course_uuid?.replace('course_', '') === courseUuid)
-      if (run && run.steps?.length > 0) {
-        const completed = run.steps.filter((s: any) => s.complete).length
-        totalProgress += Math.round((completed / run.steps.length) * 100)
+      if (run) {
+        const completed = (run.steps || []).filter((s: any) => s.complete).length
+        const total = run.course_total_steps || (run.steps || []).length || 1
+        totalProgress += Math.round((completed / total) * 100)
       }
     }
     return Math.round(totalProgress / courseItems.length)

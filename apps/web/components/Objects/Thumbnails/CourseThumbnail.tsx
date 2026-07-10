@@ -80,9 +80,9 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
       const runUuid = r.course?.course_uuid?.replace('course_', '')
       return runUuid === cleanUuid
     })
-    if (!run?.steps?.length) return 0
-    const totalActivities = course.chapters?.reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0) || run.steps.length
-    const completedCount = run.steps.filter((s: any) => s.complete).length
+    if (!run) return 0
+    const completedCount = (run.steps || []).filter((s: any) => s.complete).length
+    const totalActivities = run.course_total_steps || (run.steps || []).length
     return totalActivities > 0 ? Math.round((completedCount / totalActivities) * 100) : 0
   })()
 
