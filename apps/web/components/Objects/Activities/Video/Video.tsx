@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import YouTube from 'react-youtube'
 import { useOrg } from '@components/Contexts/OrgContext'
 import LearnHousePlayer from './LearnHousePlayer'
@@ -54,6 +54,14 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
   const org = useOrg() as any
   const resolvedOrgUuid = orgUuid || org?.org_uuid
   const [videoId, setVideoId] = React.useState('')
+  const [isLandscape, setIsLandscape] = useState(false)
+
+  useEffect(() => {
+    const checkOrientation = () => setIsLandscape(window.innerHeight < 500 && window.innerWidth > window.innerHeight)
+    checkOrientation()
+    window.addEventListener('resize', checkOrientation)
+    return () => window.removeEventListener('resize', checkOrientation)
+  }, [])
 
   React.useEffect(() => {
     if (activity?.content?.uri) {
@@ -77,11 +85,16 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
 
   return (
     <div className="w-full max-w-full px-0 sm:px-4">
+      {!isLandscape && (
+        <div className="md:hidden bg-yellow-50 border border-yellow-300 rounded-xl p-3 text-center text-sm text-yellow-800 mb-3">
+          📱 Pivotez votre téléphone pour une meilleure immersion
+        </div>
+      )}
       {activity && (
         <>
           {activity.activity_sub_type === 'SUBTYPE_VIDEO_HOSTED' && (
-            <div className="my-0 sm:my-3 md:my-5 w-full">
-              <div className="relative w-full aspect-video sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none">
+            <div className={`my-0 sm:my-3 md:my-5 w-full ${isLandscape ? 'fixed inset-0 z-[100] bg-black' : ''}`}>
+              <div className={`relative w-full aspect-video sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none ${isLandscape ? '!aspect-auto h-full' : ''}`}>
                 {(() => {
                   const { src, isHls } = getVideoSource()
                   const thumbnails = isHls
@@ -124,8 +137,8 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
             </div>
           )}
           {activity.activity_sub_type === 'SUBTYPE_VIDEO_YOUTUBE' && (
-            <div className="my-0 sm:my-3 md:my-5 w-full">
-              <div className="relative w-full aspect-video sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none">
+            <div className={`my-0 sm:my-3 md:my-5 w-full ${isLandscape ? 'fixed inset-0 z-[100] bg-black' : ''}`}>
+              <div className={`relative w-full aspect-video sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none ${isLandscape ? '!aspect-auto h-full' : ''}`}>
                 <YouTube
                   className="w-full h-full"
                   opts={{
@@ -154,7 +167,7 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
         </>
       )}
       {activity?.content?.description && (
-        <div className="mt-4 p-4 bg-[var(--ordria-surface)] rounded-xl border border-[var(--ordria-border)]">
+        <div className={`${isLandscape ? 'hidden' : 'block'} mt-4 p-4 bg-[var(--ordria-surface)] rounded-xl border border-[var(--ordria-border)]`}>
           <p className="text-sm text-[var(--ordria-foreground)] whitespace-pre-wrap leading-relaxed">
             {activity.content.description}
           </p>

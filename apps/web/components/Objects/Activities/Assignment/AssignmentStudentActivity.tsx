@@ -54,7 +54,7 @@ function AssignmentStudentActivity() {
 
   return (
     <div className='flex flex-col space-y-4 md:space-y-6'>
-      <div className='flex flex-col md:flex-row justify-center md:space-x-3 space-y-3 md:space-y-0 items-center'>
+      <div className='hidden md:flex flex-col md:flex-row justify-center md:space-x-3 space-y-3 md:space-y-0 items-center'>
         <div className='text-xs h-fit flex space-x-3 items-center'>
           <div className='flex gap-2 py-2 px-4 md:px-5 h-fit text-sm text-[var(--ordria-foreground)] bg-[var(--ordria-accent-bg)] rounded-full border border-[var(--ordria-accent-border)] items-center'>
             <Backpack size={14} className="md:size-[14px]" />
@@ -89,7 +89,7 @@ function AssignmentStudentActivity() {
       </div>
       
       {/* Hearts indicator (decorative) */}
-      <div className="flex items-center justify-center gap-2 mb-2">
+      <div className="hidden md:flex items-center justify-center gap-2 mb-2">
         <span className="text-lg">❤️</span>
         <span className="text-lg">❤️</span>
         <span className="text-lg">❤️</span>
@@ -116,7 +116,7 @@ function AssignmentStudentActivity() {
       
       
       {assignments?.assignment_object?.description && (
-        <div className='flex flex-col space-y-2 p-4 md:p-6 bg-[var(--ordria-surface)] rounded-2xl border border-[var(--ordria-border)]'>
+        <div className='hidden md:flex flex-col space-y-2 p-4 md:p-6 bg-[var(--ordria-surface)] rounded-2xl border border-[var(--ordria-border)]'>
           <div className='flex flex-col space-y-3'>
             <div className='flex items-center gap-2 text-slate-700'>
               <Info size={16} className="text-slate-500" />
@@ -216,6 +216,24 @@ function AssignmentStudentActivity() {
           </div>
         )
       })}
+
+      {/* Mobile: sticky submit/next button */}
+      <div className="sticky bottom-0 bg-white border-t border-gray-200 p-3 z-50 md:hidden">
+        <button
+          className="duo-btn-success w-full"
+          onClick={() => {
+            const submitBtn = document.querySelector('[class*="bg-cyan-800"]') as HTMLElement
+            if (submitBtn) {
+              submitBtn.click()
+            } else {
+              const nextBtn = document.querySelector('[class*="bg-gray-200"]') as HTMLElement
+              if (nextBtn) nextBtn.click()
+            }
+          }}
+        >
+          {isGraded ? t('common.next', 'Suivant') : t('assignments.submit_for_grading', 'Soumettre')}
+        </button>
+      </div>
     </div>
   )
 }

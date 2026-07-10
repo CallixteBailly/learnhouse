@@ -305,6 +305,20 @@ const CourseClient = (props: any) => {
 
   const jsonLd = generateJsonLd()
 
+  const isStarted = !!(trailData?.runs?.find(
+    (run: any) => {
+      const cleanRunCourseUuid = run.course?.course_uuid?.replace('course_', '')
+      return cleanRunCourseUuid === course?.course_uuid?.replace('course_', '')
+    }
+  ))
+
+  const firstActivity = course?.chapters?.[0]?.activities?.[0]
+  const continueLink = props.current_activity
+    ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${props.current_activity}`)
+    : firstActivity
+      ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`)
+      : '#'
+
   const totalModules = course?.chapters?.length || 0
   const totalActivitiesCount = (course?.chapters ?? []).reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0)
   const completedActivitiesCount = (course?.chapters ?? []).reduce((sum: number, ch: any) => {
@@ -332,12 +346,21 @@ const CourseClient = (props: any) => {
                 { label: course.name }
               ]} />
             </div>
+            {/* Mobile: Commencer / Continuer button at the very top */}
+            <Link href={continueLink} className="md:hidden block w-full mb-3">
+              <button className="duo-btn-success w-full" style={{ height: '52px' }}>
+                {isStarted ? 'Continuer' : 'Commencer'}
+              </button>
+            </Link>
+
             <div className="pb-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-              <h1 className="text-3xl md:text-3xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)' }}>{course.name}</h1>
-              <CourseShare
-                courseName={course.name}
-                courseUrl={getUriWithOrg(orgslug, `/course/${courseuuid}`)}
-              />
+              <h1 className="text-xl md:text-3xl font-bold truncate" style={{ fontFamily: 'var(--ordria-font-display)' }}>{course.name}</h1>
+              <div className="hidden md:block">
+                <CourseShare
+                  courseName={course.name}
+                  courseUrl={getUriWithOrg(orgslug, `/course/${courseuuid}`)}
+                />
+              </div>
             </div>
 
             <div className="flex flex-col md:flex-row gap-8 pt-2">
@@ -348,7 +371,7 @@ const CourseClient = (props: any) => {
 
                     if (showVideo && course.thumbnail_video) {
                     return (
-                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[120px] md:h-[400px]">
+                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[120px] md:h-[400px] hidden md:block">
                         {course.thumbnail_type === 'both' && (
                           <div className="absolute top-3 right-3 z-10">
                             <div className="bg-black/20 backdrop-blur-sm rounded-lg p-1 flex space-x-1">
@@ -396,7 +419,7 @@ const CourseClient = (props: any) => {
                     );
                     } else if (showImage && course.thumbnail_image) {
                     return (
-                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[120px] md:h-[400px] bg-cover bg-center"
+                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[120px] md:h-[400px] bg-cover bg-center hidden md:block"
                         style={{
                           backgroundImage: `url(${getCourseThumbnailMediaDirectory(
                             org?.org_uuid,
@@ -447,7 +470,7 @@ const CourseClient = (props: any) => {
                     } else {
                     return (
                       <div
-                        className="inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl relative w-full h-[120px] md:h-[400px] bg-cover bg-center"
+                        className="inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl relative w-full h-[120px] md:h-[400px] bg-cover bg-center hidden md:block"
                         style={{
                           backgroundImage: `url('/empty_thumbnail.png')`,
                           backgroundSize: 'auto',
@@ -467,12 +490,14 @@ const CourseClient = (props: any) => {
                   );
                   return run;
                 })() && (
-                  <ActivityIndicators
-                    course_uuid={course.course_uuid}
-                    orgslug={orgslug}
-                    course={course}
-                    trailData={trailData}
-                  />
+                  <div className="hidden md:block">
+                    <ActivityIndicators
+                      course_uuid={course.course_uuid}
+                      orgslug={orgslug}
+                      course={course}
+                      trailData={trailData}
+                    />
+                  </div>
                 )}
 
                 <div className="course_metadata_left space-y-2 hidden md:block">
@@ -482,7 +507,7 @@ const CourseClient = (props: any) => {
                 </div>
               </div>
 
-              <div className='course_metadata_right w-full md:w-1/4 space-y-4'>
+              <div className='course_metadata_right w-full md:w-1/4 space-y-4 hidden md:block'>
                 {/* Actions Box */}
                 <CoursesActions courseuuid={courseuuid} orgslug={orgslug} course={course} trailData={trailData} />
                 
@@ -565,16 +590,16 @@ const CourseClient = (props: any) => {
                   <div className="relative flex flex-col items-center py-4">
                     {/* SVG curvy path */}
                     <svg
-                      className="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-full pointer-events-none z-0"
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-[140px] h-full pointer-events-none z-0"
                       viewBox="0 0 120 700"
                       preserveAspectRatio="none"
                     >
                       <path
-                        d="M 60 36 Q 120 80, 60 130 Q 0 180, 60 230 Q 120 280, 60 330 Q 0 380, 60 430 Q 120 480, 60 530 Q 0 580, 60 630"
+                        d="M 60 40 Q 120 90, 60 140 Q 0 190, 60 240 Q 120 290, 60 340 Q 0 390, 60 440 Q 120 490, 60 540 Q 0 590, 60 640"
                         fill="none"
                         stroke="var(--ordria-accent-border)"
-                        strokeWidth="4"
-                        strokeDasharray="8 6"
+                        strokeWidth="6"
+                        strokeDasharray="10 8"
                         strokeLinecap="round"
                       />
                     </svg>
@@ -598,22 +623,22 @@ const CourseClient = (props: any) => {
                       return (
                         <div
                           key={chapter.chapter_uuid || `chapter-${index}`}
-                          className="relative z-10 flex items-center gap-4 mb-12 last:mb-0 w-full max-w-md"
+                          className="relative z-10 flex flex-col md:flex-row items-center gap-4 mb-20 last:mb-0 w-full max-w-md"
                         >
                           {/* Circle */}
                           {isLocked ? (
                             <div className="flex-shrink-0" aria-disabled="true">
                               <div
-                                className={`w-[72px] h-[72px] max-md:w-[60px] max-md:h-[60px] rounded-full flex items-center justify-center text-2xl font-bold transition-all border-4 cursor-not-allowed
-                                  bg-[var(--ordria-surface)] border-[var(--ordria-border)] text-[var(--ordria-muted)]`}
+                                className="w-[80px] h-[80px] md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center text-2xl font-bold transition-transform border-4 cursor-not-allowed
+                                  bg-[var(--ordria-surface)] border-[var(--ordria-border)] text-[var(--ordria-muted)]"
                               >
                                 🔒
                               </div>
                             </div>
                           ) : (
-                            <Link href={chapterLink} className="flex-shrink-0 hover:scale-105 transition-transform" prefetch={false}>
+                            <Link href={chapterLink} className="flex-shrink-0 transition-transform hover:scale-110 active:scale-95" prefetch={false}>
                               <div
-                                className={`w-[72px] h-[72px] max-md:w-[60px] max-md:h-[60px] rounded-full flex items-center justify-center text-2xl font-bold transition-all border-4
+                                className={`w-[80px] h-[80px] md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center text-2xl font-bold transition-all border-4
                                   ${isChapterCompleted
                                     ? 'bg-[var(--ordria-accent)] border-[var(--ordria-accent-secondary)] text-white shadow-[0_4px_16px_rgba(24,200,224,0.3)]'
                                     : 'bg-[var(--ordria-accent)] border-[var(--ordria-accent-hover)] text-white duo-pulse'
@@ -625,7 +650,7 @@ const CourseClient = (props: any) => {
                           )}
 
                           {/* Label */}
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 text-center md:text-left">
                             <span className="text-xs font-mono text-[var(--ordria-muted)] uppercase tracking-wider">
                               Module {index + 1}
                             </span>
@@ -635,22 +660,22 @@ const CourseClient = (props: any) => {
                             >
                               {chapter.name}
                             </h3>
-                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <div className="flex items-center gap-2 mt-1 flex-wrap justify-center md:justify-start">
                               <span className="text-xs text-[var(--ordria-muted)]">
                                 {chapter.activities.length} {t('activities.activities')}
                               </span>
                               {isChapterCompleted && (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] font-semibold">
-                                  Terminé
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold border border-green-200">
+                                  ✓ Terminé
                                 </span>
                               )}
                               {isCurrent && (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] font-semibold">
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-600 font-semibold border border-green-200">
                                   En cours
                                 </span>
                               )}
                               {isLocked && (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--ordria-surface)] text-[var(--ordria-muted)] font-semibold">
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 font-semibold border border-gray-200">
                                   Verrouillé
                                 </span>
                               )}
@@ -672,8 +697,8 @@ const CourseClient = (props: any) => {
                                         className="flex items-center gap-2 p-2 rounded-lg opacity-60 cursor-not-allowed select-none"
                                         title={t('course.activity_locked_hint', 'Sign in or join the right user group to unlock this.')}
                                       >
-                                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 bg-gray-200 text-gray-400">
-                                          <Lock size={12} />
+                                        <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0 bg-gray-200 text-gray-400">
+                                          <Lock size={14} />
                                         </span>
                                         <span className="text-sm text-[var(--ordria-muted)] truncate">{activity.name}</span>
                                       </div>
@@ -689,7 +714,7 @@ const CourseClient = (props: any) => {
                                       onMouseEnter={() => handleActivityMouseEnter(activity)}
                                     >
                                       <span
-                                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0
                                           ${actCompleted ? 'bg-[var(--ordria-success)] text-white' : 'bg-[var(--ordria-surface)] text-[var(--ordria-muted)]'}`}
                                       >
                                         {actCompleted
@@ -779,8 +804,19 @@ const CourseClient = (props: any) => {
 
             {/* Community Section */}
             <Suspense fallback={<div className="animate-pulse h-48 bg-gray-100 rounded-lg mt-4" />}>
-              <CourseCommunitySection courseUuid={course.course_uuid} orgslug={orgslug} />
+              <div className="hidden md:block">
+                <CourseCommunitySection courseUuid={course.course_uuid} orgslug={orgslug} />
+              </div>
             </Suspense>
+
+            {/* Mobile: Creator info at the bottom */}
+            {course.authors?.[0] && (
+              <div className="md:hidden mt-8 mb-4 text-center">
+                <p className="text-xs text-[var(--ordria-muted)]">
+                  Créé par @{course.authors[0].user?.username || 'admin'}
+                </p>
+              </div>
+            )}
           </GeneralWrapperStyled>
 
           {/* Mobile Actions Box */}

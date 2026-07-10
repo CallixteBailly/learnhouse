@@ -196,7 +196,7 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
   return (
     <>
       {/* Bottom navigation (in-place) */}
-      <div ref={bottomNavRef} className="mt-6 mb-2 w-full">
+      <div ref={bottomNavRef} className="sticky bottom-0 bg-white border-t border-gray-200 p-3 z-50 md:relative md:border-0 md:bg-transparent md:p-0 md:z-auto mt-6 mb-2 w-full">
         <NavigationButtons isFloating={false} />
       </div>
       

@@ -491,6 +491,13 @@ function ActivityClient(props: ActivityClientProps) {
   const displayName = activity?.name ?? activityNameFromCourse
   const displayActivityType = allActivities[currentIndex]?.activity_type
 
+  const currentChapterIdx = course?.chapters?.findIndex((ch: any) =>
+    ch.activities.some((a: any) => a.id === activity?.id)
+  ) ?? -1
+  const totalChapters = course?.chapters?.length ?? 0
+  const completedActivityCount = trailData?.runs?.find((r: any) => r.course_uuid === course?.course_uuid)?.steps?.filter((s: any) => s.complete)?.length ?? 0
+  const totalActivityCount = allActivities.length
+
   if (activity?.is_locked) {
     const isAuthenticated = session?.status === 'authenticated'
     return (
@@ -792,7 +799,32 @@ function ActivityClient(props: ActivityClientProps) {
                   />
                 ) : (
                   <div className="space-y-4 pt-0 relative">
-                    <div className="pt-2 pb-3 sm:pb-6">
+                    {/* Mobile: sticky course info bar */}
+                    <div className="md:hidden sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-3 py-2 -mx-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <Link href={getUriWithOrg(orgslug, '') + `/course/${courseuuid}`} className="flex items-center gap-2 min-w-0">
+                          <ChevronLeft size={18} className="text-gray-600 shrink-0" />
+                          <span className="text-sm font-bold text-gray-800 truncate" style={{ fontFamily: 'var(--ordria-font-display)' }}>
+                            {course.name}
+                          </span>
+                        </Link>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-xs font-mono text-[var(--ordria-muted)]">
+                            {completedActivityCount}/{totalActivityCount}
+                          </span>
+                          {totalChapters > 0 && (
+                            <span className="text-xs font-semibold text-[var(--ordria-muted)]">
+                              Ch.{currentChapterIdx + 1}/{totalChapters}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="mt-1.5 duo-progress-bar" style={{ height: '4px' }}>
+                        <div className="duo-progress-fill" style={{ width: `${totalActivityCount > 0 ? (completedActivityCount / totalActivityCount) * 100 : 0}%` }}></div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 pb-3 sm:pb-6 hidden md:block">
                       <Breadcrumbs items={[
                         { label: t('courses.courses'), href: getUriWithOrg(orgslug, '/courses'), icon: <BookCopy size={14} /> },
                         { label: course.name, href: getUriWithOrg(orgslug, `/course/${courseuuid}`) },
@@ -802,7 +834,7 @@ function ActivityClient(props: ActivityClientProps) {
                     <div className="space-y-3 sm:space-y-4 activity-info-section relative" style={{ zIndex: 'var(--z-content)' }}>
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                           <div className="flex space-x-4 sm:space-x-6 items-center">
-                            <div className="flex shrink-0">
+                            <div className="flex shrink-0 hidden md:block">
                               <Link
                                 href={getUriWithOrg(orgslug, '') + `/course/${courseuuid}`}
                               >
@@ -820,7 +852,7 @@ function ActivityClient(props: ActivityClientProps) {
                                 />
                               </Link>
                             </div>
-                            <div className="flex flex-col -space-y-1">
+                            <div className="flex flex-col -space-y-1 hidden md:flex">
                               <p className="font-bold text-gray-700 text-xs sm:text-md">{t('search.course')} </p>
                               <h1 className="font-bold text-gray-950 text-lg sm:text-3xl first-letter:uppercase" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                                 {course.name}
@@ -841,14 +873,16 @@ function ActivityClient(props: ActivityClientProps) {
                           )}
                         </div>
 
-                        <ActivityIndicators
-                          course_uuid={courseuuid}
-                          current_activity={activityid}
-                          orgslug={orgslug}
-                          course={course}
-                          enableNavigation={true}
-                          trailData={trailData}
-                        />
+                        <div className="hidden md:block">
+                          <ActivityIndicators
+                            course_uuid={courseuuid}
+                            current_activity={activityid}
+                            orgslug={orgslug}
+                            course={course}
+                            enableNavigation={true}
+                            trailData={trailData}
+                          />
+                        </div>
 
                         {!isMobile && (
                         <div className="flex gap-1 bg-[var(--ordria-surface)] rounded-2xl p-1.5 mb-4">
@@ -868,7 +902,7 @@ function ActivityClient(props: ActivityClientProps) {
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-3">
                           <div className="flex flex-1 items-center space-x-3 min-w-0">
                             <div className="flex flex-col -space-y-1 min-w-0">
-                              <p className="font-bold text-gray-700 text-xs sm:text-md">
+                              <p className="font-bold text-gray-700 text-xs sm:text-md hidden md:block">
                                 {getChapterNameByActivityId(course, activity?.id) ?? chapterNameFromCourse}
                               </p>
                               <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 w-full">
@@ -876,20 +910,20 @@ function ActivityClient(props: ActivityClientProps) {
                                 {displayName}
                               </h1>
                               {activity && activity.activity_type === 'TYPE_VIDEO' && (
-                                <span className="duo-category-badge bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0">🎬 {t('activities.video')}</span>
+                                <span className="duo-category-badge bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0 hidden sm:inline-flex">🎬 {t('activities.video')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_DOCUMENT' && (
-                                <span className="duo-category-badge bg-amber-50 text-[var(--ordria-warning)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0">📝 {t('activities.document')}</span>
+                                <span className="duo-category-badge bg-amber-50 text-[var(--ordria-warning)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0 hidden sm:inline-flex">📝 {t('activities.document')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_ASSIGNMENT' && (
-                                <span className="duo-category-badge bg-green-50 text-[var(--ordria-success)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0">🎯 {t('activities.assignment')}</span>
+                                <span className="duo-category-badge bg-green-50 text-[var(--ordria-success)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0 hidden sm:inline-flex">🎯 {t('activities.assignment')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_DYNAMIC' && (
-                                <span className="duo-category-badge bg-purple-50 text-purple-600 shrink-0 self-start sm:self-auto mt-1 sm:mt-0">📄 {t('activities.page')}</span>
+                                <span className="duo-category-badge bg-purple-50 text-purple-600 shrink-0 self-start sm:self-auto mt-1 sm:mt-0 hidden sm:inline-flex">📄 {t('activities.page')}</span>
                               )}
                               </div>
                               {/* Authors and Dates Section */}
-                              <div className="flex flex-wrap items-center gap-3 mt-2">
+                              <div className="hidden md:flex flex-wrap items-center gap-3 mt-2">
                                 {/* Avatars */}
                                 {course.authors && course.authors.length > 0 && (
                                   <div className="flex -space-x-3">
@@ -1020,7 +1054,7 @@ function ActivityClient(props: ActivityClientProps) {
 
                               {/* Progress bar — activity position — Duolingo style */}
                               {allActivities.length > 0 && (
-                                <div className="mb-4">
+                                <div className="mb-4 hidden md:block">
                                   <div className="flex justify-between items-center mb-1.5">
                                     <span className="text-xs font-semibold text-[var(--ordria-muted)]">Étape {currentIndex + 1} sur {allActivities.length}</span>
                                     <span className="text-xs font-mono text-[var(--ordria-accent-secondary)]">{Math.round(((currentIndex + 1) / allActivities.length) * 100)}%</span>
@@ -1079,6 +1113,7 @@ function ActivityClient(props: ActivityClientProps) {
 
                       {/* Activity Actions below the content box */}
                       {activity && activity.published == true && activity.content.paid_access != false && (
+                        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-3 z-40 md:relative md:border-0 md:bg-transparent">
                         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mt-4 w-full gap-2 sm:gap-0">
                           <div className="order-1 sm:order-none">
                             <PreviousActivityButton
@@ -1103,6 +1138,7 @@ function ActivityClient(props: ActivityClientProps) {
                               orgslug={orgslug}
                             />
                           </div>
+                        </div>
                         </div>
                       )}
 
