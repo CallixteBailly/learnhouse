@@ -589,170 +589,126 @@ const CourseClient = (props: any) => {
                     </div>
                   </div>
 
-                  {/* Learning Path — Duolingo zigzag style */}
-                  <div className="relative w-full max-w-md mx-auto py-8">
-                    {/* SVG connecting paths between alternating positions */}
-                    <svg
-                      className="absolute inset-0 w-full h-full pointer-events-none z-0"
-                      viewBox="0 0 100 100"
-                      preserveAspectRatio="none"
-                    >
-                      {(course.chapters ?? []).map((_: any, i: number) => {
-                        if (i === (course.chapters ?? []).length - 1) return null;
-                        const x1 = i % 2 === 0 ? 15 : 85;
-                        const x2 = (i + 1) % 2 === 0 ? 15 : 85;
-                        const total = (course.chapters ?? []).length;
-                        const y1 = (i / total) * 100;
-                        const y2 = ((i + 1) / total) * 100;
-                        const midY = (y1 + y2) / 2;
-                        const chActs = (course.chapters ?? [])[i].activities || [];
-                        const isSegCompleted = chActs.length > 0 && chActs.every((a: any) => isActivityDone(a));
-                        return (
-                          <path
-                            key={i}
-                            d={`M ${x1} ${y1} Q 50 ${midY} ${x2} ${y2}`}
-                            fill="none"
-                            stroke={isSegCompleted ? '#58cc02' : '#b8c0d8'}
-                            strokeWidth="6"
-                            strokeDasharray={isSegCompleted ? 'none' : '10 8'}
-                            strokeLinecap="round"
-                            vectorEffect="non-scaling-stroke"
-                          />
-                        );
-                      })}
-                    </svg>
+                  {/* Learning Path — Duolingo zigzag with fixed-height nodes */}
+                  {(() => {
+                    const chapters = course.chapters ?? []
+                    const NODE_HEIGHT = 140 // fixed px per node so SVG aligns perfectly
+                    const CIRCLE_SIZE = 72
+                    const totalHeight = chapters.length * NODE_HEIGHT
 
-                    {/* Circles with zigzag positioning */}
-                    {(course.chapters ?? []).map((chapter: any, index: number) => {
-                      const chapterActivities = chapter.activities || []
-                      const isChapterCompleted = chapterActivities.length > 0 && chapterActivities.every((a: any) => isActivityDone(a))
-
-                      const firstNonCompletedIdx = (course.chapters ?? []).findIndex((ch: any) => {
-                        const chActs = ch.activities || []
-                        return !(chActs.length > 0 && chActs.every((a: any) => isActivityDone(a)))
-                      })
-                      const isCurrent = firstNonCompletedIdx === index && !isChapterCompleted
-                      const isLocked = !isChapterCompleted && !isCurrent
-
-                      const firstActivity = chapterActivities[0]
-                      const chapterLink = firstActivity
-                        ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`)
-                        : '#'
-
-                      return (
-                        <div
-                          key={chapter.chapter_uuid || `chapter-${index}`}
-                          className="relative z-10 flex flex-col items-center mb-16 last:mb-0"
-                          style={{ marginLeft: index % 2 === 0 ? '0' : 'auto', marginRight: index % 2 === 0 ? 'auto' : '0', width: 'fit-content' }}
+                    return (
+                      <div
+                        className="relative w-full max-w-sm mx-auto py-6"
+                        style={{ minHeight: `${totalHeight}px` }}
+                      >
+                        {/* SVG path — connects exact circle center positions */}
+                        <svg
+                          className="absolute top-0 left-0 w-full pointer-events-none z-0"
+                          style={{ height: `${totalHeight}px` }}
+                          preserveAspectRatio="none"
                         >
-                          {/* Circle — Duolingo 3D button style */}
-                          <div className="relative">
-                            {/* Shadow underneath for 3D effect */}
-                            <div className="absolute inset-0 rounded-full translate-y-1.5" style={{ background: isLocked ? '#d9d9d9' : 'rgba(0,0,0,0.15)' }} />
-                            {/* Main circle */}
-                            {isLocked ? (
+                          {chapters.map((chapter: any, i: number) => {
+                            if (i === chapters.length - 1) return null
+                            // Circle centers: even=left(30%), odd=right(70%)
+                            const x1 = i % 2 === 0 ? '30%' : '70%'
+                            const x2 = (i + 1) % 2 === 0 ? '30%' : '70%'
+                            // Y = center of each node (NODE_HEIGHT/2 + i*NODE_HEIGHT)
+                            const y1 = NODE_HEIGHT / 2 + i * NODE_HEIGHT
+                            const y2 = NODE_HEIGHT / 2 + (i + 1) * NODE_HEIGHT
+                            const midY = (y1 + y2) / 2
+
+                            const chActs = chapters[i].activities || []
+                            const isSegCompleted = chActs.length > 0 && chActs.every((a: any) => isActivityDone(a))
+
+                            return (
+                              <path
+                                key={i}
+                                d={`M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`}
+                                fill="none"
+                                stroke={isSegCompleted ? '#58cc02' : '#e5e5e5'}
+                                strokeWidth="5"
+                                strokeDasharray={isSegCompleted ? 'none' : '8 6'}
+                                strokeLinecap="round"
+                                vectorEffect="non-scaling-stroke"
+                              />
+                            )
+                          })}
+                        </svg>
+
+                        {/* Circles — each in a fixed-height container */}
+                        {chapters.map((chapter: any, index: number) => {
+                          const chapterActivities = chapter.activities || []
+                          const isChapterCompleted = chapterActivities.length > 0 && chapterActivities.every((a: any) => isActivityDone(a))
+
+                          const firstNonCompletedIdx = chapters.findIndex((ch: any) => {
+                            const chActs = ch.activities || []
+                            return !(chActs.length > 0 && chActs.every((a: any) => isActivityDone(a)))
+                          })
+                          const isCurrent = firstNonCompletedIdx === index && !isChapterCompleted
+                          const isLocked = !isChapterCompleted && !isCurrent
+
+                          const firstActivity = chapterActivities[0]
+                          const chapterLink = firstActivity
+                            ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`)
+                            : '#'
+
+                          return (
+                            <div
+                              key={chapter.chapter_uuid || `chapter-${index}`}
+                              className="relative z-10 flex items-center justify-center"
+                              style={{ height: `${NODE_HEIGHT}px` }}
+                            >
+                              {/* Circle + label container — alternates left/right */}
                               <div
-                                className="relative w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold transition-all border-4 cursor-not-allowed bg-[#e5e5e5] border-[#e5e5e5] text-[#afafaf] shadow-[0_4px_0_#d9d9d9]"
+                                className="flex items-center gap-3"
+                                style={{
+                                  alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
+                                  paddingLeft: index % 2 === 0 ? 'calc(30% - 36px)' : '0',
+                                  paddingRight: index % 2 !== 0 ? 'calc(30% - 36px)' : '0',
+                                }}
                               >
-                                🔒
-                              </div>
-                            ) : (
-                              <Link href={chapterLink} className="block" prefetch={false}>
-                                <div
-                                  className={`relative w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold transition-all border-4 active:translate-y-1
-                                    ${isChapterCompleted
-                                      ? 'bg-[#58cc02] border-[#58cc02] text-white shadow-[0_4px_0_#46a302]'
-                                      : 'bg-[#1cb0f6] border-[#1cb0f6] text-white shadow-[0_4px_0_#1899d6] duo-pulse'
-                                    }`}
-                                >
-                                  {isChapterCompleted ? '✓' : '★'}
-                                </div>
-                              </Link>
-                            )}
-                          </div>
-
-                          {/* Label below circle */}
-                          <div className="mt-3 text-center max-w-[200px]">
-                            <span className="text-xs font-bold uppercase tracking-wider text-[#777]">
-                              Module {index + 1}
-                            </span>
-                            <h3 className="font-bold text-base text-[#3c3c3c] mt-0.5" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                              {chapter.name}
-                            </h3>
-                            {/* Status badge */}
-                            <div className="mt-1">
-                              {isChapterCompleted && (
-                                <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-[#58cc02]/10 text-[#58cc02] border-2 border-[#58cc02]/20">
-                                  ✓ Terminé
-                                </span>
-                              )}
-                              {isCurrent && (
-                                <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-[#1cb0f6]/10 text-[#1cb0f6] border-2 border-[#1cb0f6]/20">
-                                  ▶ En cours
-                                </span>
-                              )}
-                              {isLocked && (
-                                <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-gray-100 text-[#afafaf] border-2 border-gray-200">
-                                  🔒 Verrouillé
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Activities list for current/completed modules */}
-                            {(isCurrent || isChapterCompleted) && chapterActivities.length > 0 && (
-                              <div className="mt-3 space-y-1.5 text-left">
-                                {chapterActivities.map((activity: any, actIdx: number) => {
-                                  const activityCleanUuid = activity.activity_uuid?.replace('activity_', '')
-                                  const actCompleted = isActivityDone(activity)
-                                  const actLocked = !!activity.is_locked
-                                  const activityLink = getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${activityCleanUuid}`)
-
-                                  if (actLocked) {
-                                    return (
-                                      <div
-                                        key={actIdx}
-                                        className="flex items-center gap-2 p-2 rounded-lg opacity-60 cursor-not-allowed select-none"
-                                        title={t('course.activity_locked_hint', 'Sign in or join the right user group to unlock this.')}
-                                      >
-                                        <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0 bg-gray-200 text-gray-400">
-                                          <Lock size={14} />
-                                        </span>
-                                        <span className="text-sm text-[#777] truncate">{activity.name}</span>
-                                      </div>
-                                    )
-                                  }
-
-                                  return (
-                                    <Link
-                                      key={actIdx}
-                                      href={activityLink}
-                                      prefetch={false}
-                                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                      onMouseEnter={() => handleActivityMouseEnter(activity)}
+                                {/* Circle */}
+                                {isLocked ? (
+                                  <div
+                                    className="flex-shrink-0 rounded-full flex items-center justify-center text-2xl cursor-not-allowed bg-[#e5e5e5] text-[#afafaf]"
+                                    style={{ width: `${CIRCLE_SIZE}px`, height: `${CIRCLE_SIZE}px`, boxShadow: '0 4px 0 #d9d9d9' }}
+                                  >
+                                    🔒
+                                  </div>
+                                ) : (
+                                  <Link href={chapterLink} prefetch={false} className="block flex-shrink-0">
+                                    <div
+                                      className={`rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1
+                                        ${isChapterCompleted
+                                          ? 'bg-[#58cc02] text-white'
+                                          : 'bg-[#1cb0f6] text-white duo-pulse'
+                                        }`}
+                                      style={{ width: `${CIRCLE_SIZE}px`, height: `${CIRCLE_SIZE}px`, boxShadow: `0 4px 0 ${isChapterCompleted ? '#46a302' : '#1899d6'}` }}
                                     >
-                                      <span
-                                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0
-                                          ${actCompleted ? 'bg-[#58cc02] text-white' : 'bg-gray-100 text-[#777]'}`}
-                                      >
-                                        {actCompleted
-                                          ? '✓'
-                                          : activity.activity_type === 'TYPE_VIDEO'
-                                            ? '🎬'
-                                            : activity.activity_type === 'TYPE_ASSIGNMENT'
-                                              ? '🎯'
-                                              : '📄'}
-                                      </span>
-                                      <span className="text-sm text-[#3c3c3c] truncate">{activity.name}</span>
-                                    </Link>
-                                  )
-                                })}
+                                      {isChapterCompleted ? '✓' : '▶'}
+                                    </div>
+                                  </Link>
+                                )}
+
+                                {/* Title only — no duplicate "Module N", no badges, no activities */}
+                                <div className="min-w-0 max-w-[160px]">
+                                  <h3
+                                    className="font-bold text-sm text-[#3c3c3c] truncate"
+                                    style={{ fontFamily: 'Nunito, sans-serif' }}
+                                  >
+                                    {chapter.name}
+                                  </h3>
+                                  <span className="text-xs text-[#afafaf]">
+                                    {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
+                                  </span>
+                                </div>
                               </div>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )
+                  })()}
                 </div>
 
                 {/* Sidebar (desktop only) */}
