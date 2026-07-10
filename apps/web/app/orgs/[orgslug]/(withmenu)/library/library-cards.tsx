@@ -13,6 +13,7 @@ import { folderTone } from '@components/Dashboard/Library/LibraryToolbar'
 import { shareFolderLink } from '@components/Dashboard/Library/shareFolder'
 import { resourceHref, safeExternalUrl } from '@components/Dashboard/Library/resourceLink'
 import MediaPreview from '@components/Dashboard/Library/MediaPreview'
+import { useTrail } from '@/hooks/queries/useTrail'
 import {
   FolderSimple,
   GraduationCap,
@@ -68,10 +69,28 @@ const CARD = 'group relative bg-gradient-to-br from-[var(--ordria-accent-bg)] to
 export function FolderCard({ folder, orgslug }: { folder: any; orgslug: string }) {
   const { t } = useTranslation()
   const org = useOrg() as any
+  const { data: trailData } = useTrail(org?.id)
   const count = folder.total_items ?? ((folder.items?.length || 0) + (folder.subfolders?.length || 0))
   const thumb = folder.thumbnail_image
     ? getFolderThumbnailMediaDirectory(org?.org_uuid, folder.folder_uuid, folder.thumbnail_image)
     : null
+
+  const folderProgress = (() => {
+    if (!trailData?.runs || !folder.items) return 0
+    const courseItems = folder.items.filter((item: any) => item.resource_type === 'courses')
+    if (courseItems.length === 0) return 0
+    let totalProgress = 0
+    for (const item of courseItems) {
+      const courseUuid = item.resource?.course_uuid?.replace('course_', '')
+      const run = trailData.runs.find((r: any) => r.course?.course_uuid?.replace('course_', '') === courseUuid)
+      if (run && run.steps?.length > 0) {
+        const completed = run.steps.filter((s: any) => s.complete).length
+        totalProgress += Math.round((completed / run.steps.length) * 100)
+      }
+    }
+    return Math.round(totalProgress / courseItems.length)
+  })()
+
   return (
     <Link href={getUriWithOrg(orgslug, `/library/folder/${removeFolderPrefix(folder.folder_uuid)}`)} className={CARD}>
       <button
@@ -94,9 +113,19 @@ export function FolderCard({ folder, orgslug }: { folder: any; orgslug: string }
             <FolderSimple size={22} weight="fill" />
           </div>
         )}
-        <div className="flex flex-col min-w-0">
+        <div className="flex flex-col min-w-0 flex-1">
           <h3 className="text-[15px] font-bold text-gray-900 truncate leading-tight" style={{ fontFamily: 'var(--font-display, Sora)' }}>{folder.name}</h3>
-          <span className="text-xs text-gray-400">{count} {t('library.items')}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">{count} {t('library.items')}</span>
+            {folderProgress > 0 && (
+              <span className="text-[10px] font-bold" style={{ color: 'var(--ordria-accent-secondary)' }}>{folderProgress}%</span>
+            )}
+          </div>
+          {folderProgress > 0 && (
+            <div className="duo-progress-bar mt-1" style={{ height: '4px' }}>
+              <div className="duo-progress-fill" style={{ width: `${folderProgress}%` }}></div>
+            </div>
+          )}
         </div>
       </div>
     </Link>

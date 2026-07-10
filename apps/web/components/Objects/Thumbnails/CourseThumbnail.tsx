@@ -2,12 +2,13 @@
 import { useOrg } from '@components/Contexts/OrgContext'
 import AuthenticatedClientElement from '@components/Security/AuthenticatedClientElement'
 import ConfirmationModal from '@components/Objects/StyledElements/ConfirmationModal/ConfirmationModal'
-import Modal from '@components/Objects/StyledElements/Modal/Modal'
+import Modal from '@components/Objects/StyledElements/Modal'
 import ManageAccessPopover from '@components/Dashboard/Library/ManageAccessPopover'
 import { getUriWithOrg } from '@services/config/config'
 import { deleteCourseFromBackend, cloneCourse } from '@services/courses/courses'
 import { exportCourse, downloadBlob, ExportStatus } from '@services/courses/transfer'
 import { exportToast } from '@components/Objects/StyledElements/Toast/ExportToast'
+import { useTrail } from '@/hooks/queries/useTrail'
 import { getCourseThumbnailMediaDirectory, getUserAvatarMediaDirectory } from '@services/media/media'
 import { useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
@@ -69,8 +70,20 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
   const session = useLHSession() as any
   const queryClient = useQueryClient()
   const { track } = useLHAnalytics('learner')
+  const { data: trailData } = useTrail(org?.id)
 
   const cleanUuid = removeCoursePrefix(course.course_uuid)
+
+  const courseProgress = (() => {
+    if (!trailData?.runs) return 0
+    const run = trailData.runs.find((r: any) => {
+      const runUuid = r.course?.course_uuid?.replace('course_', '')
+      return runUuid === cleanUuid
+    })
+    if (!run || !run.steps?.length) return 0
+    const completed = run.steps.filter((s: any) => s.complete).length
+    return run.steps.length > 0 ? Math.round((completed / run.steps.length) * 100) : 0
+  })()
 
   const handleCardOpen = () => {
     track(AnalyticsEvent.CourseCardOpened, {
@@ -251,8 +264,11 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
         )}
 
         <div className="duo-progress-bar mt-2">
-          <div className="duo-progress-fill" style={{ width: '0%' }}></div>
+          <div className="duo-progress-fill" style={{ width: `${courseProgress}%` }}></div>
         </div>
+        {courseProgress > 0 && (
+          <span className="text-[10px] font-bold mt-1" style={{ color: 'var(--ordria-accent-secondary)' }}>{courseProgress}%</span>
+        )}
 
         <div className="pt-1.5 flex items-center gap-2 border-t border-[var(--ordria-border)]">
           {displayedAuthors.length > 0 && (
