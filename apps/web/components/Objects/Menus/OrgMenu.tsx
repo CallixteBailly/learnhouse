@@ -152,9 +152,10 @@ export const OrgMenu = (props: any) => {
         style={{ top: 12 + topOffset }}
       >
         <div
-          className="flex items-center justify-between h-14 px-4 sm:px-5 rounded-2xl backdrop-blur-xl border border-white/10"
+          className="flex items-center justify-between h-14 px-4 sm:px-5 rounded-2xl backdrop-blur-xl border border-white/10 text-white"
           style={{
-            backgroundColor: primaryColor ? `${primaryColor}cc` : 'oklch(0.23 0.06 264 / 0.82)',
+            backgroundColor: primaryColor ? `${primaryColor}cc` : 'oklch(0.23 0.06 264 / 0.9)',
+            backgroundImage: 'radial-gradient(70% 60% at 50% 0%, oklch(0.8 0.13 213 / 0.18), transparent 60%)',
             boxShadow: '0 8px 32px -8px oklch(0 0 0 / 0.35), 0 2px 8px -2px oklch(0 0 0 / 0.15)',
           }}
         >
