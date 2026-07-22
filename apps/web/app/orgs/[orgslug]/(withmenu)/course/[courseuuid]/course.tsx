@@ -357,6 +357,18 @@ const CourseClient = (props: any) => {
             {/* Mobile: title only (sticky Commencer button added at bottom) */}
             <h1 className="md:hidden text-xl font-bold truncate mb-3" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>{course.name}</h1>
 
+            {/* Mobile: compact 16:9 thumbnail (video plays in the activity, a static image is enough on mobile) */}
+            <div className="md:hidden">
+              <img
+                src={course.thumbnail_image
+                  ? getCourseThumbnailMediaDirectory(org?.org_uuid, course?.course_uuid, course?.thumbnail_image)
+                  : '/empty_thumbnail.png'}
+                alt={course.name}
+                className="block w-full aspect-video rounded-lg object-cover ring-1 ring-inset ring-black/10 shadow-lg bg-[var(--ordria-surface)]"
+                fetchPriority="high"
+              />
+            </div>
+
             <div className="flex flex-col md:flex-row gap-8 pt-2">
               <div className="w-full md:w-3/4 space-y-4">
                 {(() => {
