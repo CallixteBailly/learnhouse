@@ -488,7 +488,7 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
               {/* Certificate preview as navy card with gold border */}
               <div className="max-w-md mx-auto p-6 rounded-2xl border-4 border-amber-400" style={{ background: 'var(--ordria-foreground)' }}>
                 <p className="text-center text-amber-300 text-sm font-semibold uppercase tracking-wider mb-2">{t('certificate.certificate', 'Certificat de Réussite')}</p>
-                <p className="text-center text-white/70 text-sm mb-1">{t('certificate.certifies_that', 'OrdIA Learning certifie que')}</p>
+                <p className="text-center text-white/70 text-sm mb-1">{t('certificate.certifies_that', 'Ordria Learning certifie que')}</p>
                 <p className="text-center text-white text-lg font-bold mb-2">{session?.data?.user?.full_name || session?.data?.user?.name || ''}</p>
                 <p className="text-center text-white/70 text-sm">{t('certificate.has_completed', 'a complété le cours')}</p>
                 <p className="text-center text-amber-300 text-sm font-semibold mt-1">{courseName}</p>

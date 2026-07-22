@@ -38,19 +38,21 @@ export function isLightColor(hex: string): boolean {
  */
 export function getMenuColorClasses(primaryColor: string) {
   if (!primaryColor) {
+    // Thème par défaut — Bleu Nuit Ordria (aligné sur ordria.pages.dev)
+    // Header sombre + textes blanc cassé + accents cyan Éclat
     return {
-      text: 'text-gray-700',
-      textMuted: 'text-gray-500',
-      hoverBg: 'hover:bg-gray-100',
-      iconBtn: 'hover:bg-gray-100 text-gray-600',
+      text: 'text-white/90',
+      textMuted: 'text-white/60',
+      hoverBg: 'hover:bg-white/10',
+      iconBtn: 'hover:bg-white/10 text-white/70',
       searchBg:
-        'bg-white text-black placeholder:text-black/40 focus:ring-black/5 focus:border-black/20 nice-shadow',
+        'bg-white/10 text-white placeholder:text-white/50 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[oklch(0.80_0.13_213/0.4)] backdrop-blur-sm',
       searchIcon:
-        'text-black/40 group-focus-within:text-black/60',
-      signUpBtn: 'bg-black text-white hover:bg-gray-800',
-      profileHover: 'hover:bg-gray-50',
-      profileName: 'text-gray-900',
-      profileMuted: 'text-gray-500',
+        'text-white/40 group-focus-within:text-white/70',
+      signUpBtn: 'bg-[var(--ordria-accent)] text-[var(--ordria-nuit)] hover:bg-[var(--ordria-accent-hover)]',
+      profileHover: 'hover:bg-white/10',
+      profileName: 'text-white',
+      profileMuted: 'text-white/60',
       logoFilter: 'none',
     }
   }

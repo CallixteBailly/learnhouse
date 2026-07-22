@@ -101,7 +101,7 @@ function ForgotPasswordClient({ org }: ForgotPasswordClientProps) {
                         </div>
                         <button
                             onClick={() => setShowMessage(false)}
-                            className="p-1 rounded-lg hover:bg-black/5 transition-colors shrink-0 opacity-60 hover:opacity-100"
+                            className="p-1 rounded-lg hover:bg-[var(--ordria-surface)] transition-colors shrink-0 opacity-60 hover:opacity-100"
                         >
                             <X size={16} />
                         </button>
@@ -111,15 +111,15 @@ function ForgotPasswordClient({ org }: ForgotPasswordClientProps) {
                 <div className="flex-1 flex items-center justify-center px-6 md:px-12 lg:px-20">
                     <div className="w-full max-w-[420px] py-10">
                         {/* Header */}
-                        <h1 className="text-[28px] md:text-[32px] font-black text-black tracking-tight leading-tight">{t('auth.forgot_password_title')}</h1>
-                        <p className="mt-2 text-black/45 text-[15px] font-medium">{t('auth.forgot_password_description')}</p>
+                        <h1 className="text-[28px] md:text-[32px] font-black text-[var(--ordria-foreground)] tracking-tight leading-tight" style={{ fontFamily: "var(--ordria-font-display, Sora)" }}>{t('auth.forgot_password_title')}</h1>
+                        <p className="mt-2 text-[var(--ordria-muted)] text-[15px] font-medium">{t('auth.forgot_password_description')}</p>
 
                         {/* Form */}
                         <div className="mt-8">
                             <FormLayout onSubmit={formik.handleSubmit}>
                                 <FormField name="email">
                                     <div className="flex items-center space-x-2 mb-1.5">
-                                        <Form.Label className="grow text-[13px] font-semibold text-black/70">{t('auth.email')}</Form.Label>
+                                        <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">{t('auth.email')}</Form.Label>
                                         {formik.errors.email && (
                                             <div className="text-red-500 text-xs flex items-center space-x-1">
                                                 <Info size={11} />
@@ -133,7 +133,7 @@ function ForgotPasswordClient({ org }: ForgotPasswordClientProps) {
                                             value={formik.values.email}
                                             type="email"
                                             required
-                                            className="box-border w-full bg-neutral-50 text-black rounded-lg px-4 border border-neutral-200 inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-neutral-400 transition-all placeholder:text-black/25 text-sm"
+                                            className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 border border-[var(--ordria-border)] inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all placeholder:text-[var(--ordria-muted)] text-sm"
                                         />
                                     </Form.Control>
                                 </FormField>
@@ -147,7 +147,7 @@ function ForgotPasswordClient({ org }: ForgotPasswordClientProps) {
                                 <Form.Submit asChild>
                                     <button
                                         disabled={isSubmitting || (turnstileRequired && !turnstileToken)}
-                                        className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-black hover:bg-black/85 text-white px-[15px] font-bold text-[14px] leading-none mt-2 transition-all disabled:opacity-50"
+                                        className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-[var(--ordria-accent)] hover:bg-[var(--ordria-accent-hover)] text-[var(--ordria-nuit)] px-[15px] font-bold text-[14px] leading-none mt-2 transition-all disabled:opacity-50"
                                     >
                                         {isSubmitting ? (
                                             <span className="flex items-center space-x-2">
@@ -163,8 +163,8 @@ function ForgotPasswordClient({ org }: ForgotPasswordClientProps) {
                         </div>
 
                         {/* Back to Login */}
-                        <p className="text-center text-sm text-black/35 mt-6">
-                            <Link href="/login" className="inline-flex items-center gap-2 text-black font-semibold hover:underline">
+                        <p className="text-center text-sm text-[var(--ordria-muted)] mt-6">
+                            <Link href="/login" className="inline-flex items-center gap-2 text-[var(--ordria-foreground)] font-semibold hover:underline">
                                 <ArrowLeft size={16} />
                                 {t('auth.back_to_login')}
                             </Link>

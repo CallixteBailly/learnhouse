@@ -43,6 +43,7 @@ function MarkdownActivity({ activity, editable = false, style }: MarkdownActivit
   const session = useLHSession() as any
   const access_token = session?.data?.tokens?.access_token
   const markdownUrl = activity.content?.markdown_url || ''
+  const inlineMarkdown = activity.content?.markdown || ''
 
   const [markdown, setMarkdown] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -54,6 +55,12 @@ function MarkdownActivity({ activity, editable = false, style }: MarkdownActivit
 
   const fetchMarkdown = useCallback(async (url: string) => {
     if (!url) {
+      // If no URL but inline markdown exists, use it directly
+      if (inlineMarkdown) {
+        setMarkdown(inlineMarkdown)
+        setLoading(false)
+        return
+      }
       setError('No markdown URL configured')
       setLoading(false)
       return
@@ -73,7 +80,7 @@ function MarkdownActivity({ activity, editable = false, style }: MarkdownActivit
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [inlineMarkdown])
 
   useEffect(() => {
     fetchMarkdown(markdownUrl)

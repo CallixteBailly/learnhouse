@@ -83,6 +83,7 @@ import useAdminStatus from '@components/Hooks/useAdminStatus'
 import { useLHAnalytics, AnalyticsEvent } from '@services/analytics'
 import OnboardingSidebarBox from '@components/Dashboard/Onboarding/OnboardingSidebarBox'
 import { useOnboarding } from '@components/Hooks/useOnboarding'
+import Logo from '@components/Objects/Brand/Logo'
 
 // Scattered night-sky starfield for the free-plan upgrade box. Fixed positions
 // (top/left %) so the constellation is stable across renders; `north` is the
@@ -260,10 +261,11 @@ function DashLeftMenu() {
               className="h-9 w-9 object-contain rounded-lg"
             />
           ) : (
-            <img
-              src="/lrn-dash.svg"
-              alt="Learnhouse logo"
-              className="h-8 w-8"
+            <Logo
+              variant={isCollapsed ? 'mark' : 'lockup'}
+              size="sm"
+              animated
+              ariaLabel="Ordria Learning"
             />
           )}
           {!isCollapsed && (

@@ -281,7 +281,7 @@ function ActivityClient(props: ActivityClientProps) {
   const _queryClient = useQueryClient()
 
   // Fetch trail data — shares cache key with course page trail query
-  const { data: trailData } = useTrail(org?.id)
+  const { data: trailData, refetch: refetchTrail } = useTrail(org?.id)
 
   // Memoize activity position calculation
   const { allActivities, currentIndex } = useActivityPosition(course, activityid);
@@ -387,9 +387,8 @@ function ActivityClient(props: ActivityClientProps) {
       const saved = localStorage.getItem('globalFocusMode');
       if (saved !== null) {
         setIsFocusMode(saved === 'true');
-      } else if (isMobile) {
-        setIsFocusMode(true);
       }
+      // Mobile now uses the same normal mode as desktop — no forced focus mode
     }
   }, [isMobile]);
 

@@ -43,6 +43,7 @@ import { cn } from '@/lib/utils'
 import { usePlan } from '@components/Hooks/usePlan'
 import { FeedbackModal } from '@components/Objects/Modals/FeedbackModal'
 import { useCommandPalette } from '@components/Dashboard/CommandPalette/CommandPaletteContext'
+import Logo from '@components/Objects/Brand/Logo'
 
 function DashMobileMenu() {
   const org = useOrg() as any
@@ -97,16 +98,17 @@ function DashMobileMenu() {
           className="flex items-center gap-0.5 px-1.5 py-1.5 bg-white/95 backdrop-blur-xl rounded-full border-2 border-[#e5e5e5]"
           style={{ boxShadow: '0 4px 0 #e5e5e5' }}
         >
-          {/* LearnHouse logo — links to home */}
+          {/* Ordria Learning logo — links to home */}
           <Link
             href="/dash"
             className="flex items-center justify-center px-2.5 py-2.5 rounded-full transition-all duration-200"
             aria-label="Home"
           >
-            <img
-              src="/lrn-dash.svg"
-              alt="LearnHouse"
-              className="h-[18px] w-[18px] opacity-70 hover:opacity-100 transition-opacity"
+            <Logo
+              variant="mark"
+              size={20}
+              ariaLabel="Ordria Learning"
+              className="opacity-70 hover:opacity-100 transition-opacity"
             />
           </Link>
           {/* Progressive reveal — more icons as viewport widens */}
@@ -199,7 +201,7 @@ function DashMobileMenu() {
                   />
                 ) : (
                   <div className="h-7 w-7 flex items-center justify-center bg-[#f7f7f7] rounded-lg">
-                    <img src="/lrn-dash.svg" alt="LearnHouse" className="h-4 w-4" />
+                    <Logo variant="mark" size={16} ariaLabel="Ordria Learning" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">

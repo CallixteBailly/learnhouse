@@ -93,8 +93,8 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
       {activity && (
         <>
           {activity.activity_sub_type === 'SUBTYPE_VIDEO_HOSTED' && (
-            <div className={`my-0 sm:my-3 md:my-5 w-full ${isLandscape ? 'fixed inset-0 z-[100] bg-black flex items-center justify-center' : ''}`}>
-              <div className={`${isLandscape ? 'w-full h-full' : 'relative w-full aspect-video sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none'}`}>
+            <div className={`my-0 sm:my-3 md:my-5 w-full overflow-hidden ${isLandscape ? 'fixed inset-0 z-[var(--z-overlay)] bg-black flex items-center justify-center' : ''}`}>
+              <div className={`${isLandscape ? 'w-full h-full' : 'relative w-full aspect-video max-h-[60vh] sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none'}`}>
                 {(() => {
                   const { src, isHls } = getVideoSource()
                   const thumbnails = isHls
@@ -134,8 +134,8 @@ function VideoActivity({ activity, course, orgUuid }: VideoActivityProps) {
             </div>
           )}
           {activity.activity_sub_type === 'SUBTYPE_VIDEO_YOUTUBE' && (
-            <div className={`my-0 sm:my-3 md:my-5 w-full ${isLandscape ? 'fixed inset-0 z-[100] bg-black flex items-center justify-center' : ''}`}>
-              <div className={`${isLandscape ? 'w-full h-full' : 'relative w-full aspect-video sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none'}`}>
+            <div className={`my-0 sm:my-3 md:my-5 w-full overflow-hidden ${isLandscape ? 'fixed inset-0 z-[var(--z-overlay)] bg-black flex items-center justify-center' : ''}`}>
+              <div className={`${isLandscape ? 'w-full h-full' : 'relative w-full aspect-video max-h-[60vh] sm:rounded-2xl overflow-hidden ring-0 sm:ring-1 sm:ring-gray-200/10 sm:dark:ring-gray-700/20 shadow-none'}`}>
                 <YouTube
                   className="w-full h-full"
                   opts={{

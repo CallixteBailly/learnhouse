@@ -12,6 +12,7 @@ import { useLHSession } from '@components/Contexts/LHSessionContext'
 import { getUserAvatarMediaDirectory } from '@services/media/media'
 import Link from 'next/link'
 import React from 'react'
+import Logo from '@components/Objects/Brand/Logo'
 
 function AdminTopMenu() {
   const session = useLHSession() as any
@@ -40,7 +41,7 @@ function AdminTopMenu() {
       >
         {/* Logo */}
         <Link className="flex items-center gap-2 transition-opacity hover:opacity-70 shrink-0" href="/admin">
-          <img src="/lrn-dash.svg" alt="Learnhouse logo" className="h-7 w-7" />
+          <Logo variant="mark" size="sm" ariaLabel="Ordria Learning" />
           <span className="font-semibold text-sm text-white">Admin</span>
           <span className="text-[9px] font-medium uppercase tracking-wider text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded">
             Superadmin

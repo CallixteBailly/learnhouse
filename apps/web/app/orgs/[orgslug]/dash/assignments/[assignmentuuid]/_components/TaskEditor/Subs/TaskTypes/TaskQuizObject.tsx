@@ -5,7 +5,7 @@ import { useLHSession } from '@components/Contexts/LHSessionContext';
 import AssignmentBoxUI from '@components/Objects/Activities/Assignment/AssignmentBoxUI';
 import { getAssignmentTask, getAssignmentTaskSubmissionsUser, handleAssignmentTaskSubmission, updateAssignmentTask } from '@services/courses/assignments';
 import { Check, Info, Minus, Plus, PlusCircle, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
@@ -226,6 +226,33 @@ function TaskQuizObject({ view, assignmentTaskUUID, user_id }: TaskQuizObjectPro
         const hasChanges = JSON.stringify(initialUserSubmissions.submissions) !== JSON.stringify(userSubmissions.submissions);
         setShowSavingDisclaimer(hasChanges);
     }, [userSubmissions, initialUserSubmissions.submissions]);
+
+    // Auto-submit : dès que toutes les questions ont au moins une réponse cochée,
+    // on soumet automatiquement (sans attendre le clic sur Submit).
+    // Évite la friction du bouton manuel pour les quizzes simples.
+    const hasAutoSubmitted = useRef(false);
+    useEffect(() => {
+        if (view !== 'student') return;
+        if (hasAutoSubmitted.current) return;
+        if (questions.length === 0) return;
+        if (submissionIsGraded) return;
+
+        // Chaque question doit avoir au moins une option `answer: true`
+        const allAnswered = questions.every(q => {
+            return userSubmissions.submissions.some(
+                s => s.questionUUID === q.questionUUID && s.answer === true
+            );
+        });
+
+        if (allAnswered) {
+            hasAutoSubmitted.current = true;
+            // Petit délai pour que setUserSubmissions soit bien propagé
+            const t = setTimeout(() => {
+                submitFC();
+            }, 300);
+            return () => clearTimeout(t);
+        }
+    }, [userSubmissions, questions, view, submissionIsGraded]);
 
 
 

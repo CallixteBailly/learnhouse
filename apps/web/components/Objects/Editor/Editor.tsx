@@ -78,6 +78,7 @@ import {
   hasEditorContentChanged,
   shouldGuardNavigationClick,
 } from './unsavedChangesGuard'
+import Logo from '@components/Objects/Brand/Logo'
 
 interface ConflictInfo {
   hasConflict: boolean
@@ -693,13 +694,7 @@ const EditorLearnHouseLogo = () => {
         animate={animation.animate}
         transition={animation.transition}
       >
-        <Image
-          src="/lrn.svg"
-          alt="LearnHouse"
-          width={14}
-          height={14}
-          className="invert"
-        />
+        <Logo variant="mark" size={25} ariaLabel="Ordria Learning" />
       </motion.div>
     </div>
   )

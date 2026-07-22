@@ -13,8 +13,8 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { getPlatformUrl } from '@services/config/config'
 
-const TERMS_URL = getPlatformUrl('/terms') || 'https://www.learnhouse.io/terms'
-const PRIVACY_URL = getPlatformUrl('/privacy') || 'https://www.learnhouse.io/privacy'
+const TERMS_URL = getPlatformUrl('/terms') || 'https://ordria.fr/terms'
+const PRIVACY_URL = getPlatformUrl('/privacy') || 'https://ordria.fr/privacy'
 
 export function AuthFooter({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
@@ -62,7 +62,7 @@ export function CopyrightFooter({
     <footer className={`w-full py-6 px-6 ${className}`}>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-x-5 gap-y-2 text-[13px] font-medium">
         <p className={base}>
-          {t('common.copyright', { defaultValue: '© {{year}} OrdIA Learning', year })}
+          {t('common.copyright', { defaultValue: '© {{year}} Ordria Learning', year })}
         </p>
         <nav className="flex items-center gap-x-5">
           <Link

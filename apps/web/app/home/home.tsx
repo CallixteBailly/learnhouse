@@ -38,6 +38,7 @@ import {
   DialogFooter,
 } from '@components/ui/dialog'
 import { AVAILABLE_LANGUAGES } from '@/lib/languages'
+import Logo from '@components/Objects/Brand/Logo'
 
 function HomeClient() {
   const { t, i18n } = useTranslation()
@@ -71,15 +72,15 @@ function HomeClient() {
   }, [isAuthenticated, orgs, router])
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#fff] overflow-y-auto">
+    <div className="fixed inset-0 z-[100] bg-[var(--ordria-background)] overflow-y-auto">
       <div className="relative min-h-screen">
         <div
           className="absolute inset-0 pointer-events-none z-0"
           style={{
             backgroundImage: `
-              radial-gradient(circle at 20% 20%, rgba(88,204,2,0.06) 0%, transparent 40%),
-              radial-gradient(circle at 80% 60%, rgba(28,176,246,0.06) 0%, transparent 40%),
-              radial-gradient(circle at 50% 90%, rgba(206,130,255,0.05) 0%, transparent 40%),
+              radial-gradient(circle at 20% 20%, oklch(0.80 0.13 213 / 0.08) 0%, transparent 40%),
+              radial-gradient(circle at 80% 60%, oklch(0.55 0.20 263 / 0.08) 0%, transparent 40%),
+              radial-gradient(circle at 50% 90%, oklch(0.65 0.20 300 / 0.05) 0%, transparent 40%),
             `,
           }}
         />
@@ -88,17 +89,11 @@ function HomeClient() {
           <div className="w-full max-w-md flex flex-col items-center">
             <div className="flex flex-col items-center mb-10">
               { }
-              <img
-                src="/lrn.svg"
-                alt="LearnHouse"
-                width={56}
-                height={56}
-                className="opacity-90 duo-bounce"
-              />
-              <h1 className="mt-6 font-black tracking-tight text-3xl text-[#3c3c3c] text-center" style={{ fontFamily: 'var(--font-display, Nunito)' }}>
+              <Logo variant="mark" size={56} animated className="duo-bounce opacity-90" ariaLabel="Ordria Learning" />
+              <h1 className="mt-6 font-black tracking-tight text-3xl text-[var(--ordria-foreground)] text-center" style={{ fontFamily: 'var(--ordria-font-display, Sora)' }}>
                 {t('common.your_organizations')}
               </h1>
-              <p className="mt-2 text-sm text-[#afafaf] text-center font-semibold">
+              <p className="mt-2 text-sm text-[var(--ordria-muted)] text-center font-semibold">
                 {t('common.choose_an_organization_to_continue', {
                   defaultValue: 'Choose an organization to continue',
                 })}
@@ -106,14 +101,14 @@ function HomeClient() {
             </div>
 
             {isAuthenticated && (
-              <div className="w-full mb-6 flex items-center justify-between bg-white rounded-2xl border-2 border-[#e5e5e5] px-4 py-3" style={{ boxShadow: '0 4px 0 #e5e5e5' }}>
+              <div className="w-full mb-6 flex items-center justify-between bg-white rounded-2xl border-2 border-[var(--ordria-border)] px-4 py-3" style={{ boxShadow: '0 4px 0 var(--ordria-border)' }}>
                 <div className="flex items-center gap-3 min-w-0">
                   <UserAvatar border="border-2" rounded="rounded-full" width={36} />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-bold text-[#3c3c3c] truncate capitalize">
+                    <span className="text-sm font-bold text-[var(--ordria-foreground)] truncate capitalize">
                       {session?.data?.user?.first_name} {session?.data?.user?.last_name}
                     </span>
-                    <span className="text-xs text-[#afafaf] truncate font-semibold">
+                    <span className="text-xs text-[var(--ordria-muted)] truncate font-semibold">
                       {session?.data?.user?.email}
                     </span>
                   </div>
@@ -122,7 +117,7 @@ function HomeClient() {
                   <DropdownMenuTrigger asChild>
                     <button
                       aria-label={t('common.settings')}
-                      className="p-2 rounded-lg text-[#afafaf] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-colors"
+                      className="p-2 rounded-lg text-[var(--ordria-muted)] hover:text-[var(--ordria-foreground)] hover:bg-[var(--ordria-surface)] transition-colors"
                     >
                       <Settings size={16} />
                     </button>
@@ -133,7 +128,7 @@ function HomeClient() {
                         <p className="text-sm font-bold">
                           {session?.data?.user?.first_name} {session?.data?.user?.last_name}
                         </p>
-                        <p className="text-xs text-[#afafaf] font-semibold">{session?.data?.user?.email}</p>
+                        <p className="text-xs text-[var(--ordria-muted)] font-semibold">{session?.data?.user?.email}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -162,7 +157,7 @@ function HomeClient() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => signOut({ redirect: true, callbackUrl: '/login' })}
-                      className="flex items-center space-x-2 text-[#ff4b4b] focus:text-[#ff4b4b]"
+                      className="flex items-center space-x-2 text-[var(--ordria-error)] focus:text-[var(--ordria-error)]"
                     >
                       <LogOut size={16} />
                       <span>{t('user.sign_out')}</span>
@@ -178,7 +173,7 @@ function HomeClient() {
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
-                      className="h-[72px] w-full rounded-2xl bg-[#f7f7f7] animate-pulse"
+                      className="h-[72px] w-full rounded-2xl bg-[var(--ordria-surface)] animate-pulse"
                     />
                   ))}
                 </>
@@ -195,9 +190,9 @@ function HomeClient() {
               )}
 
               {isAuthenticated && orgs && orgs.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-14 px-6 bg-white rounded-2xl border-2 border-dashed border-[#e5e5e5]">
-                  <TentTree className="text-[#afafaf]" size={64} />
-                  <p className="mt-4 text-sm font-bold text-[#777] text-center">
+                <div className="flex flex-col items-center justify-center py-14 px-6 bg-white rounded-2xl border-2 border-dashed border-[var(--ordria-border)]">
+                  <TentTree className="text-[var(--ordria-muted)]" size={64} />
+                  <p className="mt-4 text-sm font-bold text-[var(--ordria-muted)] text-center">
                     {t('common.no_orgs_message')}
                   </p>
                 </div>
@@ -225,15 +220,15 @@ function HomeClient() {
                 href={platformUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-10 flex items-center gap-1.5 text-[11px] text-[#afafaf] hover:text-[#3c3c3c] transition-colors font-semibold"
+                className="mt-10 flex items-center gap-1.5 text-[11px] text-[var(--ordria-muted)] hover:text-[var(--ordria-foreground)] transition-colors font-semibold"
               >
                 <span>{t('common.powered_by', { defaultValue: 'Powered by' })}</span>
-                <span className="font-extrabold tracking-tight text-[#777]">LearnHouse</span>
+                <span className="font-extrabold tracking-tight text-[var(--ordria-muted)]">Ordria Learning</span>
               </a>
             ) : (
-              <div className="mt-10 flex items-center gap-1.5 text-[11px] text-[#afafaf] font-semibold">
+              <div className="mt-10 flex items-center gap-1.5 text-[11px] text-[var(--ordria-muted)] font-semibold">
                 <span>{t('common.powered_by', { defaultValue: 'Powered by' })}</span>
-                <span className="font-extrabold tracking-tight text-[#777]">LearnHouse</span>
+                <span className="font-extrabold tracking-tight text-[var(--ordria-muted)]">Ordria Learning</span>
               </div>
             )}
             <CopyrightFooter year={new Date().getFullYear()} className="mt-4 pt-0" />
@@ -304,7 +299,7 @@ function OrgRow({ org, access_token }: { org: any; access_token: string }) {
   }
 
   return (
-    <div className="relative flex items-center p-4 bg-white rounded-2xl border-2 border-[#e5e5e5] hover:border-[var(--ordria-accent)] transition-all group duo-card-hover" style={{ boxShadow: '0 4px 0 #e5e5e5' }}>
+    <div className="relative flex items-center p-4 bg-white rounded-2xl border-2 border-[var(--ordria-border)] hover:border-[var(--ordria-accent)] transition-all group duo-card-hover" style={{ boxShadow: '0 4px 0 var(--ordria-border)' }}>
       <Link
         href={getUriWithOrg(org.slug, '/')}
         className="flex items-center flex-1 min-w-0"
@@ -314,28 +309,28 @@ function OrgRow({ org, access_token }: { org: any; access_token: string }) {
           <img
             src={getOrgLogoMediaDirectory(org.org_uuid, org.logo_image)}
             alt={org.name}
-            className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border-2 border-[#f7f7f7]"
+            className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border-2 border-[var(--ordria-surface)]"
           />
         ) : (
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#e5f9d8] to-[#ddf4ff] flex items-center justify-center text-[var(--ordria-accent)] font-black text-xl flex-shrink-0 border-2 border-[#e5e5e5]">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--ordria-accent-bg)] to-[var(--ordria-surface)] flex items-center justify-center text-[var(--ordria-accent)] font-black text-xl flex-shrink-0 border-2 border-[var(--ordria-border)]">
             {initial}
           </div>
         )}
 
         <div className="ml-3 flex-1 min-w-0">
-          <div className="font-bold text-[#3c3c3c] tracking-tight truncate">
+          <div className="font-bold text-[var(--ordria-foreground)] tracking-tight truncate">
             {org.name}
           </div>
           {org.description ? (
-            <p className="text-xs text-[#afafaf] truncate mt-0.5 font-semibold">{org.description}</p>
+            <p className="text-xs text-[var(--ordria-muted)] truncate mt-0.5 font-semibold">{org.description}</p>
           ) : (
-            <p className="text-xs text-[#afafaf] truncate mt-0.5 font-semibold">{org.slug}</p>
+            <p className="text-xs text-[var(--ordria-muted)] truncate mt-0.5 font-semibold">{org.slug}</p>
           )}
         </div>
 
         <ChevronRight
           size={20}
-          className="ml-3 text-[#afafaf] group-hover:text-[var(--ordria-accent)] group-hover:translate-x-0.5 transition-all flex-shrink-0"
+          className="ml-3 text-[var(--ordria-muted)] group-hover:text-[var(--ordria-accent)] group-hover:translate-x-0.5 transition-all flex-shrink-0"
         />
       </Link>
 

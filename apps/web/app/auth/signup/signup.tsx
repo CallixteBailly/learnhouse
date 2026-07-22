@@ -64,7 +64,7 @@ function SignUpClient(props: SignUpClientProps) {
     <AuthLayout
       org={props.org}
       welcomeText={t('auth.invited_to_join')}
-      title={t('auth.image_title_signup', { defaultValue: 'Formez avec OrdIA Learning.' })}
+      title={t('auth.image_title_signup', { defaultValue: 'Formez avec Ordria Learning.' })}
       subtitle={t('auth.image_subtitle_signup', {
         defaultValue: 'Create your account and launch your first course in minutes.',
       })}
@@ -73,7 +73,7 @@ function SignUpClient(props: SignUpClientProps) {
         // Don't flash the open/invite signup form while the session is still
         // resolving — a logged-in user would otherwise briefly see it.
         <div className="flex-1 flex items-center justify-center px-6 md:px-12 lg:px-20">
-          <Loader2 size={22} className="animate-spin text-black/30" />
+          <Loader2 size={22} className="animate-spin text-[var(--ordria-muted)]" />
         </div>
       )}
       {session.status !== 'loading' && joinMethod == 'open' &&
@@ -83,7 +83,7 @@ function SignUpClient(props: SignUpClientProps) {
           ) : (
             // Signed in on the org-less apex — the effect above redirects to /home.
             <div className="flex-1 flex items-center justify-center px-6 md:px-12 lg:px-20">
-              <Loader2 size={22} className="animate-spin text-black/30" />
+              <Loader2 size={22} className="animate-spin text-[var(--ordria-muted)]" />
             </div>
           )
         ) : (
@@ -176,7 +176,7 @@ const LoggedInJoinScreen = ({ inviteCode, org }: JoinScreenProps) => {
           </div>
           <button
             onClick={() => setShowMessage(false)}
-            className="p-1 rounded-lg hover:bg-black/5 transition-colors shrink-0 opacity-60 hover:opacity-100"
+            className="p-1 rounded-lg hover:bg-[var(--ordria-surface)] transition-colors shrink-0 opacity-60 hover:opacity-100"
           >
             <X size={18} />
           </button>
@@ -186,8 +186,8 @@ const LoggedInJoinScreen = ({ inviteCode, org }: JoinScreenProps) => {
       <div className="flex-1 flex items-center justify-center px-6 md:px-12 lg:px-20">
         <div className="w-full max-w-[420px] py-10">
           {/* Header */}
-          <h1 className="text-[28px] md:text-[32px] font-black text-black tracking-tight leading-tight">{t('auth.join_organization')}</h1>
-          <p className="mt-2 text-black/45 text-[15px] font-medium">{t('auth.join_organization_desc')}</p>
+          <h1 className="text-[28px] md:text-[32px] font-black text-[var(--ordria-foreground)] tracking-tight leading-tight" style={{ fontFamily: "var(--ordria-font-display, Sora)" }}>{t('auth.join_organization')}</h1>
+          <p className="mt-2 text-[var(--ordria-muted)] text-[15px] font-medium">{t('auth.join_organization_desc')}</p>
 
           {/* Join Card */}
           <div className="mt-8 flex flex-col items-center gap-6">
@@ -195,15 +195,15 @@ const LoggedInJoinScreen = ({ inviteCode, org }: JoinScreenProps) => {
             <div className="flex items-center gap-3">
               <UserAvatar rounded="rounded-xl" border="border-2" width={48} />
               <div>
-                <p className="font-semibold text-black">{session.data?.user?.first_name} {session.data?.user?.last_name}</p>
-                <p className="text-sm text-black/45">@{session.data?.user?.username}</p>
+                <p className="font-semibold text-[var(--ordria-foreground)]">{session.data?.user?.first_name} {session.data?.user?.last_name}</p>
+                <p className="text-sm text-[var(--ordria-muted)]">@{session.data?.user?.username}</p>
               </div>
             </div>
 
             {/* Organization Info */}
-            <div className="w-full text-center py-4 bg-neutral-50 rounded-lg border border-neutral-200">
-              <p className="text-sm text-black/45 mb-1">{t('auth.joining')}</p>
-              <p className="font-semibold text-black text-lg">{activeOrg?.name}</p>
+            <div className="w-full text-center py-4 bg-[var(--ordria-surface)] rounded-lg border border-[var(--ordria-border)]">
+              <p className="text-sm text-[var(--ordria-muted)] mb-1">{t('auth.joining')}</p>
+              <p className="font-semibold text-[var(--ordria-foreground)] text-lg">{activeOrg?.name}</p>
             </div>
 
             {/* Join Button or Verification Warning */}
@@ -217,7 +217,7 @@ const LoggedInJoinScreen = ({ inviteCode, org }: JoinScreenProps) => {
               <button
                 onClick={join}
                 disabled={isSubmitting}
-                className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-black hover:bg-black/85 text-white px-[15px] font-bold text-[14px] leading-none transition-all disabled:opacity-50 gap-2"
+                className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-[var(--ordria-accent)] hover:bg-[var(--ordria-accent-hover)] text-[var(--ordria-nuit)] px-[15px] font-bold text-[14px] leading-none transition-all disabled:opacity-50 gap-2"
               >
                 {isSubmitting ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -309,7 +309,7 @@ const NoTokenScreen = ({ org }: NoTokenScreenProps) => {
           </div>
           <button
             onClick={() => setShowMessage(false)}
-            className="p-1 rounded-lg hover:bg-black/5 transition-colors shrink-0 opacity-60 hover:opacity-100"
+            className="p-1 rounded-lg hover:bg-[var(--ordria-surface)] transition-colors shrink-0 opacity-60 hover:opacity-100"
           >
             <X size={18} />
           </button>
@@ -319,15 +319,15 @@ const NoTokenScreen = ({ org }: NoTokenScreenProps) => {
       <div className="flex-1 flex items-center justify-center px-6 md:px-12 lg:px-20">
         <div className="w-full max-w-[420px] py-10">
           {/* Header */}
-          <h1 className="text-[28px] md:text-[32px] font-black text-black tracking-tight leading-tight">{t('auth.invite_required')}</h1>
-          <p className="mt-2 text-black/45 text-[15px] font-medium">{t('auth.invite_required_desc', { org: activeOrg?.name })}</p>
+          <h1 className="text-[28px] md:text-[32px] font-black text-[var(--ordria-foreground)] tracking-tight leading-tight" style={{ fontFamily: "var(--ordria-font-display, Sora)" }}>{t('auth.invite_required')}</h1>
+          <p className="mt-2 text-[var(--ordria-muted)] text-[15px] font-medium">{t('auth.invite_required_desc', { org: activeOrg?.name })}</p>
 
           {/* Invite Code Form */}
           <div className="mt-8">
             <FormLayout onSubmit={validateCode}>
               <FormField name="invite_code">
                 <div className="flex items-center space-x-2 mb-1.5">
-                  <Form.Label className="grow text-[13px] font-semibold text-black/70">{t('auth.invite_code')}</Form.Label>
+                  <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">{t('auth.invite_code')}</Form.Label>
                 </div>
                 <Form.Control asChild>
                   <input
@@ -336,7 +336,7 @@ const NoTokenScreen = ({ org }: NoTokenScreenProps) => {
                     type="text"
                     placeholder={t('auth.enter_invite_code')}
                     required
-                    className="box-border w-full bg-neutral-50 text-black rounded-lg px-4 border border-neutral-200 inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-neutral-400 transition-all placeholder:text-black/25 text-sm"
+                    className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 border border-[var(--ordria-border)] inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all placeholder:text-[var(--ordria-muted)] text-sm"
                   />
                 </Form.Control>
               </FormField>
@@ -344,7 +344,7 @@ const NoTokenScreen = ({ org }: NoTokenScreenProps) => {
               <Form.Submit asChild>
                 <button
                   disabled={isSubmitting || !inviteCode.trim()}
-                  className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-black hover:bg-black/85 text-white px-[15px] font-bold text-[14px] leading-none mt-2 transition-all disabled:opacity-50 gap-2"
+                  className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-[var(--ordria-accent)] hover:bg-[var(--ordria-accent-hover)] text-[var(--ordria-nuit)] px-[15px] font-bold text-[14px] leading-none mt-2 transition-all disabled:opacity-50 gap-2"
                 >
                   {isSubmitting ? (
                     <Loader2 size={18} className="animate-spin" />

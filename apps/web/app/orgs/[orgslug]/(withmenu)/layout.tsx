@@ -7,6 +7,7 @@ import { OrgMenu } from '@components/Objects/Menus/OrgMenu'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { OrgJoinBanner, OrgJoinBannerProvider } from '@components/Objects/Banners/OrgJoinBanner'
 import { PodcastPlayerProvider } from '@components/Contexts/PodcastPlayerContext'
+import Logo from '@components/Objects/Brand/Logo'
 import dynamic from 'next/dynamic'
 const PodcastPlayer = dynamic(() => import('@components/Objects/Podcasts/PodcastPlayer'), { ssr: false })
 import Image from 'next/image'
@@ -38,18 +39,8 @@ function OrgFooter() {
       <div className="flex flex-col items-center justify-center space-y-3 sm:space-y-4 text-center">
         {footerText && <p className="text-xs sm:text-sm text-gray-500">{footerText}</p>}
         {showWatermark && (
-          <Link href="https://ordria.fr" target="_blank" rel="noopener noreferrer">
-            <span
-              style={{
-                fontFamily: 'Nunito, system-ui, sans-serif',
-                fontWeight: 800,
-                fontSize: '13px',
-                color: 'var(--muted-foreground)',
-              }}
-              className="opacity-40 hover:opacity-70 transition-opacity duration-300"
-            >
-              OrdIA Learning
-            </span>
+          <Link href="https://ordria.fr" target="_blank" rel="noopener noreferrer" className="opacity-50 hover:opacity-80 transition-opacity duration-300">
+            <Logo variant="lockup" size="sm" suffix="Learning" ariaLabel="Ordria Learning" />
           </Link>
         )}
       </div>

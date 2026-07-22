@@ -144,8 +144,8 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
   return (
     <div className="w-full max-w-[420px] py-10">
       {/* Header */}
-      <h1 className="text-[28px] md:text-[32px] font-black text-black tracking-tight leading-tight">{t('auth.create_account')}</h1>
-      <p className="mt-2 text-black/45 text-[15px] font-medium">{t('auth.fill_in_details')}</p>
+      <h1 className="text-[28px] md:text-[32px] font-black text-[var(--ordria-foreground)] tracking-tight leading-tight" style={{ fontFamily: "var(--ordria-font-display, Sora)" }}>{t('auth.create_account')}</h1>
+      <p className="mt-2 text-[var(--ordria-muted)] text-[15px] font-medium">{t('auth.fill_in_details')}</p>
 
       <div className="mt-8">
         {/* Error/Success Messages */}
@@ -216,7 +216,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
         <FormLayout onSubmit={formik.handleSubmit}>
           <FormField name="email">
             <div className="flex items-center space-x-2 mb-1.5">
-              <Form.Label className="grow text-[13px] font-semibold text-black/70">{t('auth.email')}</Form.Label>
+              <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">{t('auth.email')}</Form.Label>
               {formik.touched.email && formik.errors.email && (
                 <span className="text-red-500 text-xs flex items-center space-x-1">
                   <Info size={11} />
@@ -231,7 +231,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
                 value={formik.values.email}
                 type="email"
                 required
-                className="box-border w-full bg-neutral-50 text-black rounded-lg px-4 border border-neutral-200 inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-neutral-400 transition-all placeholder:text-black/25 text-sm"
+                className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 border border-[var(--ordria-border)] inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all placeholder:text-[var(--ordria-muted)] text-sm"
               />
             </Form.Control>
           </FormField>
@@ -239,7 +239,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
           <div className="flex flex-row space-x-2">
             <FormField name="first_name">
               <div className="flex items-center space-x-2 mb-1.5">
-                <Form.Label className="grow text-[13px] font-semibold text-black/70">{t('user.first_name')}</Form.Label>
+                <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">{t('user.first_name')}</Form.Label>
                 {formik.touched.first_name && formik.errors.first_name && (
                   <span className="text-red-500 text-xs flex items-center space-x-1">
                     <Info size={11} />
@@ -253,13 +253,13 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
                   onBlur={formik.handleBlur}
                   value={formik.values.first_name}
                   type="text"
-                  className="box-border w-full bg-neutral-50 text-black rounded-lg px-4 border border-neutral-200 inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-neutral-400 transition-all placeholder:text-black/25 text-sm"
+                  className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 border border-[var(--ordria-border)] inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all placeholder:text-[var(--ordria-muted)] text-sm"
                 />
               </Form.Control>
             </FormField>
             <FormField name="last_name">
               <div className="flex items-center space-x-2 mb-1.5">
-                <Form.Label className="grow text-[13px] font-semibold text-black/70">{t('user.last_name')}</Form.Label>
+                <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">{t('user.last_name')}</Form.Label>
                 {formik.touched.last_name && formik.errors.last_name && (
                   <span className="text-red-500 text-xs flex items-center space-x-1">
                     <Info size={11} />
@@ -273,7 +273,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
                   onBlur={formik.handleBlur}
                   value={formik.values.last_name}
                   type="text"
-                  className="box-border w-full bg-neutral-50 text-black rounded-lg px-4 border border-neutral-200 inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-neutral-400 transition-all placeholder:text-black/25 text-sm"
+                  className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 border border-[var(--ordria-border)] inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all placeholder:text-[var(--ordria-muted)] text-sm"
                 />
               </Form.Control>
             </FormField>
@@ -281,7 +281,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
 
           <FormField name="password">
             <div className="flex items-center space-x-2 mb-1.5">
-              <Form.Label className="grow text-[13px] font-semibold text-black/70">{t('auth.password')}</Form.Label>
+              <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">{t('auth.password')}</Form.Label>
               {formik.touched.password && formik.errors.password && (
                 <span className="text-red-500 text-xs flex items-center space-x-1">
                   <Info size={11} />
@@ -297,7 +297,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="box-border w-full bg-neutral-50 text-black rounded-lg px-4 border border-neutral-200 inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-neutral-400 transition-all placeholder:text-black/25 text-sm"
+                className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 border border-[var(--ordria-border)] inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all placeholder:text-[var(--ordria-muted)] text-sm"
               />
             </Form.Control>
             <PasswordStrengthIndicator password={formik.values.password} />
@@ -305,7 +305,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
 
           <FormField name="username">
             <div className="flex items-center space-x-2 mb-1.5">
-              <Form.Label className="grow text-[13px] font-semibold text-black/70">{t('user.username')}</Form.Label>
+              <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">{t('user.username')}</Form.Label>
               {formik.touched.username && formik.errors.username && (
                 <span className="text-red-500 text-xs flex items-center space-x-1">
                   <Info size={11} />
@@ -320,14 +320,14 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
                 value={formik.values.username}
                 type="text"
                 required
-                className="box-border w-full bg-neutral-50 text-black rounded-lg px-4 border border-neutral-200 inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-neutral-400 transition-all placeholder:text-black/25 text-sm"
+                className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 border border-[var(--ordria-border)] inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all placeholder:text-[var(--ordria-muted)] text-sm"
               />
             </Form.Control>
           </FormField>
 
           <FormField name="bio">
             <div className="flex items-center space-x-2 mb-1.5">
-              <Form.Label className="grow text-[13px] font-semibold text-black/70">{`${t('user.bio')} (${t('common.optional')})`}</Form.Label>
+              <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">{`${t('user.bio')} (${t('common.optional')})`}</Form.Label>
             </div>
             <Form.Control asChild>
               <textarea
@@ -335,7 +335,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
                 onBlur={formik.handleBlur}
                 value={formik.values.bio}
                 placeholder={t('user.bio_placeholder')}
-                className="box-border w-full bg-neutral-50 text-black rounded-lg px-4 py-3 border border-neutral-200 appearance-none focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-neutral-400 transition-all placeholder:text-black/25 text-sm resize-none min-h-[80px]"
+                className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 py-3 border border-[var(--ordria-border)] appearance-none focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all placeholder:text-[var(--ordria-muted)] text-sm resize-none min-h-[80px]"
               />
             </Form.Control>
           </FormField>
@@ -349,7 +349,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
           <Form.Submit asChild>
             <button
               disabled={isSubmitting || !!message || (turnstileRequired && !formik.values.turnstileToken)}
-              className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-black hover:bg-black/85 text-white px-[15px] font-bold text-[14px] leading-none mt-2 transition-all disabled:opacity-50"
+              className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-[var(--ordria-accent)] hover:bg-[var(--ordria-accent-hover)] text-[var(--ordria-nuit)] px-[15px] font-bold text-[14px] leading-none mt-2 transition-all disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span className="flex items-center space-x-2">
@@ -366,10 +366,10 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
         {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-neutral-200" />
+            <div className="w-full border-t border-[var(--ordria-border)]" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 text-black/30 bg-white text-xs font-medium">{t('common.or')}</span>
+            <span className="px-3 text-[var(--ordria-muted)] bg-white text-xs font-medium">{t('common.or')}</span>
           </div>
         </div>
 
@@ -377,16 +377,16 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
         <button
           onClick={handleGoogleSignIn}
           disabled={isSubmitting}
-          className="flex justify-center items-center w-full bg-white hover:bg-neutral-50 text-black space-x-3 font-medium p-3 rounded-lg border border-neutral-200 transition-all text-sm disabled:opacity-50"
+          className="flex justify-center items-center w-full bg-white hover:bg-[var(--ordria-surface)] text-[var(--ordria-foreground)] space-x-3 font-medium p-3 rounded-lg border border-[var(--ordria-border)] transition-all text-sm disabled:opacity-50"
         >
           <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="" className="w-4 h-4" />
           <span>{t('auth.sign_in_with_google')}</span>
         </button>
 
         {/* Login Link */}
-        <p className="text-center text-sm text-black/35 mt-6">
+        <p className="text-center text-sm text-[var(--ordria-muted)] mt-6">
           {t('auth.already_have_account')}{' '}
-          <Link href="/login" className="text-black font-semibold hover:underline">
+          <Link href="/login" className="text-[var(--ordria-foreground)] font-semibold hover:underline">
             {t('auth.login')}
           </Link>
         </p>

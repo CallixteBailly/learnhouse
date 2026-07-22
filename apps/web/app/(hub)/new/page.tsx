@@ -67,6 +67,7 @@ import {
 import { fetchPrices } from '../billing/_lib/billingClient'
 import PricingCards from './_components/PricingCards'
 import PlanSummaryCard from './_components/PlanSummaryCard'
+import Logo from '@components/Objects/Brand/Logo'
 
 // ── Constants ───────────────────────────────────────────────────────────────
 
@@ -969,7 +970,7 @@ export default function CreateNewOrgPage() {
             <div className="flex justify-center">
               <Link href="/home">
                 { }
-                <img src="/lrn.svg" alt="LearnHouse" width={40} height={40} className="opacity-90" />
+                <Logo variant="mark" size="sm" ariaLabel="Ordria Learning" className="opacity-90" />
               </Link>
             </div>
             <div className="flex justify-end">

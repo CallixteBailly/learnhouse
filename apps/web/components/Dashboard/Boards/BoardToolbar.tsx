@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
   Cursor,
   Hand,
@@ -27,6 +26,7 @@ import * as Popover from '@radix-ui/react-popover'
 import { cn } from '@/lib/utils'
 import type { Editor } from '@tiptap/core'
 import ToolTip from '@components/Objects/StyledElements/Tooltip/Tooltip'
+import Logo from '@components/Objects/Brand/Logo'
 
 type ToolMode = 'select' | 'pan' | 'draw' | 'card' | 'youtube' | 'playground' | 'activity' | 'embed' | 'webpage' | 'sticker' | 'frame' | 'note' | 'todo' | 'podcast'
 
@@ -92,13 +92,7 @@ export default function BoardToolbar({
       {/* Logo */}
       <Link href="/dash/boards">
         <div className="bg-black rounded-md w-[25px] h-[25px] flex items-center justify-center hover:opacity-80 transition-opacity">
-          <Image
-            src="/lrn.svg"
-            alt="LearnHouse"
-            width={14}
-            height={14}
-            className="invert"
-          />
+          <Logo variant="mark" size="sm" ariaLabel="Ordria Learning" />
         </div>
       </Link>
 

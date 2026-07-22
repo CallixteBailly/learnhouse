@@ -118,7 +118,7 @@ function VerifyEmailClient({ org }: VerifyEmailClientProps) {
                         </div>
                         <button
                             onClick={() => setShowMessage(false)}
-                            className="p-1 rounded-lg hover:bg-black/5 transition-colors shrink-0 opacity-60 hover:opacity-100"
+                            className="p-1 rounded-lg hover:bg-[var(--ordria-surface)] transition-colors shrink-0 opacity-60 hover:opacity-100"
                         >
                             <X size={18} />
                         </button>
@@ -128,13 +128,13 @@ function VerifyEmailClient({ org }: VerifyEmailClientProps) {
                 <div className="flex-1 flex items-center justify-center px-6 md:px-12 lg:px-20">
                     <div className="w-full max-w-[420px] py-10">
                         {/* Header */}
-                        <h1 className="text-[28px] md:text-[32px] font-black text-black tracking-tight leading-tight text-center">{t('auth.verify_email_title')}</h1>
+                        <h1 className="text-[28px] md:text-[32px] font-black text-[var(--ordria-foreground)] tracking-tight leading-tight text-center">{t('auth.verify_email_title')}</h1>
 
                         {/* Loading State */}
                         {isVerifying && (
                             <div className="mt-8 flex flex-col items-center gap-4">
-                                <Loader2 className="h-12 w-12 animate-spin text-black/40" />
-                                <p className="text-black/45 text-sm font-medium">{t('auth.verifying_email')}</p>
+                                <Loader2 className="h-12 w-12 animate-spin text-[var(--ordria-muted)]" />
+                                <p className="text-[var(--ordria-muted)] text-sm font-medium">{t('auth.verifying_email')}</p>
                             </div>
                         )}
 
@@ -148,12 +148,12 @@ function VerifyEmailClient({ org }: VerifyEmailClientProps) {
                                         <p className="text-sm font-medium mt-0.5">{error}</p>
                                     </div>
                                 </div>
-                                <p className="text-sm text-black/45 text-center font-medium">
+                                <p className="text-sm text-[var(--ordria-muted)] text-center font-medium">
                                     {t('auth.verification_trouble')}
                                 </p>
                                 <Link
                                     href="/login"
-                                    className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-black hover:bg-black/85 text-white px-[15px] font-bold text-[14px] leading-none transition-all"
+                                    className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-[var(--ordria-accent)] hover:bg-[var(--ordria-accent-hover)] text-[var(--ordria-nuit)] px-[15px] font-bold text-[14px] leading-none transition-all"
                                 >
                                     {t('auth.back_to_login')}
                                 </Link>
@@ -168,13 +168,13 @@ function VerifyEmailClient({ org }: VerifyEmailClientProps) {
                                         <CheckCircle className="h-8 w-8 text-green-500" />
                                     </div>
                                     <div>
-                                        <h2 className="font-bold text-lg text-black">{t('auth.email_verified_success')}</h2>
-                                        <p className="text-sm text-black/45 font-medium mt-1">{t('auth.email_verified_message')}</p>
+                                        <h2 className="font-bold text-lg text-[var(--ordria-foreground)]">{t('auth.email_verified_success')}</h2>
+                                        <p className="text-sm text-[var(--ordria-muted)] font-medium mt-1">{t('auth.email_verified_message')}</p>
                                     </div>
                                 </div>
                                 <Link
                                     href="/home"
-                                    className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-black hover:bg-black/85 text-white px-[15px] font-bold text-[14px] leading-none transition-all"
+                                    className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-[var(--ordria-accent)] hover:bg-[var(--ordria-accent-hover)] text-[var(--ordria-nuit)] px-[15px] font-bold text-[14px] leading-none transition-all"
                                 >
                                     {t('auth.continue_to_dashboard', { defaultValue: 'Continue to your dashboard' })}
                                 </Link>
