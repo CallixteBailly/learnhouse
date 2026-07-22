@@ -28,6 +28,50 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useLHAnalytics, AnalyticsEvent } from '@services/analytics'
 
+/** Photos Unsplash de fallback quand un cours n'a pas de thumbnail.
+ *  Détection par métier + pool aléatoire déterministe (stable par UUID). */
+const METIER_PHOTOS: { keys: string[]; photo: string; label: string }[] = [
+  { keys: ['restaurant', 'restaurat'], photo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80', label: 'Restaurant' },
+  { keys: ['coiffeur', 'barbier', 'salon'], photo: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80', label: 'Coiffure' },
+  { keys: ['garagist', 'auto', 'mécan'], photo: 'https://images.unsplash.com/photo-1632823471565-1ecdf5c6da77?auto=format&fit=crop&w=800&q=80', label: 'Garage' },
+  { keys: ['artisan', 'btp', 'construct'], photo: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80', label: 'Artisan' },
+  { keys: ['immobilier', 'agent'], photo: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80', label: 'Immobilier' },
+  { keys: ['digital', 'transformation'], photo: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80', label: 'Digital' },
+  { keys: ['marketing', 'communication'], photo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80', label: 'Marketing' },
+  { keys: ['ia', 'intelligence', 'automatisation'], photo: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80', label: 'IA' },
+]
+
+const FALLBACK_POOL = [
+  'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80',
+]
+
+function getFallbackImage(course: any): string {
+  const name = (course?.name || '').toLowerCase()
+  const tags = Array.isArray(course?.tags) ? course.tags.join(' ').toLowerCase() : (course?.tags || '').toLowerCase()
+  const haystack = `${name} ${tags}`
+  for (const m of METIER_PHOTOS) {
+    if (m.keys.some((k) => haystack.includes(k))) return m.photo
+  }
+  const uuid = course?.course_uuid || course?.name || ''
+  const idx = uuid.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % FALLBACK_POOL.length
+  return FALLBACK_POOL[idx]
+}
+
+function getCourseCategoryLabel(course: any): string {
+  const name = (course?.name || '').toLowerCase()
+  const tags = Array.isArray(course?.tags) ? course.tags.join(' ').toLowerCase() : (course?.tags || '').toLowerCase()
+  const haystack = `${name} ${tags}`
+  for (const m of METIER_PHOTOS) {
+    if (m.keys.some((k) => haystack.includes(k))) return m.label
+  }
+  return ''
+}
+
 type Course = {
   course_uuid: string
   name: string
@@ -164,20 +208,11 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
 
   const thumbnailImage = course.thumbnail_image
     ? getCourseThumbnailMediaDirectory(org?.org_uuid, course.course_uuid, course.thumbnail_image)
-    : '/empty_thumbnail.png'
+    : getFallbackImage(course)
 
   const courseLink = customLink ? customLink : getUriWithOrg(orgslug, `/course/${removeCoursePrefix(course.course_uuid)}`)
 
-  const categoryEmoji = (() => {
-    const name = (course.name || '').toLowerCase();
-    const tags = course.tags || [];
-    if (name.includes('coiffeur') || tags.includes('coiffeur')) return '✂️';
-    if (name.includes('garagist') || tags.includes('garagiste')) return '🔧';
-    if (name.includes('restaurat') || tags.includes('restaurateur')) return '🍽️';
-    if (name.includes('artisan') || tags.includes('artisan')) return '🔨';
-    if (name.includes('barbier') || tags.includes('barbier')) return '🎯';
-    return '📚';
-  })();
+  const categoryLabel = getCourseCategoryLabel(course)
 
   return (
     <div onMouseEnter={handleMouseEnter} className={`group relative flex flex-col bg-white rounded-2xl border-2 border-[var(--ordria-border)] overflow-hidden w-full duo-card-hover ${isSelected ? 'ring-2 ring-[var(--ordria-accent)] ring-offset-2' : ''}`}>
@@ -227,7 +262,7 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
           style={{ backgroundImage: `url(${thumbnailImage})` }}
         />
         <div className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-semibold shadow-sm">
-          <span>{categoryEmoji}</span>
+          {categoryLabel && <span>{categoryLabel}</span>}
         </div>
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
         {isDashboard && (

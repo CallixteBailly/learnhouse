@@ -145,18 +145,19 @@ export const OrgMenu = (props: any) => {
 
   return (
     <>
-      <div className="backdrop-blur-lg h-[60px] blur-3xl" style={{ zIndex: 'var(--z-behind)', marginTop: topOffset }}></div>
+      <div style={{ height: 72 + topOffset }} aria-hidden="true" />
       <nav
         aria-label="Top navigation"
-        className={`fixed left-0 right-0 h-[60px] flex items-center ${!primaryColor ? 'bg-[var(--ordria-nuit)]/95 backdrop-blur-xl border-b border-white/10' : 'backdrop-blur-lg'}`}
-        style={{
-          zIndex: 'var(--z-nav)',
-          backgroundColor: primaryColor || undefined,
-          top: topOffset,
-          boxShadow: primaryColor ? undefined : '0 8px 32px -8px oklch(0 0 0 / 0.4)',
-        }}
+        className="fixed left-1/2 -translate-x-1/2 w-[calc(100%-1.5rem)] max-w-5xl z-[var(--z-nav)]"
+        style={{ top: 12 + topOffset }}
       >
-        <div className="flex items-center justify-between w-full max-w-(--breakpoint-2xl) mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div
+          className="flex items-center justify-between h-14 px-4 sm:px-5 rounded-2xl backdrop-blur-xl border border-white/10"
+          style={{
+            backgroundColor: primaryColor ? `${primaryColor}cc` : 'oklch(0.23 0.06 264 / 0.82)',
+            boxShadow: '0 8px 32px -8px oklch(0 0 0 / 0.35), 0 2px 8px -2px oklch(0 0 0 / 0.15)',
+          }}
+        >
           <div className="flex items-center space-x-5 md:w-auto w-full">
             <div className="logo flex md:w-auto w-full justify-center">
               <Link href={getUriWithOrg(orgslug, '/')}>
