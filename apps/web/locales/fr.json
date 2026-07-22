@@ -655,7 +655,27 @@
     "quit_course_confirm": "Êtes-vous sûr de vouloir quitter ce cours ? Vous perdrez toute votre progression.",
     "quit_course_title": "Quitter le cours ?",
     "courses_load_error": "Échec du chargement des cours. Veuillez réessayer.",
-    "view_all_courses": "Voir tous les cours"
+    "view_all_courses": "Voir tous les cours",
+    "modules_completed": "{{completed}} sur {{total}} modules terminés",
+    "activities_remaining": "{{count}} activité restante",
+    "activities_remaining_plural": "{{count}} activités restantes",
+    "activities_completed_count": "{{count}} activités terminées",
+    "activities_count": "{{count}} activité",
+    "activities_count_plural": "{{count}} activités",
+    "certificate": "Certificat",
+    "certificate_unlocked": "Certificat débloqué !",
+    "certificate_touch": "Touchez pour récupérer votre certificat",
+    "certificate_finish_all_modules": "Terminez tous les modules",
+    "certificate_percent_remaining": "Plus que {{percent}}% avant le certificat !",
+    "certificate_badge": "🏆 Certificat",
+    "unlock_module_hint": "💡 Terminez toutes les activités d’un module pour débloquer le suivant.",
+    "created_by": "Créé par @{{author}}",
+    "finish_course": "Terminer le cours",
+    "modules": "Modules",
+    "modules_unit": "modules",
+    "instructor": "Formateur",
+    "course_info": "Informations du cours",
+    "certificate_desc": "Obtenez votre certificat en terminant tous les modules"
   },
   "communities": {
     "title": "Communautés",
@@ -966,7 +986,11 @@
     "embed": "Intégrer",
     "embed_code_copied": "Code d'intégration copié !",
     "link_copied": "Lien copié !",
-    "share": "Partager"
+    "share": "Partager",
+    "confirm_leave_title": "Quitter sans avoir tout lu ?",
+    "confirm_leave_msg": "Vous n'avez pas atteint le bas de la page. Voulez-vous vraiment passer à la suite ?",
+    "confirm_leave_cta": "Continuer quand même",
+    "auto_completed_on_scroll": "Activité marquée comme lue automatiquement"
   },
   "assignments": {
     "submit_assignment": "Rendre le devoir",

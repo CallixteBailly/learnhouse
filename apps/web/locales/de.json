@@ -654,7 +654,9 @@
       "info_description": "Filtern Sie Kurse nach Benutzergruppe, um nur die Kurse anzuzeigen, die einer bestimmten Gruppe zugewiesen sind. Nützlich für Familien oder Teams, die sich dieselbe Organisation teilen."
     },
     "courses_load_error": "Kurse konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
-    "view_all_courses": "Alle Kurse anzeigen"
+    "view_all_courses": "Alle Kurse anzeigen",
+    "certificate_badge": "Certificat",
+    "finish_course": "Vollständig "
   },
   "communities": {
     "title": "Communities",

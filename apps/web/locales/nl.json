@@ -654,7 +654,9 @@
     "quit_course_confirm": "Weet u zeker dat u deze cursus wilt verlaten? U verliest al uw voortgang.",
     "quit_course_title": "Cursus verlaten?",
     "courses_load_error": "Cursussen laden mislukt. Probeer het opnieuw.",
-    "view_all_courses": "Alle cursussen bekijken"
+    "view_all_courses": "Alle cursussen bekijken",
+    "certificate_badge": "Certificat",
+    "finish_course": "Voltooien "
   },
   "communities": {
     "title": "Community's",

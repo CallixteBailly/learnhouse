@@ -676,7 +676,9 @@
     "quit_course_confirm": "আপনি কি নিশ্চিত যে আপনি এই কোর্সটি ছাড়তে চান? আপনি আপনার সমস্ত অগ্রগতি হারাবেন।",
     "quit_course_title": "কোর্স ছাড়বেন?",
     "courses_load_error": "কোর্স লোড করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
-    "view_all_courses": "সমস্ত কোর্স দেখুন"
+    "view_all_courses": "সমস্ত কোর্স দেখুন",
+    "certificate_badge": "Certificat",
+    "finish_course": "সম্পন্ন "
   },
   "communities": {
     "title": "কমিউনিটি",

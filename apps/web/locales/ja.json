@@ -664,7 +664,9 @@
     "quit_course_confirm": "このコースを終了してもよろしいですか？すべての進捗が失われます。",
     "quit_course_title": "コースを終了しますか？",
     "courses_load_error": "コースの読み込みに失敗しました。もう一度お試しください。",
-    "view_all_courses": "すべてのコースを表示"
+    "view_all_courses": "すべてのコースを表示",
+    "certificate_badge": "Certificat",
+    "finish_course": "完了する "
   },
   "communities": {
     "title": "コミュニティ",

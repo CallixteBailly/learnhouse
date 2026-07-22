@@ -654,7 +654,9 @@
       "filter_by_group": "Filtrovať podľa skupiny",
       "info_title": "Filter skupín používateľov",
       "info_description": "Filtrujte kurzy podľa skupiny používateľov pre zobrazenie len kurzov priradených konkrétnej skupine. Užitočné pre rodiny alebo tímy zdieľajúce rovnakú organizáciu."
-    }
+    },
+    "certificate_badge": "Certificat",
+    "finish_course": "Dokončiť "
   },
   "communities": {
     "title": "Komunity",

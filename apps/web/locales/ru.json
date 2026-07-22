@@ -676,7 +676,9 @@
     "quit_course_confirm": "Вы уверены, что хотите покинуть курс? Весь прогресс будет потерян.",
     "quit_course_title": "Покинуть курс?",
     "courses_load_error": "Не удалось загрузить курсы. Пожалуйста, попробуйте ещё раз.",
-    "view_all_courses": "Посмотреть все курсы"
+    "view_all_courses": "Посмотреть все курсы",
+    "certificate_badge": "Certificat",
+    "finish_course": "Завершить "
   },
   "communities": {
     "title": "Сообщества",

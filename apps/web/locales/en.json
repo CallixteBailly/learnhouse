@@ -660,7 +660,27 @@
       "filter_by_group": "Filter by group",
       "info_title": "User Group Filter",
       "info_description": "Filter courses by user group to see only courses assigned to a specific group. Useful for families or teams sharing the same organization."
-    }
+    },
+    "modules_completed": "{{completed}} of {{total}} modules completed",
+    "activities_remaining": "{{count}} activity remaining",
+    "activities_remaining_plural": "{{count}} activities remaining",
+    "activities_completed_count": "{{count}} activities completed",
+    "activities_count": "{{count}} activity",
+    "activities_count_plural": "{{count}} activities",
+    "certificate": "Certificate",
+    "certificate_unlocked": "Certificate unlocked!",
+    "certificate_touch": "Tap to get your certificate",
+    "certificate_finish_all_modules": "Complete all modules",
+    "certificate_percent_remaining": "Only {{percent}}% left until your certificate!",
+    "certificate_badge": "🏆 Certificate",
+    "unlock_module_hint": "💡 Complete all activities in a module to unlock the next one.",
+    "created_by": "Created by @{{author}}",
+    "finish_course": "Finish course",
+    "modules": "Modules",
+    "modules_unit": "modules",
+    "instructor": "Instructor",
+    "course_info": "Course information",
+    "certificate_desc": "Earn your certificate by completing all modules"
   },
   "communities": {
     "title": "Communities",
@@ -1399,7 +1419,11 @@
     "copy_link": "Copy Link",
     "link_copied": "Link copied!",
     "embed": "Embed",
-    "embed_code_copied": "Embed code copied!"
+    "embed_code_copied": "Embed code copied!",
+    "confirm_leave_title": "Leave without reading everything?",
+    "confirm_leave_msg": "You haven't reached the bottom of the page. Do you really want to continue?",
+    "confirm_leave_cta": "Continue anyway",
+    "auto_completed_on_scroll": "Activity automatically marked as read"
   },
   "embed": {
     "not_supported_title": "This activity is not supported",

@@ -664,7 +664,9 @@
     "quit_course_confirm": "确定要退出此课程吗？您将失去所有进度。",
     "quit_course_title": "退出课程？",
     "courses_load_error": "加载课程失败，请重试。",
-    "view_all_courses": "查看所有课程"
+    "view_all_courses": "查看所有课程",
+    "certificate_badge": "Certificat",
+    "finish_course": "完成 "
   },
   "communities": {
     "title": "社区",

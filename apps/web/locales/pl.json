@@ -676,7 +676,9 @@
     "quit_course_confirm": "Czy na pewno chcesz opuścić ten kurs? Utracisz cały postęp.",
     "quit_course_title": "Opuścić kurs?",
     "courses_load_error": "Nie udało się załadować kursów. Spróbuj ponownie.",
-    "view_all_courses": "Zobacz wszystkie kursy"
+    "view_all_courses": "Zobacz wszystkie kursy",
+    "certificate_badge": "Certificat",
+    "finish_course": "Zakończ "
   },
   "communities": {
     "title": "Społeczności",

@@ -676,7 +676,9 @@
     "quit_course_confirm": "Bu kurstan çıkmak istediğinizden emin misiniz? Tüm ilerlemenizi kaybedersiniz.",
     "quit_course_title": "Kurstan Çık?",
     "courses_load_error": "Kurslar yüklenemedi. Lütfen tekrar deneyin.",
-    "view_all_courses": "Tüm kursları görüntüle"
+    "view_all_courses": "Tüm kursları görüntüle",
+    "certificate_badge": "Certificat",
+    "finish_course": "Tamamla "
   },
   "communities": {
     "title": "Topluluklar",
