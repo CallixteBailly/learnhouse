@@ -58,9 +58,11 @@ export async function createCourse(
   form.append('name', name)
   form.append('description', description)
   form.append('public', 'true')
-  form.append('about', '')
+  form.append('about', description)
   form.append('learnings', '[]')
   form.append('tags', tags)
+  form.append('thumbnail_type', 'image')
+  form.append('open_to_contributors', 'false')
   const res = await fetch(`${API_URL}/courses/?org_id=${orgId}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
@@ -131,9 +133,11 @@ export function createVideoActivity(
     token,
     {
       name,
+      type: 'youtube',
       uri: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       chapter_id: chapterId,
-      details: { startTime: 0, endTime: 0, autoplay: false, muted: false },
+      org_id: orgId,
+      details: JSON.stringify({ startTime: 0, endTime: 0, autoplay: false, muted: false }),
     },
   )
 }
@@ -335,18 +339,21 @@ export async function getUserCertificateForCourse(
 
 // ─── Trail / activity completion (to trigger certification award) ──────────
 
-/** Mark an activity as complete for the authenticated user. */
+/** Mark an activity as complete for the authenticated user.
+ * Uses the trail API: add_activity adds it to the trail as completed. */
 export async function markActivityComplete(
   token: string,
   activityUuid: string,
 ): Promise<void> {
-  // The API uses PUT /trail/... internally; we use the public completion endpoint
-  // which is POST /activities/{uuid}/complete or PUT on the trail step.
-  // From the web client: saveCompletionActivity(activity_uuid, token) does a PUT
-  await req('PUT', `/trail/org/activity/${activityUuid}`, token, {
-    activity_uuid: activityUuid,
-    complete: true,
-  }).catch(() => {})
+  await req('POST', `/trail/add_activity/${activityUuid}`, token).catch(() => {})
+}
+
+/** Add a course to the user's trail (enrollment / start tracking). */
+export async function addCourseToTrail(
+  token: string,
+  courseUuid: string,
+): Promise<void> {
+  await req('POST', `/trail/add_course/${courseUuid}`, token).catch(() => {})
 }
 
 // ─── Invites ──────────────────────────────────────────────────────────────

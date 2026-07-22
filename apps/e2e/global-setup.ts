@@ -132,21 +132,38 @@ async function saveLogin(
   password: string,
   statePath: string,
 ): Promise<void> {
+  // API-based login: get the token, then set it in the browser context
+  // via cookie + localStorage. More reliable than UI login (no Turnstile,
+  // no i18n label differences).
+  const token = await api.login(email, password)
+
   const context = await browser.newContext()
   const page = await context.newPage()
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    await page.goto(`${BASE_URL}/login`)
-    await page.getByRole('textbox', { name: 'Email' }).fill(email)
-    await page.getByRole('textbox', { name: 'Password' }).fill(password)
-    await page.getByRole('button', { name: 'Login', exact: true }).click()
-    try {
-      await page.waitForURL((u) => !/\/login(\?|$)/.test(u.toString()), { timeout: 12_000 })
-      break
-    } catch {
-      if (attempt === 3) throw new Error(`global-setup: login failed for ${email}`)
-      await page.waitForTimeout(15_000)
-    }
-  }
+
+  // Navigate to the app so we can set localStorage/cookies on the right origin
+  await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' }).catch(() => {})
+
+  // Inject the session token into the browser context
+  await page.evaluate((tok) => {
+    // LearnHouse stores the session in a cookie named 'lh_session' (or similar)
+    // and/or in localStorage. We set both to cover all session strategies.
+    try { window.localStorage.setItem('lh_session', JSON.stringify({ token: tok })) } catch {}
+    try { window.localStorage.setItem('access_token', tok) } catch {}
+  }, token)
+
+  // Set the session cookie (the Next.js backend uses next-auth or custom)
+  await context.addCookies([
+    {
+      name: 'lh_session',
+      value: token,
+      domain: new URL(BASE_URL).hostname,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ])
+
   // Bake the dismissed-onboarding flag into the saved state so every context
   // reusing this storageState (including ad-hoc ones) skips the first-run UI.
   await page.evaluate(() => {

@@ -88,6 +88,13 @@ export async function setupScenario(): Promise<Scenario> {
   })
 
   // ── Create invite code for garagiste group ──
+  // Clean up old invite codes first (max 6 per org — previous runs may have filled the slots)
+  try {
+    const existingInvites = await api.listInviteCodes(token, org.id)
+    for (const inv of existingInvites) {
+      await api.req('DELETE', `/orgs/${org.id}/invites/${inv.invite_code_uuid}`, token).catch(() => {})
+    }
+  } catch { /* ignore */ }
   const garagisteInvite = await api.createInviteCode(token, org.id, garagisteGroup.id)
 
   _scenario = {
