@@ -88,6 +88,15 @@ const nextConfig = {
   },
   reactStrictMode: false,
   output: 'standalone',
+  // Skip TypeScript checking during production build when explicitly requested
+  // (e.g. in Docker where the check is RAM-heavy and types are validated in dev/CI).
+  // The check stays ON by default for local `next build`.
+  typescript: {
+    ignoreBuildErrors: process.env.NEXT_IGNORE_TYPECHECK === '1',
+  },
+  eslint: {
+    ignoreDuringBuilds: process.env.NEXT_IGNORE_LINT === '1',
+  },
   images: {
     remotePatterns: [
       {
