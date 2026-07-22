@@ -65,7 +65,7 @@ function MenuLinks(props: { orgslug: string; primaryColor?: string }) {
       <ul className="flex space-x-5">
         {rendered.map((it) => {
           const content = (
-            <li className={`flex space-x-2 items-center ${colors.text} font-semibold`}>
+            <li className="flex space-x-2 items-center text-white font-semibold">
               <it.Icon size={20} weight="fill" /> <span>{it.label}</span>
             </li>
           )
