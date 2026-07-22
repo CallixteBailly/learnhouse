@@ -58,55 +58,114 @@ function getCourseDuration(course: any): string | null {
 }
 
 /** Visuel distinctif par métier quand pas de thumbnail image.
- *  Rendu JSX overlay (emoji géant + label) sur gradient signature.
+ *  Utilise des photos Unsplash réelles (vérifiées) au lieu d'emojis.
  *  Détecte le métier depuis le nom du cours. */
-const METIER_VISUALS: Record<string, { emoji: string; gradient: string; label: string }> = {
-  restaurant: { emoji: '🍛', gradient: 'linear-gradient(135deg, oklch(0.62 0.18 35) 0%, oklch(0.40 0.15 30) 100%)', label: 'Restaurateur' },
-  barbier: { emoji: '💈', gradient: 'linear-gradient(135deg, oklch(0.45 0.15 350) 0%, oklch(0.28 0.10 350) 100%)', label: 'Barbier' },
-  artisan: { emoji: '🔨', gradient: 'linear-gradient(135deg, oklch(0.55 0.12 300) 0%, oklch(0.35 0.10 300) 100%)', label: 'Artisan' },
-  garagiste: { emoji: '🔧', gradient: 'linear-gradient(135deg, oklch(0.50 0.13 200) 0%, oklch(0.30 0.10 210) 100%)', label: 'Garagiste' },
-  coiffeur: { emoji: '✂️', gradient: 'linear-gradient(135deg, oklch(0.65 0.18 150) 0%, oklch(0.40 0.14 150) 100%)', label: 'Coiffeur' },
-  ia: { emoji: '🤖', gradient: 'linear-gradient(135deg, oklch(0.55 0.20 263) 0%, oklch(0.23 0.06 264) 100%)', label: 'IA' },
+const METIER_VISUALS: Record<string, { image: string; label: string }> = {
+  restaurant: {
+    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+    label: 'Restaurateur',
+  },
+  barbier: {
+    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
+    label: 'Barbier',
+  },
+  artisan: {
+    image: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=800&q=80',
+    label: 'Artisan',
+  },
+  garagiste: {
+    image: 'https://images.unsplash.com/photo-1632823469850-1b7b1e8b7e1e?auto=format&fit=crop&w=800&q=80',
+    label: 'Garagiste',
+  },
+  coiffeur: {
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+    label: 'Coiffeur',
+  },
+  ia: {
+    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
+    label: 'IA',
+  },
+  immobilier: {
+    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+    label: 'Immobilier',
+  },
+  digital: {
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
+    label: 'Digital',
+  },
+  marketing: {
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
+    label: 'Marketing',
+  },
 }
 
-function detectMetier(course: any): { emoji: string; gradient: string; label: string } {
+/** Pool d'images de fallback aléatoires (style tech/business) quand aucun
+ *  métier n'est détecté — pioche déterministe basée sur l'UUID du cours. */
+const FALLBACK_IMAGES = [
+  'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
+]
+
+function detectMetier(course: any): { image: string; label: string } {
   const name = (course?.name || '').toLowerCase()
   const tags = getCourseTags(course).join(' ').toLowerCase()
   const haystack = `${name} ${tags}`
-  for (const [key, vis] of Object.entries(METIER_VISUALS)) {
-    if (haystack.includes(key)) return vis
-  }
-  // défaut — IA cyan signature
-  return METIER_VISUALS.ia
+  // Ordre de priorité : métiers spécifiques d'abord
+  if (haystack.includes('restaurant') || haystack.includes('restaur'))
+    return METIER_VISUALS.restaurant
+  if (haystack.includes('barbier') || haystack.includes('coiffeur'))
+    return METIER_VISUALS.coiffeur
+  if (haystack.includes('artisan'))
+    return METIER_VISUALS.artisan
+  if (haystack.includes('garagiste') || haystack.includes('auto') || haystack.includes('mécan'))
+    return METIER_VISUALS.garagiste
+  if (haystack.includes('immobilier') || haystack.includes('agent'))
+    return METIER_VISUALS.immobilier
+  if (haystack.includes('digital') || haystack.includes('transformation'))
+    return METIER_VISUALS.digital
+  if (haystack.includes('marketing') || haystack.includes('communication'))
+    return METIER_VISUALS.marketing
+  if (haystack.includes('ia') || haystack.includes('intelligence') || haystack.includes('automatisation'))
+    return METIER_VISUALS.ia
+  // Fallback : image aléatoire déterministe (stable par UUID)
+  const uuid = course?.course_uuid || ''
+  const idx = uuid.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % FALLBACK_IMAGES.length
+  return { image: FALLBACK_IMAGES[idx], label: '' }
 }
 
-/** Rendu JSX d'un visuel fallback (emoji + gradient métier) pour une card */
+/** Rendu JSX d'un visuel fallback (photo Unsplash + overlay dégradé) pour une card */
 function VisualFallback({ course, size = 'normal' }: { course: any; size?: 'normal' | 'hero' }) {
-  const { emoji, gradient, label } = detectMetier(course)
-  const emojiSize = size === 'hero' ? '8rem' : '3.5rem'
+  const { image, label } = detectMetier(course)
   const labelSize = size === 'hero' ? '0.95rem' : '0.7rem'
   return (
-    <div
-      className="absolute inset-0 flex flex-col items-center justify-center"
-      style={{ background: gradient }}
-      aria-hidden="true"
-    >
-      <span
+    <>
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${image})` }}
+        aria-hidden="true"
+      />
+      {/* Overlay dégradé pour la lisibilité et cohérence brand */}
+      <div
+        className="absolute inset-0"
         style={{
-          fontSize: emojiSize,
-          lineHeight: 1,
-          filter: 'drop-shadow(0 8px 16px oklch(0 0 0 / 0.3))',
+          background:
+            'linear-gradient(135deg, oklch(0.23 0.06 264 / 0.55) 0%, oklch(0.23 0.06 264 / 0.15) 50%, transparent 100%)',
         }}
-      >
-        {emoji}
-      </span>
-      <span
-        className="font-display font-bold uppercase tracking-widest mt-2 text-white/80"
-        style={{ fontSize: labelSize, letterSpacing: '0.15em' }}
-      >
-        {label}
-      </span>
-    </div>
+        aria-hidden="true"
+      />
+      {label && (
+        <span
+          className="absolute bottom-3 left-3 font-display font-bold uppercase tracking-widest text-white/90"
+          style={{ fontSize: labelSize, letterSpacing: '0.15em', textShadow: '0 2px 8px oklch(0 0 0 / 0.6)' }}
+        >
+          {label}
+        </span>
+      )}
+    </>
   )
 }
 
@@ -133,7 +192,7 @@ function HeroFeature({ course, orgslug, orgUuid }: { course: any; orgslug: strin
                 style={{ backgroundImage: `url(${thumb})` }}
               />
             ) : (
-              <div className="yt-hero__media" style={{ background: detectMetier(course).gradient }}>
+              <div className="yt-hero__media" style={{ backgroundImage: `url(${detectMetier(course).image})` }}>
                 <VisualFallback course={course} size="hero" />
               </div>
             )}
@@ -302,7 +361,7 @@ function VideoLibrary({ courses, orgslug, orgUuid }: { courses: any[]; orgslug: 
                         style={{ backgroundImage: `url(${thumb})` }}
                       />
                     ) : (
-                      <div className="yt-thumb__media" style={{ background: detectMetier(course).gradient }}>
+                      <div className="yt-thumb__media" style={{ backgroundImage: `url(${detectMetier(course).image})` }}>
                         <VisualFallback course={course} />
                       </div>
                     )}
@@ -409,7 +468,7 @@ function DeepDives({ courses, orgslug, orgUuid }: { courses: any[]; orgslug: str
                               style={{ backgroundImage: `url(${thumb})` }}
                             />
                           ) : (
-                            <div className="yt-thumb__media" style={{ background: detectMetier(course).gradient }}>
+                            <div className="yt-thumb__media" style={{ backgroundImage: `url(${detectMetier(course).image})` }}>
                               <VisualFallback course={course} size="hero" />
                             </div>
                           )}
@@ -519,7 +578,7 @@ function Recommendations({ courses, orgslug, orgUuid }: { courses: any[]; orgslu
                         style={{ backgroundImage: `url(${thumb})` }}
                       />
                     ) : (
-                      <div className="yt-thumb__media" style={{ background: detectMetier(course).gradient }}>
+                      <div className="yt-thumb__media" style={{ backgroundImage: `url(${detectMetier(course).image})` }}>
                         <VisualFallback course={course} />
                       </div>
                     )}
