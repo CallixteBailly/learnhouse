@@ -1,0 +1,8 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ordria">
+  <!-- Anneau extérieur — Bleu Nuit #0E1B39 -->
+  <circle cx="20" cy="20" r="17" stroke="#0E1B39" stroke-width="3.4" fill="none" />
+  <!-- Anneau intérieur concentrique -->
+  <circle cx="20" cy="20" r="9.5" stroke="#0E1B39" stroke-width="2.4" fill="none" />
+  <!-- Accent progression — Cyan Éclat #34D3EF, haut-droite -->
+  <circle cx="31.5" cy="8.5" r="2.8" fill="#34D3EF" />
+</svg>
