@@ -214,7 +214,7 @@ function AssignmentBoxUI({ type, view, currentPoints, currentFeedback, maxPoints
                         onChange={(e) => setManualFeedback(e.target.value)}
                         placeholder={t('assignments.task_feedback_placeholder', { defaultValue: 'Note for this task (saved with grade)' })}
                         rows={1}
-                        className='w-full px-2.5 py-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-200 placeholder:text-gray-400 resize-y'
+                        className='w-full px-2.5 py-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-200 placeholder:text-[var(--ordria-muted)] resize-y'
                     />
                 </div>
             )}

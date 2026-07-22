@@ -661,7 +661,7 @@ function Newsletter() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={email ? '' : typed + (isTyping ? '▌' : '')}
-                  className="flex-1 bg-transparent border-0 py-3 text-white text-lg font-body placeholder:text-white/50 focus:outline-none"
+                  className="flex-1 bg-transparent border-0 py-3 text-white text-lg font-body placeholder:text-white/70 focus:outline-none"
                   aria-label={t('courses.newsletter_email_label', 'Votre adresse email')}
                 />
                 <button
