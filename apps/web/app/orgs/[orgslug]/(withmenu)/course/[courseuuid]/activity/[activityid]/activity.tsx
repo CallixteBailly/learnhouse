@@ -33,7 +33,7 @@ import FixedActivitySecondaryBar from '@components/Pages/Activity/FixedActivityS
 import CourseEndView from '@components/Pages/Activity/CourseEndView'
 import { motion, AnimatePresence } from 'motion/react'
 import { Breadcrumbs } from '@components/Objects/Breadcrumbs/Breadcrumbs'
-import { BookCopy } from 'lucide-react'
+import { BookCopy, AlertTriangle } from 'lucide-react'
 import MiniInfoTooltip from '@components/Objects/MiniInfoTooltip'
 import GeneralWrapperStyled from '@components/Objects/StyledElements/Wrappers/GeneralWrapper'
 import ActivityIndicators from '@components/Pages/Courses/ActivityIndicators'
@@ -198,7 +198,7 @@ function ActivityActions({ activity, activityid, course, orgslug, assignment, sh
             </>
           )}
           {showNavigation && (
-            <NextActivityButton course={course} currentActivityId={activity.id} orgslug={orgslug} />
+            <NextActivityButton course={course} currentActivityId={activity.id} orgslug={orgslug} requireScrollConfirm={activity.activity_type != 'TYPE_ASSIGNMENT'} />
           )}
         </AuthenticatedClientElement>
       )}
@@ -888,7 +888,7 @@ function ActivityClient(props: ActivityClientProps) {
                         <div className="flex gap-1 bg-[var(--ordria-surface)] rounded-2xl p-1.5 mb-4">
                           <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_VIDEO' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)]'}`}>
                             <span>🎬</span> <span className="hidden sm:inline">Vidéo</span>
-                            {activity?.activity_type === 'TYPE_VIDEO' && <span className="text-[10px] font-mono bg-[var(--ordria-accent)] text-white px-1.5 py-0.5 rounded">5 min</span>}
+                            {activity?.activity_type === 'TYPE_VIDEO' && <span className="text-[10px] font-mono bg-[var(--ordria-accent)] text-[var(--ordria-on-accent)] px-1.5 py-0.5 rounded">5 min</span>}
                           </div>
                           <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_DYNAMIC' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)]'}`}>
                             <span>📝</span> <span className="hidden sm:inline">Lecture</span>
@@ -1114,6 +1114,7 @@ function ActivityClient(props: ActivityClientProps) {
                               course={course}
                               currentActivityId={activity.id}
                               orgslug={orgslug}
+                              requireScrollConfirm={activity.activity_type != 'TYPE_ASSIGNMENT'}
                             />
                           </div>
                         </div>
@@ -1162,6 +1163,51 @@ export function MarkStatus(props: {
   const [isLoading, setIsLoading] = React.useState(false);
   const [showMarkedTooltip, setShowMarkedTooltip] = React.useState(false);
   const [showUnmarkedTooltip, setShowUnmarkedTooltip] = React.useState(false);
+  const [bottomReached, setBottomReached] = React.useState(false);
+  const hasAutoCompleted = React.useRef(false);
+
+  // Scroll tracking : détecte quand l'utilisateur atteint le bas de la page.
+  // On considère "bottom" quand on est à moins de 200px du bas (tolérance).
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const visible = window.innerHeight;
+        const pageHeight = document.documentElement.scrollHeight;
+        // tolérance de 200px
+        const isBottom = scrollY + visible >= pageHeight - 200;
+        if (isBottom && !bottomReached) {
+          setBottomReached(true);
+        }
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Check initial au cas où la page est courte
+    setTimeout(handleScroll, 500);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [bottomReached]);
+
+  // Auto-complete quand l'utilisateur atteint le bas pour la 1re fois
+  // ET que l'activité n'est pas déjà marquée comme complétée.
+  // Sauf pour les TYPE_ASSIGNMENT (qui ont leur propre logique de submit/correction).
+  React.useEffect(() => {
+    const isAssignment = props.activity?.activity_type === 'TYPE_ASSIGNMENT';
+    if (
+      bottomReached &&
+      !hasAutoCompleted.current &&
+      !isActivityCompleted() &&
+      !isLoading &&
+      !isAssignment
+    ) {
+      hasAutoCompleted.current = true;
+      markActivityAsCompleteFront({ silent: true });
+    }
+  }, [bottomReached]);
 
 
   React.useEffect(() => {
@@ -1245,7 +1291,7 @@ export function MarkStatus(props: {
     return currentIndex >= 0 && currentIndex < flat.length - 1 ? flat[currentIndex + 1] : null;
   };
 
-  async function markActivityAsCompleteFront() {
+  async function markActivityAsCompleteFront(options?: { silent?: boolean }) {
     try {
       const willCompleteAll = areAllActivitiesCompleted();
       const nextActivity = findNextActivity();
@@ -1276,6 +1322,17 @@ export function MarkStatus(props: {
 
       const cleanCourseUuid = props.course.course_uuid.replace('course_', '');
       await queryClient.invalidateQueries({ queryKey: queryKeys.courses.meta(cleanCourseUuid) });
+
+      // Mode silencieux (auto-complete au scroll) : on marque comme lu SANS naviguer.
+      // L'utilisateur reste sur la page et peut cliquer Suivant lui-même.
+      if (options?.silent) {
+        toast.success(t('activities.auto_completed_on_scroll', 'Activité marquée comme lue'), {
+          duration: 2500,
+          icon: '✓',
+        });
+        return;
+      }
+
       if (willCompleteAll || !nextActivity) {
         router.push(getUriWithOrg(props.orgslug, '') + `/course/${cleanCourseUuid}/activity/end`);
       } else {
@@ -1390,7 +1447,7 @@ export function MarkStatus(props: {
           <div className="relative">
             <div
               className={`${isLoading ? 'opacity-90' : ''} bg-gray-800 rounded-md px-4 nice-shadow flex flex-col p-2.5 text-white hover:cursor-pointer transition-all duration-200 ${isLoading ? 'cursor-not-allowed' : 'hover:bg-gray-700'}`}
-              onClick={!isLoading ? markActivityAsCompleteFront : undefined}
+              onClick={!isLoading ? () => markActivityAsCompleteFront() : undefined}
             >
               <span className="text-[10px] font-bold mb-1 uppercase">{t('common.status')}</span>
               <div className="flex items-center space-x-2">
@@ -1443,10 +1500,44 @@ export function MarkStatus(props: {
   )
 }
 
-function NextActivityButton({ course, currentActivityId, orgslug }: { course: any, currentActivityId: string, orgslug: string }) {
+function NextActivityButton({ course, currentActivityId, orgslug, requireScrollConfirm = false }: { course: any, currentActivityId: string, orgslug: string, requireScrollConfirm?: boolean }) {
   const { t } = useTranslation();
   const router = useRouter();
   const _isMobile = useMediaQuery('(max-width: 768px)');
+  const [bottomReached, setBottomReached] = React.useState(false);
+  const [showConfirmModal, setShowConfirmModal] = React.useState(false);
+
+  // Scroll tracking local — pour la confirmation "êtes-vous sûr de quitter sans avoir tout lu ?"
+  React.useEffect(() => {
+    if (!requireScrollConfirm) return;
+    if (typeof window === 'undefined') return;
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const visible = window.innerHeight;
+        const pageHeight = document.documentElement.scrollHeight;
+        const isBottom = scrollY + visible >= pageHeight - 200;
+        if (isBottom && !bottomReached) setBottomReached(true);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Check initial seulement pour les pages très courtes (où le bottom est déjà atteint au mount)
+    const initialCheck = () => {
+      const pageHeight = document.documentElement.scrollHeight;
+      const isShortPage = pageHeight <= window.innerHeight + 50;
+      if (isShortPage) setBottomReached(true);
+    };
+    initialCheck();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [requireScrollConfirm, bottomReached]);
+
+  // Si l'utilisateur a scrollé en bas OU si la confirmation n'est pas requise, on navigue direct.
+  // Sinon, on affiche une modal de confirmation.
+  const shouldConfirm = requireScrollConfirm && !bottomReached;
 
   const findNextActivity = () => {
     let allActivities: any[] = [];
@@ -1482,39 +1573,100 @@ function NextActivityButton({ course, currentActivityId, orgslug }: { course: an
     router.push(getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/end`);
   };
 
-  if (isLastActivity) {
-    return (
-      <div
-        onClick={navigateToEnd}
-        className="rounded-xl px-3 sm:px-5 p-2 sm:p-2.5 text-white hover:cursor-pointer transition-all active:translate-y-0.5"
-        style={{ background: 'var(--ordria-accent)', boxShadow: '0 3px 0 var(--ordria-accent-secondary)' }}
-      >
-        <span className="text-[10px] font-bold mb-1 uppercase block opacity-80">Terminer</span>
-        <div className="flex items-center space-x-1">
-          <span className="text-xs sm:text-sm font-bold">🏆 Certificat</span>
-          <ChevronRight size={17} className="shrink-0" />
-        </div>
-      </div>
-    );
-  }
+  const handleClick = () => {
+    if (shouldConfirm) {
+      setShowConfirmModal(true);
+    } else {
+      if (isLastActivity) navigateToEnd();
+      else navigateToActivity();
+    }
+  };
 
   const navigateToActivity = () => {
     const cleanCourseUuid = course.course_uuid?.replace('course_', '');
     router.push(getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/${nextActivity.cleanUuid}`);
   };
 
-  return (
+  const handleConfirm = () => {
+    setShowConfirmModal(false);
+    if (isLastActivity) navigateToEnd();
+    else navigateToActivity();
+  };
+
+  const trigger = (
     <div
-      onClick={navigateToActivity}
-      className="bg-gray-200 rounded-md px-3 sm:px-4 shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] flex flex-col p-2 sm:p-2.5 text-gray-600 hover:cursor-pointer transition delay-150 duration-300 ease-in-out hover:bg-gray-200"
+      onClick={handleClick}
+      className={isLastActivity
+        ? "rounded-xl px-3 sm:px-5 p-2 sm:p-2.5 text-white hover:cursor-pointer transition-all active:translate-y-0.5"
+        : "bg-gray-200 rounded-md px-3 sm:px-4 shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] flex flex-col p-2 sm:p-2.5 text-gray-600 hover:cursor-pointer transition delay-150 duration-300 ease-in-out hover:bg-gray-200"
+      }
+      style={isLastActivity ? { background: 'var(--ordria-accent)', boxShadow: '0 3px 0 var(--ordria-accent-secondary)' } : undefined}
     >
-      <span className="text-[10px] font-bold text-gray-500 mb-1 uppercase">{t('common.next')}</span>
-      <div className="flex items-center space-x-1">
-        <span className="text-xs sm:text-sm font-semibold truncate max-w-[120px] sm:max-w-[200px]">{nextActivity.name}</span>
-        <ChevronRight size={17} className="shrink-0" />
-      </div>
+      {isLastActivity ? (
+        <>
+          <span className="text-[10px] font-bold mb-1 uppercase block opacity-80">Terminer</span>
+          <div className="flex items-center space-x-1">
+            <span className="text-xs sm:text-sm font-bold">🏆 Certificat</span>
+            <ChevronRight size={17} className="shrink-0" />
+          </div>
+        </>
+      ) : (
+        <>
+          <span className="text-[10px] font-bold text-gray-500 mb-1 uppercase">{t('common.next')}</span>
+          <div className="flex items-center space-x-1">
+            <span className="text-xs sm:text-sm font-semibold truncate max-w-[120px] sm:max-w-[200px]">{nextActivity.name}</span>
+            <ChevronRight size={17} className="shrink-0" />
+          </div>
+        </>
+      )}
     </div>
   );
+
+  // Si la confirmation est requise, on rend le trigger + la modal contrôlée.
+  if (shouldConfirm) {
+    return (
+      <>
+        {trigger}
+        <Modal
+          isDialogOpen={showConfirmModal}
+          onOpenChange={setShowConfirmModal}
+          dialogTitle={t('activities.confirm_leave_title', 'Quitter sans avoir tout lu ?')}
+          dialogContent={
+            <div className="flex space-x-4 tracking-tight p-6 pr-10">
+              <div className="shrink-0 p-6 rounded-xl flex items-center bg-red-100 text-red-600">
+                <AlertTriangle size={35} />
+              </div>
+              <div className="pt-1 w-auto grow">
+                <div className="text-xl font-bold text-[var(--ordria-foreground)]">{t('activities.confirm_leave_title', 'Quitter sans avoir tout lu ?')}</div>
+                <div className="text-md text-[var(--ordria-muted)] leading-tight mt-1">
+                  {t('activities.confirm_leave_msg', 'Vous n\'avez pas atteint le bas de la page. Voulez-vous vraiment passer à la suite ?')}
+                </div>
+                <div className="flex flex-row-reverse mt-4 gap-2">
+                  <button
+                    type="button"
+                    onClick={handleConfirm}
+                    className="rounded-md text-sm px-3 py-2 font-bold flex justify-center items-center cursor-pointer text-white bg-red-500 hover:bg-red-600 hover:shadow-lg transition duration-300 ease-in-out"
+                  >
+                    {t('activities.confirm_leave_cta', 'Continuer quand même')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmModal(false)}
+                    className="rounded-md text-sm px-3 py-2 font-bold flex justify-center items-center cursor-pointer text-[var(--ordria-foreground)] bg-[var(--ordria-surface)] hover:bg-[var(--ordria-border)] transition duration-300 ease-in-out"
+                  >
+                    {t('common.cancel', 'Annuler')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+          noPadding
+          customWidth="sm:max-w-[600px] sm:min-w-[500px]"
+        />
+      </>
+    );
+  }
+  return trigger;
 }
 
 function PreviousActivityButton({ course, currentActivityId, orgslug }: { course: any, currentActivityId: string, orgslug: string }) {

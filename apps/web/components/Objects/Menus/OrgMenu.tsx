@@ -25,8 +25,12 @@ import {
   SquaresFour,
   ChalkboardSimple,
   Signpost,
+  Books,
+  FolderSimple,
 } from '@phosphor-icons/react'
 import { DiscordIcon } from '@components/Objects/Icons/DiscordIcon'
+import { menuIcon } from '@components/Objects/Menus/menuIcons'
+import Logo from '@components/Objects/Brand/Logo'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -144,11 +148,12 @@ export const OrgMenu = (props: any) => {
       <div className="backdrop-blur-lg h-[60px] blur-3xl" style={{ zIndex: 'var(--z-behind)', marginTop: topOffset }}></div>
       <nav
         aria-label="Top navigation"
-        className={`backdrop-blur-lg fixed left-0 right-0 h-[60px] ${!primaryColor ? 'bg-white/90 nice-shadow' : ''}`}
+        className={`fixed left-0 right-0 h-[60px] flex items-center ${!primaryColor ? 'bg-[var(--ordria-nuit)]/95 backdrop-blur-xl border-b border-white/10' : 'backdrop-blur-lg'}`}
         style={{
           zIndex: 'var(--z-nav)',
           backgroundColor: primaryColor || undefined,
-          top: topOffset
+          top: topOffset,
+          boxShadow: primaryColor ? undefined : '0 8px 32px -8px oklch(0 0 0 / 0.4)',
         }}
       >
         <div className="flex items-center justify-between w-full max-w-(--breakpoint-2xl) mx-auto px-4 sm:px-6 lg:px-8 h-full">
@@ -159,17 +164,17 @@ export const OrgMenu = (props: any) => {
                   {org?.logo_image ? (
                     <img
                       src={`${getOrgLogoMediaDirectory(org.org_uuid, org?.logo_image)}`}
-                      alt="Learnhouse"
+                      alt={`${org?.name || 'Ordria Learning'} logo`}
                       style={{ width: 'auto', height: '100%' }}
                       className="rounded-md"
                     />
                   ) : (
-                    <LearnHouseLogo logoFilter={colors.logoFilter} />
+                    <Logo variant="lockup" size="sm" animated tone={primaryColor ? 'dark' : 'light'} style={{ filter: colors.logoFilter }} />
                   )}
                 </div>
               </Link>
             </div>
-            <div className="hidden md:flex">
+            <div className={`hidden md:flex ${colors.text}`}>
               <MenuLinks orgslug={orgslug} primaryColor={primaryColor} />
             </div>
           </div>
@@ -315,7 +320,7 @@ export const OrgMenu = (props: any) => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <a
-                        href="https://docs.learnhouse.app"
+                        href="https://ordria.fr/docs"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2"
@@ -359,7 +364,7 @@ export const OrgMenu = (props: any) => {
               </div>
             )}
 
-            <div className="hidden md:flex">
+            <div className={`hidden md:flex ${colors.text}`}>
               <HeaderProfileBox primaryColor={primaryColor} />
             </div>
             <button
@@ -380,17 +385,37 @@ export const OrgMenu = (props: any) => {
         </div>
       </nav>
       <div
-        className={`fixed inset-x-0 bg-white/80 backdrop-blur-lg md:hidden shadow-lg transition-all duration-300 ease-in-out ${
-          isMenuOpen ? 'opacity-100' : '-top-full opacity-0'
+        className={`fixed inset-x-0 bg-[var(--ordria-nuit)]/98 backdrop-blur-xl border-b border-white/10 md:hidden transition-all duration-300 ease-in-out ${
+          isMenuOpen ? 'opacity-100' : '-top-full opacity-0 pointer-events-none'
         }`}
         style={{
           zIndex: 'var(--z-nav-menu)',
           top: isMenuOpen ? topOffset + 60 : undefined
         }}
+        aria-hidden={!isMenuOpen}
       >
-        <div className="flex flex-col px-4 py-3 space-y-4 justify-center items-center">
-          <div className="border-t border-gray-200 w-full pt-3">
-            <HeaderProfileBox />
+        <div className="flex flex-col px-4 py-4 space-y-5 max-h-[calc(100vh-60px)] overflow-y-auto">
+          {/* Search */}
+          <SearchBar orgslug={orgslug} className="w-full" primaryColor="" />
+
+          {/* Navigation links — stacked vertical for mobile */}
+          <MobileNavLinks orgslug={orgslug} primaryColor={primaryColor} onNavigate={() => setIsMenuOpen(false)} />
+
+          {/* Trail progress */}
+          <AuthenticatedClientElement checkMethod="authentication">
+            <Link
+              href={getUriWithOrg(orgslug, '/trail')}
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center gap-3 text-white/90 font-semibold py-2"
+            >
+              <Signpost size={22} weight="fill" />
+              <span>{t('courses.progress')}</span>
+            </Link>
+          </AuthenticatedClientElement>
+
+          {/* Profile */}
+          <div className="border-t border-white/10 pt-4">
+            <HeaderProfileBox primaryColor={primaryColor} />
           </div>
         </div>
       </div>
@@ -551,18 +576,85 @@ const CopilotMenuButton = ({
 }
 
 const LearnHouseLogo = ({ logoFilter }: { logoFilter: string }) => {
+  // Composant local legacy — désormais délégué au <Logo> unifié.
+  // Conservé temporairement pour les éventuels autres usages inline.
+  return <Logo variant="lockup" size="sm" animated style={{ filter: logoFilter }} />
+}
+
+/**
+ * Menu de navigation mobile — version verticale du MenuLinks desktop.
+ * Rend les mêmes liens (config-driven via le contexte org) en stacked vertical,
+ * avec fermeture du drawer au clic.
+ */
+function MobileNavLinks({
+  orgslug,
+  primaryColor,
+  onNavigate,
+}: {
+  orgslug: string
+  primaryColor: string
+  onNavigate: () => void
+}) {
+  const org = useOrg() as any
+  const { t } = useTranslation()
+
+  const rf = org?.config?.config?.resolved_features
+  const isEnabled = (feature: string) => rf?.[feature]?.enabled === true
+
+  const configItems: any[] | undefined =
+    org?.config?.config?.customization?.menu?.items ?? org?.config?.config?.general?.menu?.items
+
+  const DEFAULT_ORDER = ['courses', 'library']
+  const source =
+    configItems && configItems.length
+      ? [...configItems].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      : DEFAULT_ORDER.map((type, i) => ({ type, enabled: true, order: i, label: '', url: '' }))
+
+  const items = source
+    .map((item: any) => {
+      if (item.type === 'custom') {
+        if (!item.enabled || !item.url) return null
+        const external = /^https?:\/\//i.test(item.url)
+        return {
+          key: `custom-${item.url}`,
+          label: item.label || item.url,
+          Icon: menuIcon(item.icon),
+          href: external ? item.url : getUriWithOrg(orgslug, item.url),
+          external,
+        }
+      }
+      if (item.type === 'courses') {
+        if (!item.enabled || !isEnabled('courses')) return null
+        return { key: 'courses', label: item.label || t('courses.courses'), Icon: Books, href: getUriWithOrg(orgslug, '/courses'), external: false }
+      }
+      if (item.type === 'library') {
+        if (!item.enabled || !isEnabled('folders')) return null
+        return { key: 'library', label: item.label || t('common.formations'), Icon: FolderSimple, href: getUriWithOrg(orgslug, '/library'), external: false }
+      }
+      return null
+    })
+    .filter(Boolean) as { key: string; label: string; Icon: any; href: string; external: boolean }[]
+
+  if (items.length === 0) return null
+
   return (
-    <span
-      style={{
-        fontFamily: 'Nunito, system-ui, sans-serif',
-        fontWeight: 900,
-        fontSize: '22px',
-        letterSpacing: '-0.02em',
-        filter: logoFilter,
-        color: 'inherit',
-      }}
-    >
-      OrdIA Learning
-    </span>
+    <nav aria-label={t('common.navigation', 'Navigation')} className="flex flex-col">
+      {items.map((it) => {
+        const content = (
+          <span className="flex items-center gap-3 text-white/90 font-semibold py-2">
+            <it.Icon size={22} weight="fill" /> <span>{it.label}</span>
+          </span>
+        )
+        return it.external ? (
+          <a key={it.key} href={it.href} target="_blank" rel="noopener noreferrer" onClick={onNavigate}>
+            {content}
+          </a>
+        ) : (
+          <Link key={it.key} href={it.href} onClick={onNavigate}>
+            {content}
+          </Link>
+        )
+      })}
+    </nav>
   )
 }

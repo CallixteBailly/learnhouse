@@ -110,7 +110,7 @@ export function FolderCard({ folder, orgslug }: { folder: any; orgslug: string }
         {thumb ? (
           <div className="w-10 h-10 rounded-lg bg-cover bg-center flex-shrink-0 ring-1 ring-inset ring-black/5" style={{ backgroundImage: `url(${thumb})` }} />
         ) : (
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-[var(--ordria-accent)] to-[var(--ordria-accent-secondary)] text-white">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-[var(--ordria-accent)] to-[var(--ordria-accent-secondary)] text-[var(--ordria-on-accent)]">
             <FolderSimple size={22} weight="fill" />
           </div>
         )}

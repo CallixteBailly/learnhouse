@@ -9,7 +9,7 @@ function NewCourseButton({ disabled = false }: NewCourseButtonProps) {
   const { t } = useTranslation()
   return (
     <div
-      className={`rounded-xl bg-[var(--ordria-accent)] transition-all duration-100 ease-linear antialiased px-5 py-2.5 my-auto text-xs font-extrabold uppercase tracking-wide text-white flex space-x-2 items-center ${
+      className={`rounded-xl bg-[var(--ordria-accent)] transition-all duration-100 ease-linear antialiased px-5 py-2.5 my-auto text-xs font-extrabold uppercase tracking-wide text-[var(--ordria-on-accent)] flex space-x-2 items-center ${
         disabled ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-105'
       }`}
       style={{ boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}
