@@ -514,7 +514,7 @@ function ActivityClient(props: ActivityClientProps) {
               ? t('course.locked_restricted', 'You need to be a member of the right user group to access this. Ask a course admin to add you.')
               : t('course.locked_auth_required', 'You need to sign in to access this activity.')}
           </p>
-          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+          <div className="flex flex-col md:flex-row gap-2 justify-center">
             {!isAuthenticated && (
               <Link
                 href={getUriWithOrg(orgslug, '/login')}
@@ -658,7 +658,7 @@ function ActivityClient(props: ActivityClientProps) {
                           className="flex items-center space-x-2"
                         >
                           {activity && (
-                            <div className="hidden sm:block">
+                            <div className="hidden md:block">
                               <ActivityShareDropdown
                                 activityName={activity.name}
                                 activityUrl={typeof window !== 'undefined' ? window.location.href : ''}
@@ -832,7 +832,7 @@ function ActivityClient(props: ActivityClientProps) {
                       ]} />
                     </div>
                     <div className="space-y-3 sm:space-y-4 activity-info-section relative" style={{ zIndex: 'var(--z-content)' }}>
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
                           <div className="flex space-x-4 sm:space-x-6 items-center">
                             <div className="flex shrink-0 hidden md:block">
                               <Link
@@ -860,7 +860,7 @@ function ActivityClient(props: ActivityClientProps) {
                             </div>
                           </div>
                           {activity && (
-                            <div className="hidden sm:block">
+                            <div className="hidden md:block">
                               <ActivityShareDropdown
                                 activityName={activity.name}
                                 activityUrl={typeof window !== 'undefined' ? window.location.href : ''}
@@ -899,27 +899,27 @@ function ActivityClient(props: ActivityClientProps) {
                         </div>
                         )}
 
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-3">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center w-full gap-3">
                           <div className="flex flex-1 items-center space-x-3 min-w-0">
                             <div className="flex flex-col -space-y-1 min-w-0">
                               <p className="font-bold text-gray-700 text-xs sm:text-md hidden md:block">
                                 {getChapterNameByActivityId(course, activity?.id) ?? chapterNameFromCourse}
                               </p>
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 w-full">
+                              <div className="flex flex-col md:flex-row md:items-center sm:gap-2 w-full">
                               <h1 className="font-bold text-gray-950 text-base sm:text-2xl first-letter:uppercase w-full" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                                 {displayName}
                               </h1>
                               {activity && activity.activity_type === 'TYPE_VIDEO' && (
-                                <span className="duo-category-badge bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0 hidden sm:inline-flex">🎬 {t('activities.video')}</span>
+                                <span className="duo-category-badge bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] shrink-0 self-start md:self-auto mt-1 md:mt-0 hidden md:inline-flex">🎬 {t('activities.video')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_DOCUMENT' && (
-                                <span className="duo-category-badge bg-amber-50 text-[var(--ordria-warning)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0 hidden sm:inline-flex">📝 {t('activities.document')}</span>
+                                <span className="duo-category-badge bg-amber-50 text-[var(--ordria-warning)] shrink-0 self-start md:self-auto mt-1 md:mt-0 hidden md:inline-flex">📝 {t('activities.document')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_ASSIGNMENT' && (
-                                <span className="duo-category-badge bg-green-50 text-[var(--ordria-success)] shrink-0 self-start sm:self-auto mt-1 sm:mt-0 hidden sm:inline-flex">🎯 {t('activities.assignment')}</span>
+                                <span className="duo-category-badge bg-green-50 text-[var(--ordria-success)] shrink-0 self-start md:self-auto mt-1 md:mt-0 hidden md:inline-flex">🎯 {t('activities.assignment')}</span>
                               )}
                               {activity && activity.activity_type === 'TYPE_DYNAMIC' && (
-                                <span className="duo-category-badge bg-purple-50 text-purple-600 shrink-0 self-start sm:self-auto mt-1 sm:mt-0 hidden sm:inline-flex">📄 {t('activities.page')}</span>
+                                <span className="duo-category-badge bg-purple-50 text-purple-600 shrink-0 self-start md:self-auto mt-1 md:mt-0 hidden md:inline-flex">📄 {t('activities.page')}</span>
                               )}
                               </div>
                               {/* Authors and Dates Section */}
@@ -998,7 +998,7 @@ function ActivityClient(props: ActivityClientProps) {
                               </div>
                             </div>
                           </div>
-                          <div className="hidden sm:flex space-x-2 items-center relative shrink-0" style={{ zIndex: 'var(--z-interactive)' }}>
+                          <div className="hidden md:flex space-x-2 items-center relative shrink-0" style={{ zIndex: 'var(--z-interactive)' }}>
                             {activity && activity.published == true && activity.content.paid_access != false && (
                               <AuthenticatedClientElement checkMethod="authentication">
                                 {activity.activity_type != 'TYPE_ASSIGNMENT' && (
@@ -1047,7 +1047,7 @@ function ActivityClient(props: ActivityClientProps) {
                                 <div className={`flex-1 min-w-0 ${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-3 sm:p-7 rounded-2xl border border-[var(--ordria-border)]'} ${bgColor} relative isolate`} style={{ zIndex: 'var(--z-base)' }}>
                                   <button
                                     onClick={() => setIsFocusMode(true)}
-                                    className={`absolute ${activity.activity_type === 'TYPE_SCORM' ? 'top-2 right-2' : 'top-4 right-4'} hidden sm:flex bg-[var(--ordria-surface)] hover:bg-[var(--ordria-accent-bg)] border border-[var(--ordria-border)] p-2 rounded-full cursor-pointer transition-all duration-200 group overflow-hidden pointer-events-auto`}
+                                    className={`absolute ${activity.activity_type === 'TYPE_SCORM' ? 'top-2 right-2' : 'top-4 right-4'} hidden md:flex bg-[var(--ordria-surface)] hover:bg-[var(--ordria-accent-bg)] border border-[var(--ordria-border)] p-2 rounded-full cursor-pointer transition-all duration-200 group overflow-hidden pointer-events-auto`}
                                     style={{ zIndex: 'var(--z-interactive)' }}
                                     title={t('activities.focus_mode')}
                                   >
@@ -1092,15 +1092,15 @@ function ActivityClient(props: ActivityClientProps) {
                       {/* Activity Actions below the content box */}
                       {activity && activity.published == true && activity.content.paid_access != false && (
                         <div className="sticky bottom-0 bg-white border-t border-gray-200 p-3 z-40 md:relative md:border-0 md:bg-transparent">
-                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mt-4 w-full gap-2 sm:gap-0">
-                          <div className="order-1 sm:order-none">
+                        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center mt-4 w-full gap-2 md:gap-0">
+                          <div className="order-1 md:order-none">
                             <PreviousActivityButton
                               course={course}
                               currentActivityId={activity.id}
                               orgslug={orgslug}
                             />
                           </div>
-                          <div className="flex items-center justify-between sm:justify-end space-x-2 order-2 sm:order-none">
+                          <div className="flex items-center justify-between md:justify-end space-x-2 order-2 md:order-none">
                             <ActivityActions
                               activity={activity}
                               activityid={activityid}
