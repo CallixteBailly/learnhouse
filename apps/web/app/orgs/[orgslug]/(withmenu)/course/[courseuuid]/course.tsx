@@ -9,8 +9,9 @@ import { useRouter } from 'next/navigation'
 import GeneralWrapperStyled from '@components/Objects/StyledElements/Wrappers/GeneralWrapper'
 import {
   getCourseThumbnailMediaDirectory,
+  getUserAvatarMediaDirectory,
 } from '@services/media/media'
-import { ArrowRight, Check, Video, Image as ImageIcon, BookCopy, Lock } from 'lucide-react'
+import { ArrowRight, Check, Video, Image as ImageIcon, BookCopy, Lock, ChevronRight, Layers, ListChecks, User, BarChart3, Trophy } from 'lucide-react'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { CourseProvider } from '@components/Contexts/CourseContext'
 import { useMediaQuery } from 'usehooks-ts'
@@ -320,6 +321,16 @@ const CourseClient = (props: any) => {
       ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`)
       : '#'
 
+  /**
+   * Garde-fou d'accès : si l'utilisateur n'est pas connecté, on renvoie vers /signup
+   * au lieu de pointer directement vers l'activité (sinon on bypass l'inscription).
+   * Appliqué aux nœuds du learning path, aux liens d'activité et au certificat.
+   */
+  const guardLink = (activityPath: string) => {
+    if (!session?.data?.user) return getUriWithOrg(orgslug, '/signup')
+    return activityPath
+  }
+
   const totalModules = course?.chapters?.length || 0
   const totalActivitiesCount = (course?.chapters ?? []).reduce((sum: number, ch: any) => sum + (ch.activities?.length || 0), 0)
   const completedActivitiesCount = (course?.chapters ?? []).reduce((sum: number, ch: any) => {
@@ -341,7 +352,8 @@ const CourseClient = (props: any) => {
       {!course || !org ? null : (
         <>
           <GeneralWrapperStyled>
-            <div className="pb-4 hidden md:block">
+            <div className="flex flex-col gap-6 md:gap-8">
+            <div className="pb-4 hidden md:block order-first">
               <Breadcrumbs items={[
                 { label: t('courses.courses'), href: getUriWithOrg(orgslug, '/courses'), icon: <BookCopy size={14} /> },
                 { label: course.name }
@@ -349,16 +361,16 @@ const CourseClient = (props: any) => {
             </div>
 
             {/* Desktop: title + share only (Commencer button is in CoursesActions sidebar) */}
-            <div className="hidden md:flex justify-between items-center mb-2">
+            <div className="hidden md:flex justify-between items-center mb-2 order-2">
               <h1 className="text-3xl font-bold truncate" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>{course.name}</h1>
               <CourseShare courseName={course.name} courseUrl={getUriWithOrg(orgslug, `/course/${courseuuid}`)} />
             </div>
 
             {/* Mobile: title only (sticky Commencer button added at bottom) */}
-            <h1 className="md:hidden text-xl font-bold truncate mb-3" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>{course.name}</h1>
+            <h1 className="md:hidden text-xl font-bold truncate mb-3 order-2" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>{course.name}</h1>
 
             {/* Mobile: compact 16:9 thumbnail (video plays in the activity, a static image is enough on mobile) */}
-            <div className="md:hidden">
+            <div className="md:hidden order-2">
               <img
                 src={course.thumbnail_image
                   ? getCourseThumbnailMediaDirectory(org?.org_uuid, course?.course_uuid, course?.thumbnail_image)
@@ -369,7 +381,7 @@ const CourseClient = (props: any) => {
               />
             </div>
 
-            <div className="flex flex-col md:flex-row gap-8 pt-2">
+            <div className="flex flex-col md:flex-row gap-8 pt-2 order-4">
               <div className="w-full md:w-3/4 space-y-4">
                 {(() => {
                   const showVideo = course.thumbnail_type === 'video' || (course.thumbnail_type === 'both' && activeThumbnailType === 'video');
@@ -377,7 +389,7 @@ const CourseClient = (props: any) => {
 
                     if (showVideo && course.thumbnail_video) {
                     return (
-                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[120px] md:h-[400px] hidden md:block">
+                      <div className="relative inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl w-full h-[120px] md:h-[220px] hidden md:block overflow-hidden">
                         {course.thumbnail_type === 'both' && (
                           <div className="absolute top-3 right-3 z-10">
                             <div className="bg-black/20 backdrop-blur-sm rounded-lg p-1 flex space-x-1">
@@ -476,7 +488,7 @@ const CourseClient = (props: any) => {
                     } else {
                     return (
                       <div
-                        className="inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl relative w-full h-[120px] md:h-[400px] bg-cover bg-center hidden md:block"
+                        className="inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl relative w-full h-[120px] md:h-[220px] bg-cover bg-center hidden md:block overflow-hidden"
                         style={{
                           backgroundImage: `url('/empty_thumbnail.png')`,
                           backgroundSize: 'auto',
@@ -507,22 +519,46 @@ const CourseClient = (props: any) => {
                 )}
 
                 <div className="course_metadata_left space-y-2 hidden md:block">
-                  <div className="">
-                    <p className="py-5 whitespace-pre-line break-words w-full leading-relaxed tracking-normal text-pretty hyphens-auto text-[var(--ordria-foreground)]">{course.about}</p>
-                  </div>
+                  {course.about && (
+                    <details className="group">
+                      <summary className="cursor-pointer text-xs font-display font-semibold uppercase tracking-wider text-[var(--ordria-muted)] hover:text-[var(--ordria-foreground)] transition-colors list-none flex items-center gap-1.5">
+                        <ChevronRight size={12} className="transition-transform group-open:rotate-90" />
+                        {t('courses.about_course', 'À propos')}
+                      </summary>
+                      <p className="mt-2 pl-4 border-l-2 border-[var(--ordria-border)] text-sm whitespace-pre-line break-words w-full leading-relaxed text-[var(--ordria-muted)]">{course.about}</p>
+                    </details>
+                  )}
                 </div>
               </div>
 
               <div className='course_metadata_right w-full md:w-1/4 space-y-4 hidden md:block'>
                 {/* Actions Box */}
                 <CoursesActions courseuuid={courseuuid} orgslug={orgslug} course={course} trailData={trailData} />
-                
-                {/* Authors & Updates Box */}
-                <div className="bg-white rounded-2xl border-2 border-[var(--ordria-border)] duo-card-hover overflow-hidden p-4">
-                  <CourseProvider courseuuid={course.course_uuid}>
-                    <CourseAuthors authors={course.authors} />
-                  </CourseProvider>
-                </div>
+
+                {/* Authors — version compacte (rétractable), placé après les actions */}
+                <details className="bg-white rounded-2xl border border-[var(--ordria-border)] overflow-hidden hidden md:block group">
+                  <summary className="cursor-pointer p-3 list-none flex items-center gap-2 hover:bg-[var(--ordria-surface)] transition-colors">
+                    {course.authors?.[0]?.user && (
+                      <img
+                        src={getUserAvatarMediaDirectory(course.authors[0].user.user_uuid, course.authors[0].user.avatar_image)}
+                        alt={course.authors[0].user.username}
+                        className="w-7 h-7 rounded-full object-cover"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-[var(--ordria-muted)] font-semibold uppercase tracking-wider">{t('courses.author', 'Auteur')}</p>
+                      <p className="text-sm font-bold text-[var(--ordria-foreground)] truncate">
+                        @{course.authors?.[0]?.user?.username || 'admin'}
+                      </p>
+                    </div>
+                    <ChevronRight size={14} className="text-[var(--ordria-muted)] transition-transform group-open:rotate-90" />
+                  </summary>
+                  <div className="border-t border-[var(--ordria-border)] max-h-[300px] overflow-y-auto">
+                    <CourseProvider courseuuid={course.course_uuid}>
+                      <CourseAuthors authors={course.authors} />
+                    </CourseProvider>
+                  </div>
+                </details>
               </div>
             </div>
 
@@ -533,7 +569,7 @@ const CourseClient = (props: any) => {
               })
               if (displayLearnings.length === 0) return null
               return (
-                <div className="w-full hidden md:block">
+                <div className="w-full hidden md:block order-4">
                   <h2 className="py-5 text-xl md:text-2xl font-bold" style={{ fontFamily: 'var(--ordria-font-display)' }}>{t('courses.what_you_will_learn')}</h2>
                   <div className="bg-white rounded-2xl border-2 border-[var(--ordria-border)] duo-card-hover overflow-hidden px-5 py-5 space-y-2">
                     {displayLearnings.map((learning: any) => {
@@ -572,8 +608,8 @@ const CourseClient = (props: any) => {
               )
             })()}
 
-            {/* Course Progress + Learning Path */}
-            <div className="w-full my-5 mb-2">
+            {/* Course Progress + Learning Path — section héro, placée avant vidéo/about */}
+            <div className="w-full my-5 mb-2 order-3">
               <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
                 {/* Main: Progress + Learning Path */}
                 <div>
@@ -581,7 +617,7 @@ const CourseClient = (props: any) => {
                   <div className="rounded-2xl p-4 mb-8" style={{ background: 'var(--ordria-surface)', border: '2px solid var(--ordria-border)' }}>
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-bold text-sm" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>
-                        {completedModules} sur {totalModules} modules terminés
+                        {t('courses.modules_completed', { completed: completedModules, total: totalModules })}
                       </span>
                       <span className="font-mono font-black text-2xl" style={{ color: 'var(--ordria-accent-secondary)' }}>
                         {progressPercent}%
@@ -608,7 +644,7 @@ const CourseClient = (props: any) => {
                       const isLocked = !isChapterCompleted && !isCurrent
                       const firstActivity = chapterActivities[0]
                       const chapterLink = firstActivity
-                        ? getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`)
+                        ? guardLink(getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${firstActivity.activity_uuid?.replace('activity_', '')}`))
                         : '#'
                       const isLast = index === (course.chapters ?? []).length - 1
 
@@ -626,7 +662,7 @@ const CourseClient = (props: any) => {
                                 style={{
                                   background: isChapterCompleted ? 'var(--ordria-success)' : 'var(--ordria-accent)',
                                   color: '#fff',
-                                  boxShadow: `0 4px 0 ${isChapterCompleted ? '#1e7a4d' : 'var(--ordria-accent-secondary)'}`,
+                                  boxShadow: `0 4px 0 ${isChapterCompleted ? 'color-mix(in oklch, var(--ordria-success), black 20%)' : 'var(--ordria-accent-secondary)'}`,
                                 }}
                               >
                                 {isChapterCompleted ? '✓' : '▶'}
@@ -644,7 +680,7 @@ const CourseClient = (props: any) => {
                               {chapterActivities.map((activity: any, actIdx: number) => {
                                 const actDone = isActivityDone(activity)
                                 const actCleanUuid = activity.activity_uuid?.replace('activity_', '')
-                                const actLink = getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${actCleanUuid}`)
+                                const actLink = guardLink(getUriWithOrg(orgslug, `/course/${courseuuid}/activity/${actCleanUuid}`))
                                 return (
                                   <Link
                                     key={actIdx}
@@ -671,7 +707,7 @@ const CourseClient = (props: any) => {
                                 const remaining = chapterActivities.filter((a: any) => !isActivityDone(a)).length
                                 return remaining > 0 ? (
                                   <p className="text-xs text-center pt-1" style={{ color: 'var(--ordria-accent-secondary)' }}>
-                                    {remaining} activité{remaining > 1 ? 's' : ''} restante{remaining > 1 ? 's' : ''}
+                                    {t('courses.activities_remaining', { count: remaining })}
                                   </p>
                                 ) : null
                               })()}
@@ -680,17 +716,17 @@ const CourseClient = (props: any) => {
 
                           {isChapterCompleted && (
                             <span className="text-xs mb-3 font-semibold" style={{ color: 'var(--ordria-success)' }}>
-                              ✓ {chapterActivities.length} activités terminées
+                              ✓ {t('courses.activities_completed_count', { count: chapterActivities.length })}
                             </span>
                           )}
                           {isLocked && (
                             <span className="text-xs mb-4" style={{ color: 'var(--ordria-muted)' }}>
-                              {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
+                              {t('courses.activities_count', { count: chapterActivities.length })}
                             </span>
                           )}
                           {isCurrent && (
                             <span className="text-xs mb-4" style={{ color: 'var(--ordria-muted)' }}>
-                              {chapterActivities.length} {chapterActivities.length > 1 ? 'activités' : 'activité'}
+                              {t('courses.activities_count', { count: chapterActivities.length })}
                             </span>
                           )}
 
@@ -710,7 +746,7 @@ const CourseClient = (props: any) => {
                         const acts = ch.activities || []
                         return acts.length > 0 && acts.every((a: any) => isActivityDone(a))
                       })
-                      const endLink = getUriWithOrg(orgslug, `/course/${courseuuid}/activity/end`)
+                      const endLink = guardLink(getUriWithOrg(orgslug, `/course/${courseuuid}/activity/end`))
 
                       return (
                         <>
@@ -722,7 +758,7 @@ const CourseClient = (props: any) => {
                             <Link href={endLink} prefetch={false}>
                               <div
                                 className="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all active:translate-y-1"
-                                style={{ background: 'var(--ordria-warning)', color: '#fff', boxShadow: '0 4px 0 #8a6420' }}
+                                style={{ background: 'var(--ordria-warning)', color: '#fff', boxShadow: '0 4px 0 color-mix(in oklch, var(--ordria-warning), black 25%)' }}
                               >
                                 🏆
                               </div>
@@ -737,19 +773,19 @@ const CourseClient = (props: any) => {
                           )}
 
                           <h3 className="font-bold text-sm mt-2 text-center px-4" style={{ fontFamily: 'var(--ordria-font-display)', color: 'var(--ordria-foreground)' }}>
-                            {allDone ? 'Certificat débloqué !' : 'Certificat'}
+                            {allDone ? t('courses.certificate_unlocked') : t('courses.certificate')}
                           </h3>
                           <span className="text-xs text-center" style={{ color: 'var(--ordria-muted)' }}>
-                            {allDone ? 'Touchez pour récupérer votre certificat' : 'Terminez tous les modules'}
+                            {allDone ? t('courses.certificate_touch') : t('courses.certificate_finish_all_modules')}
                           </span>
 
                           {/* Info message for stuck users */}
                           {!allDone && (
                             <div className="mt-6 p-3 rounded-xl text-xs text-center max-w-xs" style={{ background: 'var(--ordria-surface)', color: 'var(--ordria-muted)' }}>
-                              💡 Terminez toutes les activités d'un module pour débloquer le suivant.
+                              {t('courses.unlock_module_hint')}
                               {progressPercent > 0 && progressPercent < 100 && (
                                 <span className="block mt-1 font-semibold" style={{ color: 'var(--ordria-accent-secondary)' }}>
-                                  Plus que {100 - progressPercent}% avant le certificat !
+                                  {t('courses.certificate_percent_remaining', { percent: 100 - progressPercent })}
                                 </span>
                               )}
                             </div>
@@ -772,7 +808,9 @@ const CourseClient = (props: any) => {
 
                     <div className="space-y-3 mb-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center text-lg">📚</div>
+                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center">
+                          <Layers size={18} className="text-[var(--ordria-accent-secondary)]" aria-hidden="true" />
+                        </div>
                         <div>
                           <div className="text-xs text-[var(--ordria-muted)]">{t('courses.modules', 'Modules')}</div>
                           <div className="text-sm font-semibold text-[var(--ordria-foreground)]">
@@ -781,7 +819,9 @@ const CourseClient = (props: any) => {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center text-lg">📝</div>
+                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center">
+                          <ListChecks size={18} className="text-[var(--ordria-accent-secondary)]" aria-hidden="true" />
+                        </div>
                         <div>
                           <div className="text-xs text-[var(--ordria-muted)]">{t('activities.activities', 'Activités')}</div>
                           <div className="text-sm font-semibold text-[var(--ordria-foreground)]">
@@ -791,7 +831,9 @@ const CourseClient = (props: any) => {
                       </div>
                       {course.authors?.[0] && (
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center text-lg">👤</div>
+                          <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center">
+                            <User size={18} className="text-[var(--ordria-accent-secondary)]" aria-hidden="true" />
+                          </div>
                           <div>
                             <div className="text-xs text-[var(--ordria-muted)]">{t('courses.instructor', 'Formateur')}</div>
                             <div className="text-sm font-semibold text-[var(--ordria-foreground)]">
@@ -801,7 +843,9 @@ const CourseClient = (props: any) => {
                         </div>
                       )}
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center text-lg">📊</div>
+                        <div className="w-9 h-9 rounded-lg bg-[var(--ordria-accent-bg)] flex items-center justify-center">
+                          <BarChart3 size={18} className="text-[var(--ordria-accent-secondary)]" aria-hidden="true" />
+                        </div>
                         <div>
                           <div className="text-xs text-[var(--ordria-muted)]">{t('courses.progress', 'Progression')}</div>
                           <div className="text-sm font-semibold text-[var(--ordria-foreground)]">{progressPercent}%</div>
@@ -811,7 +855,7 @@ const CourseClient = (props: any) => {
 
                     {/* Certificate preview */}
                     <div className="p-4 rounded-xl border-2 border-amber-300 bg-amber-50">
-                      <div className="text-2xl mb-1">🏆</div>
+                      <Trophy size={28} className="text-[var(--ordria-warning)] mb-1" aria-hidden="true" />
                       <div className="font-bold text-sm text-[var(--ordria-warning)]">
                         {t('courses.certificate', 'Certificat')}
                       </div>
@@ -825,36 +869,34 @@ const CourseClient = (props: any) => {
             </div>
 
             {/* Community Section */}
-            <Suspense fallback={<div className="animate-pulse h-48 bg-gray-100 rounded-lg mt-4" />}>
-              <div className="hidden md:block">
-                <CourseCommunitySection courseUuid={course.course_uuid} orgslug={orgslug} />
-              </div>
-            </Suspense>
+            <div className="order-5">
+              <Suspense fallback={<div className="animate-pulse h-48 bg-gray-100 rounded-lg mt-4" />}>
+                <div className="hidden md:block">
+                  <CourseCommunitySection courseUuid={course.course_uuid} orgslug={orgslug} />
+                </div>
+              </Suspense>
+            </div>
 
             {/* Mobile: Creator info at the bottom */}
             {course.authors?.[0] && (
-              <div className="md:hidden mt-8 mb-4 text-center">
+              <div className="md:hidden mt-8 mb-4 text-center order-6">
                 <p className="text-xs text-[var(--ordria-muted)]">
-                  Créé par @{course.authors[0].user?.username || 'admin'}
+                  {t('courses.created_by', { author: course.authors[0].user?.username || 'admin' })}
                 </p>
               </div>
             )}
+            </div>{/* ferme le flex flex-col wrapper d'ordre */}
           </GeneralWrapperStyled>
 
-          {/* Mobile: Sticky Commencer/Continuer button — only if NOT enrolled yet */}
-          {!isStarted && (
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 p-3" style={{ background: 'linear-gradient(to top, var(--ordria-background) 70%, transparent)' }}>
-              <Link href={continueLink} prefetch={false} className="block no-underline">
-                <div className="w-full text-center py-3.5 rounded-xl font-bold text-base active:translate-y-0.5 transition-all" style={{ fontFamily: 'var(--ordria-font-display)', background: 'var(--ordria-accent)', color: '#fff', boxShadow: '0 4px 0 var(--ordria-accent-secondary)' }}>
-                  ★ Commencer
-                </div>
-              </Link>
-            </div>
-          )}
-
-          {/* Mobile Actions Box */}
+          {/* Mobile Actions Box — unique CTA pour mobile (couvre Commencer et Quitter).
+              Plus de sticky bottom séparé pour éviter la duplication. */}
           {isMobile && (
-            <div className="pb-24">
+            <div className="md:hidden sticky bottom-0 z-30 pb-3 -mx-4 px-4 pt-3 mt-6"
+              style={{
+                background: 'linear-gradient(to top, var(--ordria-background) 80%, transparent)',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
               <CourseActionsMobile courseuuid={courseuuid} orgslug={orgslug} course={course} trailData={trailData} />
             </div>
           )}

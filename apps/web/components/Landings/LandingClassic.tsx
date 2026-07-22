@@ -572,10 +572,24 @@ function Newsletter() {
   const [typed, setTyped] = useState('')
   const [isTyping, setIsTyping] = useState(true)
   const timeoutsRef = useRef<NodeJS.Timeout[]>([])
+  const sectionRef = useRef<HTMLElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
 
-  // Typewriter effect qui cycle les pitches
+  // Ne jouer le typewriter que si la section est dans le viewport (économise CPU)
   useEffect(() => {
-    if (email) {
+    const node = sectionRef.current
+    if (!node) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.15 }
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  // Typewriter effect qui cycle les pitches (uniquement si visible + pas d'email)
+  useEffect(() => {
+    if (!isVisible || email) {
       setTyped('')
       return
     }
@@ -611,7 +625,7 @@ function Newsletter() {
       timeoutsRef.current.forEach(clearTimeout)
       timeoutsRef.current = []
     }
-  }, [pitchIdx, email])
+  }, [pitchIdx, email, isVisible])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -620,7 +634,7 @@ function Newsletter() {
   }
 
   return (
-    <section className="bg-[var(--ordria-nuit)] text-white relative overflow-hidden">
+    <section ref={sectionRef} className="bg-[var(--ordria-nuit)] text-white relative overflow-hidden">
       {/* Cyan glow */}
       <div
         aria-hidden="true"
