@@ -2870,7 +2870,10 @@
 
   /* Filtres catégories — chips */
   .yt-chip {
-    padding: 0.5rem 0.95rem;
+    padding: 0.625rem 1rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
     border-radius: 999px;
     font-family: var(--ordria-font-display);
     font-size: 0.875rem;

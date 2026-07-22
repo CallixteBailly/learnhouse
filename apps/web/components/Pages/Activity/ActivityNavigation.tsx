@@ -109,9 +109,9 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
           <>
             <button
               onClick={() => navigateToActivity(prevActivity)}
-              className={`flex items-center space-x-1.5 p-2 rounded-xl transition-all duration-200 cursor-pointer ${
-                prevActivity 
-                  ? 'text-[var(--ordria-foreground)]' 
+              className={`flex items-center space-x-1.5 p-2 min-h-[44px] rounded-xl transition-all duration-200 cursor-pointer ${
+                prevActivity
+                  ? 'text-[var(--ordria-foreground)]'
                   : 'opacity-50 text-[var(--ordria-muted)] cursor-not-allowed'
               }`}
               disabled={!prevActivity}
@@ -128,18 +128,18 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
             
             <button
               onClick={() => isLastActivity ? navigateToEnd() : navigateToActivity(nextActivity)}
-              className={`flex items-center space-x-1.5 p-2 rounded-xl transition-all duration-200 cursor-pointer ${
-                (nextActivity || isLastActivity) 
-                  ? 'text-[var(--ordria-foreground)]' 
+              className={`flex items-center space-x-1.5 p-2 min-h-[44px] rounded-xl transition-all duration-200 cursor-pointer ${
+                (nextActivity || isLastActivity)
+                  ? 'text-[var(--ordria-foreground)]'
                   : 'opacity-50 text-[var(--ordria-muted)] cursor-not-allowed'
               }`}
               disabled={!nextActivity && !isLastActivity}
-              title={isLastActivity ? 'Terminer le cours' : (nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity'))}
+              title={isLastActivity ? t('courses.finish_course') : (nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity'))}
             >
               <div className="flex flex-col items-end">
-                <span className="text-xs text-gray-500">{isLastActivity ? 'Terminer' : t('common.next')}</span>
+                <span className="text-xs text-gray-500">{isLastActivity ? t('common.complete') : t('common.next')}</span>
                 <span className="text-sm capitalize font-semibold text-right">
-                  {isLastActivity ? '🏆 Certificat' : (nextActivity ? nextActivity.name : t('activities.no_next_activity'))}
+                  {isLastActivity ? t('courses.certificate_badge') : (nextActivity ? nextActivity.name : t('activities.no_next_activity'))}
                 </span>
               </div>
               <ChevronRight size={20} className="text-gray-800 shrink-0" />
@@ -151,7 +151,7 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
             <div className="justify-self-start">
               <button
                 onClick={() => navigateToActivity(prevActivity)}
-                className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl transition-all duration-200 cursor-pointer ${
+                className={`flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-xl transition-all duration-200 cursor-pointer ${
                   prevActivity 
                     ? 'bg-[var(--ordria-surface)] text-[var(--ordria-foreground)] border border-[var(--ordria-border)]' 
                     : 'bg-gray-100 text-[var(--ordria-muted)] border border-[var(--ordria-border)] cursor-not-allowed'
@@ -176,18 +176,18 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
             <div className="justify-self-end">
               <button
                 onClick={() => isLastActivity ? navigateToEnd() : navigateToActivity(nextActivity)}
-                className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl transition-all duration-200 cursor-pointer ${
+                className={`flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-xl transition-all duration-200 cursor-pointer ${
                   (nextActivity || isLastActivity) 
                     ? 'duo-btn-success' 
                     : 'bg-gray-100 text-[var(--ordria-muted)] border border-[var(--ordria-border)] cursor-not-allowed'
                 }`}
                 disabled={!nextActivity && !isLastActivity}
-                title={isLastActivity ? 'Terminer le cours' : (nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity'))}
+                title={isLastActivity ? t('courses.finish_course') : (nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity'))}
               >
                 <div className="flex flex-col items-end">
-                <span className="text-xs text-[var(--ordria-muted)]">{isLastActivity ? 'Terminer' : t('common.next')}</span>
+                <span className="text-xs text-[var(--ordria-muted)]">{isLastActivity ? t('common.complete') : t('common.next')}</span>
                   <span className="text-sm capitalize font-semibold text-right">
-                    {isLastActivity ? '🏆 Certificat' : (nextActivity ? nextActivity.name : t('activities.no_next_activity'))}
+                    {isLastActivity ? t('courses.certificate_badge') : (nextActivity ? nextActivity.name : t('activities.no_next_activity'))}
                   </span>
                 </div>
                 <ChevronRight size={16} className="shrink-0" />
