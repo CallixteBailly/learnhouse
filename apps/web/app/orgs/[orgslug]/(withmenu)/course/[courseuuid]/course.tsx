@@ -610,7 +610,7 @@ const CourseClient = (props: any) => {
                           ) : (
                             <Link href={chapterLink} prefetch={false}>
                               <div
-                                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1 duo-pulse"
+                                className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all active:translate-y-1 ${isCurrent ? 'duo-pulse' : ''}`}
                                 style={{
                                   background: isChapterCompleted ? 'var(--ordria-success)' : 'var(--ordria-accent)',
                                   color: '#fff',
@@ -709,7 +709,7 @@ const CourseClient = (props: any) => {
                           {allDone ? (
                             <Link href={endLink} prefetch={false}>
                               <div
-                                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all active:translate-y-1 duo-pulse"
+                                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all active:translate-y-1"
                                 style={{ background: 'var(--ordria-warning)', color: '#fff', boxShadow: '0 4px 0 #8a6420' }}
                               >
                                 🏆
