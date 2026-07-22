@@ -11,7 +11,7 @@ services:
       - LEARNHOUSE_API_URL=http://localhost:9000
       - LEARNHOUSE_DOMAIN=
       - HTTP_PORT=80
-      - NEXT_PUBLIC_LEARNHOUSE_API_URL=/api/v1/
+      - NEXT_PUBLIC_LEARNHOUSE_API_URL=http://localhost/api/v1/
       - NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL=http://localhost/
       - NEXT_PUBLIC_LEARNHOUSE_DOMAIN=
       - NEXT_PUBLIC_LEARNHOUSE_TOP_DOMAIN=
