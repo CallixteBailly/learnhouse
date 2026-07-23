@@ -151,8 +151,8 @@ const nextConfig = {
   },
 }
 
-// Generate runtime config for development
-if (process.env.NODE_ENV === 'development') {
+// Generate runtime config — works for dev AND Cloudflare Pages production builds
+if (process.env.NODE_ENV === 'development' || process.env.BUILD_FOR_PAGES === '1') {
   const fs = require('fs')
   const path = require('path')
   const runtimeConfig = {}
