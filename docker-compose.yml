@@ -39,7 +39,12 @@ services:
       - LEARNHOUSE_AI_MODEL_FAST=GLM-5-Turbo
       - LEARNHOUSE_AI_MODEL_STANDARD=glm-5.2
       - LEARNHOUSE_AI_MODEL_PRO=GLM-5
-      - LEARNHOUSE_CONTENT_DELIVERY_TYPE=filesystem
+      - LEARNHOUSE_CONTENT_DELIVERY_TYPE=${CONTENT_DELIVERY_TYPE:-filesystem}
+      # R2/S3 config (only used when CONTENT_DELIVERY_TYPE=s3api)
+      - AWS_ENDPOINT_URL_S3=${R2_ENDPOINT:-}
+      - AWS_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY:-}
+      - AWS_STORAGE_BUCKET_NAME=learnhouse-content
       - LEARNHOUSE_OSS=true
       - NEXT_PUBLIC_LEARNHOUSE_OSS=true
       - LEARNHOUSE_COOKIE_DOMAIN=
@@ -63,7 +68,12 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: learnhouse-cloudflared
     restart: unless-stopped
-    command: tunnel --no-autoupdate --url http://learnhouse-app:80
+    # Named tunnel (stable URL): set TUNNEL_TOKEN env var and use 'tunnel run'
+    # Quick tunnel (random URL, for dev): comment the environment/command below
+    #   and use: command: tunnel --no-autoupdate --url http://learnhouse-app:80
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
     depends_on:
       learnhouse-app:
         condition: service_started
