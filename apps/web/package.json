@@ -10,7 +10,10 @@
     "lint": "eslint . || true",
     "lint:fix": "eslint --fix . || true",
     "lint:strict": "eslint",
-    "test": "bun test tests"
+    "test": "bun test tests",
+    "deploy:pages": "opennextjs-cloudflare && wrangler pages deploy .open-next",
+    "build:pages": "opennextjs-cloudflare",
+    "dev:pages": "wrangler pages dev .open-next --port 3000"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.4",
@@ -149,6 +152,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@opennextjs/cloudflare": "^1.20.2",
     "@tailwindcss/postcss": "^4.1.16",
     "@types/node": "25.9.4",
     "@types/qrcode": "^1.5.6",
@@ -160,7 +164,8 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.16",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "wrangler": "^4.114.0"
   },
   "overrides": {
     "@types/react": "19.2.17",
