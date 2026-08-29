@@ -98,6 +98,9 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.NEXT_IGNORE_LINT === '1',
   },
   images: {
+    // Cloudflare Workers builds (BUILD_FOR_PAGES=1) have no image optimizer
+    // unless the paid Cloudflare Images binding is attached — serve originals.
+    unoptimized: process.env.BUILD_FOR_PAGES === '1',
     remotePatterns: [
       {
         protocol: 'http',

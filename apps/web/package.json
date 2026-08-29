@@ -11,9 +11,9 @@
     "lint:fix": "eslint --fix . || true",
     "lint:strict": "eslint",
     "test": "bun test tests",
-    "deploy:pages": "opennextjs-cloudflare && wrangler pages deploy .open-next",
-    "build:pages": "opennextjs-cloudflare",
-    "dev:pages": "wrangler pages dev .open-next --port 3000"
+    "build:worker": "opennextjs-cloudflare build",
+    "preview:worker": "opennextjs-cloudflare preview",
+    "deploy:worker": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.4",

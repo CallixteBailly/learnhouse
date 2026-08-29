@@ -24,27 +24,28 @@ function loadRuntimeConfig(): Record<string, string> {
   if (typeof window === 'undefined') {
     // Server-side: try to read from runtime-config.json
     // Try multiple possible paths for standalone mode
+    //
+    // NOTE: this module must NEVER be imported from the Edge middleware —
+    // Turbopack rejects these Node APIs in Edge bundles. The middleware
+    // imports ./edgeConfig (Edge-safe subset) instead.
     try {
       const fs = require('fs');
       const path = require('path');
-      
-      // In standalone mode, runtime-config.json is in the same directory as server.js
-      // Try common possible locations relative to the current working directory and module
-      const possiblePaths = [
-        path.join(process.cwd(), 'runtime-config.json'),
-        path.join(__dirname || process.cwd(), 'runtime-config.json'),
-        path.join(__dirname || process.cwd(), '..', 'runtime-config.json'),
-      ];
-      
-      for (const configPath of possiblePaths) {
-        try {
-          if (fs.existsSync(configPath)) {
-            runtimeConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-            break;
-          }
-        } catch {
-          // Continue to next path
+
+      // In standalone mode, server-wrapper.js writes runtime-config.json into
+      // the working directory. The path stays RELATIVE on purpose — any
+      // static reference to process.cwd()/__dirname makes Turbopack reject
+      // this module in the Edge middleware bundle (it reaches the Edge graph
+      // via the EE tenancy resolver's dynamic import). path.resolve()
+      // evaluates against the runtime cwd internally.
+      const configPath = path.resolve('runtime-config.json');
+
+      try {
+        if (fs.existsSync(configPath)) {
+          runtimeConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
         }
+      } catch {
+        // unreadable/invalid JSON — keep the empty config
       }
     } catch {
       // fs/path not available (client-side bundle), skip

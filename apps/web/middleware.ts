@@ -1,4 +1,4 @@
-import { getAPIUrl } from './services/config/config'
+import { getEdgeAPIUrl as getAPIUrl } from './services/config/edgeConfig'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { isLocalhost as isLocalhostCheck } from './services/utils/ts/hostUtils'
@@ -12,7 +12,7 @@ import { isLocalhost as isLocalhostCheck } from './services/utils/ts/hostUtils'
 //   1. multi (EE-only):   slug.{LEARNHOUSE_DOMAIN} subdomain detection +
 //                         per-org custom domains. The detection logic lives in
 //                         `./ee/services/tenancy/...` and is dynamic-imported
-//                         here — OSS proxy.ts never references subdomain or
+//                         here — OSS middleware never references subdomain or
 //                         custom-domain helpers directly.
 //   2. single (localhost): always serves the default org. Host-only cookies.
 //   3. single (VPS):       any domain on a self-hosted VPS. Same as #2 — we
@@ -20,6 +20,11 @@ import { isLocalhost as isLocalhostCheck } from './services/utils/ts/hostUtils'
 //
 // Modes 2 and 3 share `tenancy === "single"`. The OSS code path returns the
 // default org without ever calling subdomain extraction.
+//
+// NOTE: this file is named `middleware.ts` (not Next 16's `proxy.ts`) on
+// purpose: proxy.ts forces the Node.js runtime, which Cloudflare Workers
+// (OpenNext) does not support. middleware.ts + runtime: 'edge' is the
+// Cloudflare-compatible combination. All imports are Web-standard APIs.
 
 interface InstanceInfo {
   multi_org_enabled: boolean
@@ -91,7 +96,7 @@ async function resolveTenant(req: NextRequest, instance: InstanceInfo): Promise<
     const mod = await import('./ee/services/tenancy/resolveMulti.middleware')
     return await mod.resolveMultiFromRequest(req, instance)
   } catch (err) {
-    console.warn('[proxy] EE multi-tenant resolver unavailable; falling back to default org', err)
+    console.warn('[middleware] EE multi-tenant resolver unavailable; falling back to default org', err)
     return { slug: instance.default_org_slug, source: 'default' }
   }
 }
@@ -206,6 +211,11 @@ function tenantRequestHeaders(
 // =============================================================================
 
 export const config = {
+  // This file deliberately keeps the LEGACY `middleware.ts` name: Next 16's
+  // `proxy.ts` convention forces the Node.js runtime, which Cloudflare
+  // Workers (OpenNext) does not support. middleware.ts defaults to the Edge
+  // runtime — do NOT set `runtime` explicitly ('edge' is rejected as
+  // experimental, 'nodejs' breaks the Cloudflare build).
   matcher: [
     /*
      * Match all paths except for:
@@ -227,7 +237,7 @@ export const config = {
   ],
 }
 
-export default async function proxy(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const instance = await getInstanceInfo()
   const { pathname, search } = req.nextUrl
   const fullhost = req.headers.get('host')
