@@ -62,13 +62,13 @@ RUN curl -fsSL https://bun.sh/install | bash \
 # ── Configs ──
 COPY apps/cloudflare-api/nginx-api.conf /etc/nginx/nginx-api.conf
 COPY apps/cloudflare-api/start-api.sh /app/start-api.sh
-RUN chmod +x /app/start-api.sh \
-    && mkdir -p /tmp/nginx /tmp/nginx_cb /tmp/api-logs \
-    && chown -R www-data:www-data /tmp/nginx /tmp/nginx_cb
+RUN chmod +x /app/start-api.sh
 
 # ── Non-root user (Cloudflare Containers run without root capabilities) ──
+# nginx temp paths (/tmp/nginx) must be writable by the runtime user.
 RUN useradd --create-home --uid 1001 appuser \
-    && chown -R appuser:appuser /app
+    && mkdir -p /tmp/nginx /tmp/api-logs \
+    && chown -R appuser:appuser /app /tmp/nginx /tmp/api-logs
 USER appuser
 ENV HOME=/home/appuser
 

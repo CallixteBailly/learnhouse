@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "deploy": "tsc && wrangler deploy",
+    "build": "wrangler types types/worker-configuration.d.ts && tsc",
+    "deploy": "bun run build && wrangler deploy",
     "tail": "wrangler tail",
     "cf-typegen": "wrangler types"
   },

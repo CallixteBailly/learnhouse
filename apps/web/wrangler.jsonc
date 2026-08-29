@@ -36,11 +36,10 @@
   // Secrets (set once per environment):
   //   wrangler secret put NEXTAUTH_SECRET
   //
-  // Zone routing (single domain, same-origin cookies):
-  //   ordria.app/*            -> this worker (most general pattern)
-  //   ordria.app/api/v1*      -> ordria-learning-api worker (container)
-  //   ordria.app/content*     -> ordria-learning-api worker (container)
-  //   ordria.app/collab*      -> ordria-learning-api worker (container)
-  // Attach via dashboard or:
-  //   wrangler deployments  # then add routes in the Workers dashboard
+  // Zone routing (single domain, same-origin cookies). Uncomment once the
+  // zone exists in the account, then deploy — Cloudflare routes to the MOST
+  // SPECIFIC pattern, so the API worker's /api/v1*, /content*, /collab*
+  // patterns win over this catch-all:
+  //
+  // "routes": [{ "pattern": "ordria.app/*", "zone_name": "ordria.app" }]
 }

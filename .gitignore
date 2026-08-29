@@ -71,3 +71,4 @@ apps/api/ee
 # Playwright MCP session artifacts
 .playwright-mcp/
 .omo/
+.mimosa/

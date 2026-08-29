@@ -10,5 +10,5 @@
     "rootDir": "src",
     "skipLibCheck": true
   },
-  "include": ["src", "worker-configuration.d.ts"]
+  "include": ["src", "types/worker-configuration.d.ts"]
 }

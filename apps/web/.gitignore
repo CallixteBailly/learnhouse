@@ -50,3 +50,7 @@ next.config.original.js
 # Runtime config (generated at startup by server-wrapper.js)
 public/runtime-config.js
 runtime-config.json
+
+# OpenNext (Cloudflare Workers) build output
+.open-next/
+.wrangler/
