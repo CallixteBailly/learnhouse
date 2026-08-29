@@ -1,5 +1,11 @@
 # Cloudflare Compatibility Implementation Plan
 
+> ⚠️ **SUPERSEDÉ par la v2** : `2026-08-29-cloudflare-full-migration.md`.
+> Ce plan v1 (frontend Pages + tunnel vers un VPS) a été implémenté puis
+> remplacé : la migration v2 fait tourner TOUTES les fonctionnalités sur
+> Cloudflare (frontend Worker OpenNext + API dans un Cloudflare Container +
+> R2 + Neon Postgres), sans VPS ni tunnel.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Deploy the LearnHouse frontend on Cloudflare Pages (edge global), with the backend accessible via a stable Cloudflare named tunnel, and media storage on Cloudflare R2.
