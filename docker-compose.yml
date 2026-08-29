@@ -1,3 +1,15 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# LOCAL DEVELOPMENT / LEGACY VPS STACK ONLY.
+#
+# Production runs entirely on Cloudflare — see docs/CLOUDFLARE-DEPLOY.md:
+#   frontend → Cloudflare Worker (OpenNext, apps/web/wrangler.jsonc)
+#   API+collab+redis → Cloudflare Container (apps/cloudflare-api/)
+#   Postgres → Neon (managed), media → R2
+#
+# This compose file remains the easiest way to run the full stack locally:
+#   docker compose up -d
+# The cloudflared tunnel service is OPT-IN (dev-only): docker compose --profile tunnel up -d
+# ─────────────────────────────────────────────────────────────────────────────
 services:
   learnhouse-app:
     build:
@@ -68,6 +80,8 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: learnhouse-cloudflared
     restart: unless-stopped
+    # Dev-only optional tunnel: enable with `docker compose --profile tunnel up -d`
+    profiles: ["tunnel"]
     # Named tunnel (stable URL): set TUNNEL_TOKEN env var and use 'tunnel run'
     # Quick tunnel (random URL, for dev): comment the environment/command below
     #   and use: command: tunnel --no-autoupdate --url http://learnhouse-app:80

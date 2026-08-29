@@ -1,0 +1,55 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ordria-learning-api",
+  "main": "dist/worker.js",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "containers": [
+    {
+      "class_name": "LearnHouseApiContainer",
+      // Built & pushed to the Cloudflare registry automatically on deploy.
+      "image": "./Dockerfile",
+      "image_build_context": "../..",
+      // basic = 1 shared vCPU / 2 GiB. Bump to standard-1+ for heavy
+      // video/HLS transcoding workloads.
+      "instance_type": "basic",
+      // Single instance: in-memory collab state + local Redis consistency.
+      "max_instances": 1
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "API_CONTAINER",
+        "class_name": "LearnHouseApiContainer"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["LearnHouseApiContainer"]
+    }
+  ]
+  // Secrets (one-time setup):
+  //   wrangler secret put LEARNHOUSE_SQL_CONNECTION_STRING   # Neon Postgres URL
+  //   wrangler secret put LEARNHOUSE_AUTH_JWT_SECRET_KEY
+  //   wrangler secret put NEXTAUTH_SECRET
+  //   wrangler secret put COLLAB_INTERNAL_KEY
+  //   wrangler secret put LEARNHOUSE_AI_API_KEY
+  //   wrangler secret put AWS_ENDPOINT_URL_S3                 # https://<account>.r2.cloudflarestorage.com
+  //   wrangler secret put AWS_ACCESS_KEY_ID                   # R2 token
+  //   wrangler secret put AWS_SECRET_ACCESS_KEY
+  //   wrangler secret put LEARNHOUSE_INITIAL_ADMIN_EMAIL
+  //   wrangler secret put LEARNHOUSE_INITIAL_ADMIN_PASSWORD
+  //
+  // Zone routes — uncomment once the zone exists in the account. These
+  // patterns are MORE SPECIFIC than the frontend's ordria.app/* catch-all,
+  // so they take precedence (same-origin: no CORS needed):
+  //
+  // "routes": [
+  //   { "pattern": "ordria.app/api/v1*", "zone_name": "ordria.app" },
+  //   { "pattern": "ordria.app/content*", "zone_name": "ordria.app" },
+  //   { "pattern": "ordria.app/collab*", "zone_name": "ordria.app" }
+  // ]
+}
