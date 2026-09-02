@@ -36,7 +36,7 @@ FROM python:3.14-slim-bookworm AS runner
 # redis-server (local cache) + ffmpeg (HLS transcoding) + node (collab).
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        nginx curl netcat-openbsd ca-certificates redis-server ffmpeg gnupg \
+        nginx curl netcat-openbsd ca-certificates redis-server ffmpeg gnupg unzip \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && apt-get purge -y gnupg \
@@ -55,6 +55,8 @@ COPY apps/api ./
 WORKDIR /app/collab
 COPY --from=collab-builder /app/dist ./dist
 COPY apps/collab/package.json apps/collab/bun.lock* ./
+# bun via the official installer (static glibc build); the alpine builder's
+# binary is musl-linked and won't run on bookworm.
 RUN curl -fsSL https://bun.sh/install | bash \
     && mv /root/.bun/bin/bun /usr/local/bin/bun && rm -rf /root/.bun \
     && bun install --production

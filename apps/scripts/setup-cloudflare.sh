@@ -62,6 +62,16 @@ wrangler secret put AWS_SECRET_ACCESS_KEY               # R2 token secret
 wrangler secret put LEARNHOUSE_INITIAL_ADMIN_EMAIL
 wrangler secret put LEARNHOUSE_INITIAL_ADMIN_PASSWORD
 
+# Optional — emails (org invites, password reset). Provider: resend OR smtp.
+# wrangler secret put LEARNHOUSE_EMAIL_PROVIDER        # "resend" or "smtp"
+# wrangler secret put LEARNHOUSE_RESEND_API_KEY
+# wrangler secret put LEARNHOUSE_SYSTEM_EMAIL_ADDRESS
+# (smtp alternative: LEARNHOUSE_SMTP_HOST/_PORT/_USERNAME/_PASSWORD/_USE_TLS)
+
+# Optional — analytics dashboard (Tinybird)
+# wrangler secret put LEARNHOUSE_TINYBIRD_INGEST_TOKEN
+# wrangler secret put LEARNHOUSE_TINYBIRD_READ_TOKEN
+
 cd ../web
 wrangler secret put NEXTAUTH_SECRET                     # SAME value as the API worker
 EOF
