@@ -75,5 +75,9 @@ nohup /app/api/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 9000 --timeout-
 echo "[start] FastAPI starting on :9000"
 
 # ── 6. nginx — foreground, main process ──
-echo "[start] All services launched — nginx on :8080"
-exec nginx -c /etc/nginx/nginx-api.conf -g 'daemon off;'
+# Render routes web traffic to $PORT (their platform convention); other hosts
+# (Cloudflare Container, local Docker) don't set it and keep the default 8080.
+LISTEN_PORT="${PORT:-8080}"
+sed "s/8080/${LISTEN_PORT}/g" /etc/nginx/nginx-api.conf > /tmp/nginx-api.conf
+echo "[start] All services launched — nginx on :${LISTEN_PORT}"
+exec nginx -c /tmp/nginx-api.conf -g 'daemon off;'

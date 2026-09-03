@@ -403,7 +403,8 @@ async function gracefulShutdown() {
 process.on('SIGINT', gracefulShutdown)
 process.on('SIGTERM', gracefulShutdown)
 
-// Bind loopback only: nginx (the single exposed port) proxies /collab here.
-server.listen(PORT, '127.0.0.1').then(() => {
-  console.log(`Hocuspocus collab server running on 127.0.0.1:${PORT}`)
+// Note: Hocuspocus v4 listen(port, callback) has no host option — nginx stays
+// the single entry point because the platform routes to nginx's port only.
+server.listen(PORT).then(() => {
+  console.log(`Hocuspocus collab server running on port ${PORT}`)
 })
