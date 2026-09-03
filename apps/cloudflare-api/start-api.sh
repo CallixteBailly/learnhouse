@@ -51,7 +51,9 @@ fi
 
 # ── 3. Migrations + initial admin (idempotent) ──
 cd /app/api
-if uv run python cli.py install --short > /tmp/api-logs/install.log 2>&1; then
+# Direct venv binaries — `uv run` fails on some hosts (Render) resolving the
+# interpreter symlink, and skips a layer of boot-time checks (faster cold start).
+if /app/api/.venv/bin/python cli.py install --short > /tmp/api-logs/install.log 2>&1; then
     echo "[start] DB install/migrations OK"
 else
     echo "[start] WARN: cli.py install failed — continuing"
@@ -69,7 +71,7 @@ echo "[start] Collab server starting on :4000"
 # ── 5. FastAPI backend ──
 cd /app/api
 # Bind loopback: nginx (8080, the only exposed port) proxies everything.
-nohup uv run uvicorn app:app --host 127.0.0.1 --port 9000 --timeout-keep-alive 600 > /tmp/api-logs/api.log 2>&1 &
+nohup /app/api/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 9000 --timeout-keep-alive 600 > /tmp/api-logs/api.log 2>&1 &
 echo "[start] FastAPI starting on :9000"
 
 # ── 6. nginx — foreground, main process ──
