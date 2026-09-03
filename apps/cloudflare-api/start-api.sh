@@ -54,7 +54,11 @@ cd /app/api
 if uv run python cli.py install --short > /tmp/api-logs/install.log 2>&1; then
     echo "[start] DB install/migrations OK"
 else
-    echo "[start] WARN: cli.py install failed (see /tmp/api-logs/install.log) — continuing"
+    echo "[start] WARN: cli.py install failed — continuing"
+    # Surface the real error in container stdout (visible in Render logs)
+    echo "[start] ---- install.log (last 40 lines) ----"
+    tail -n 40 /tmp/api-logs/install.log || true
+    echo "[start] ---- end install.log ----"
 fi
 
 # ── 4. Collab server ──
