@@ -64,7 +64,8 @@ echo "[start] Collab server starting on :4000"
 
 # ── 5. FastAPI backend ──
 cd /app/api
-nohup uv run uvicorn app:app --host 0.0.0.0 --port 9000 --timeout-keep-alive 600 > /tmp/api-logs/api.log 2>&1 &
+# Bind loopback: nginx (8080, the only exposed port) proxies everything.
+nohup uv run uvicorn app:app --host 127.0.0.1 --port 9000 --timeout-keep-alive 600 > /tmp/api-logs/api.log 2>&1 &
 echo "[start] FastAPI starting on :9000"
 
 # ── 6. nginx — foreground, main process ──
