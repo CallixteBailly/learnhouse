@@ -1,0 +1,39 @@
+# Render.com blueprint — OrdIA Learning API (free-tier MVP backend)
+#
+# Deploy: render.com → New + → Blueprint → select the learnhouse repo →
+# Render reads this file, asks for the secret values, and deploys.
+# Same Docker image as the Cloudflare Container (see Dockerfile.render).
+#
+# Free plan: 512 MB RAM, sleeps after ~15 min idle (cold start ~1 min),
+# no card required. Not suitable for video transcoding (ffmpeg uploads) —
+# use YouTube activities; switch to Cloudflare Containers + R2 when a
+# card is available.
+#
+# Spec: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: ordia-api
+    runtime: docker
+    dockerfile: ./Dockerfile.render
+    plan: free
+    region: frankfurt
+    healthCheckPath: /ping
+    autoDeploy: false # manual deploys only — free build minutes are limited
+    envVars:
+      # Postgres (Neon) — strip channel_binding, keep sslmode=require
+      - key: LEARNHOUSE_SQL_CONNECTION_STRING
+        sync: false
+      # openssl rand -base64 32
+      - key: LEARNHOUSE_AUTH_JWT_SECRET_KEY
+        sync: false
+      # openssl rand -base64 32 — MUST match the frontend Worker value
+      - key: NEXTAUTH_SECRET
+        sync: false
+      # openssl rand -base64 32
+      - key: COLLAB_INTERNAL_KEY
+        sync: false
+      # Initial admin — real domain (pydantic rejects .local), strong password
+      - key: LEARNHOUSE_INITIAL_ADMIN_EMAIL
+        sync: false
+      - key: LEARNHOUSE_INITIAL_ADMIN_PASSWORD
+        sync: false
