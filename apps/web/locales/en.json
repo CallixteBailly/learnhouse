@@ -4618,11 +4618,14 @@
       "video_block": {
         "uploading": "Uploading video...",
         "drop_or_browse": "Drop your video here or click to browse",
-        "supported_formats": "Supports MP4 and WebM formats",
-        "unsupported_format": "Please upload a supported video format (MP4 or WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "Video Player",
         "expand_video": "Expand video",
-        "download_video": "Download video"
+        "download_video": "Download video",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "No PDF available",

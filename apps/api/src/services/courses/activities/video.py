@@ -23,8 +23,23 @@ from fastapi import HTTPException, status, UploadFile, Request
 from uuid import uuid4
 from datetime import datetime
 from src.security.rbac import check_resource_access, AccessAction
+from src.security.file_validation import VIDEO_FILE_FORMATS
 
 logger = logging.getLogger(__name__)
+
+
+def _is_supported_video_file(video_file: UploadFile) -> bool:
+    """Accept a video upload when its EXTENSION is a known video container.
+
+    Extension-first on purpose: browsers report wildly inconsistent MIME types
+    for less common containers (mkv often arrives as application/octet-stream,
+    mov as video/quicktime or video/mp4). Content itself is still magic-byte
+    validated downstream by validate_upload, so this gate only routes formats.
+    """
+    if not video_file.filename or "." not in video_file.filename:
+        return False
+    ext = video_file.filename.rsplit(".", 1)[-1].strip().lower()
+    return ext in VIDEO_FILE_FORMATS
 
 
 async def create_video_activity(
@@ -88,7 +103,7 @@ async def create_video_activity(
             detail="Video : No video file provided",
         )
 
-    if video_file.content_type not in ["video/mp4", "video/webm"]:
+    if not _is_supported_video_file(video_file):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Video : Wrong video format"
         )
@@ -312,7 +327,7 @@ async def update_video_activity(
         activity.details = json.loads(details)
 
     if video_file and video_file.filename:
-        if video_file.content_type not in ["video/mp4", "video/webm"]:
+        if not _is_supported_video_file(video_file):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Video : Wrong video format",

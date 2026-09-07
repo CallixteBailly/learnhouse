@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from src.routers import admin as admin_router_module
 from src.routers import analytics as analytics_router_module
+from src.routers import audit_logs as audit_logs_router_module
 from src.routers import code_execution
 from src.routers import code_submissions
 from src.routers import health
@@ -327,6 +328,13 @@ v1_router.include_router(
     prefix="/analytics",
     tags=["analytics"],
     dependencies=[Depends(require_authenticated_user)],
+)
+
+v1_router.include_router(
+    audit_logs_router_module.router,
+    prefix="/audit-logs",
+    tags=["audit-logs"],
+    dependencies=[Depends(require_authenticated_user), Depends(require_plan("enterprise", "Audit Logs"))],
 )
 
 v1_router.include_router(

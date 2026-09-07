@@ -132,8 +132,8 @@ function detectMetier(course: any): { image: string; label: string } {
   if (haystack.includes('ia') || haystack.includes('intelligence') || haystack.includes('automatisation'))
     return METIER_VISUALS.ia
   // Fallback : image aléatoire déterministe (stable par UUID)
-  const uuid = course?.course_uuid || ''
-  const idx = uuid.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % FALLBACK_IMAGES.length
+  const uuid: string = course?.course_uuid || ''
+  const idx = uuid.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) % FALLBACK_IMAGES.length
   return { image: FALLBACK_IMAGES[idx], label: '' }
 }
 

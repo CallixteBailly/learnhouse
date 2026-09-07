@@ -4406,11 +4406,14 @@
       "video_block": {
         "uploading": "Nahráva sa video...",
         "drop_or_browse": "Presuňte video sem alebo kliknite pre prehliadanie",
-        "supported_formats": "Podporuje formáty MP4 a WebM",
-        "unsupported_format": "Nahrajte podporovaný formát videa (MP4 alebo WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "Prehrávač videa",
         "expand_video": "Rozbaliť video",
-        "download_video": "Stiahnuť video"
+        "download_video": "Stiahnuť video",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "Žiadne PDF nie je dostupné",

@@ -239,6 +239,7 @@ async def transcode_activity(activity_uuid: str) -> bool:
             activity_uuid, "ready",
             master=result["master"], renditions=result["renditions"],
             thumbnails=result.get("thumbnails"),
+            width=result.get("width"), height=result.get("height"),
         )
         if client:
             try:
@@ -422,6 +423,7 @@ async def transcode_block(activity_uuid: str, block_uuid: str) -> bool:
             block_uuid, "ready",
             master=result["master"], renditions=result["renditions"],
             thumbnails=result.get("thumbnails"),
+            width=result.get("width"), height=result.get("height"),
         )
         if client:
             try:

@@ -47,8 +47,13 @@ RUN apt-get update \
 # ── Backend: Python deps (cached layer, then source) ──
 WORKDIR /app/api
 COPY apps/api/uv.lock apps/api/pyproject.toml ./
+# uv's managed Python (required: exactly 3.14.3) goes to /opt/uv-python —
+# NOT /root/.local — so the runtime user can execute the venv symlinks
+# (default location = "Permission denied" for appuser at startup).
+ENV UV_PYTHON_INSTALL_DIR=/opt/uv-python
 RUN pip install --no-cache-dir --upgrade pip uv \
-    && uv sync --no-dev
+    && uv sync --no-dev \
+    && chmod -R a+rX /opt/uv-python
 COPY apps/api ./
 
 # ── Collab: compiled JS + production deps ──
@@ -68,9 +73,13 @@ RUN chmod +x /app/start-api.sh
 
 # ── Non-root user (Cloudflare Containers run without root capabilities) ──
 # nginx temp paths (/tmp/nginx) must be writable by the runtime user.
+# a+rX guarantees traversal + exec on venv binaries for ANY runtime UID
+# (some platforms remap the execution user).
 RUN useradd --create-home --uid 1001 appuser \
     && mkdir -p /tmp/nginx /tmp/api-logs \
-    && chown -R appuser:appuser /app /tmp/nginx /tmp/api-logs
+    && chown -R appuser:appuser /app /tmp/nginx /tmp/api-logs \
+    && chmod -R a+rX /app /home/appuser \
+    && chmod 755 /home/appuser
 USER appuser
 ENV HOME=/home/appuser
 
@@ -86,3 +95,5 @@ ENV PYTHONUNBUFFERED=1 \
 EXPOSE 8080
 
 CMD ["/app/start-api.sh"]
+
+# 2026-09-05: env bump (LEARNHOUSE_FRONTEND_DOMAIN/SSL) — comment-only change to force a rollout so the running instance restarts with the new environment.

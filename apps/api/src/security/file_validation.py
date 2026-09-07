@@ -36,20 +36,68 @@ def validate_image_content(content: bytes) -> bool:
     return False
 
 
+# Common `ftyp` brands (MP4 family: mp4/m4v/mov/3gp/heic-less media files).
+# Any brand here at offset 8 confirms an ISO-BMFF container we can hand to the
+# HLS pipeline; exotic-but-valid brands still validate via the QuickTime atom
+# fallback below.
+_MP4_FTYP_BRANDS = (
+    b'mp4', b'isom', b'iso2', b'iso4', b'iso5', b'iso6', b'M4V ', b'M4A',
+    b'qt  ', b'avc1', b'3gp', b'3g2', b'3ge', b'3gg', b'3gm', b'3gp',
+    b'dash', b'mp42', b'mp41', b'MSF1', b'NDSC', b'F4V ',
+)
+
+# Legacy QuickTime `.mov` files may have no ftyp at all and open with one of
+# these atoms instead (the first atom type sits at offset 4).
+_QUICKTIME_FIRST_ATOMS = (
+    b'moov', b'mdat', b'free', b'skip', b'wide', b'pnot', b'ftyp',
+)
+
+
 def validate_video_content(content: bytes) -> bool:
-    """Validate video content using magic bytes."""
+    """Validate video content using magic bytes (container sniffing).
+
+    Accepts every container the HLS transcoder can decode: MP4 family
+    (mp4/m4v/mov/3gp), Matroska/WebM (EBML), AVI, ASF/WMV, FLV, Ogg and
+    MPEG-PS. Codec-level checks are deliberately out of scope — ffmpeg is the
+    authority there and reports failures through the transcode job.
+    """
     if len(content) < 12:
         return False
 
     magic_bytes = content[:12]
 
-    # MP4: starts with specific ftyp box signatures
-    if (magic_bytes[4:8] == b'ftyp' and
-        (b'mp4' in magic_bytes[8:12] or b'M4V' in magic_bytes[8:12] or b'isom' in magic_bytes[8:12])):
+    # ISO-BMFF / QuickTime: `ftyp` box at offset 4 with a known brand.
+    if magic_bytes[4:8] == b'ftyp':
+        brand = magic_bytes[8:12]
+        if any(brand.startswith(b) for b in _MP4_FTYP_BRANDS):
+            return True
+
+    # Legacy QuickTime .mov: first atom is a known box type.
+    if magic_bytes[4:8] in _QUICKTIME_FIRST_ATOMS:
         return True
 
-    # WebM: EBML header
+    # WebM / MKV: EBML header.
     if magic_bytes.startswith(b'\x1a\x45\xdf\xa3'):
+        return True
+
+    # AVI: RIFF....AVI
+    if magic_bytes.startswith(b'RIFF') and magic_bytes[8:12] == b'AVI ':
+        return True
+
+    # ASF / WMV: ASF header object GUID.
+    if magic_bytes.startswith(b'\x30\x26\xb2\x75\x8e\x66\xcf\x11'):
+        return True
+
+    # FLV
+    if magic_bytes.startswith(b'FLV'):
+        return True
+
+    # Ogg (video ogv / audio ogg share the same page signature).
+    if magic_bytes.startswith(b'OggS'):
+        return True
+
+    # MPEG-PS (VOB/.mpg) pack header or MPEG-ES video sequence header.
+    if magic_bytes[:4] == b'\x00\x00\x01\xba' or magic_bytes[:4] == b'\x00\x00\x01\xb3':
         return True
 
     return False
@@ -131,8 +179,18 @@ FILE_TYPES = {
         'validator': validate_image_content
     },
     'video': {
-        'extensions': ['.mp4', '.webm'],
-        'mime_types': ['video/mp4', 'video/webm'],
+        # Every container the HLS pipeline (ffmpeg) can decode. mp4/m4v/mov/
+        # webm/ogv also play progressively in browsers before HLS is ready;
+        # the rest (mkv/avi/wmv/flv/mpeg/3gp) becomes watchable via HLS.
+        'extensions': [
+            '.mp4', '.m4v', '.mov', '.webm', '.mkv', '.avi', '.wmv',
+            '.flv', '.ogv', '.mpg', '.mpeg', '.3gp',
+        ],
+        'mime_types': [
+            'video/mp4', 'video/x-m4v', 'video/quicktime', 'video/webm',
+            'video/x-matroska', 'video/x-msvideo', 'video/x-ms-wmv',
+            'video/x-flv', 'video/ogg', 'video/mpeg', 'video/3gpp',
+        ],
         'max_size': 5 * _GB,
         'validator': validate_video_content
     },
@@ -191,6 +249,10 @@ FILE_TYPES = {
     }
 }
 
+# Dot-less video extensions (e.g. 'mp4') for call sites that historically pass
+# bare format strings — video block creation, upload mapping, activity gates.
+VIDEO_FILE_FORMATS = [ext.lstrip('.') for ext in FILE_TYPES['video']['extensions']]
+
 
 EXT_TO_CANONICAL_MIME = {
     '.jpg': 'image/jpeg',
@@ -200,6 +262,16 @@ EXT_TO_CANONICAL_MIME = {
     '.webp': 'image/webp',
     '.mp4': 'video/mp4',
     '.webm': 'video/webm',
+    '.m4v': 'video/x-m4v',
+    '.mov': 'video/quicktime',
+    '.mkv': 'video/x-matroska',
+    '.avi': 'video/x-msvideo',
+    '.wmv': 'video/x-ms-wmv',
+    '.flv': 'video/x-flv',
+    '.ogv': 'video/ogg',
+    '.mpg': 'video/mpeg',
+    '.mpeg': 'video/mpeg',
+    '.3gp': 'video/3gpp',
     '.pdf': 'application/pdf',
     '.mp3': 'audio/mpeg',
     '.wav': 'audio/wav',
@@ -225,6 +297,15 @@ MIME_TO_SAFE_EXT = {
     'image/webp': 'webp',
     'video/mp4': 'mp4',
     'video/webm': 'webm',
+    'video/x-m4v': 'm4v',
+    'video/quicktime': 'mov',
+    'video/x-matroska': 'mkv',
+    'video/x-msvideo': 'avi',
+    'video/x-ms-wmv': 'wmv',
+    'video/x-flv': 'flv',
+    'video/ogg': 'ogv',
+    'video/mpeg': 'mpeg',
+    'video/3gpp': '3gp',
     'application/pdf': 'pdf',
     'audio/mpeg': 'mp3',
     'audio/wav': 'wav',

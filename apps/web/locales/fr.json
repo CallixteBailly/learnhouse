@@ -4147,11 +4147,14 @@
       "video_block": {
         "uploading": "Téléchargement de la vidéo...",
         "drop_or_browse": "Glissez votre vidéo ici ou cliquez pour parcourir",
-        "supported_formats": "Supporte les formats MP4 et WebM",
-        "unsupported_format": "Veuillez télécharger un format vidéo supporté (MP4 ou WebM)",
+        "supported_formats": "Supporte les formats MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG et 3GP",
+        "unsupported_format": "Veuillez téléverser un format vidéo supporté (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "Lecteur vidéo",
         "expand_video": "Agrandir la vidéo",
-        "download_video": "Télécharger la vidéo"
+        "download_video": "Télécharger la vidéo",
+        "converting_title": "Conversion vidéo en cours",
+        "converting_description": "Votre vidéo {{format}} est en cours de conversion pour une lecture optimale dans tous les navigateurs. Elle sera prête dans quelques minutes — cette page se met à jour automatiquement.",
+        "fullscreen_video": "Lire en plein écran"
       },
       "pdf_block": {
         "no_pdf": "Aucun PDF disponible",

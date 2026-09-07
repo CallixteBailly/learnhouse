@@ -13,7 +13,7 @@ export const getAuditLogs = async (orgId: number, accessToken: string, filters: 
   if (filters.start_date) queryParams.append("start_date", filters.start_date);
   if (filters.end_date) queryParams.append("end_date", filters.end_date);
 
-  const url = `${getAPIUrl()}ee/audit_logs/?${queryParams.toString()}`;
+  const url = `${getAPIUrl()}audit-logs/?${queryParams.toString()}`;
   return apiFetch(url, accessToken);
 };
 

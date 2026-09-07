@@ -4258,9 +4258,12 @@
         "drop_or_browse": "আপনার ভিডিও এখানে ছেড়ে দিন বা ব্রাউজ করতে ক্লিক করুন",
         "expand_video": "ভিডিও প্রসারিত করুন",
         "player_title": "ভিডিও প্লেয়ার",
-        "supported_formats": "MP4 এবং WebM ফরম্যাট সমর্থন করে",
-        "unsupported_format": "অনুগ্রহ করে একটি সমর্থিত ভিডিও ফরম্যাট আপলোড করুন (MP4 বা WebM)",
-        "uploading": "ভিডিও আপলোড হচ্ছে..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "ভিডিও আপলোড হচ্ছে...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "button_block": {
         "enter_link_url": "লিঙ্ক URL লিখুন"

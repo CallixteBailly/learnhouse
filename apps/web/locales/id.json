@@ -4256,9 +4256,12 @@
         "drop_or_browse": "Letakkan video Anda di sini atau klik untuk menelusuri",
         "expand_video": "Perluas video",
         "player_title": "Pemutar Video",
-        "supported_formats": "Mendukung format MP4 dan WebM",
-        "unsupported_format": "Silakan unggah format video yang didukung (MP4 atau WebM)",
-        "uploading": "Mengunggah video..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "Mengunggah video...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "button_block": {
         "enter_link_url": "Masukkan URL tautan"

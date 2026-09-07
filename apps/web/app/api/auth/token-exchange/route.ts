@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
     if (!access_token && !refresh_token) {
       console.error('[token-exchange] step=decrypt no tokens in response')
       return NextResponse.json(
-        { error: 'No tokens returned', code: 'no_tokens' },
+        { error: 'No tokens returned', code: 'signin_data_missing' },
         { status: 401 }
       )
     }
@@ -207,7 +207,7 @@ export async function POST(request: NextRequest) {
 
     if (!access_token) {
       return NextResponse.json(
-        { error: 'Token exchange failed', code: 'no_access_token' },
+        { error: 'Token exchange failed', code: 'session_not_established' },
         { status: 401 }
       )
     }
@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
     if (!refresh_token) {
       console.error('[token-exchange] step=cookies no refresh token — refusing to set partial session')
       return NextResponse.json(
-        { error: 'Platform did not return a refresh token', code: 'no_refresh_token' },
+        { error: 'Platform did not return a refresh token', code: 'signin_link_incomplete' },
         { status: 401 }
       )
     }

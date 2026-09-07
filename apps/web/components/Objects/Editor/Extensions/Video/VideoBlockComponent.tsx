@@ -1,8 +1,8 @@
 import { NodeViewProps, NodeViewWrapper } from '@tiptap/react'
 import { Node } from '@tiptap/core'
 import {
-  Loader2, Video, Upload, X, ArrowLeftRight,
-  CheckCircle2, AlertCircle, Expand,
+  Loader2, Video, Upload, X, ArrowLeftRight, Clock,
+  CheckCircle2, AlertCircle, Expand, Maximize,
 } from 'lucide-react'
 import React from 'react'
 import toast from 'react-hot-toast'
@@ -12,13 +12,18 @@ import { useOrg } from '@components/Contexts/OrgContext'
 import { useCourse } from '@components/Contexts/CourseContext'
 import { useEditorProvider } from '@components/Contexts/Editor/EditorContext'
 import { useLHSession } from '@components/Contexts/LHSessionContext'
-import { constructAcceptValue } from '@/lib/constants'
+import {
+  VIDEO_ACCEPT_VALUE,
+  isSupportedVideoFile,
+  isProgressivelyPlayableVideo,
+} from '@/lib/video-formats'
 import { cn } from '@/lib/utils'
 import Modal from '@components/Objects/StyledElements/Modal/Modal'
 import LearnHousePlayer from '@components/Objects/Activities/Video/LearnHousePlayer'
+import AdaptiveVideoShell from '@components/Objects/Activities/Video/AdaptiveVideoShell'
 import { useTranslation } from 'react-i18next'
 
-const SUPPORTED_FILES = constructAcceptValue(['webm', 'mp4'])
+const SUPPORTED_FILES = VIDEO_ACCEPT_VALUE
 
 const VIDEO_SIZES = {
   small: { width: 480, label: 'Small' },
@@ -144,6 +149,21 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
   const [hlsMeta, setHlsMeta] = React.useState<any>(
     (initialBlockObject as any)?.content?.hls ?? null
   )
+  // Latest status for the polling interval (avoids re-arming it on each update).
+  const hlsMetaRef = React.useRef<any>(hlsMeta)
+  hlsMetaRef.current = hlsMeta
+  // Intrinsic video dimensions: seeded from the server's HLS metadata when
+  // available (no layout shift once transcoded), otherwise measured by the
+  // player on loadedmetadata. Drives the adaptive aspect-ratio shell.
+  const hlsDims = (m: any): number | null => {
+    const w = Number(m?.width)
+    const h = Number(m?.height)
+    return w > 0 && h > 0 ? w / h : null
+  }
+  const [aspectRatio, setAspectRatio] = React.useState<number | null>(hlsDims((initialBlockObject as any)?.content?.hls))
+  const handleDimensions = React.useCallback((w: number, h: number) => {
+    if (w > 0 && h > 0) setAspectRatio(w / h)
+  }, [])
 
   // Update block object when size changes
   React.useEffect(() => {
@@ -190,14 +210,13 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
     setIsDragging(false)
 
     const file = e.dataTransfer.files[0]
-    const fileExtension = file?.name.split('.').pop()?.toLowerCase()
 
-    if (file && fileExtension && ['mp4', 'webm'].includes(fileExtension)) {
+    if (file && isSupportedVideoFile(file)) {
       setVideo(file)
       setError(null)
       handleUpload(file)
     } else {
-      setError('Please upload a supported video format (MP4 or WebM)')
+      setError(t('editor.blocks.video_block.unsupported_format'))
     }
   }
 
@@ -262,15 +281,39 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
     ? getVideoBlockStreamUrl(orgUuid, courseUuid, activityUuid, blockObject.block_uuid, fileId)
     : null
 
-  // Fetch the fresh block once we have its uuid, to learn whether HLS is ready.
+  // Fetch the fresh block once we have its uuid, to learn whether HLS is ready
+  // — and keep polling every 10s while it isn't (bounded), so a video that
+  // still needs transcoding flips to playable without a manual refresh.
   const blockUuid = blockObject?.block_uuid
   React.useEffect(() => {
     if (!blockUuid || !access_token) return
     let cancelled = false
-    getVideoBlock(blockUuid, access_token).then((fresh) => {
-      if (!cancelled && fresh?.content?.hls) setHlsMeta(fresh.content.hls)
-    })
-    return () => { cancelled = true }
+    let attempts = 0
+    const tick = () => {
+      if (cancelled) return
+      getVideoBlock(blockUuid, access_token).then((fresh) => {
+        if (cancelled || !fresh?.content?.hls) return
+        setHlsMeta(fresh.content.hls)
+        setAspectRatio((prev) => prev ?? hlsDims(fresh.content.hls))
+      })
+    }
+    tick()
+    const interval = setInterval(() => {
+      attempts += 1
+      if (attempts > 60) {
+        clearInterval(interval)
+        return
+      }
+      if ((hlsMetaRef.current?.status ?? null) === 'ready') {
+        clearInterval(interval)
+        return
+      }
+      tick()
+    }, 10000)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
   }, [blockUuid, access_token])
 
   const hlsReady = hlsMeta?.status === 'ready'
@@ -280,10 +323,18 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
 
   // Adaptive HLS when ready (with the MP4 as fallback), else the progressive MP4.
   const videoUrl = hlsMasterUrl || mp4Url
+  // Formats browsers can't play directly (mkv/avi/wmv/flv/mpeg/3gp) show a
+  // conversion state until the HLS ladder lands, instead of a broken player.
+  const needsConversion =
+    !!blockObject && !hlsReady && !isProgressivelyPlayableVideo(blockObject.content?.file_format)
   const playerProps = {
     src: videoUrl || '',
     isHls: !!hlsMasterUrl,
     fallbackSrc: hlsMasterUrl && mp4Url ? mp4Url : undefined,
+    onDimensions: handleDimensions,
+    onReady: (playerInstance: any) => {
+      playerApiRef.current = playerInstance
+    },
     thumbnails:
       hlsReady && hlsMeta?.thumbnails?.url && blockObject && orgUuid && courseUuid && activityUuid
         ? {
@@ -301,32 +352,58 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
     setIsModalOpen(true);
   };
 
+  // video.js player instance (set via onReady) for imperative fullscreen.
+  const playerApiRef = React.useRef<any>(null)
+  // Real fullscreen in one click. Routes through video.js's own
+  // FullscreenToggle button so we inherit its platform fallbacks (notably
+  // iPhone, where element-Fullscreen doesn't exist and video.js swaps to the
+  // native video player's fullscreen).
+  const handleFullscreen = () => {
+    const player = playerApiRef.current
+    if (!player || player.isDisposed?.()) return
+    const toggle = player.controlBar?.getChild?.('FullscreenToggle')
+    if (toggle) {
+      toggle.handleClick()
+    } else {
+      player.requestFullscreen?.()
+    }
+  };
+
   // If we're in preview mode and have a video, show only the video player
   if (!isEditable && blockObject && videoUrl) {
-    const width = VIDEO_SIZES[blockObject.size].width
     return (
       <>
         <NodeViewWrapper className="block-video w-full">
           <div className="w-full flex justify-center relative">
-            <div
-              style={{
-                maxWidth: typeof width === 'number' ? width : '100%',
-                width: '100%'
-              }}
+            <AdaptiveVideoShell
+              aspectRatio={aspectRatio}
+              maxWidth={VIDEO_SIZES[blockObject.size].width}
+              className="rounded-lg group"
             >
-              <div className="relative group w-full aspect-video overflow-hidden rounded-lg bg-black">
-                <LearnHousePlayer {...playerProps} />
-                <div className="absolute top-2 right-2 z-40 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={handleExpand}
-                    className="p-2 outline-none bg-black/50 hover:bg-black/70 rounded-lg transition-colors"
-                    title={t('editor.blocks.video_block.expand_video')}
-                  >
-                    <Expand className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-              </div>
-            </div>
+              {needsConversion ? (
+                <ConversionPending format={blockObject.content?.file_format} />
+              ) : (
+                <>
+                  <LearnHousePlayer {...playerProps} />
+                  <div className="absolute top-2 right-2 z-40 flex gap-1 lh-video-overlay transition-opacity">
+                    <button
+                      onClick={handleFullscreen}
+                      className="p-2 outline-none bg-black/50 hover:bg-black/70 rounded-lg transition-colors"
+                      title={t('editor.blocks.video_block.fullscreen_video')}
+                    >
+                      <Maximize className="w-4 h-4 text-white" />
+                    </button>
+                    <button
+                      onClick={handleExpand}
+                      className="p-2 outline-none bg-black/50 hover:bg-black/70 rounded-lg transition-colors"
+                      title={t('editor.blocks.video_block.expand_video')}
+                    >
+                      <Expand className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
+                </>
+              )}
+            </AdaptiveVideoShell>
           </div>
         </NodeViewWrapper>
 
@@ -337,13 +414,17 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
           minWidth="lg"
           minHeight="lg"
           dialogContent={
-            <div className="w-full aspect-video overflow-hidden rounded-lg bg-black">
-              <LearnHousePlayer
-                key={isModalOpen ? videoUrl : undefined}
-                {...playerProps}
-                details={{ autoplay: true }}
-              />
-            </div>
+            <AdaptiveVideoShell aspectRatio={aspectRatio} maxHeightVh={70} className="rounded-lg">
+              {needsConversion ? (
+                <ConversionPending format={blockObject.content?.file_format} />
+              ) : (
+                <LearnHousePlayer
+                  key={isModalOpen ? videoUrl : undefined}
+                  {...playerProps}
+                  details={{ autoplay: true }}
+                />
+              )}
+            </AdaptiveVideoShell>
           }
         />
       </>
@@ -465,32 +546,38 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
 
             {/* Video Player */}
             <div className="flex justify-center">
-              <div
-                style={{
-                  maxWidth: typeof VIDEO_SIZES[selectedSize].width === 'number'
-                    ? VIDEO_SIZES[selectedSize].width
-                    : '100%',
-                  width: '100%'
-                }}
+              <AdaptiveVideoShell
+                aspectRatio={aspectRatio}
+                maxWidth={VIDEO_SIZES[selectedSize].width}
+                className="rounded-lg group nice-shadow"
               >
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black nice-shadow">
-                  {isLoading && (
-                    <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/10 backdrop-blur-sm">
-                      <Loader2 className="w-8 h-8 animate-spin text-white" />
-                    </div>
-                  )}
-                  <LearnHousePlayer {...playerProps} />
-                  <div className="absolute top-2 right-2 z-40 flex gap-1">
-                    <button
-                      onClick={handleExpand}
-                      className="p-2 outline-none bg-black/50 hover:bg-black/70 rounded-lg transition-colors"
-                      title={t('editor.blocks.video_block.expand_video')}
-                    >
-                      <Expand className="w-4 h-4 text-white" />
-                    </button>
+                {isLoading && (
+                  <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/10 backdrop-blur-sm">
+                    <Loader2 className="w-8 h-8 animate-spin text-white" />
                   </div>
+                )}
+                {needsConversion ? (
+                  <ConversionPending format={blockObject.content?.file_format} />
+                ) : (
+                  <LearnHousePlayer {...playerProps} />
+                )}
+                <div className="absolute top-2 right-2 z-40 flex gap-1">
+                  <button
+                    onClick={handleFullscreen}
+                    className="p-2 outline-none bg-black/50 hover:bg-black/70 rounded-lg transition-colors"
+                    title={t('editor.blocks.video_block.fullscreen_video')}
+                  >
+                    <Maximize className="w-4 h-4 text-white" />
+                  </button>
+                  <button
+                    onClick={handleExpand}
+                    className="p-2 outline-none bg-black/50 hover:bg-black/70 rounded-lg transition-colors"
+                    title={t('editor.blocks.video_block.expand_video')}
+                  >
+                    <Expand className="w-4 h-4 text-white" />
+                  </button>
                 </div>
-              </div>
+              </AdaptiveVideoShell>
             </div>
           </div>
         )}
@@ -504,17 +591,44 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
           minWidth="lg"
           minHeight="lg"
           dialogContent={
-            <div className="w-full aspect-video overflow-hidden rounded-lg bg-black">
-              <LearnHousePlayer
-                key={isModalOpen ? videoUrl : undefined}
-                {...playerProps}
-                details={{ autoplay: true }}
-              />
-            </div>
+            <AdaptiveVideoShell aspectRatio={aspectRatio} maxHeightVh={70} className="rounded-lg">
+              {needsConversion ? (
+                <ConversionPending format={blockObject.content?.file_format} />
+              ) : (
+                <LearnHousePlayer
+                  key={isModalOpen ? videoUrl : undefined}
+                  {...playerProps}
+                  details={{ autoplay: true }}
+                />
+              )}
+            </AdaptiveVideoShell>
           }
         />
       )}
     </NodeViewWrapper>
+  )
+}
+
+/**
+ * Placeholder shown while the server transcodes a container browsers can't
+ * play directly (mkv/avi/wmv/flv/mpeg/3gp). The block polls HLS status and
+ * swaps to the real player as soon as it is ready.
+ */
+function ConversionPending({ format }: { format?: string }) {
+  const { t } = useTranslation()
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-neutral-950 px-6 text-center">
+      <Clock className="w-10 h-10 text-neutral-400" />
+      <p className="text-sm font-medium text-white">
+        {t('editor.blocks.video_block.converting_title')}
+      </p>
+      <p className="text-xs leading-relaxed text-neutral-400 max-w-xs">
+        {t('editor.blocks.video_block.converting_description', {
+          format: (format || '').toUpperCase(),
+        })}
+      </p>
+      <Loader2 className="w-5 h-5 animate-spin text-neutral-500" />
+    </div>
   )
 }
 

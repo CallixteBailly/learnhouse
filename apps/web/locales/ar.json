@@ -4168,11 +4168,14 @@
       "video_block": {
         "uploading": "جاري تحميل الفيديو...",
         "drop_or_browse": "اسحب الفيديو الخاص بك هنا أو انقر للاستعراض",
-        "supported_formats": "يدعم صيغ MP4 و WebM",
-        "unsupported_format": "يرجى تحميل صيغة فيديو مدعومة (MP4 أو WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "مشغل الفيديو",
         "expand_video": "توسيع الفيديو",
-        "download_video": "تحميل الفيديو"
+        "download_video": "تحميل الفيديو",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "لا يوجد PDF متاح",

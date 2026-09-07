@@ -1,9 +1,20 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ordria-learning-api",
+  "account_id": "74858fb12cfbc4a8a0ef2b33c2d6ff36",
   "main": "dist/worker.js",
   "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  // Keep the Container permanently warm — a cron ping every 4 minutes
+  // prevents the 5-minute sleepAfter from triggering, eliminating cold
+  // starts (502 for ~55s on first visitor). Cost: negligible (cron
+  // triggers are included in the Workers Paid plan).
+  "triggers": {
+    "crons": ["*/4 * * * *"]
+  },
   "containers": [
     {
       "class_name": "LearnHouseApiContainer",
@@ -30,7 +41,7 @@
       "tag": "v1",
       "new_sqlite_classes": ["LearnHouseApiContainer"]
     }
-  ]
+  ],
   // Secrets (one-time setup):
   //   wrangler secret put LEARNHOUSE_SQL_CONNECTION_STRING   # Neon Postgres URL
   //   wrangler secret put LEARNHOUSE_AUTH_JWT_SECRET_KEY
@@ -43,13 +54,11 @@
   //   wrangler secret put LEARNHOUSE_INITIAL_ADMIN_EMAIL
   //   wrangler secret put LEARNHOUSE_INITIAL_ADMIN_PASSWORD
   //
-  // Zone routes — uncomment once the zone exists in the account. These
-  // patterns are MORE SPECIFIC than the frontend's ordria.app/* catch-all,
+  // Zone routes — MORE SPECIFIC than the frontend's learn.ordria.fr/* catch-all,
   // so they take precedence (same-origin: no CORS needed):
-  //
-  // "routes": [
-  //   { "pattern": "ordria.app/api/v1*", "zone_name": "ordria.app" },
-  //   { "pattern": "ordria.app/content*", "zone_name": "ordria.app" },
-  //   { "pattern": "ordria.app/collab*", "zone_name": "ordria.app" }
-  // ]
+  "routes": [
+    { "pattern": "learn.ordria.fr/api/v1*", "zone_name": "ordria.fr" },
+    { "pattern": "learn.ordria.fr/content*", "zone_name": "ordria.fr" },
+    { "pattern": "learn.ordria.fr/collab*", "zone_name": "ordria.fr" }
+  ]
 }

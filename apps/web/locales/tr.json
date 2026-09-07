@@ -4263,9 +4263,12 @@
         "drop_or_browse": "Videonuzu buraya bırakın veya göz atmak için tıklayın",
         "expand_video": "Videoyu genişlet",
         "player_title": "Video Oynatıcı",
-        "supported_formats": "MP4 ve WebM formatlarını destekler",
-        "unsupported_format": "Lütfen desteklenen bir video formatı yükleyin (MP4 veya WebM)",
-        "uploading": "Video yükleniyor..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "Video yükleniyor...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       }
     },
     "ai_panel": {

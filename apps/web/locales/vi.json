@@ -4261,9 +4261,12 @@
         "drop_or_browse": "Thả video của bạn vào đây hoặc nhấp để duyệt",
         "expand_video": "Mở rộng video",
         "player_title": "Trình phát video",
-        "supported_formats": "Hỗ trợ định dạng MP4 và WebM",
-        "unsupported_format": "Vui lòng tải lên định dạng video được hỗ trợ (MP4 hoặc WebM)",
-        "uploading": "Đang tải lên video..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "Đang tải lên video...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       }
     },
     "ai_panel": {

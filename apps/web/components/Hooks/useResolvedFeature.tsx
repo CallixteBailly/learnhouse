@@ -1,6 +1,6 @@
 import { useOrg } from '@components/Contexts/OrgContext'
 import { usePlan } from '@components/Hooks/usePlan'
-import { PlanLevel, planMeetsRequirement } from '@services/plans/plans'
+import { PlanLevel, isPlanGated, planMeetsRequirement } from '@services/plans/plans'
 import { FeatureKey, getFeatureMeta } from '@services/features/featureMetadata'
 
 export interface ResolvedFeatureState {
@@ -41,11 +41,15 @@ export function useResolvedFeature(feature: FeatureKey): ResolvedFeatureState {
       : null
   const requiredPlan = (rf?.required_plan ?? catalogRequired) as PlanLevel | null
   const enabled = rf?.enabled !== false
-  const meetsPlan = requiredPlan ? planMeetsRequirement(currentPlan, requiredPlan) : true
+  // Self-hosted builds have no plan tiers: the backend's resolved_features is
+  // the sole authority there (EE-only features come back enabled=false,
+  // available=false). Tier comparison only applies on the SaaS platform.
+  const meetsPlan =
+    !isPlanGated() || !requiredPlan || planMeetsRequirement(currentPlan, requiredPlan)
 
   let reason: 'plan' | 'disabled' | undefined
   if (!meetsPlan) reason = 'plan'
-  else if (!enabled) reason = 'disabled'
+  else if (!enabled) reason = rf?.available === false ? 'plan' : 'disabled'
 
   return { enabled, requiredPlan, currentPlan, meetsPlan, reason }
 }

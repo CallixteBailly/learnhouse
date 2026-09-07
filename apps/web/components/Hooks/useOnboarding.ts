@@ -1,5 +1,6 @@
 'use client'
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export type OnboardingStep = {
   id: string
@@ -124,6 +125,9 @@ function saveState(state: OnboardingState) {
 
 export function useOnboarding() {
   const [state, setState] = useState<OnboardingState>(loadState)
+  // Step copy lives in the locale files (onboarding.steps.<id>.*); the English
+  // strings in DEFAULT_STEPS are only the fallback.
+  const { t } = useTranslation()
 
   const applyLocalChange = useCallback(
     (updater: (_prev: OnboardingState) => OnboardingState) => {
@@ -153,6 +157,9 @@ export function useOnboarding() {
 
   const steps: OnboardingStep[] = DEFAULT_STEPS.map((s) => ({
     ...s,
+    title: t(`onboarding.steps.${s.id}.title`, { defaultValue: s.title }),
+    description: t(`onboarding.steps.${s.id}.description`, { defaultValue: s.description }),
+    action: t(`onboarding.steps.${s.id}.action`, { defaultValue: s.action }),
     completed: state.completedSteps.includes(s.id) || state.skippedSteps.includes(s.id),
     skipped: state.skippedSteps.includes(s.id),
   }))

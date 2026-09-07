@@ -78,6 +78,7 @@ import { RequestBodyWithAuthHeader } from '@services/utils/ts/requests'
 import { getAssignmentsFromACourse } from '@services/courses/assignments'
 import { getDeploymentMode } from '@services/config/config'
 import PlanBadge from '@components/Dashboard/Shared/PlanRestricted/PlanBadge'
+import { isPlanGated } from '@services/plans/plans'
 import { usePlan } from '@components/Hooks/usePlan'
 import useAdminStatus from '@components/Hooks/useAdminStatus'
 import { useLHAnalytics, AnalyticsEvent } from '@services/analytics'
@@ -262,7 +263,9 @@ function DashLeftMenu() {
             />
           ) : (
             <Logo
-              variant={isCollapsed ? 'mark' : 'lockup'}
+              /* Mark only — the lockup's "Ordria Learning" text next to the org
+                 name duplicated the brand and forced the name to truncate. */
+              variant="mark"
               size="sm"
               animated
               ariaLabel="Ordria Learning"
@@ -790,7 +793,7 @@ function DashLeftMenu() {
                   <HoverMenuItem asChild>
                     <Link href="/dash/analytics" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <ChartLine size={16} weight="fill" />
-                      <span className="flex items-center">{t('analytics.tabs.advanced')}<PlanBadge currentPlan={plan} requiredPlan="enterprise" variant="dark" /></span>
+                      <span className="flex items-center">{t('analytics.tabs.advanced')}{isPlanGated() && <PlanBadge currentPlan={plan} requiredPlan="enterprise" variant="dark" />}</span>
                     </Link>
                   </HoverMenuItem>
                 </HoverMenuContent>

@@ -10,6 +10,7 @@ from src.db.courses.courses import Course
 from src.db.users import AnonymousUser, PublicUser
 from src.security.org_auth import is_org_member
 from src.security.rbac import check_resource_access, AccessAction
+from src.security.file_validation import VIDEO_FILE_FORMATS
 from src.services.blocks.utils.upload_files import upload_file_and_return_file_object
 
 
@@ -63,7 +64,7 @@ async def create_video_block(
         video_file,
         activity_uuid,
         block_uuid,
-        ["mp4", "webm"],
+        VIDEO_FILE_FORMATS,
         block_type,
         org.org_uuid,
         str(course.course_uuid),

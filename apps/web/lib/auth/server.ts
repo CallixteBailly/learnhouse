@@ -1,6 +1,11 @@
 import { cookies } from 'next/headers'
+import { safeBackendUrl } from '@/lib/secure-url'
 
-const BACKEND_URL = (process.env.NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL || 'http://localhost:1338').replace(/\/+$/, '')
+// Validated at module load: http/https only, private/reserved hosts rejected
+// (localhost dev default allowed) — guards every server-side fetch below.
+const BACKEND_URL = safeBackendUrl(
+  process.env.NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL || 'http://localhost:1338'
+)
 
 // Cookie names (must match the API routes)
 const ACCESS_TOKEN_COOKIE = 'LH_access'

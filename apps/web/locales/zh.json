@@ -4136,11 +4136,14 @@
       "video_block": {
         "uploading": "上传视频中...",
         "drop_or_browse": "将视频拖放到此处或点击浏览",
-        "supported_formats": "支持MP4和WebM格式",
-        "unsupported_format": "请上传支持的视频格式 (MP4或WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "视频播放器",
         "expand_video": "展开视频",
-        "download_video": "下载视频"
+        "download_video": "下载视频",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "没有可用的PDF",

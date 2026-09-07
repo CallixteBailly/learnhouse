@@ -56,6 +56,11 @@ export class LearnHouseApiContainer extends Container {
     LEARNHOUSE_COOKIE_DOMAIN: "",
     LEARNHOUSE_INITIAL_ORG_NAME: "OrdIA Learning",
     LEARNHOUSE_INITIAL_ORG_SLUG: "default",
+    // Public frontend origin — used for links inside emails (password reset,
+    // invitations, email verification). Without this the API falls back to
+    // its "localhost:3000" default and sends dead links in production.
+    LEARNHOUSE_FRONTEND_DOMAIN: "learn.ordria.fr",
+    LEARNHOUSE_SSL: "true",
     // The container sits behind the Cloudflare Worker proxy — trust XFF for
     // the collab rate limiter.
     COLLAB_TRUST_PROXY: "true",
@@ -100,11 +105,23 @@ const FORWARD_TO_CONTAINER = [
   "AWS_ENDPOINT_URL_S3",
   "AWS_ACCESS_KEY_ID",
   "AWS_SECRET_ACCESS_KEY",
+  "AWS_STORAGE_BUCKET_NAME",
   "LEARNHOUSE_INITIAL_ADMIN_EMAIL",
   "LEARNHOUSE_INITIAL_ADMIN_PASSWORD",
   "LEARNHOUSE_IS_AI_ENABLED",
   "LEARNHOUSE_CONTENT_DELIVERY_TYPE",
-  "AWS_STORAGE_BUCKET_NAME",
+  // Email (Cloudflare Email Service SMTP: smtp.mx.cloudflare.net:465 implicit TLS)
+  "LEARNHOUSE_EMAIL_PROVIDER",
+  "LEARNHOUSE_SYSTEM_EMAIL_ADDRESS",
+  "LEARNHOUSE_SMTP_HOST",
+  "LEARNHOUSE_SMTP_PORT",
+  "LEARNHOUSE_SMTP_USERNAME",
+  "LEARNHOUSE_SMTP_PASSWORD",
+  "LEARNHOUSE_SMTP_USE_TLS",
+  // Analytics (Tinybird — events ingest + dashboard queries)
+  "LEARNHOUSE_TINYBIRD_API_URL",
+  "LEARNHOUSE_TINYBIRD_INGEST_TOKEN",
+  "LEARNHOUSE_TINYBIRD_READ_TOKEN",
 ] as const;
 
 export default {
@@ -113,5 +130,14 @@ export default {
     // and local Redis. max_instances is pinned to 1 in wrangler.jsonc.
     const container = getContainer(env.API_CONTAINER);
     return container.fetch(request);
+  },
+
+  // Cron trigger (every 4 min, see wrangler.jsonc "triggers.crons") —
+  // keeps the Container awake so users never hit a cold-start 502.
+  async scheduled(_controller: unknown, env: Env): Promise<void> {
+    const container = getContainer(env.API_CONTAINER);
+    // /ping is answered directly by nginx (no upstream) — enough to keep
+    // the container instance from sleeping.
+    await container.fetch(new Request("https://warmup/ping"));
   },
 } satisfies ExportedHandler<Env>;

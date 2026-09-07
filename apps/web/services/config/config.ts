@@ -1,4 +1,5 @@
 import { stripPort, isSubdomainOf, isSameHost, isLocalhost as isLocalhostCheck } from '@services/utils/ts/hostUtils'
+import { safeBackendUrl } from '@/lib/secure-url'
 
 // Runtime configuration cache
 let runtimeConfig: Record<string, string> | null = null;
@@ -146,9 +147,18 @@ export const isOnCustomDomain = (): boolean => {
 const deriveAPIUrl = (): string => {
   // Backward compat: if explicit API URL is set, use it
   const explicitApiUrl = getConfig('NEXT_PUBLIC_LEARNHOUSE_API_URL')
-  if (explicitApiUrl) return explicitApiUrl
-  // Derive from backend URL
-  const backendUrl = getLEARNHOUSE_BACKEND_URL().replace(/\/+$/, '')
+  if (explicitApiUrl) {
+    if (typeof window === 'undefined') {
+      // Validate server-side without losing the trailing slash callers rely on
+      const base = safeBackendUrl(explicitApiUrl.replace(/\/+$/, ''))
+      return explicitApiUrl.endsWith('/') ? `${base}/` : base
+    }
+    return explicitApiUrl
+  }
+  // Derive from backend URL. Strip any trailing slashes first: the client-side
+  // getBackendUrl() returns the raw env value, where a trailing slash would
+  // produce a double slash (http://host//api/v1/) that the backend 404s.
+  const backendUrl = getBackendUrl().replace(/\/+$/, '')
   return `${backendUrl}/api/v1/`
 }
 
@@ -168,7 +178,14 @@ export const getServerAPIUrl = () => {
   return deriveAPIUrl()
 }
 
-export const getBackendUrl = () => getLEARNHOUSE_BACKEND_URL()
+// Server-to-server backend URL, validated (http/https, no private/reserved
+// hosts) before any fetch — see lib/secure-url for the guard rules.
+export const getBackendUrl = () => {
+  if (typeof window === 'undefined') {
+    return safeBackendUrl(getLEARNHOUSE_BACKEND_URL())
+  }
+  return getLEARNHOUSE_BACKEND_URL()
+}
 
 /**
  * Get the upgrade/plan URL for a given org.

@@ -8,6 +8,7 @@ import "server-only";
 // build if any client bundle imports this module. Pure decision logic lives in
 // ./subscriptionUtils; static price/type config in ./plans.
 import { getServerAPIUrl, getLEARNHOUSE_HTTP_PROTOCOL_VAL, getLEARNHOUSE_DOMAIN_VAL } from "@services/config/config";
+import { safeBackendUrl } from "@/lib/secure-url";
 import {
   PRICE_IDS,
   PACK_PRICE_IDS,
@@ -48,7 +49,11 @@ const stripe: any = new Proxy(
       if (!_stripeClient) {
         const key = getStripeSecretKey();
         if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
-        _stripeClient = require("stripe")(key);
+        // Validate the API base (default Stripe endpoint) so a misconfigured
+        // env var can never redirect SDK traffic — see lib/secure-url.
+        _stripeClient = require("stripe")(key, {
+          apiBase: safeBackendUrl(process.env.STRIPE_API_BASE || "https://api.stripe.com"),
+        });
       }
       return _stripeClient[prop];
     },

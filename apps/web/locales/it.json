@@ -4237,9 +4237,12 @@
         "drop_or_browse": "Trascina il tuo video qui o clicca per sfogliare",
         "expand_video": "Espandi video",
         "player_title": "Lettore video",
-        "supported_formats": "Supporta i formati MP4 e WebM",
-        "unsupported_format": "Carica un formato video supportato (MP4 o WebM)",
-        "uploading": "Caricamento video..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "Caricamento video...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       }
     },
     "ai_panel": {

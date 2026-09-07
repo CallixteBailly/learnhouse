@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ordria-learning",
+  "account_id": "74858fb12cfbc4a8a0ef2b33c2d6ff36",
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -23,23 +24,21 @@
   // from these in the Worker). Client bundles are baked at build time via
   // public/runtime-config.js (see next.config.js, BUILD_FOR_PAGES=1).
   "vars": {
-    "NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL": "https://ordria.app",
-    "NEXT_PUBLIC_LEARNHOUSE_API_URL": "https://ordria.app/api/v1/",
-    "NEXT_PUBLIC_COLLAB_URL": "wss://ordria.app/collab",
-    "NEXT_PUBLIC_LEARNHOUSE_DOMAIN": "ordria.app",
-    "NEXT_PUBLIC_LEARNHOUSE_TOP_DOMAIN": "ordria.app",
+    "NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL": "https://learn.ordria.fr",
+    "NEXT_PUBLIC_LEARNHOUSE_API_URL": "https://learn.ordria.fr/api/v1/",
+    "NEXT_PUBLIC_COLLAB_URL": "wss://learn.ordria.fr/collab",
+    "NEXT_PUBLIC_LEARNHOUSE_DOMAIN": "learn.ordria.fr",
+    "NEXT_PUBLIC_LEARNHOUSE_TOP_DOMAIN": "learn.ordria.fr",
     "NEXT_PUBLIC_LEARNHOUSE_HTTPS": "True",
     "NEXT_PUBLIC_LEARNHOUSE_MULTI_ORG": "False",
     "NEXT_PUBLIC_LEARNHOUSE_DEFAULT_ORG": "default",
     "NEXT_PUBLIC_LEARNHOUSE_OSS": "true"
-  }
+  },
   // Secrets (set once per environment):
   //   wrangler secret put NEXTAUTH_SECRET
   //
-  // Zone routing (single domain, same-origin cookies). Uncomment once the
-  // zone exists in the account, then deploy — Cloudflare routes to the MOST
-  // SPECIFIC pattern, so the API worker's /api/v1*, /content*, /collab*
-  // patterns win over this catch-all:
-  //
-  // "routes": [{ "pattern": "ordria.app/*", "zone_name": "ordria.app" }]
+  // Zone routing (single domain, same-origin cookies). Cloudflare routes to
+  // the MOST SPECIFIC pattern, so the API worker's /api/v1*, /content*,
+  // /collab* patterns win over this catch-all:
+  "routes": [{ "pattern": "learn.ordria.fr/*", "zone_name": "ordria.fr" }]
 }

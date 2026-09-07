@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import 'video.js/dist/video-js.css'
 import './player-controls.css'
 import { shouldSendHlsCredentials, type CaptionTrack } from './videoSource'
+import { guessVideoMime } from '@/lib/video-formats'
 
 const SEEK_SECONDS = 15
 
@@ -56,8 +57,16 @@ interface LearnHousePlayerProps {
   /** Progressive MP4 URL to fall back to if the HLS source errors. */
   fallbackSrc?: string
   details?: VideoDetails
-  onReady?: () => void
+  /** Receives the video.js player instance once initialized (for imperative
+   *  actions like fullscreen from a parent overlay button). */
+  onReady?: (_player?: any) => void
   poster?: string
+  /**
+   * Called once the video's intrinsic pixel dimensions are known
+   * (loadedmetadata). Lets the parent size its container to the video's real
+   * aspect ratio (portrait/square videos) instead of a fixed 16:9 box.
+   */
+  onDimensions?: (_width: number, _height: number) => void
   /** Hover-scrub preview sprite config (HLS only). */
   thumbnails?: ThumbnailsConfig | null
   /** Ready WebVTT caption tracks to attach (subtitles/CC menu). */
@@ -81,6 +90,7 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
   details,
   onReady,
   poster,
+  onDimensions,
   thumbnails,
   captions,
 }) => {
@@ -92,6 +102,10 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
   const retriedRef = useRef(false)
   const [loadError, setLoadError] = useState(false)
   const [reloadNonce, setReloadNonce] = useState(0)
+  // Keep the latest callback without adding it to the init effect's deps (the
+  // player must not be rebuilt when the parent re-renders with a new closure).
+  const onDimensionsRef = useRef(onDimensions)
+  onDimensionsRef.current = onDimensions
 
   useEffect(() => {
     let disposed = false
@@ -142,14 +156,14 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
         autoplay: !!details?.autoplay,
         muted: !!details?.muted,
         playbackRates: PLAYBACK_RATES,
-        sources: [{ src, type: isHls ? 'application/x-mpegURL' : 'video/mp4' }],
+        sources: [{ src, type: guessVideoMime(src, isHls) }],
         html5: {
           vhs: { overrideNative: true },
           nativeAudioTracks: false,
           nativeVideoTracks: false,
         },
       }, () => {
-        onReady?.()
+        onReady?.(player)
       })
       playerRef.current = player
 
@@ -194,7 +208,7 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
         clearWatchdog()
         if (isHls && fallbackSrc && !fellBackRef.current) {
           fellBackRef.current = true
-          reloadCurrent({ src: fallbackSrc, type: 'video/mp4' })
+          reloadCurrent({ src: fallbackSrc, type: guessVideoMime(fallbackSrc) })
           return
         }
         if (!retriedRef.current) {
@@ -205,11 +219,103 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
         setLoadError(true)
       }
       player.on('error', recover)
+      player.on('dispose', clearWatchdog)
+
+      // Mobile fullscreen UX: align the screen orientation with the video's
+      // own orientation while fullscreen (a 16:9 video fullscreened on a phone
+      // held portrait gets auto-rotated to landscape instead of letterboxing).
+      // Only Android Chrome supports orientation lock (and only in
+      // fullscreen); iOS Safari ignores it — best-effort, purely cosmetic.
+      const alignOrientation = async () => {
+        const orientation = (screen as any).orientation
+        if (!orientation?.lock) return
+        try {
+          if (player.isFullscreen()) {
+            const w = player.videoWidth?.() ?? 0
+            const h = player.videoHeight?.() ?? 0
+            await orientation.lock(w >= h ? 'landscape' : 'portrait')
+          } else {
+            orientation.unlock?.()
+          }
+        } catch {
+          /* unsupported or denied — cosmetic only */
+        }
+      }
+      player.on('fullscreenchange', alignOrientation)
+
+      // YouTube-style 'f' shortcut: toggle fullscreen while hovering the
+      // player (or when this player is the fullscreen one). Ignored while
+      // typing so it never hijacks the editor or a form.
+      const onKeyF = (e: KeyboardEvent) => {
+        if (e.key !== 'f' && e.key !== 'F') return
+        if (player.isDisposed?.()) return
+        const ae = document.activeElement
+        if (ae instanceof HTMLElement && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return
+        try {
+          if (!player.isFullscreen() && !player.el().matches(':hover')) return
+          e.preventDefault()
+          if (player.isFullscreen()) {
+            player.exitFullscreen()
+          } else {
+            player.requestFullscreen()
+          }
+        } catch {
+          /* best-effort */
+        }
+      }
+      document.addEventListener('keydown', onKeyF)
+      player.on('dispose', () => document.removeEventListener('keydown', onKeyF))
+
+      // video.js's full-window fallback (where the Fullscreen API is missing)
+      // keeps the player DOM in place, trapped below the page chrome's
+      // stacking contexts — the video ends up BEHIND nav/toasts instead of
+      // covering them. Park the element on <body> for the duration. React
+      // never manages this node (it's created imperatively above), so moving
+      // it is safe; it's put back before dispose so the container stays
+      // consistent.
+      let fullWindowSlot: { parent: Node; next: Node | null } | null = null
+      const unparkFromFullWindow = () => {
+        if (!fullWindowSlot) return
+        try {
+          fullWindowSlot.parent.insertBefore(player.el(), fullWindowSlot.next)
+        } catch {
+          /* best-effort */
+        }
+        fullWindowSlot = null
+      }
+      player.on('fullscreenchange', () => {
+        if (player.isDisposed?.()) return
+        try {
+          if (player.isFullWindow) {
+            const parent = player.el().parentNode
+            if (!fullWindowSlot && parent) {
+              fullWindowSlot = {
+                parent,
+                next: player.el().nextSibling,
+              }
+              document.body.appendChild(player.el())
+            }
+          } else {
+            unparkFromFullWindow()
+          }
+        } catch {
+          /* best-effort */
+        }
+      })
+      player.on('dispose', unparkFromFullWindow)
       player.one('loadedmetadata', () => {
         metaLoaded = true
         clearWatchdog()
+        // Report the intrinsic dimensions so the parent can adopt the video's
+        // real aspect ratio (portrait/square) — harmless when nothing listens.
+        try {
+          const w = player.videoWidth?.() ?? 0
+          const h = player.videoHeight?.() ?? 0
+          if (w > 0 && h > 0) onDimensionsRef.current?.(w, h)
+        } catch {
+          /* best-effort */
+        }
       })
-      player.on('dispose', clearWatchdog)
       armWatchdog()
 
       // Insert the ±15s seek buttons right after the play button.

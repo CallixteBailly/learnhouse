@@ -3,6 +3,8 @@
  * Provides consistent validation across all upload components
  */
 
+import { VIDEO_FILE_EXTENSIONS, VIDEO_MIME_BY_EXTENSION } from './video-formats'
+
 // File type configurations (matches backend)
 export const FILE_TYPES = {
   image: {
@@ -11,8 +13,8 @@ export const FILE_TYPES = {
     maxSize: 10 * 1024 * 1024, // 10MB
   },
   video: {
-    extensions: ['.mp4', '.webm'],
-    mimeTypes: ['video/mp4', 'video/webm'],
+    extensions: VIDEO_FILE_EXTENSIONS.map((ext) => `.${ext}`),
+    mimeTypes: Object.values(VIDEO_MIME_BY_EXTENSION),
     maxSize: 100 * 1024 * 1024, // 100MB
   },
   document: {
@@ -41,21 +43,36 @@ export function validateFile(
     return { valid: false, error: 'SVG files are not allowed for security reasons' }
   }
 
-  // Find matching file type
+  const getExtension = (name: string) => {
+    const i = name.lastIndexOf('.')
+    return i === -1 ? '' : name.slice(i).toLowerCase()
+  }
+
+  // Find matching file type. Extension-first: browsers report inconsistent
+  // MIME types for less common video containers (mkv → application/octet-stream).
   let matchedType: FileType | null = null
   for (const type of allowedTypes) {
     const config = FILE_TYPES[type]
-    if ((config.mimeTypes as readonly string[]).includes(file.type)) {
+    if ((config.extensions as readonly string[]).includes(getExtension(file.name))) {
       matchedType = type
       break
     }
   }
+  if (!matchedType) {
+    for (const type of allowedTypes) {
+      const config = FILE_TYPES[type]
+      if ((config.mimeTypes as readonly string[]).includes(file.type)) {
+        matchedType = type
+        break
+      }
+    }
+  }
 
   if (!matchedType) {
-    const allowedMimes = allowedTypes.flatMap(type => FILE_TYPES[type].mimeTypes)
-    return { 
-      valid: false, 
-      error: `Invalid file type: ${file.type}. Allowed types: ${allowedMimes.join(', ')}` 
+    const allowedExts = allowedTypes.flatMap(type => FILE_TYPES[type].extensions)
+    return {
+      valid: false,
+      error: `Invalid file type. Allowed extensions: ${allowedExts.join(', ')}`
     }
   }
 
@@ -64,9 +81,9 @@ export function validateFile(
   if (file.size > maxSize) {
     const sizeMB = (file.size / 1024 / 1024).toFixed(1)
     const maxSizeMB = (maxSize / 1024 / 1024).toFixed(1)
-    return { 
-      valid: false, 
-      error: `File too large (${sizeMB}MB). Maximum size: ${maxSizeMB}MB` 
+    return {
+      valid: false,
+      error: `File too large (${sizeMB}MB). Maximum size: ${maxSizeMB}MB`
     }
   }
 

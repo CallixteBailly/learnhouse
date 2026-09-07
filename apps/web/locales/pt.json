@@ -4124,11 +4124,14 @@
       "video_block": {
         "uploading": "Enviando vídeo...",
         "drop_or_browse": "Solte seu vídeo aqui ou clique para procurar",
-        "supported_formats": "Suporta formatos MP4 e WebM",
-        "unsupported_format": "Por favor, envie um formato de vídeo suportado (MP4 ou WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "Reprodutor de vídeo",
         "expand_video": "Expandir vídeo",
-        "download_video": "Baixar vídeo"
+        "download_video": "Baixar vídeo",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "Nenhum PDF disponível",

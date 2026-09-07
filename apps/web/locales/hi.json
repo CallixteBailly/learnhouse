@@ -4256,9 +4256,12 @@
         "drop_or_browse": "अपना वीडियो यहाँ छोड़ें या ब्राउज़ करने के लिए क्लिक करें",
         "expand_video": "वीडियो विस्तार करें",
         "player_title": "वीडियो प्लेयर",
-        "supported_formats": "MP4 और WebM प्रारूप समर्थित हैं",
-        "unsupported_format": "कृपया एक समर्थित वीडियो प्रारूप अपलोड करें (MP4 या WebM)",
-        "uploading": "वीडियो अपलोड हो रहा है..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "वीडियो अपलोड हो रहा है...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "button_block": {
         "enter_link_url": "लिंक URL दर्ज करें"

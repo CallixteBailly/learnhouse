@@ -1,5 +1,6 @@
 import uuid
 from fastapi import HTTPException, Request, UploadFile
+from src.security.file_validation import VIDEO_FILE_FORMATS
 from src.services.blocks.schemas.files import BlockFile
 from src.services.utils.upload_content import upload_file
 
@@ -16,12 +17,12 @@ async def upload_file_and_return_file_object(
 ):
     """Upload file for blocks."""
     file_id = str(uuid.uuid4())
-    
+
     # Map legacy format list to type system
     allowed_types = []
     if any(fmt in ['jpg', 'jpeg', 'png', 'gif', 'webp'] for fmt in list_of_allowed_file_formats):
         allowed_types.append('image')
-    if any(fmt in ['mp4', 'webm'] for fmt in list_of_allowed_file_formats):
+    if any(fmt in VIDEO_FILE_FORMATS for fmt in list_of_allowed_file_formats):
         allowed_types.append('video')
     if any(fmt in ['pdf'] for fmt in list_of_allowed_file_formats):
         allowed_types.append('document')

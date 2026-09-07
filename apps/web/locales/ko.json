@@ -4249,9 +4249,12 @@
         "drop_or_browse": "비디오를 여기에 놓거나 클릭하여 찾아보기",
         "expand_video": "비디오 확장",
         "player_title": "비디오 플레이어",
-        "supported_formats": "MP4 및 WebM 형식 지원",
-        "unsupported_format": "지원되는 비디오 형식을 업로드해 주세요 (MP4 또는 WebM)",
-        "uploading": "비디오 업로드 중..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "비디오 업로드 중...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       }
     },
     "ai_panel": {

@@ -255,8 +255,12 @@ export function SessionProvider({
     }
   }, [])
 
-  // Fetch user session from backend
-  const fetchUserSession = useCallback(async (token: string, expiry?: number): Promise<Session | null> => {
+  // Fetch user session from backend.
+  // Returns null when the token is authoritatively rejected (401/403 — caller
+  // should clear auth state) and undefined on transient failures (5xx, network
+  // — caller must keep the current auth state; a backend blip or a container
+  // rollout must not log the user out).
+  const fetchUserSession = useCallback(async (token: string, expiry?: number): Promise<Session | null | undefined> => {
     try {
       const response = await fetch(`${getAPIUrl()}users/session`, {
         method: 'GET',
@@ -267,8 +271,11 @@ export function SessionProvider({
       })
 
       if (!response.ok) {
-        console.error(`Session fetch failed with status: ${response.status}`)
-        return null
+        if (response.status === 401 || response.status === 403) {
+          return null
+        }
+        console.warn(`Session fetch failed with status: ${response.status} (transient — keeping auth state)`)
+        return undefined
       }
 
       const data = await response.json()
@@ -282,8 +289,8 @@ export function SessionProvider({
         },
       }
     } catch (error) {
-      console.error('Error fetching user session:', error)
-      return null
+      console.warn('Error fetching user session:', error)
+      return undefined
     }
   }, [])
 
@@ -357,14 +364,21 @@ export function SessionProvider({
     setAccessToken(token)
     setTokenExpiry(expiry || null)
 
-    const sessionData = await fetchUserSession(token, expiry)
-    // A logout/clear that fired during the await bumped the epoch — abort the
-    // write so we don't resurrect a session that was just invalidated.
-    if (authEpochRef.current !== epoch) return false
-    if (!sessionData) {
-      clearAuthState()
-      return false
-    }
+        const sessionData = await fetchUserSession(token, expiry)
+        // A logout/clear that fired during the await bumped the epoch — abort the
+        // write so we don't resurrect a session that was just invalidated.
+        if (authEpochRef.current !== epoch) return false
+        if (sessionData === null) {
+          clearAuthState()
+          return false
+        }
+        if (!sessionData) {
+          // Transient failure — keep cookies and auth state; the refetch
+          // interval or the next navigation will retry. Only make the
+          // loading state resolve so gates don't spin forever.
+          setStatus((prev) => (prev === 'loading' ? 'unauthenticated' : prev))
+          return false
+        }
 
     setSession(sessionData)
     setStatus('authenticated')
@@ -418,14 +432,22 @@ export function SessionProvider({
       let currentExpiry = tokenExpiry
 
       if (!currentToken || isTokenExpiringSoon(currentExpiry)) {
-        const refreshResult = await refreshAccessToken()
+        let refreshResult: { access_token: string; expiry?: number } | null = null
+        try {
+          refreshResult = await refreshAccessToken()
+        } catch {
+          // Transient refresh failure — keep auth state and retry later
+          // (interval / next navigation) instead of logging the user out.
+          console.warn('Token refresh failed transiently — keeping auth state')
+          return null
+        }
         if (refreshResult) {
           currentToken = refreshResult.access_token
           currentExpiry = refreshResult.expiry || null
           setAccessToken(currentToken)
           setTokenExpiry(currentExpiry)
         } else {
-          // No valid token, user is unauthenticated
+          // Refresh token authoritatively rejected (401) — user is unauthenticated
           clearAuthState()
           return null
         }
@@ -444,13 +466,16 @@ export function SessionProvider({
           timestamp: now,
         }
         return currentToken
-      } else {
+      } else if (sessionData === null) {
         clearAuthState()
         return null
+      } else {
+        // Transient session-fetch failure — keep the last known session; the
+        // refetch interval will retry.
+        return currentToken
       }
     } catch (error) {
-      console.error('Session refresh error:', error)
-      clearAuthState()
+      console.warn('Session refresh error:', error)
       return null
     }
   }, [accessToken, tokenExpiry, fetchUserSession, isTokenExpiringSoon, refreshAccessToken, clearAuthState])
@@ -469,13 +494,22 @@ export function SessionProvider({
       setStatus('loading')
 
       // Try to restore session from refresh token
-      const refreshResult = await refreshAccessToken()
+      let refreshResult: { access_token: string; expiry?: number } | null = null
+      let transientRefreshError = false
+      try {
+        refreshResult = await refreshAccessToken()
+      } catch {
+        // Backend blip / container rollout — keep the cookies so a reload can
+        // retry instead of destroying the session.
+        transientRefreshError = true
+      }
 
       if (!isMounted) return
 
       if (refreshResult) {
-        if (!isMounted) return
         await applySessionFromToken(refreshResult.access_token, refreshResult.expiry)
+      } else if (transientRefreshError) {
+        setStatus('unauthenticated')
       } else {
         clearAuthState()
       }

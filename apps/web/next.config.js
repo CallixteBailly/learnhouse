@@ -1,7 +1,14 @@
 const { withSentryConfig } = require("@sentry/nextjs");
+const path = require("path");
 
 /** @type {import('common.next').NextConfig} */
 const nextConfig = {
+  // Dev server (turbopack) only: without an explicit root, Next walks up to the
+  // nearest lockfile — a stray ~/package-lock.json makes it pick $HOME as the
+  // workspace root and every route 404s. The repo root is the real workspace.
+  turbopack: {
+    root: path.join(__dirname, "..", ".."),
+  },
   // Required by PostHog's reverse-proxy rewrites below so the trailing-slash
   // handling on /ingest/* doesn't 308-redirect ingestion requests.
   skipTrailingSlashRedirect: true,

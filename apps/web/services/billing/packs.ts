@@ -5,6 +5,7 @@ import "server-only";
 // `x-platform-key` header — a DIFFERENT key + header than the plan endpoint
 // (orgPlan.ts uses `CloudInternalKey`). Both internal auth schemes must coexist.
 import { getServerAPIUrl } from "@services/config/config";
+import { safeBackendUrl } from "@/lib/secure-url";
 
 function platformHeaders() {
   return {
@@ -14,7 +15,8 @@ function platformHeaders() {
 }
 
 export async function activatePackInternally(orgId: string, packId: string, platformSubscriptionId: string) {
-  const res = await fetch(`${getServerAPIUrl()}internal/packs/${orgId}/activate`, {
+  // Host validated at the fetch site (http/https, no private/reserved hosts)
+  const res = await fetch(safeBackendUrl(`${getServerAPIUrl()}internal/packs/${orgId}/activate`), {
     method: "POST",
     headers: platformHeaders(),
     body: JSON.stringify({
@@ -32,7 +34,7 @@ export async function activatePackInternally(orgId: string, packId: string, plat
 }
 
 export async function markPackCancelingInternally(orgId: string, platformSubscriptionId: string) {
-  const res = await fetch(`${getServerAPIUrl()}internal/packs/${orgId}/mark-canceling`, {
+  const res = await fetch(safeBackendUrl(`${getServerAPIUrl()}internal/packs/${orgId}/mark-canceling`), {
     method: "PATCH",
     headers: platformHeaders(),
     body: JSON.stringify({
@@ -49,7 +51,7 @@ export async function markPackCancelingInternally(orgId: string, platformSubscri
 }
 
 export async function deactivateAllPacksInternally(orgId: string) {
-  const res = await fetch(`${getServerAPIUrl()}internal/packs/${orgId}/deactivate-all`, {
+  const res = await fetch(safeBackendUrl(`${getServerAPIUrl()}internal/packs/${orgId}/deactivate-all`), {
     method: "DELETE",
     headers: platformHeaders(),
   });
@@ -63,7 +65,7 @@ export async function deactivateAllPacksInternally(orgId: string) {
 }
 
 export async function deactivatePackInternally(orgId: string, platformSubscriptionId: string) {
-  const res = await fetch(`${getServerAPIUrl()}internal/packs/${orgId}/deactivate`, {
+  const res = await fetch(safeBackendUrl(`${getServerAPIUrl()}internal/packs/${orgId}/deactivate`), {
     method: "DELETE",
     headers: platformHeaders(),
     body: JSON.stringify({

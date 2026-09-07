@@ -4261,9 +4261,12 @@
         "drop_or_browse": "ลากวิดีโอมาที่นี่ หรือคลิกเพื่อเลือก",
         "expand_video": "ขยายวิดีโอ",
         "player_title": "เครื่องเล่นวิดีโอ",
-        "supported_formats": "รองรับรูปแบบ MP4 และ WebM",
-        "unsupported_format": "โปรดอัปโหลดวิดีโอในรูปแบบที่รองรับ (MP4 หรือ WebM)",
-        "uploading": "กำลังอัปโหลดวิดีโอ..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "กำลังอัปโหลดวิดีโอ...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       }
     },
     "ai_panel": {

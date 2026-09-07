@@ -1,39 +1,69 @@
 #syntax=docker/dockerfile:1
 # ─────────────────────────────────────────────────────────────────────────────
-# Cloudflare Container image — OrdIA Learning API
+# Render.com image — OrdIA Learning ALL-IN-ONE
+# Frontend (Next.js standalone) + FastAPI API + collab + redis + nginx
+# in ONE service, single URL, same-origin — same layout as the classic
+# LearnHouse docker image. Build context: REPOSITORY ROOT.
 #
-# Runs the FULL backend stack in ONE container instance (max_instances=1):
-#   nginx :8080  — single exposed port (Container defaultPort), routes to:
-#     /ping   → 200 (Container class readiness check)
-#     /collab → Hocuspocus collab server :4000 (WebSocket)
-#     /*      → FastAPI backend :9000 (API + content delivery)
-#   redis :6379  — local, ephemeral (cache + token revocation)
-#
-# Build context is the REPOSITORY ROOT (see image_build_context in
-# wrangler.jsonc) — paths below are relative to the repo root.
+#   nginx :${PORT:-8080} — single exposed port, routes to:
+#     /ping           → 200 (readiness check)
+#     /collab         → Hocuspocus :4000 (WebSocket)
+#     /api/v1, /content → FastAPI :9000
+#     everything else → Next.js frontend :3000 (incl. /api/auth NextAuth)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ───────────────────────────────────────────────
-# Stage 1: Collab server build
+# Stage 1: Frontend dependencies
 # ───────────────────────────────────────────────
-FROM oven/bun:1-alpine AS collab-builder
+FROM oven/bun:1-alpine AS frontend-deps
+RUN apk update && apk add --no-cache libc6-compat && rm -rf /var/cache/apk/*
 WORKDIR /app
-
-COPY apps/collab/package.json apps/collab/bun.lock* ./
+COPY apps/web/package.json apps/web/bun.lock* ./
 RUN bun install --frozen-lockfile
 
-COPY apps/collab/tsconfig.json ./
-COPY apps/collab/src/ ./src/
+# ───────────────────────────────────────────────
+# Stage 2: Frontend build (standalone output)
+# ───────────────────────────────────────────────
+FROM oven/bun:1-alpine AS frontend-builder
+WORKDIR /app
+COPY --from=frontend-deps /app/node_modules ./node_modules
+COPY apps/web .
 
+# Skip TS/ESLint checks in Docker build — RAM-heavy, validated in dev/CI
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_IGNORE_TYPECHECK=1 \
+    NEXT_IGNORE_LINT=1 \
+    BUILD_FOR_PAGES=1
+
+# Baked defaults — overridden at runtime by server-wrapper.js (runtime-config)
+ARG PUBLIC_BASE_URL=https://ordia-api-9xnv.onrender.com
+ENV NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL=${PUBLIC_BASE_URL} \
+    NEXT_PUBLIC_LEARNHOUSE_API_URL=${PUBLIC_BASE_URL}/api/v1/ \
+    NEXT_PUBLIC_COLLAB_URL=wss://ordria-api-9xnv.onrender.com/collab \
+    NEXT_PUBLIC_LEARNHOUSE_HTTPS=True \
+    NEXT_PUBLIC_LEARNHOUSE_MULTI_ORG=False \
+    NEXT_PUBLIC_LEARNHOUSE_DEFAULT_ORG=default \
+    NEXT_PUBLIC_LEARNHOUSE_OSS=true
+
+RUN rm -f .env*
 RUN bun run build
 
 # ───────────────────────────────────────────────
-# Stage 2: Runtime image
+# Stage 3: Collab server build
+# ───────────────────────────────────────────────
+FROM oven/bun:1-alpine AS collab-builder
+WORKDIR /app
+COPY apps/collab/package.json apps/collab/bun.lock* ./
+RUN bun install --frozen-lockfile
+COPY apps/collab/tsconfig.json ./
+COPY apps/collab/src/ ./src/
+RUN bun run build
+
+# ───────────────────────────────────────────────
+# Stage 4: Runtime image (frontend + api + collab + redis + nginx)
 # ───────────────────────────────────────────────
 FROM python:3.14-slim-bookworm AS runner
 
-# nginx (front door) + curl (healthchecks) + netcat (DB wait) +
-# redis-server (local cache) + ffmpeg (HLS transcoding) + node (collab).
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         nginx curl netcat-openbsd ca-certificates redis-server ffmpeg gnupg unzip \
@@ -43,6 +73,12 @@ RUN apt-get update \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /root/.npm
+
+# ── Frontend: Next.js standalone (server-wrapper injects runtime env) ──
+COPY --from=frontend-builder /app/.next/standalone /app/web
+COPY --from=frontend-builder /app/.next/static /app/web/.next/static
+COPY --from=frontend-builder /app/public /app/web/public
+COPY apps/web/server-wrapper.js /app/web/server-wrapper.js
 
 # ── Backend: Python deps (cached layer, then source) ──
 WORKDIR /app/api
@@ -66,11 +102,15 @@ COPY apps/cloudflare-api/nginx-api.conf /etc/nginx/nginx-api.conf
 COPY apps/cloudflare-api/start-api.sh /app/start-api.sh
 RUN chmod +x /app/start-api.sh
 
-# ── Non-root user (Cloudflare Containers run without root capabilities) ──
-# nginx temp paths (/tmp/nginx) must be writable by the runtime user.
+# ── Non-root user + world-readable/executable app tree ──
+# Some runtimes (Render) execute the image as an arbitrary UID that doesn't
+# match appuser — a+rX guarantees traversal + exec on the venv binaries for
+# ANY runtime user.
 RUN useradd --create-home --uid 1001 appuser \
     && mkdir -p /tmp/nginx /tmp/api-logs \
-    && chown -R appuser:appuser /app /tmp/nginx /tmp/api-logs
+    && chown -R appuser:appuser /app /tmp/nginx /tmp/api-logs \
+    && chmod -R a+rX /app /home/appuser \
+    && chmod 755 /home/appuser
 USER appuser
 ENV HOME=/home/appuser
 
@@ -78,7 +118,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONIOENCODING=utf-8 \
     LEARNHOUSE_PORT=9000 \
     COLLAB_PORT=4000 \
-    HOSTNAME=0.0.0.0 \
+    HOSTNAME=127.0.0.1 \
     LEARNHOUSE_OSS=true \
     LEARNHOUSE_REDIS_CONNECTION_STRING=redis://127.0.0.1:6379/0 \
     LEARNHOUSE_REDIS_URL=redis://127.0.0.1:6379

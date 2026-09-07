@@ -269,7 +269,12 @@ def _send_email_smtp(sender: str, to: str, subject: str, body: str, mailing):
 
     server = None
     try:
-        if mailing.smtp_use_tls:
+        # Port 465 = implicit TLS (SMTPS), used by Cloudflare Email Service
+        # (smtp.mx.cloudflare.net) and other modern relays — STARTTLS is not
+        # offered there. 587/other ports use classic SMTP + STARTTLS.
+        if mailing.smtp_port == 465:
+            server = smtplib.SMTP_SSL(mailing.smtp_host, mailing.smtp_port, timeout=_SMTP_TIMEOUT)
+        elif mailing.smtp_use_tls:
             server = smtplib.SMTP(mailing.smtp_host, mailing.smtp_port, timeout=_SMTP_TIMEOUT)
             server.starttls()
         else:

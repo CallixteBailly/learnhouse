@@ -18,9 +18,11 @@ from src.core.ee_hooks import is_ee_available, get_ee_hooks
 
 DeploymentMode = Literal['saas', 'oss', 'ee']
 
-# Features blocked in OSS mode but available in EE and plan-gated in SaaS
+# Features blocked in OSS mode but available in EE and plan-gated in SaaS.
+# Audit logs and advanced analytics ship natively in this build (see
+# src/services/audit and src/services/analytics), so they are not listed.
 EE_ONLY_FEATURES: frozenset[str] = frozenset({
-    'sso', 'audit_logs', 'payments', 'analytics_advanced', 'scorm'
+    'sso', 'payments', 'scorm'
 })
 
 

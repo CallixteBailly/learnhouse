@@ -4134,11 +4134,14 @@
       "video_block": {
         "uploading": "動画をアップロード中...",
         "drop_or_browse": "動画をここにドラッグするか、クリックして参照",
-        "supported_formats": "MP4およびWebM形式をサポート",
-        "unsupported_format": "サポートされている動画形式 (MP4またはWebM) をアップロードしてください",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "ビデオプレーヤー",
         "expand_video": "動画を展開",
-        "download_video": "動画をダウンロード"
+        "download_video": "動画をダウンロード",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "PDFが利用できません",

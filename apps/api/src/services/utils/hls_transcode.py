@@ -185,34 +185,40 @@ def build_ffmpeg_args(
     return args
 
 
-async def _probe(src_path: str) -> tuple[int, bool, float]:
-    """Return (height, has_audio, duration_s).
+async def _probe(src_path: str) -> tuple[int, int, bool, float]:
+    """Return (width, height, has_audio, duration_s).
 
-    On any probe failure returns (0, False, 0.0): height 0 → a single lowest
+    Width/height are the source's intrinsic pixel dimensions (0 when probing
+    fails) — used to keep the sprite thumbnail cells in the video's aspect
+    ratio and to publish the ratio to the player (layout that fits the video
+    instead of a fixed 16:9 box).
+
+    On any probe failure returns (0, 0, False, 0.0): height 0 → a single lowest
     rung (never upscale a source we can't measure), and has_audio False → no
     audio maps (so a silent source can't fail the transcode with a bad a:0 map).
     """
     probe = _ffprobe()
     if not probe:
-        return 0, False, 0.0
+        return 0, 0, False, 0.0
     try:
         rc, out, _ = await _run_subprocess(
             [probe, "-v", "error", "-show_streams", "-show_format", "-of", "json", src_path],
             PROBE_TIMEOUT_S,
         )
         if rc != 0:
-            return 0, False, 0.0
+            return 0, 0, False, 0.0
     except Exception:
-        return 0, False, 0.0
+        return 0, 0, False, 0.0
     try:
         data = json.loads(out.decode() or "{}")
     except json.JSONDecodeError:
-        return 0, False, 0.0
+        return 0, 0, False, 0.0
     streams = data.get("streams", [])
-    height = 0
+    width = height = 0
     has_audio = False
     for s in streams:
         if s.get("codec_type") == "video":
+            width = max(width, int(s.get("width") or 0))
             height = max(height, int(s.get("height") or 0))
         elif s.get("codec_type") == "audio":
             has_audio = True
@@ -220,7 +226,7 @@ async def _probe(src_path: str) -> tuple[int, bool, float]:
         duration = float(data.get("format", {}).get("duration") or 0.0)
     except (TypeError, ValueError):
         duration = 0.0
-    return height, has_audio, duration
+    return width, height, has_audio, duration
 
 
 # Cap the sprite at a sane cell count so a multi-hour video can't produce a
@@ -255,6 +261,23 @@ def _sprite_interval(duration_s: float, interval: int, columns: int) -> int:
         if frames > MAX_THUMBNAILS:
             interval = max(interval, math.ceil(duration_s / MAX_THUMBNAILS))
     return interval
+
+
+def sprite_cell_size(width: int, height: int) -> tuple[int, int]:
+    """Thumbnail cell (width, height) matching the source's aspect ratio.
+
+    Keeps the 16:9 default exactly 160x90 (legacy size) and derives other
+    ratios from a 90px short side, clamped so neither dimension can explode
+    (a 9:16 short becomes 90x160, 1:1 becomes 90x90).
+    """
+    if width <= 0 or height <= 0:
+        return THUMB_WIDTH, THUMB_HEIGHT
+    ratio = width / height
+    if ratio >= 1:
+        w = round(THUMB_HEIGHT * ratio)
+        return max(THUMB_HEIGHT, min(2 * THUMB_WIDTH, w)), THUMB_HEIGHT
+    h = round(THUMB_HEIGHT / ratio)
+    return THUMB_HEIGHT, max(THUMB_HEIGHT, min(2 * THUMB_WIDTH, h))
 
 
 async def generate_sprite_thumbnails(
@@ -321,8 +344,8 @@ async def transcode_source_to_hls(src_path: str, out_dir: str) -> Optional[dict]
         logger.error("HLS source missing: %s", src_path)
         return None
 
-    height, has_audio, duration = await _probe(src_path)
-    rungs = select_ladder(height)
+    src_width, src_height, has_audio, duration = await _probe(src_path)
+    rungs = select_ladder(src_height)
     os.makedirs(out_dir, exist_ok=True)
     for r in rungs:
         os.makedirs(os.path.join(out_dir, f"v{r.name}"), exist_ok=True)
@@ -364,11 +387,20 @@ async def transcode_source_to_hls(src_path: str, out_dir: str) -> Optional[dict]
         logger.error("HLS transcode produced no master playlist for %s", src_path)
         return None
 
-    # Best-effort hover-preview sprite; playback works fine without it.
-    thumbnails = await generate_sprite_thumbnails(src_path, out_dir, duration)
+    # Best-effort hover-preview sprite; playback works fine without it. The
+    # cells keep the source's aspect ratio (16:9 stays the legacy 160x90).
+    thumb_w, thumb_h = sprite_cell_size(src_width, src_height)
+    thumbnails = await generate_sprite_thumbnails(
+        src_path, out_dir, duration, width=thumb_w, height=thumb_h
+    )
 
     return {
         "master": MASTER_PLAYLIST_NAME,
         "renditions": [r.name for r in rungs],
         "thumbnails": thumbnails,
+        # Intrinsic source dimensions — published so the player can size its
+        # container to the video's real aspect ratio without waiting for
+        # client-side metadata.
+        "width": src_width,
+        "height": src_height,
     }

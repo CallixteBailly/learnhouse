@@ -3,6 +3,7 @@ import { Plugin, PluginKey } from '@tiptap/pm/state'
 import { uploadNewImageFile } from '@services/blocks/Image/images'
 import { uploadNewVideoFile } from '@services/blocks/Video/video'
 import { uploadNewPDFFile } from '@services/blocks/Pdf/pdf'
+import { isSupportedVideoFile } from '@/lib/video-formats'
 import toast from 'react-hot-toast'
 
 interface PasteFileHandlerOptions {
@@ -49,8 +50,16 @@ const PasteFileHandler = Extension.create<PasteFileHandlerOptions>({
       let handled = false
 
       for (const file of Array.from(files)) {
-        const mapping = MIME_TYPE_MAP[file.type]
-        if (!mapping) continue
+        let mapping = MIME_TYPE_MAP[file.type]
+        if (!mapping) {
+          // Video containers arrive with inconsistent MIME types (mkv often
+          // pastes as application/octet-stream) — route videos by extension.
+          if (isSupportedVideoFile(file)) {
+            mapping = { blockType: 'blockVideo', label: 'video', upload: uploadNewVideoFile }
+          } else {
+            continue
+          }
+        }
 
         handled = true
         const { blockType, label, upload } = mapping

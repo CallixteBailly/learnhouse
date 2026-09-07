@@ -38,3 +38,27 @@ services:
         sync: false
       - key: LEARNHOUSE_INITIAL_ADMIN_PASSWORD
         sync: false
+      # ── Frontend (Next.js, served by the same container) ──
+      # server-wrapper.js turns NEXT_PUBLIC_* into runtime config.
+      - key: NEXTAUTH_URL
+        value: https://ordia-api-9xnv.onrender.com
+      - key: AUTH_TRUST_HOST
+        value: "true"
+      - key: NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL
+        value: https://ordia-api-9xnv.onrender.com
+      - key: NEXT_PUBLIC_LEARNHOUSE_API_URL
+        value: https://ordia-api-9xnv.onrender.com/api/v1/
+      - key: NEXT_PUBLIC_COLLAB_URL
+        value: wss://ordia-api-9xnv.onrender.com/collab
+      - key: NEXT_PUBLIC_LEARNHOUSE_DOMAIN
+        value: ordria-api-9xnv.onrender.com
+      - key: NEXT_PUBLIC_LEARNHOUSE_TOP_DOMAIN
+        value: onrender.com
+      - key: NEXT_PUBLIC_LEARNHOUSE_HTTPS
+        value: "True"
+      - key: NEXT_PUBLIC_LEARNHOUSE_MULTI_ORG
+        value: "False"
+      - key: NEXT_PUBLIC_LEARNHOUSE_DEFAULT_ORG
+        value: default
+      - key: NEXT_PUBLIC_LEARNHOUSE_OSS
+        value: "true"

@@ -4148,11 +4148,14 @@
       "video_block": {
         "uploading": "Загрузка видео...",
         "drop_or_browse": "Перетащите видео здесь или нажмите для просмотра",
-        "supported_formats": "Поддерживает форматы MP4 и WebM",
-        "unsupported_format": "Пожалуйста, загрузите поддерживаемый формат видео (MP4 или WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "Видеоплеер",
         "expand_video": "Развернуть видео",
-        "download_video": "Скачать видео"
+        "download_video": "Скачать видео",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "PDF не доступен",

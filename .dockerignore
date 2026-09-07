@@ -130,3 +130,6 @@ media/
 README.md
 docs/
 *.md 
+# Never ship host virtualenvs — the image builds its own via uv sync
+# (** matches at any depth, e.g. apps/api/.venv)
+**/.venv

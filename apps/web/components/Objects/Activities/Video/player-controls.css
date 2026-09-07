@@ -1,5 +1,48 @@
 /* Minimal add-on to the default Video.js skin: icons for the ±15s seek buttons.
    Everything else stays stock. */
+
+/* Stock video.js hides the control bar until the first playback starts
+   (.vjs-has-started), which leaves NO fullscreen access on a video that
+   hasn't been started. Show the bar whenever the user is over the player
+   (vjs-user-active — mouse hover or a tap), YouTube-style. The stock
+   fade-out while playing is untouched: vjs-user-inactive replaces
+   vjs-user-active after the inactivity timeout, so the two never collide. */
+.video-js.vjs-user-active:not(.vjs-controls-disabled, .vjs-using-native-controls, .vjs-error) .vjs-control-bar {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Duration isn't known before the first playback and video.js renders
+   garbage in the time controls (e.g. "-20:6") — hide them until started. */
+.video-js:not(.vjs-has-started) .vjs-current-time,
+.video-js:not(.vjs-has-started) .vjs-time-divider,
+.video-js:not(.vjs-has-started) .vjs-duration,
+.video-js:not(.vjs-has-started) .vjs-remaining-time {
+  display: none;
+}
+
+/* Full-window is video.js's fallback where the Fullscreen API is missing
+   (e.g. an iframe without allow="fullscreen"). Stock z-index (1000) sits
+   below some app chrome (toasts at 300+); raise it above everything. */
+body.vjs-full-window .video-js.vjs-fullscreen {
+  z-index: 2147483000;
+}
+
+/* Video block overlay chips: hover-revealed on pointer devices, always
+   visible on touch (group-hover never fires without hover). */
+.lh-video-overlay {
+  opacity: 1;
+}
+@media (hover: hover) {
+  .lh-video-overlay {
+    opacity: 0;
+  }
+  .group:hover .lh-video-overlay {
+    opacity: 1;
+  }
+}
+
 .video-js .vjs-seek-back-15 .vjs-icon-placeholder::before,
 .video-js .vjs-seek-forward-15 .vjs-icon-placeholder::before {
   content: '';

@@ -4241,9 +4241,12 @@
         "drop_or_browse": "Sleep uw video hierheen of klik om te bladeren",
         "expand_video": "Video uitvouwen",
         "player_title": "Videospeler",
-        "supported_formats": "Ondersteunt MP4- en WebM-formaten",
-        "unsupported_format": "Upload een ondersteund videoformaat (MP4 of WebM)",
-        "uploading": "Video uploaden..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "Video uploaden...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       }
     },
     "ai_panel": {

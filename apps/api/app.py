@@ -24,6 +24,7 @@ from src.core.middleware.cors import configure_cors
 from src.router import v1_router
 from src.routers.content_files import router as content_files_router
 from src.routers.local_content import router as local_content_router
+from src.services.audit.recorder import AuditLogMiddleware
 
 
 learnhouse_config: LearnHouseConfig = get_learnhouse_config()
@@ -57,6 +58,9 @@ app = FastAPI(
 configure_cors(app)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 register_ee_middlewares(app)
+# Outermost: sees every mutating /api/v1 call, including those short-circuited
+# by inner middlewares, and records after the response has been sent.
+app.add_middleware(AuditLogMiddleware)
 
 # Lifecycle
 app.add_event_handler("startup", startup_app(app))

@@ -91,7 +91,7 @@ const OrgAuditLogs = () => {
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: logsQueryKey ?? ['audit_logs_disabled'],
-    queryFn: () => apiFetch(`${getAPIUrl()}ee/audit_logs/?${buildQuery()}`, access_token),
+    queryFn: () => apiFetch(`${getAPIUrl()}audit-logs/?${buildQuery()}`, access_token),
     enabled: !!(org?.id && access_token),
     staleTime: 60_000,
   })
@@ -137,7 +137,7 @@ const OrgAuditLogs = () => {
       if (start) params.append('start_date', start)
       if (end) params.append('end_date', end)
 
-      const url = `${getAPIUrl()}ee/audit_logs/export?${params.toString()}`
+      const url = `${getAPIUrl()}audit-logs/export?${params.toString()}`
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${access_token}`

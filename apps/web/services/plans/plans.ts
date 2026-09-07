@@ -22,8 +22,19 @@ export type PlanLevel = 'free' | 'personal' | 'personal-family' | 'standard' | '
 // 'oss' is kept as a display-only type value (not in hierarchy) for OSS mode label rendering.
 export const PLAN_HIERARCHY: PlanLevel[] = ['free', 'personal', 'personal-family', 'standard', 'pro', 'enterprise']
 
-// Features blocked in OSS mode — require EE or SaaS/enterprise plan
-const OSS_BLOCKED_FEATURES = new Set(['sso', 'audit_logs', 'payments', 'analytics_advanced', 'scorm'])
+// Features blocked in OSS mode — require EE or SaaS/enterprise plan.
+// Audit logs and advanced analytics ship natively in this build (backend
+// EE_ONLY_FEATURES mirrors this list), so they are not blocked here.
+const OSS_BLOCKED_FEATURES = new Set(['sso', 'payments', 'scorm'])
+
+/**
+ * Whether plan tiers govern feature access. Only the SaaS platform has plans:
+ * self-hosted builds (OSS/EE) decide availability by deployment mode alone, so
+ * plan badges and tier comparisons are meaningless there.
+ */
+export function isPlanGated(): boolean {
+  return getDeploymentMode() === 'saas'
+}
 
 /**
  * Check if the current plan meets or exceeds the required plan level.

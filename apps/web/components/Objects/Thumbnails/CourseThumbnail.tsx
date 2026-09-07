@@ -57,8 +57,8 @@ function getFallbackImage(course: any): string {
   for (const m of METIER_PHOTOS) {
     if (m.keys.some((k) => haystack.includes(k))) return m.photo
   }
-  const uuid = course?.course_uuid || course?.name || ''
-  const idx = uuid.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % FALLBACK_POOL.length
+  const uuid: string = course?.course_uuid || course?.name || ''
+  const idx = uuid.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) % FALLBACK_POOL.length
   return FALLBACK_POOL[idx]
 }
 

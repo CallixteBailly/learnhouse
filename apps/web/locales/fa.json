@@ -4443,11 +4443,14 @@
       "video_block": {
         "uploading": "در حال آپلود ویدیو...",
         "drop_or_browse": "ویدیو خود را اینجا رها کنید یا برای مرور کلیک کنید",
-        "supported_formats": "پشتیبانی از فرمت‌های MP4 و WebM",
-        "unsupported_format": "لطفاً یک فرمت ویدیویی پشتیبانی شده آپلود کنید (MP4 یا WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "پخش‌کننده ویدیو",
         "expand_video": "باز کردن ویدیو",
-        "download_video": "دانلود ویدیو"
+        "download_video": "دانلود ویدیو",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "هیچ PDF در دسترس نیست",
