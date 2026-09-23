@@ -44,6 +44,9 @@ from src.db.user_organizations import UserOrganization
 from src.security.rbac.constants import ADMIN_ROLE_ID
 from src.security.security import security_hash_password, security_verify_password
 from src.services.security.password_validation import validate_password_complexity
+from src.services.users.signup_profile import (
+    validate_and_normalize_signup_profile,
+)
 from src.services.analytics.analytics import track
 from src.services.analytics import events as analytics_events
 from src.services.webhooks.dispatch import dispatch_webhooks
@@ -71,6 +74,11 @@ async def create_user(
                     "requirements": validation_result.requirements,
                 },
             )
+
+    # Ordria enriched signup: job (required) + phone (optional) + RGPD consents.
+    # OAuth signups skip the requirement — the soft banner collects the job later.
+    if not is_oauth:
+        await validate_and_normalize_signup_profile(db_session, user_object)
 
     user = User.model_validate(user_object)
 
@@ -199,6 +207,7 @@ async def create_user_with_invite(
     user_object: UserCreate,
     org_id: int,
     invite_code: str,
+    is_oauth: bool = False,
 ):
 
     # Check if invite code exists
@@ -215,9 +224,20 @@ async def create_user_with_invite(
     # Usage check
     await check_limits_with_usage("members", org_id, db_session)
 
+    # Ordria enriched signup: job (required) + phone (optional) + RGPD consents.
+    # OAuth signups skip the requirement — the soft banner collects the job later.
+    if not is_oauth:
+        await validate_and_normalize_signup_profile(db_session, user_object)
 
-
-    user = await create_user(request, db_session, current_user, user_object, org_id, signup_provider="invite")
+    user = await create_user(
+        request,
+        db_session,
+        current_user,
+        user_object,
+        org_id,
+        is_oauth=is_oauth,
+        signup_provider="invite",
+    )
 
     # Check if invite code contains UserGroup
     if inviteCode.get("usergroup_id"): # type: ignore
@@ -283,6 +303,11 @@ async def create_user_without_org(
                     "requirements": validation_result.requirements,
                 },
             )
+
+    # Ordria enriched signup: job (required) + phone (optional) + RGPD consents.
+    # OAuth signups skip the requirement — the soft banner collects the job later.
+    if not is_oauth:
+        await validate_and_normalize_signup_profile(db_session, user_object)
 
     user = User.model_validate(user_object)
 
