@@ -1,6 +1,7 @@
 # apps/api/src/db/job_titles.py
 from typing import Optional
 
+from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 
@@ -12,7 +13,11 @@ class JobTitleBase(SQLModel):
 
 
 class JobTitle(JobTitleBase, table=True):
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = (
+        UniqueConstraint("slug"),
+        UniqueConstraint("label"),
+        {"extend_existing": True},
+    )
     __tablename__ = "job_title"
     id: Optional[int] = Field(default=None, primary_key=True)
     creation_date: str = ""

@@ -354,6 +354,17 @@ async def connect_to_db(app: FastAPI):
         # Create all tables
         if not is_testing:
             await conn.run_sync(SQLModel.metadata.create_all)
+    # Seed the default job-title catalog once (Ordria enriched signup).
+    if not is_testing:
+        try:
+            from src.services.job_titles.job_titles import seed_default_job_titles
+
+            async with _async_session_factory() as session:
+                await seed_default_job_titles(session)
+        except Exception:
+            logging.warning(
+                "Could not seed default job titles", exc_info=True
+            )
     app.db_engine = engine  # type: ignore
     logging.info("LearnHouse database has been started.")
 

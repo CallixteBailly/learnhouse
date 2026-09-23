@@ -8,7 +8,7 @@ from src.routers import health
 from src.routers import instance
 from src.routers import plans
 from src.routers import usergroups
-from src.routers import dev, trail, users, auth, orgs, roles, search
+from src.routers import dev, trail, users, auth, orgs, roles, search, job_titles
 from src.routers import monitoring
 from src.routers import stream
 from src.routers import api_tokens
@@ -67,6 +67,11 @@ v1_router.include_router(
     prefix="/users",
     tags=["users"],
     dependencies=[Depends(get_non_api_token_user)]
+)
+v1_router.include_router(
+    job_titles.router,
+    prefix="/job-titles",
+    tags=["job-titles"],
 )
 v1_router.include_router(
     usergroups.router,

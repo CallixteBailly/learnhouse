@@ -65,3 +65,47 @@ async def test_create_conflict_rejected(db):
     with pytest.raises(Exception) as exc:
         await create_job_title(db, JobTitleCreate(label="Community Manager"))
     assert exc.value.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# Task 3: router (public + superadmin CRUD) + hardening
+# ---------------------------------------------------------------------------
+
+
+def test_router_declares_public_and_admin_routes():
+    from src.routers import job_titles
+
+    paths = {r.path for r in job_titles.router.routes}
+    assert "/public" in paths
+    assert "/admin" in paths
+    assert "/admin/{job_title_id}" in paths
+
+
+@pytest.mark.asyncio
+async def test_admin_guard_rejects_anonymous(db):
+    from fastapi import HTTPException
+
+    from src.db.users import AnonymousUser
+    from src.security.superadmin import require_superadmin
+
+    with pytest.raises(HTTPException) as exc:
+        await require_superadmin(current_user=AnonymousUser(), db_session=db)
+    assert exc.value.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_update_label_to_existing_label_rejected(db):
+    from src.db.job_titles import JobTitleUpdate
+    from src.services.job_titles.job_titles import update_job_title
+
+    await seed_default_job_titles(db)
+    titles = await list_active_job_titles(db)
+    first, second = titles[0], titles[1]
+
+    with pytest.raises(Exception) as exc:
+        await update_job_title(db, second.id, JobTitleUpdate(label=first.label))
+    assert exc.value.status_code == 400
+
+    # The rejected change must not have clobbered the target row.
+    await db.refresh(second)
+    assert second.label != first.label

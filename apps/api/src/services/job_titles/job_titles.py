@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -100,7 +101,13 @@ async def create_job_title(db_session: AsyncSession, obj: JobTitleCreate) -> Job
         update_date=now,
     )
     db_session.add(jt)
-    await db_session.commit()
+    try:
+        await db_session.commit()
+    except IntegrityError:
+        # Race fallback: the pre-check above missed a concurrent insert and
+        # the DB unique constraints (slug, label) caught it.
+        await db_session.rollback()
+        raise HTTPException(status_code=400, detail="Job title already exists")
     await db_session.refresh(jt)
     return jt
 
@@ -112,15 +119,32 @@ async def update_job_title(
     if not jt:
         raise HTTPException(status_code=404, detail="Job title not found")
     if obj.label is not None:
-        jt.label = obj.label.strip()
-        jt.slug = slugify_job_title(jt.label)
+        new_label = obj.label.strip()
+        new_slug = slugify_job_title(new_label)
+        conflict = (
+            await db_session.execute(
+                select(JobTitle).where(
+                    (JobTitle.id != job_title_id)
+                    & ((JobTitle.slug == new_slug) | (JobTitle.label == new_label))
+                )
+            )
+        ).scalars().first()
+        if conflict:
+            raise HTTPException(status_code=400, detail="Job title already exists")
+        jt.label = new_label
+        jt.slug = new_slug
     if obj.sort_order is not None:
         jt.sort_order = obj.sort_order
     if obj.is_active is not None:
         jt.is_active = obj.is_active
     jt.update_date = str(datetime.now())
     db_session.add(jt)
-    await db_session.commit()
+    try:
+        await db_session.commit()
+    except IntegrityError:
+        # Race fallback on the unique constraints (slug, label).
+        await db_session.rollback()
+        raise HTTPException(status_code=400, detail="Job title already exists")
     await db_session.refresh(jt)
     return jt
 
