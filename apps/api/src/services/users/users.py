@@ -46,6 +46,7 @@ from src.security.security import security_hash_password, security_verify_passwo
 from src.services.security.password_validation import validate_password_complexity
 from src.services.users.signup_profile import (
     validate_and_normalize_signup_profile,
+    validate_profile_update,
 )
 from src.services.analytics.analytics import track
 from src.services.analytics import events as analytics_events
@@ -415,7 +416,31 @@ async def update_user(
     # email_verified is also protected so changing the email cannot leave
     # the account appearing "already verified" on the new address.
     _PROTECTED_FIELDS = {"is_superadmin", "id", "user_uuid", "email_verified", "email_verified_at"}
+
+    # Ordria: profile is a JSON column replaced wholesale — merge instead so a
+    # partial update never wipes the signup-collected job/phone, and so the
+    # RGPD consents (extra_metadata.consents) stay append-only (set at signup).
     user_data = user_object.model_dump(exclude_unset=True)
+
+    if "profile" in user_data:
+        merged_profile = dict(user.profile or {})
+        merged_profile.update(user_data["profile"] or {})
+        user_data["profile"] = merged_profile
+        user_object.profile = merged_profile  # validator sees the merged view
+
+    if "extra_metadata" in user_data:
+        merged_extra = dict(user.extra_metadata or {})
+        incoming_extra = dict(user_data["extra_metadata"] or {})
+        incoming_extra.pop("consents", None)  # consents are never editable here
+        merged_extra.update(incoming_extra)
+        user_data["extra_metadata"] = merged_extra
+
+    await validate_profile_update(db_session, user_object)
+    if "profile" in user_data:
+        # The validator normalizes job (slug/label) and phone in place; sync
+        # the validated view back so the setattr loop persists it, not the
+        # pre-validation merged dict.
+        user_data["profile"] = user_object.profile
 
     # SECURITY: if the email actually changed, force re-verification on the
     # new address. SaaS login requires email_verified=True, so this prevents
