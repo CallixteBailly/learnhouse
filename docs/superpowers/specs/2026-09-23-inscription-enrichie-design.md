@@ -34,7 +34,7 @@ pas : paiements (Phase 2), recommandations (Phase 3), tableau de bord consolidé
 
 | Sujet | Décision |
 |---|---|
-| Saisie du métier | Liste déroulante **administrable par le superadmin Ordria, globale à la plateforme** + option « Autre » avec champ « Précisez » facultatif (texte libre ≤ 100 caractères) |
+| Saisie du métier | Liste déroulante **administrable par le superadmin Ordria, globale à la plateforme** + option « Autre » avec champ « Précisez votre métier » **obligatoire** quand « Autre » est choisi, texte libre ≤ 100 caractères (décision spec-owner 2026-09-23 : cohérent avec la validation serveur `other` non vide) |
 | Métier obligatoire | **Oui** à l'inscription |
 | Téléphone | **Optionnel**, validation format simple (type E.164 souple), éditable depuis le profil |
 | Consentement | **Deux cases obligatoires** : conditions générales (ordria.fr/cgv) et politique de confidentialité (ordria.fr/mentions-legales) |
