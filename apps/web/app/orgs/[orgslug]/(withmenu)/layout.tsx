@@ -13,6 +13,7 @@ const PodcastPlayer = dynamic(() => import('@components/Objects/Podcasts/Podcast
 import Image from 'next/image'
 import Link from 'next/link'
 import { PageViewTracker } from '@components/Analytics/PageViewTracker'
+import CompleteProfileBanner from '@components/Objects/Badges/CompleteProfileBanner'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { usePlan } from '@components/Hooks/usePlan'
 import { getGoogleFontUrl, DEFAULT_FONT } from '@/lib/fonts'
@@ -107,6 +108,7 @@ function LayoutContent({ children, orgslug }: { children: ReactNode; orgslug: st
       }}
     >
       <PageViewTracker />
+      {!chromeless && <CompleteProfileBanner orgslug={orgslug} />}
       {!chromeless && <OrgJoinBanner />}
       {!chromeless && <OrgMenu orgslug={orgslug} />}
       <div className="flex-1 relative" style={{ zIndex: 'var(--z-content)' }}>
