@@ -5686,5 +5686,21 @@
     "subtitle": "Plans and billing across your organizations",
     "opening": "Opening…",
     "manage_billing": "Manage billing"
+  },
+  "signup": {
+    "job_label": "Your job",
+    "job_choose": "Choose…",
+    "job_other": "Other",
+    "job_other_precise": "Please specify your job",
+    "job_required": "Please choose your job",
+    "phone_label": "Phone",
+    "invalid_phone": "Invalid phone number",
+    "consent_terms": "I accept the",
+    "consent_terms_link": "terms and conditions",
+    "consent_privacy": "I accept the",
+    "consent_privacy_link": "privacy policy",
+    "consent_required": "You must accept to continue",
+    "complete_profile_banner": "Complete your profile — tell us your job for tailored recommendations.",
+    "complete_profile_cta": "Complete"
   }
 }
