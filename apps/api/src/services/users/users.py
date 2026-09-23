@@ -162,12 +162,21 @@ async def create_user(
 
     await increase_feature_usage("members", org_id, db_session)
 
-    # Track user signup
+    # Track user signup — spec §3.5: the event carries the (already normalized)
+    # job slug. OAuth signups have no job yet (the soft banner collects it
+    # later), so job_slug is None there — the key stays present and consistent
+    # for downstream analytics.
+    signup_job = (
+        user.profile.get("job") if isinstance(user.profile, dict) else None
+    )
+    job_slug = (
+        signup_job.get("slug") if isinstance(signup_job, dict) else None
+    )
     await track(
         event_name=analytics_events.USER_SIGNED_UP,
         org_id=org_id,
         user_id=user.id if user.id else 0,
-        properties={"signup_method": signup_provider},
+        properties={"signup_method": signup_provider, "job_slug": job_slug},
     )
     await dispatch_webhooks(
         event_name=analytics_events.USER_SIGNED_UP,

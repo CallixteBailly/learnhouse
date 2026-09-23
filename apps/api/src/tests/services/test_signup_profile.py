@@ -7,8 +7,11 @@ from fastapi import HTTPException
 from sqlmodel import select
 
 from src.db.job_titles import JobTitle
-from src.db.users import User, UserCreate, UserUpdate
-from src.services.job_titles.job_titles import seed_default_job_titles
+from src.db.users import User, UserCreate, UserRead, UserReadPublic, UserUpdate
+from src.services.job_titles.job_titles import (
+    deactivate_job_title,
+    seed_default_job_titles,
+)
 from src.services.users.signup_profile import (
     CONSENT_TEXT_VERSION,
     validate_and_normalize_signup_profile,
@@ -194,6 +197,101 @@ async def test_update_accepts_valid_job_change(db):
     )
     await validate_profile_update(db, user)
     assert user.profile["job"]["slug"] == "designer_ux_ui"
+
+
+@pytest.mark.asyncio
+async def test_update_grandfathers_deactivated_job_title(db):
+    """Admin deactivates a title AFTER signup — holders must still save profiles.
+
+    The grandfather clause: on UPDATE, a job whose title_id still exists is
+    accepted even when inactive (label/slug re-resolved from the stored row).
+    """
+    await seed_default_job_titles(db)
+    jt = (await db.execute(
+        select(JobTitle).where(JobTitle.slug == "community_manager")
+    )).scalars().first()
+    await deactivate_job_title(db, jt.id)
+
+    user = UserUpdate(
+        username="jdoe", email="jdoe@example.com",
+        profile={"job": {"title_id": jt.id}},
+    )
+    await validate_profile_update(db, user)  # must NOT raise INVALID_JOB
+
+    assert user.profile["job"]["title_id"] == jt.id
+    assert user.profile["job"]["slug"] == "community_manager"
+    assert user.profile["job"]["label"] == "Community Manager"
+
+
+@pytest.mark.asyncio
+async def test_update_still_rejects_unknown_job_title_id(db):
+    """Grandfathering accepts *inactive* titles, never *nonexistent* ones."""
+    await seed_default_job_titles(db)
+    user = UserUpdate(
+        username="jdoe", email="jdoe@example.com",
+        profile={"job": {"title_id": 999999}},
+    )
+    with pytest.raises(HTTPException) as exc:
+        await validate_profile_update(db, user)
+    assert exc.value.detail["code"] == "INVALID_JOB"
+
+
+@pytest.mark.asyncio
+async def test_signup_still_rejects_deactivated_job_title(db):
+    """Signup keeps the active-only rule even after update grandfathering."""
+    await seed_default_job_titles(db)
+    jt = (await db.execute(
+        select(JobTitle).where(JobTitle.slug == "community_manager")
+    )).scalars().first()
+    await deactivate_job_title(db, jt.id)
+
+    user = _user(profile={"job": {"title_id": jt.id}},
+                 extra_metadata={"consents": _consents()})
+    with pytest.raises(HTTPException) as exc:
+        await validate_and_normalize_signup_profile(db, user)
+    assert exc.value.status_code == 400
+    assert exc.value.detail["code"] == "INVALID_JOB"
+
+
+# ---------------------------------------------------------------------------
+# PII: phone must never leak through the public user projection
+# ---------------------------------------------------------------------------
+
+
+def test_user_read_public_strips_phone_keeps_job():
+    """UserReadPublic strips profile["phone"]; the rest of the profile stays."""
+    user = User(
+        id=42,
+        username="jdoe",
+        first_name="John",
+        last_name="Doe",
+        email="jdoe@example.com",
+        user_uuid="user_jdoe",
+        profile={
+            "job": {"title_id": None, "slug": "other", "other": "Architecte 3D"},
+            "phone": "+33612345678",
+        },
+    )
+
+    public = UserReadPublic.model_validate(user)
+    assert "phone" not in (public.profile or {})
+    assert public.profile["job"]["other"] == "Architecte 3D"
+    assert public.profile["job"]["slug"] == "other"
+
+    # The owner still sees their own phone via UserRead (session/own profile).
+    own = UserRead.model_validate(user)
+    assert own.profile["phone"] == "+33612345678"
+
+
+def test_user_read_public_handles_empty_and_malformed_profiles():
+    assert UserReadPublic(
+        id=1, user_uuid="u", username="j", first_name="a", last_name="b",
+        profile=None,
+    ).profile is None
+    assert UserReadPublic(
+        id=1, user_uuid="u", username="j", first_name="a", last_name="b",
+        profile={},
+    ).profile == {}
 
 
 @pytest.mark.asyncio

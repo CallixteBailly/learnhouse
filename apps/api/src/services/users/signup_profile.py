@@ -29,7 +29,9 @@ def _http(code: str, message: str) -> HTTPException:
     return HTTPException(status_code=400, detail={"code": code, "message": message})
 
 
-async def _resolve_job(db_session: AsyncSession, job: Any) -> Optional[dict]:
+async def _resolve_job(
+    db_session: AsyncSession, job: Any, require_active: bool = True
+) -> Optional[dict]:
     if not isinstance(job, dict):
         return None
     title_id = job.get("title_id")
@@ -42,14 +44,10 @@ async def _resolve_job(db_session: AsyncSession, job: Any) -> Optional[dict]:
             title_id = int(title_id)
         except (ValueError, TypeError):
             raise _http("INVALID_JOB", "Unknown or inactive job title")
-        jt = (
-            await db_session.execute(
-                select(JobTitle).where(
-                    JobTitle.id == title_id,
-                    JobTitle.is_active == True,  # noqa: E712
-                )
-            )
-        ).scalars().first()
+        statement = select(JobTitle).where(JobTitle.id == title_id)
+        if require_active:
+            statement = statement.where(JobTitle.is_active == True)  # noqa: E712
+        jt = (await db_session.execute(statement)).scalars().first()
         if not jt:
             raise _http("INVALID_JOB", "Unknown or inactive job title")
         return {"title_id": jt.id, "slug": jt.slug, "label": jt.label, "other": None}
@@ -111,10 +109,19 @@ async def validate_and_normalize_signup_profile(
 
 
 async def validate_profile_update(db_session: AsyncSession, user_object) -> None:
-    """Validate job/phone on profile updates. Consents are never touched here."""
+    """Validate job/phone on profile updates. Consents are never touched here.
+
+    GRANDFATHER CLAUSE: a job whose ``title_id`` still exists is accepted on
+    update even if an admin has since deactivated the title — otherwise every
+    profile save by its holders would 400 (INVALID_JOB) and brick the profile
+    page. Signup keeps the active-only rule (no NEW user can pick a retired
+    title); unknown title_ids are still rejected everywhere.
+    """
     profile = dict(user_object.profile or {})
     if profile.get("job") is not None:
-        job = await _resolve_job(db_session, profile.get("job"))
+        job = await _resolve_job(
+            db_session, profile.get("job"), require_active=False
+        )
         if job is None:
             raise _http("INVALID_JOB", "Job title is invalid")
         profile["job"] = job
