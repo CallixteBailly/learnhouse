@@ -402,7 +402,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
             <FormField name="jobOther">
               <div className="flex items-center space-x-2 mb-1.5">
                 <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">
-                  {t('signup.job_other_precise', { defaultValue: 'Précisez (facultatif)' })}
+                  {t('signup.job_other_precise', { defaultValue: 'Précisez votre métier' })}
                 </Form.Label>
                 {formik.touched.jobOther && formik.errors.jobOther && (
                   <span className="text-red-500 text-xs flex items-center space-x-1">
