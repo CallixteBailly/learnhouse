@@ -217,6 +217,9 @@ interface NewAccountBody {
   // Cloudflare Turnstile token collected by the signup form. Optional so OSS /
   // Turnstile-disabled deployments keep working.
   turnstileToken?: string | null
+  // Ordria enriched signup — forwarded as-is by the /api/signup gateway.
+  profile?: Record<string, unknown>
+  extra_metadata?: Record<string, unknown>
 }
 
 // Signup goes through the same-origin gateway (app/api/signup/route.ts), which
