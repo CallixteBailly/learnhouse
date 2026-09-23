@@ -53,10 +53,10 @@ def test_sprite_interval_shrinks_for_short_and_caps_for_long():
 
 
 async def test_probe_missing_ffprobe_safe_fallback(monkeypatch):
-    # No ffprobe → (0, False, 0.0): no forced 1080 upscale, no audio map.
+    # No ffprobe → (0, 0, False, 0.0): no forced upscale, no audio map.
     monkeypatch.setattr(ht, "_ffprobe", lambda: None)
-    height, has_audio, duration = await ht._probe("whatever.mp4")
-    assert (height, has_audio, duration) == (0, False, 0.0)
+    width, height, has_audio, duration = await ht._probe("whatever.mp4")
+    assert (width, height, has_audio, duration) == (0, 0, False, 0.0)
     # And that height selects a single lowest rung (never upscales).
     assert [r.name for r in ht.select_ladder(height)] == ["360p"]
 
@@ -228,5 +228,5 @@ async def test_transcode_bogus_source_returns_none(tmp_path):
 async def test_probe_non_media_returns_safe_defaults(tmp_path):
     p = tmp_path / "notvideo.mp4"
     p.write_bytes(b"just text, not a video")
-    height, has_audio, duration = await ht._probe(str(p))
-    assert height == 0 and has_audio is False and duration == 0.0
+    width, height, has_audio, duration = await ht._probe(str(p))
+    assert width == 0 and height == 0 and has_audio is False and duration == 0.0

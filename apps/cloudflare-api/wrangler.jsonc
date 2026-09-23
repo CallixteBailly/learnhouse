@@ -21,8 +21,8 @@
       // Built & pushed to the Cloudflare registry automatically on deploy.
       "image": "./Dockerfile",
       "image_build_context": "../..",
-      // basic = 1 shared vCPU / 2 GiB. Bump to standard-1+ for heavy
-      // video/HLS transcoding workloads.
+      // basic = 1/4 vCPU / 1 GiB RAM / 4 GB disk (per current CF instance-type
+      // table). Bump to standard-1+ (4 GiB) for heavy video workloads.
       "instance_type": "basic",
       // Single instance: in-memory collab state + local Redis consistency.
       "max_instances": 1

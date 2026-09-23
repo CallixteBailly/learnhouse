@@ -253,6 +253,9 @@ FILE_TYPES = {
 # bare format strings — video block creation, upload mapping, activity gates.
 VIDEO_FILE_FORMATS = [ext.lstrip('.') for ext in FILE_TYPES['video']['extensions']]
 
+# Bounded read chunk for size-limited uploads (see validate_upload).
+_READ_CHUNK_BYTES = 64 * 1024 * 1024
+
 
 EXT_TO_CANONICAL_MIME = {
     '.jpg': 'image/jpeg',
@@ -368,10 +371,22 @@ def validate_upload(
     # previous behaviour) let a single multi-GB upload exhaust process RAM
     # before the limit was ever checked. We read at most size_limit + 1 bytes,
     # which is enough to detect (and reject) any file that exceeds the cap.
+    # Read in bounded chunks: file.read(size_limit + 1) with a multi-GB limit
+    # (videos cap at 5 GB) makes CPython attempt one giant allocation and die
+    # with MemoryError inside the container's 2 GiB cgroup — even for a tiny
+    # upload whose limit is huge.
     size_limit = max_size or config.get('max_size')
     if size_limit:
-        content = file.file.read(size_limit + 1)
-        if len(content) > size_limit:
+        chunks: List[bytes] = []
+        total = 0
+        while total <= size_limit:
+            piece = file.file.read(min(_READ_CHUNK_BYTES, size_limit + 1 - total))
+            if not piece:
+                break
+            chunks.append(piece)
+            total += len(piece)
+        content = b"".join(chunks)
+        if total > size_limit:
             file.file.seek(0)
             raise HTTPException(
                 status_code=413,

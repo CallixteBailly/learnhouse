@@ -4,18 +4,21 @@ import Link from 'next/link'
 import React from 'react'
 
 /**
- * Logo Ordria Learning — monogramme « O concentrique + point cyan »
- * Charte : 2 cercles concentriques Bleu Nuit (alignement, harmonie)
- * + accent Cyan Éclat en haut-droite (le conseil qui fait grandir).
- * Porté depuis src/components/Logo.astro du marketing Ordria.
+ * Logo Ordria — charte « Rendu Ordria » (sept. 2026)
+ * Icône : cadre déconstruit (6 rectangles arrondis) — « mettre de l'ordre ».
+ * Wordmark : ORDRIA en Expose (typo de logo de la charte).
+ * Baseline : « Mettre de l'ordre, simplement ».
  *
  * Variantes :
- *   - variant="mark"    → juste le monogramme O (favicon, header compact)
- *   - variant="lockup"  → monogramme + texte "Ordria Learning"
+ *   - variant="mark"    → symbole seul (bleu charte #3b65ff)
+ *   - variant="lockup"  → symbole + wordmark « ORDRIA » (+ suffixe optionnel)
  *
  * Tons :
- *   - tone="light"  → texte blanc (sur fond Bleu Nuit / sombre)
- *   - tone="dark"   → texte Bleu Nuit (sur fond clair, défaut)
+ *   - tone="dark"  → wordmark noir #1d1d1b (fond clair, défaut)
+ *   - tone="light" → wordmark blanc cassé #f7f9f9 (fond sombre)
+ *
+ * Les lockups vectoriels officiels (12 variantes) sont servis depuis
+ * /brands/ordria/ pour les usages hors composant (emails, print…).
  */
 
 type LogoSize = 'sm' | 'md' | 'lg' | 'xl' | number
@@ -28,85 +31,56 @@ export interface LogoProps {
   href?: string
   showText?: boolean
   className?: string
-  /** Suffixe après "Ordria" — défaut "Learning" */
+  /** Suffixe optionnel après « ORDRIA » (rendu en Satoshi, plus discret) */
   suffix?: string
-  /** Accessibilité — si non fourni, utilise le suffixe */
+  /** Accessibilité — si non fourni, utilise « Ordria Learning » */
   ariaLabel?: string
   /** Style inline (ex: filter pour header sticky) */
   style?: React.CSSProperties
 }
 
-const SIZE_MAP: Record<'sm' | 'md' | 'lg' | 'xl', { mark: string; text: string }> = {
-  sm: { mark: '18px', text: '0.95rem' },
-  md: { mark: '24px', text: '1.15rem' },
-  lg: { mark: '34px', text: '1.5rem' },
-  xl: { mark: '56px', text: '2.25rem' },
+const SIZE_MAP: Record<'sm' | 'md' | 'lg' | 'xl', number> = {
+  sm: 20,
+  md: 26,
+  lg: 36,
+  xl: 56,
 }
 
-function resolveSize(size: LogoSize): { mark: string; text: string } {
-  if (typeof size === 'number') return { mark: `${size}px`, text: `${size * 0.85}px` }
+function resolveSize(size: LogoSize): number {
+  if (typeof size === 'number') return size
   return SIZE_MAP[size]
 }
 
+/** Ratio largeur/hauteur du symbole officiel (viewBox 254.28 × 214.38) */
+const MARK_ASPECT = 254.28 / 214.38
+
 /**
- * Le monogramme « O » — SVG inline pour pouvoir hériter de `currentColor`
- * et animer le point cyan.
+ * Le symbole — géométrie exacte du logo livré (Fichier 6, monochrome),
+ * colorée en bleu charte via var(--ordria-accent) = #3b65ff.
  */
-const LogoMark = React.memo(function LogoMark({
-  size,
-  animated = false,
-}: {
-  size: string
-  animated?: boolean
-}) {
+const LogoMark = React.memo(function LogoMark({ size }: { size: number }) {
   return (
-    <span
+    <svg
+      viewBox="0 0 254.28 214.38"
+      fill="var(--ordria-accent, #3b65ff)"
+      role="img"
       aria-hidden="true"
       style={{
-        position: 'relative',
         display: 'block',
         flexShrink: 0,
-        width: size,
-        height: size,
-        minWidth: '18px',
+        width: `${size * MARK_ASPECT}px`,
+        height: `${size}px`,
+        minWidth: `${18 * MARK_ASPECT}px`,
         minHeight: '18px',
-        overflow: 'visible',
-        contain: 'layout style',
       }}
     >
-      <svg
-        viewBox="0 0 40 40"
-        fill="none"
-        role="img"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          overflow: 'visible',
-          display: 'block',
-        }}
-      >
-        {/* Anneau extérieur — Bleu Nuit (currentColor) */}
-        <circle cx="20" cy="20" r="17" stroke="currentColor" strokeWidth="3.4" fill="none" />
-        {/* Anneau intérieur concentrique — plus fin */}
-        <circle cx="20" cy="20" r="9.5" stroke="currentColor" strokeWidth="2.4" fill="none" />
-        {/* Accent progression — Cyan Éclat, haut-droite */}
-        <circle
-          className={animated ? 'ordria-logo-progress' : undefined}
-          cx="31.5"
-          cy="8.5"
-          r="2.8"
-          fill="var(--ordria-accent)"
-          style={
-            animated
-              ? { transformOrigin: '31.5px 8.5px', animation: 'ordria-logo-pulse 3.6s ease-in-out infinite' }
-              : undefined
-          }
-        />
-      </svg>
-    </span>
+      <rect x="0" y="77.82" width="55.25" height="136.56" rx=".85" ry=".85" />
+      <rect x="199.03" y="0" width="55.25" height="136.56" rx=".85" ry=".85" />
+      <rect x="29.29" y="157.46" width="55.25" height="58.58" rx=".85" ry=".85" transform="translate(-129.83 243.67) rotate(-90)" />
+      <rect x="169.66" y="-1.59" width="55.25" height="58.43" rx=".85" ry=".85" transform="translate(169.66 224.92) rotate(-90)" />
+      <rect x="153.9" y="114" width="55.25" height="145.51" rx=".85" ry=".85" transform="translate(-5.22 368.28) rotate(-90)" />
+      <rect x="45.13" y="-45.13" width="55.25" height="145.51" rx=".85" ry=".85" transform="translate(45.13 100.38) rotate(-90)" />
+    </svg>
   )
 })
 
@@ -118,56 +92,61 @@ export default function Logo({
   href,
   showText = true,
   className = '',
-  suffix = 'Learning',
+  suffix,
   ariaLabel,
   style,
 }: LogoProps): React.ReactNode {
-  const { mark: markSize, text: textSize } = resolveSize(size)
-  const text = suffix ? `Ordria ${suffix}` : 'Ordria'
-  const colorClass = tone === 'light' ? 'text-white' : 'text-[var(--ordria-foreground)]'
-  const label = ariaLabel || text
+  void animated // l'icône charte est statique — prop conservée pour compat
+  const markSize = resolveSize(size)
+  const textColor = tone === 'light' ? '#f7f9f9' : 'var(--ordria-foreground, #1d1d1b)'
+  const label = ariaLabel || 'Ordria Learning'
 
   const content = (
     <span
-      className={`ordria-logo-wordmark ${colorClass} ${className}`.trim()}
+      className={`ordria-logo-wordmark ${className}`.trim()}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '0.42em',
-        fontFamily: 'var(--ordria-font-display, Sora, system-ui, sans-serif)',
-        fontWeight: 700,
-        letterSpacing: '-0.03em',
+        gap: `${markSize * 0.3}px`,
         lineHeight: 1,
-        fontSize: textSize,
         textDecoration: 'none',
         ...style,
       }}
       aria-label={label}
     >
-      <LogoMark size={markSize} animated={animated} />
+      <LogoMark size={markSize} />
       {variant === 'lockup' && showText && (
-        <>
-          <span className="sr-only">{label}</span>
-          <span
-            aria-hidden="true"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25em' }}
-          >
-            <span>Ordria</span>
-            {suffix && (
-              <span
-                style={{
-                  fontWeight: 500,
-                  color: tone === 'light' ? 'oklch(0.86 0.015 264)' : 'var(--ordria-muted)',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                {suffix}
-              </span>
-            )}
-          </span>
-        </>
+        <span
+          aria-hidden="true"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'baseline',
+            gap: `${markSize * 0.18}px`,
+            fontFamily: 'var(--font-expose, var(--ordria-font-display, sans-serif))',
+            fontWeight: 700,
+            letterSpacing: '0.04em',
+            fontSize: `${markSize * 0.62}px`,
+            color: textColor,
+          }}
+        >
+          <span style={{ textTransform: 'uppercase' }}>Ordria</span>
+          {suffix && (
+            <span
+              style={{
+                fontFamily: 'var(--font-default, sans-serif)',
+                fontWeight: 500,
+                textTransform: 'none',
+                letterSpacing: '0.01em',
+                fontSize: `${markSize * 0.5}px`,
+                color: tone === 'light' ? 'rgba(247, 249, 249, 0.72)' : 'var(--ordria-muted, #6b7280)',
+              }}
+            >
+              {suffix}
+            </span>
+          )}
+        </span>
       )}
-      {variant === 'mark' && <span className="sr-only">{label}</span>}
+      <span className="sr-only">{label}</span>
     </span>
   )
 
@@ -181,21 +160,3 @@ export default function Logo({
 
   return content
 }
-
-/**
- * Styles globaux à injecter une fois — animation du point cyan.
- * À appeler dans le layout racine, OU via le <style> ci-dessous.
- */
-export const LogoStyles = () => (
-  <style>{`
-    @keyframes ordria-logo-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.72; transform: scale(0.88); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .ordria-logo-progress {
-        animation: none !important;
-      }
-    }
-  `}</style>
-)

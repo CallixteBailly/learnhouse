@@ -20,6 +20,19 @@
       "service": "ordria-learning"
     }
   ],
+  // ISR/incremental cache store (adapter default binding name). Without it,
+  // every page render is recomputed on each request.
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "learnhouse-cache"
+    }
+  ],
+  // Console logs + exceptions retention for the web worker (the API worker
+  // already has it).
+  "observability": {
+    "enabled": true
+  },
   // Public vars — read at runtime by server code (process.env is populated
   // from these in the Worker). Client bundles are baked at build time via
   // public/runtime-config.js (see next.config.js, BUILD_FOR_PAGES=1).

@@ -55,9 +55,11 @@ class TestCreateVideoActivity:
         assert exc.value.status_code == 409
 
     @pytest.mark.asyncio
-    async def test_raises_409_for_invalid_video_content_type(
+    async def test_raises_409_for_invalid_video_extension(
         self, mock_request, db, org, course, chapter, admin_user
     ):
+        # The format gate is extension-first (browsers report inconsistent
+        # MIME types for mkv/mov), so a wrong EXTENSION is what 409s here.
         with patch(
             "src.services.courses.activities.video.check_resource_access",
             new_callable=AsyncMock,
@@ -69,9 +71,36 @@ class TestCreateVideoActivity:
                     chapter_id=chapter.id,
                     current_user=admin_user,
                     db_session=db,
-                    video_file=_mock_video_file(content_type="text/plain"),
+                    video_file=_mock_video_file(
+                        content_type="text/plain", filename="virus.txt"
+                    ),
                 )
         assert exc.value.status_code == 409
+
+    @pytest.mark.asyncio
+    async def test_raises_415_when_content_fails_magic_byte_check(
+        self, mock_request, db, org, course, chapter, admin_user
+    ):
+        import io
+
+        # Valid extension but the bytes are not a real MP4 container —
+        # validate_upload's magic-byte check rejects with 415.
+        uf = _mock_video_file(filename="fake.mp4")
+        uf.file = io.BytesIO(b"just text, not a video")
+        with patch(
+            "src.services.courses.activities.video.check_resource_access",
+            new_callable=AsyncMock,
+        ):
+            with pytest.raises(HTTPException) as exc:
+                await create_video_activity(
+                    mock_request,
+                    name="Test Video",
+                    chapter_id=chapter.id,
+                    current_user=admin_user,
+                    db_session=db,
+                    video_file=uf,
+                )
+        assert exc.value.status_code == 415
 
     @pytest.mark.asyncio
     async def test_creates_video_activity_successfully(

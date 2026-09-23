@@ -37,6 +37,7 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
   const [userCertificate, setUserCertificate] = useState<any>(null);
   const [isLoadingCertificate, setIsLoadingCertificate] = useState(false);
   const [certificateError, setCertificateError] = useState<string | null>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const qrCodeLink = getUriWithOrg(orgslug, `/certificates/${userCertificate?.certificate_user.user_certification_uuid}/verify`);
 
 
@@ -118,8 +119,9 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
 
   // Generate PDF using canvas
   const downloadCertificate = async () => {
-    if (!userCertificate) return;
+    if (!userCertificate || isGeneratingPdf) return;
 
+    setIsGeneratingPdf(true);
     try {
       const [{ default: html2canvas }, { default: jsPDF }, QRCode] = await Promise.all([
         import('html2canvas'),
@@ -175,6 +177,13 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
       const theme = getPatternTheme(userCertificate.certification.config.certificate_pattern);
       const certificateId = userCertificate.certificate_user.user_certification_uuid;
       const qrCodeData = qrCodeLink;
+      const sessionUser = session?.data?.user || {};
+      const recipientName =
+        [sessionUser.first_name, sessionUser.last_name].filter(Boolean).join(' ') ||
+        sessionUser.full_name ||
+        sessionUser.name ||
+        sessionUser.username ||
+        '';
 
       // Generate QR code
       const qrCodeDataUrl = await QRCode.toDataURL(qrCodeData, {
@@ -253,6 +262,22 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
           line-height: 1.2;
           max-width: 600px;
         ">${userCertificate.certification.config.certification_name}</div>
+
+        ${recipientName ? `
+        <div style="
+          font-size: 15px;
+          color: #6b7280;
+          margin-bottom: 8px;
+        ">Ordria Learning ${t('certificate.certifies_that', 'certifie que')}</div>
+        <div style="
+          font-size: 24px;
+          font-weight: 600;
+          color: #111827;
+          margin-bottom: 24px;
+          border-bottom: 2px solid ${theme.secondary};
+          display: inline-block;
+          padding: 0 16px 6px;
+        ">${recipientName}</div>` : ''}
         
         <div style="
           font-size: 18px;
@@ -369,10 +394,13 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
       // Save the PDF
       const fileName = `${userCertificate.certification.config.certification_name.replace(/[^a-zA-Z0-9]/g, '_')}_Certificate.pdf`;
       pdf.save(fileName);
+      toast.success(t('certificate.pdf_downloaded'));
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error('Failed to generate PDF. Please try again.');
+      toast.error(t('certificate.pdf_error'));
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -488,8 +516,14 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
               {/* Certificate preview as navy card with gold border */}
               <div className="max-w-md mx-auto p-6 rounded-2xl border-4 border-amber-400" style={{ background: 'var(--ordria-foreground)' }}>
                 <p className="text-center text-amber-300 text-sm font-semibold uppercase tracking-wider mb-2">{t('certificate.certificate', 'Certificat de Réussite')}</p>
-                <p className="text-center text-white/70 text-sm mb-1">{t('certificate.certifies_that', 'Ordria Learning certifie que')}</p>
-                <p className="text-center text-white text-lg font-bold mb-2">{session?.data?.user?.full_name || session?.data?.user?.name || ''}</p>
+                <p className="text-center text-white/70 text-sm mb-1">Ordria Learning {t('certificate.certifies_that', 'certifie que')}</p>
+                <p className="text-center text-white text-lg font-bold mb-2">
+                  {[session?.data?.user?.first_name, session?.data?.user?.last_name].filter(Boolean).join(' ')
+                    || session?.data?.user?.full_name
+                    || session?.data?.user?.name
+                    || session?.data?.user?.username
+                    || ''}
+                </p>
                 <p className="text-center text-white/70 text-sm">{t('certificate.has_completed', 'a complété le cours')}</p>
                 <p className="text-center text-amber-300 text-sm font-semibold mt-1">{courseName}</p>
               </div>
@@ -515,9 +549,17 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
               {/* Download button */}
               <button
                 onClick={downloadCertificate}
-                className="duo-btn-success w-full mt-6"
+                disabled={isGeneratingPdf}
+                className="duo-btn-success w-full mt-6 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                📥 {t('certificate.download_certificate')}
+                {isGeneratingPdf ? (
+                  <span className="inline-flex items-center justify-center">
+                    <span className="animate-spin inline-block rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                    {t('certificate.pdf_generating')}
+                  </span>
+                ) : (
+                  <>📥 {t('certificate.download_certificate')}</>
+                )}
               </button>
               <div className="flex justify-center">
                 <Link

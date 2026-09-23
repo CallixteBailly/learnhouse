@@ -1,7 +1,8 @@
 /*
   ---break---
 */
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+/* Charte Ordria (« Rendu Ordria », sept. 2026) — polices servies localement
+   via next/font/local : Satoshi (--font-default, texte) · Expose (--font-expose, marque). */
 
 @plugin 'tailwindcss-animate';
 
@@ -217,9 +218,9 @@
     padding: 0;
     margin: 0;
     scrollbar-gutter: stable;
-    font-family: var(--font-default, 'Sora'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-default, 'Satoshi'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     letter-spacing: 0;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   a {
@@ -523,35 +524,35 @@
 
 @layer base {
   :root {
-    /* shadcn tokens — aligned with Ordria design system (HSL derived from OKLCH palette)
-       Blanc Cassé #F9FAFD · Bleu Nuit #0E1B39 · Cyan Éclat #34D3EF · Azur #193BA1 */
-    --background: 225 50% 98%;            /* Blanc Cassé */
-    --foreground: 222 61% 14%;            /* Bleu Nuit */
+    /* shadcn tokens — charte Ordria (« Rendu Ordria », sept. 2026)
+       Bleu #3b65ff · Noir #1d1d1b · Blanc cassé #f7f9f9 · Satoshi/Expose */
+    --background: 180 14% 97%;            /* Blanc cassé #f7f9f9 */
+    --foreground: 60 4% 11%;              /* Noir #1d1d1b */
     --card: 0 0% 100%;
-    --card-foreground: 222 61% 14%;
+    --card-foreground: 60 4% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 61% 14%;
-    --primary: 189 85% 57%;               /* Cyan Éclat #34D3EF */
-    --primary-foreground: 222 61% 14%;    /* Bleu Nuit (texte sur cyan) */
-    --secondary: 220 55% 96%;             /* Bleu Brume */
-    --secondary-foreground: 225 73% 36%;  /* Azur */
-    --muted: 220 55% 96%;                 /* Bleu Brume */
-    --muted-foreground: 220 8% 42%;       /* Ardoise clair */
-    --accent: 189 85% 57%;                /* Cyan Éclat — aligné sur primary */
-    --accent-foreground: 222 61% 14%;
-    --destructive: 1 65% 56%;             /* Rouge Ordria */
+    --popover-foreground: 60 4% 11%;
+    --primary: 227 100% 62%;              /* Bleu #3b65ff */
+    --primary-foreground: 180 14% 97%;    /* Blanc cassé (texte sur bleu) */
+    --secondary: 227 100% 96%;            /* Bleu voile */
+    --secondary-foreground: 227 90% 42%;  /* Bleu profond */
+    --muted: 225 20% 95%;                 /* Gris bleuté clair */
+    --muted-foreground: 225 6% 42%;       /* Gris ardoise */
+    --accent: 227 100% 62%;               /* Bleu — aligné sur primary */
+    --accent-foreground: 180 14% 97%;
+    --destructive: 1 65% 56%;             /* Rouge */
     --destructive-foreground: 0 0% 98%;
-    --border: 220 16% 82%;                /* Border léger bleuté */
-    --input: 220 16% 82%;
-    --ring: 189 85% 57%;                  /* focus ring cyan */
-    --chart-1: 189 85% 57%;               /* Cyan */
-    --chart-2: 221 77% 54%;               /* Azur vif */
-    --chart-3: 222 61% 14%;               /* Bleu Nuit */
-    --chart-4: 220 55% 96%;               /* Brume */
-    --chart-5: 220 8% 42%;                /* Ardoise */
+    --border: 225 20% 88%;                /* Border léger bleuté */
+    --input: 225 20% 88%;
+    --ring: 227 100% 62%;                 /* focus ring bleu */
+    --chart-1: 227 100% 62%;              /* Bleu */
+    --chart-2: 227 80% 40%;               /* Bleu profond */
+    --chart-3: 60 4% 11%;                 /* Noir */
+    --chart-4: 225 20% 95%;               /* Gris clair */
+    --chart-5: 225 6% 42%;                /* Ardoise */
     --radius: 0.5rem;
-    --font-display: 'Sora', system-ui, -apple-system, sans-serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: var(--font-expose, 'Expose'), 'Satoshi', system-ui, sans-serif;
+    --font-body: var(--font-default, 'Satoshi'), system-ui, sans-serif;
 
     /* Z-Index Layering System */
     --z-behind: -10;
@@ -579,35 +580,35 @@
     --z-critical: 400;
     --z-max: 9999;
 
-    /* Ordria design tokens — OKLCH palette (aligned with ordria.pages.dev)
-       Bleu Nuit #0E1B39 · Cyan Éclat #34D3EF · Blanc Cassé #F9FAFD
-       Sora (display) · Inter (body) */
-    --ordria-nuit: oklch(0.23 0.06 264);
-    --ordria-nuit-500: oklch(0.41 0.09 264);
-    --ordria-azur: oklch(0.40 0.17 265);       /* bleu signature (hover/links) */
-    --ordria-azur-vif: oklch(0.55 0.20 263);   /* ombre 3D des boutons cyan */
-    --ordria-cyan: oklch(0.80 0.13 213);       /* alias accent (Cyan Éclat) */
-    --ordria-cyan-bright: oklch(0.88 0.15 213);
+    /* Ordria design tokens — OKLCH, charte « Rendu Ordria » (sept. 2026)
+       Bleu #3b65ff = oklch(0.574 0.233 267) · Noir #1d1d1b = oklch(0.230 0.004 107)
+       Blanc cassé #f7f9f9 = oklch(0.981 0.002 197) · Satoshi (texte) · Expose (marque) */
+    --ordria-nuit: oklch(0.230 0.004 107);
+    --ordria-nuit-500: oklch(0.42 0.005 107);
+    --ordria-azur: oklch(0.574 0.233 267);       /* bleu signature (hover/links) */
+    --ordria-azur-vif: oklch(0.66 0.20 267);     /* bleu clair */
+    --ordria-cyan: oklch(0.574 0.233 267);       /* alias accent — désormais bleu (historique cyan) */
+    --ordria-cyan-bright: oklch(0.66 0.20 267);
 
-    --ordria-background: oklch(0.985 0.004 264);   /* Blanc Cassé */
-    --ordria-surface: oklch(0.96 0.012 264);       /* Bleu Brume */
-    --ordria-surface-lavender: oklch(0.92 0.018 264);
-    --ordria-foreground: oklch(0.23 0.06 264);     /* Bleu Nuit */
-    --ordria-ink: oklch(0.23 0.06 264);
-    --ordria-muted: oklch(0.52 0.02 265);          /* Ardoise clair */
-    --ordria-border: oklch(0.85 0.015 264);
-    --ordria-accent: oklch(0.80 0.13 213);         /* Cyan Éclat */
-    --ordria-accent-secondary: oklch(0.55 0.20 263); /* Azur vif — ombre 3D */
-    --ordria-accent-hover: oklch(0.88 0.15 213);   /* Cyan bright */
-    --ordria-accent-bg: oklch(0.92 0.08 213);      /* Cyan soft */
-    --ordria-accent-border: oklch(0.80 0.13 213 / 0.4);
+    --ordria-background: oklch(0.981 0.002 197);     /* Blanc cassé */
+    --ordria-surface: oklch(0.955 0.004 220);        /* gris bleuté clair */
+    --ordria-surface-lavender: oklch(0.93 0.012 250);
+    --ordria-foreground: oklch(0.230 0.004 107);     /* Noir #1d1d1b */
+    --ordria-ink: oklch(0.230 0.004 107);
+    --ordria-muted: oklch(0.52 0.01 225);            /* gris ardoise */
+    --ordria-border: oklch(0.87 0.008 225);
+    --ordria-accent: oklch(0.574 0.233 267);         /* Bleu #3b65ff */
+    --ordria-accent-secondary: oklch(0.44 0.20 267); /* Bleu profond — ombre 3D */
+    --ordria-accent-hover: oklch(0.66 0.20 267);     /* Bleu clair */
+    --ordria-accent-bg: oklch(0.93 0.04 267);        /* Bleu soft */
+    --ordria-accent-border: oklch(0.574 0.233 267 / 0.4);
     --ordria-success: oklch(0.62 0.15 150);
     --ordria-warning: oklch(0.75 0.14 75);
     --ordria-error: oklch(0.60 0.18 25);
 
-    /* Alias typographiques (utilisées dans les composants — désormais définies) */
-    --ordria-font-display: 'Sora', system-ui, -apple-system, sans-serif;
-    --ordria-font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    /* Alias typographiques (charte : Expose = marque, Satoshi = texte) */
+    --ordria-font-display: var(--font-expose, 'Expose'), 'Satoshi', system-ui, sans-serif;
+    --ordria-font-body: var(--font-default, 'Satoshi'), system-ui, sans-serif;
     --ordria-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
     /* Signal accents — brief "tech YouTuber" palette
@@ -618,10 +619,8 @@
     --ordria-neon: oklch(0.88 0.18 95);            /* jaune néon, ~#FFE600 */
     --ordria-neon-ink: oklch(0.30 0.05 95);        /* texte lisible sur jaune */
 
-    /* Encre lisible sur fond cyan accent (ratio 6:1).
-       --ordria-accent (cyan clair 0.80) ne supporte pas le blanc (1.55:1) ;
-       utiliser cette encre pour tout texte posé sur cyan. */
-    --ordria-on-accent: var(--ordria-nuit);
+    /* Encre posée sur le bleu accent (#3b65ff) : blanc cassé (ratio ~4.6:1). */
+    --ordria-on-accent: oklch(0.981 0.002 197);
 
     --radius-card: 16px;
     --radius-btn: 12px;
@@ -633,8 +632,8 @@
     --shadow-blue: 0 4px 0 var(--ordria-accent-secondary);
 
     /* Category colors — mapped to Ordria palette */
-    --cat-coiffeur: var(--ordria-accent);          /* cyan */
-    --cat-garagiste: var(--ordria-accent-secondary); /* azur vif */
+    --cat-coiffeur: var(--ordria-accent);          /* bleu */
+    --cat-garagiste: var(--ordria-accent-secondary); /* bleu profond */
     --cat-restaurateur: var(--ordria-warning);
     --cat-artisan: oklch(0.65 0.20 300);           /* violet */
     --cat-barbier: var(--ordria-success);
@@ -646,30 +645,30 @@
     --duo-btn-active-shadow: 0 2px;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 60 4% 8%;            /* Noir profond, teinte charte */
+    --foreground: 180 14% 97%;         /* Blanc cassé */
+    --card: 60 4% 11%;                 /* Noir #1d1d1b */
+    --card-foreground: 180 14% 97%;
+    --popover: 60 4% 11%;
+    --popover-foreground: 180 14% 97%;
+    --primary: 227 100% 68%;           /* Bleu éclairci pour fond sombre */
+    --primary-foreground: 180 14% 97%;
+    --secondary: 227 25% 16%;
+    --secondary-foreground: 180 14% 97%;
+    --muted: 227 20% 16%;
+    --muted-foreground: 225 8% 66%;
+    --accent: 227 100% 68%;
+    --accent-foreground: 180 14% 97%;
+    --destructive: 1 65% 48%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;}}
+    --border: 227 15% 20%;
+    --input: 227 15% 20%;
+    --ring: 227 100% 68%;
+    --chart-1: 227 100% 68%;
+    --chart-2: 227 80% 50%;
+    --chart-3: 180 14% 97%;
+    --chart-4: 227 20% 30%;
+    --chart-5: 225 8% 60%;}}
 
 @layer base {
   * {
@@ -678,9 +677,9 @@
   html,
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-default, 'Sora'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-default, 'Satoshi'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     letter-spacing: 0;
-    font-weight: 600;
+    font-weight: 500;
   }
 }
 
@@ -1261,9 +1260,9 @@
 }
 
 .rotating-gradient-bg {
-  background: conic-gradient(from var(--gradient-angle) at 53.75% 50%, rgb(35, 40, 93) 4deg, rgba(20, 0, 52, 0.95) 59deg, rgba(164, 45, 238, 0.88) 281deg);
+  background: conic-gradient(from var(--gradient-angle) at 53.75% 50%, rgb(23, 38, 110) 4deg, rgba(13, 24, 77, 0.95) 59deg, rgba(59, 101, 255, 0.88) 281deg);
   animation: rotateGradientAngle 20s linear infinite;
-  box-shadow: 0 2px 8px -2px rgba(164, 45, 238, 0.3);
+  box-shadow: 0 2px 8px -2px rgba(59, 101, 255, 0.3);
 }
 
 /* Export progress shimmer animation */
@@ -1306,7 +1305,7 @@
   display: inline-block;
   width: 2px;
   height: 1em;
-  background: linear-gradient(180deg, rgb(164, 45, 238) 0%, rgb(35, 40, 93) 100%);
+  background: linear-gradient(180deg, rgb(59, 101, 255) 0%, rgb(23, 38, 110) 100%);
   margin-left: 2px;
   animation: ai-cursor-blink 1s ease-in-out infinite;
   vertical-align: text-bottom;
@@ -1331,7 +1330,7 @@
   bottom: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, transparent 0%, rgba(164, 45, 238, 0.5) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(59, 101, 255, 0.5) 50%, transparent 100%);
   animation: ai-text-reveal 1.5s linear infinite;
 }
 
@@ -1340,29 +1339,29 @@
   0% {
     opacity: 0;
     transform: translateY(10px) scale(0.98);
-    box-shadow: 0 0 0 0 rgba(164, 45, 238, 0);
+    box-shadow: 0 0 0 0 rgba(59, 101, 255, 0);
   }
   30% {
     opacity: 1;
     transform: translateY(0) scale(1);
-    box-shadow: 0 0 20px 5px rgba(164, 45, 238, 0.3);
+    box-shadow: 0 0 20px 5px rgba(59, 101, 255, 0.3);
   }
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
-    box-shadow: 0 0 0 0 rgba(164, 45, 238, 0);
+    box-shadow: 0 0 0 0 rgba(59, 101, 255, 0);
   }
 }
 
 @keyframes ai-block-glow {
   0% {
-    box-shadow: 0 0 5px rgba(164, 45, 238, 0.3), 0 0 10px rgba(35, 40, 93, 0.2);
+    box-shadow: 0 0 5px rgba(59, 101, 255, 0.3), 0 0 10px rgba(23, 38, 110, 0.2);
   }
   50% {
-    box-shadow: 0 0 15px rgba(164, 45, 238, 0.5), 0 0 25px rgba(35, 40, 93, 0.3);
+    box-shadow: 0 0 15px rgba(59, 101, 255, 0.5), 0 0 25px rgba(23, 38, 110, 0.3);
   }
   100% {
-    box-shadow: 0 0 5px rgba(164, 45, 238, 0.3), 0 0 10px rgba(35, 40, 93, 0.2);
+    box-shadow: 0 0 5px rgba(59, 101, 255, 0.3), 0 0 10px rgba(23, 38, 110, 0.2);
   }
 }
 
@@ -1391,11 +1390,11 @@
   padding: 2px;
   background: linear-gradient(
     90deg,
-    rgba(164, 45, 238, 0.8) 0%,
-    rgba(35, 40, 93, 0.8) 25%,
-    rgba(164, 45, 238, 0.8) 50%,
-    rgba(35, 40, 93, 0.8) 75%,
-    rgba(164, 45, 238, 0.8) 100%
+    rgba(59, 101, 255, 0.8) 0%,
+    rgba(23, 38, 110, 0.8) 25%,
+    rgba(59, 101, 255, 0.8) 50%,
+    rgba(23, 38, 110, 0.8) 75%,
+    rgba(59, 101, 255, 0.8) 100%
   );
   background-size: 200% 100%;
   animation: ai-border-flow 2s ease-in-out infinite;
@@ -1415,19 +1414,19 @@
 .ai-streaming-text {
   background: linear-gradient(
     90deg,
-    rgba(164, 45, 238, 1) 0%,
-    rgba(100, 60, 180, 1) 20%,
-    rgba(35, 40, 93, 1) 40%,
-    rgba(164, 45, 238, 0.9) 60%,
-    rgba(35, 40, 93, 1) 80%,
-    rgba(200, 180, 255, 1) 100%
+    rgba(59, 101, 255, 1) 0%,
+    rgba(45, 75, 190, 1) 20%,
+    rgba(23, 38, 110, 1) 40%,
+    rgba(59, 101, 255, 0.9) 60%,
+    rgba(23, 38, 110, 1) 80%,
+    rgba(184, 199, 255, 1) 100%
   );
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   animation: ai-text-reveal 1.5s linear infinite;
-  text-shadow: 0 0 10px rgba(164, 45, 238, 0.3);
+  text-shadow: 0 0 10px rgba(59, 101, 255, 0.3);
 }
 
 /* Fade out animation when streaming completes */
@@ -1661,18 +1660,18 @@
 /* Magic Block button - uses rotating gradient from globals */
 .editor-tool-btn-magic {
   position: relative;
-  background: conic-gradient(from var(--gradient-angle) at 53.75% 50%, rgb(35, 40, 93) 4deg, rgba(20, 0, 52, 0.95) 59deg, rgba(164, 45, 238, 0.88) 281deg);
+  background: conic-gradient(from var(--gradient-angle) at 53.75% 50%, rgb(23, 38, 110) 4deg, rgba(13, 24, 77, 0.95) 59deg, rgba(59, 101, 255, 0.88) 281deg);
   color: white;
   outline: none;
   border-radius: 6px;
   animation: rotateGradientAngle 20s linear infinite;
-  box-shadow: 0 2px 8px -2px rgba(164, 45, 238, 0.4);
+  box-shadow: 0 2px 8px -2px rgba(59, 101, 255, 0.4);
   padding: 6px;
 }
 
 .editor-tool-btn-magic:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px -2px rgba(164, 45, 238, 0.5);
+  box-shadow: 0 4px 12px -2px rgba(59, 101, 255, 0.5);
   cursor: pointer;
 }
 
@@ -2599,7 +2598,7 @@
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: -0.01em;
-    color: var(--ordria-nuit);
+    color: var(--ordria-on-accent);
     background-color: var(--ordria-accent);
     border: none;
     border-radius: 0.75rem;
@@ -2612,7 +2611,7 @@
   .btn-primary-ordria:hover {
     background-color: var(--ordria-accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px -8px oklch(0.80 0.13 213 / 0.45);
+    box-shadow: 0 12px 32px -8px oklch(0.574 0.233 267 / 0.45);
   }
   .btn-primary-ordria:active {
     transform: translateY(0);
@@ -2654,7 +2653,7 @@
                 box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .card-ordria:hover {
-    border-color: oklch(0.80 0.13 213 / 0.5);
+    border-color: oklch(0.574 0.233 267 / 0.5);
     transform: translateY(-3px);
     box-shadow: 0 16px 40px -16px oklch(0.23 0.06 264 / 0.18);
   }
@@ -2669,7 +2668,7 @@
     background:
       radial-gradient(ellipse 80% 60% at 15% 10%, oklch(0.41 0.09 264 / 0.55), transparent 60%),
       radial-gradient(ellipse 60% 50% at 85% 30%, oklch(0.60 0.22 262 / 0.35), transparent 65%),
-      radial-gradient(ellipse 70% 50% at 50% 100%, oklch(0.80 0.13 213 / 0.18), transparent 70%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, oklch(0.574 0.233 267 / 0.18), transparent 70%),
       var(--ordria-nuit);
     color: #fff;
   }
@@ -2702,8 +2701,8 @@
 
   /* Glow cyan — état actif/hover subtil */
   .glow-cyan-ordria {
-    box-shadow: 0 0 0 1px oklch(0.80 0.13 213 / 0.4),
-                0 0 24px -4px oklch(0.80 0.13 213 / 0.35);
+    box-shadow: 0 0 0 1px oklch(0.574 0.233 267 / 0.4),
+                0 0 24px -4px oklch(0.574 0.233 267 / 0.35);
   }
 }
 
@@ -2821,7 +2820,7 @@
     width: 56px;
     height: 56px;
     border-radius: 999px;
-    background: oklch(0.80 0.13 213 / 0.9);
+    background: oklch(0.574 0.233 267 / 0.9);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -2887,7 +2886,7 @@
   }
   .yt-chip:hover {
     color: var(--ordria-foreground);
-    border-color: oklch(0.80 0.13 213 / 0.5);
+    border-color: oklch(0.574 0.233 267 / 0.5);
   }
   .yt-chip[aria-pressed="true"] {
     background: var(--ordria-nuit);

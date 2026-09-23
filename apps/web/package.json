@@ -13,6 +13,7 @@
     "test": "bun test tests",
     "build:worker": "opennextjs-cloudflare build",
     "preview:worker": "opennextjs-cloudflare preview",
+    "predeploy:worker": "node scripts/gen-runtime-config.mjs",
     "deploy:worker": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {

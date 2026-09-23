@@ -47,11 +47,11 @@
     "help": "Довідка",
     "help_menu": {
       "documentation": "Документація",
-      "website": "Веб-сайт LearnHouse",
+      "website": "Веб-сайт Ordria",
       "discord": "Discord",
       "report_feedback": "Повідомити про проблему або залишити відгук",
       "feedback_title": "Надіслати відгук",
-      "feedback_description": "Допоможіть нам покращити LearnHouse: поділіться думками, повідомте про помилку або запропонуйте нову функцію.",
+      "feedback_description": "Допоможіть нам покращити Ordria: поділіться думками, повідомте про помилку або запропонуйте нову функцію.",
       "feedback_placeholder": "Розкажіть нам, що у вас на думці...",
       "feedback_success": "Дякуємо за відгук!",
       "send_feedback": "Надіслати відгук",
@@ -215,7 +215,7 @@
     "organizations": "Організації",
     "billing": "Платежі",
     "create_organization": "Створити організацію",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "Не вдалося видалити цю організацію. Спробуйте ще раз.",
     "org_actions": "Дії з організацією",
     "manage_upgrade": "Керувати / Покращити",
@@ -353,11 +353,11 @@
     "privacy_policy": "Політикою конфіденційності",
     "image_title_forgot": "Скиньте свій пароль.",
     "image_subtitle_forgot": "Ми допоможемо вам швидко повернутися до облікового запису.",
-    "image_title_login": "З поверненням до LearnHouse.",
+    "image_title_login": "З поверненням до Ordria.",
     "image_subtitle_login": "Продовжуйте з того місця, де зупинилися — ваші курси, студенти та інструменти чекають.",
     "image_title_reset": "Майже готово.",
     "image_subtitle_reset": "Створіть надійний пароль, щоб захистити свій обліковий запис.",
-    "image_title_signup": "Почніть навчати разом з LearnHouse.",
+    "image_title_signup": "Почніть навчати разом з Ordria.",
     "image_subtitle_signup": "Створіть обліковий запис і запустіть свій перший курс за лічені хвилини.",
     "image_title_verify": "Підтвердьте свою електронну пошту.",
     "image_subtitle_verify": "Один швидкий крок, щоб захистити обліковий запис і розпочати.",
@@ -1229,7 +1229,7 @@
     "not_supported_title": "Ця активність не підтримується",
     "not_supported_description": "Цей тип активності потребує автентифікації та не може бути вбудованим.",
     "visit_activity": "Відкрити сторінку активності",
-    "powered_by": "Працює на LearnHouse"
+    "powered_by": "Працює на Ordria"
   },
   "assignments": {
     "submit_assignment": "Надіслати завдання",
@@ -1664,7 +1664,7 @@
           "description": "Налаштуйте особисті налаштування, паролі, електронну пошту"
         }
       },
-      "learnhouse_university": "Університет LearnHouse",
+      "learnhouse_university": "Університет Ordria",
       "welcome_back": "Ласкаво просимо назад",
       "plan": "План",
       "create_course": "Створити курс",
@@ -2569,8 +2569,8 @@
         "footer_text_desc": "Спеціальний текст, який відображається внизу сторінок вашої організації",
         "default_language": "Мова за замовчуванням",
         "default_language_desc": "Мова, яку бачать нові відвідувачі за умовчанням, і мова, яка використовується для електронних листів, надісланих від імені цієї організації. Учасники можуть перемикати власну мову інтерфейсу користувача.",
-        "watermark_label": "Водяний знак \"Made with LearnHouse\".",
-        "watermark_desc": "Розмістіть фірмовий водяний знак LearnHouse на сторінках вашої організації",
+        "watermark_label": "Водяний знак \"Made with Ordria\".",
+        "watermark_desc": "Розмістіть фірмовий водяний знак Ordria на сторінках вашої організації",
         "watermark_free_plan": "Водяний знак завжди відображається на вільному плані",
         "watermark_ee": "Приховано вашою ліцензією Enterprise Edition"
       },
@@ -5011,10 +5011,10 @@
       },
       "teach_the_world": {
         "title": "Навчайтеся й розвивайтеся",
-        "description": "Ресурси, які допоможуть вам отримати максимум від LearnHouse.",
+        "description": "Ресурси, які допоможуть вам отримати максимум від Ordria.",
         "classroom": "Класна кімната",
         "classroom_desc": "Дізнайтеся, як розвивати та керувати своїми курсами",
-        "university": "Університет LearnHouse",
+        "university": "Університет Ordria",
         "university_desc": "Посібники, поради та найкращі практики"
       },
       "add_content": {
@@ -5044,7 +5044,7 @@
       }
     },
     "welcome": {
-      "title": "Ласкаво просимо до LearnHouse",
+      "title": "Ласкаво просимо до Ordria",
       "subtitle": "Створюйте курси, запрошуйте учнів і діліться знаннями зі світом.",
       "get_started": "Почати роботу",
       "features_title": "Усе, що вам потрібно",
@@ -5541,7 +5541,7 @@
         "title": "Хочете протестувати?",
         "body": "Перейдіть на",
         "link": "сторінку для розробників",
-        "suffix": "щоб спробувати LearnHouse."
+        "suffix": "щоб спробувати Ordria."
       },
       "validation": {
         "required": "Обов’язкове поле",

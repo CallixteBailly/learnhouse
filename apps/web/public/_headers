@@ -1,0 +1,6 @@
+# Workers Assets serves everything with `max-age=0, must-revalidate` by
+# default. Next.js fingerprinted bundles (hash in the filename) never change
+# content for a given name — cache them immutably in the browser for instant
+# repeat visits (per Cloudflare Workers Assets docs recommendation).
+/_next/static/*
+  Cache-Control: public, max-age=31556952, immutable

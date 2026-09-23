@@ -13,8 +13,8 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { getPlatformUrl } from '@services/config/config'
 
-const TERMS_URL = getPlatformUrl('/terms') || 'https://ordria.fr/terms'
-const PRIVACY_URL = getPlatformUrl('/privacy') || 'https://ordria.fr/privacy'
+const MENTIONS_URL = getPlatformUrl('/mentions-legales') || 'https://ordria.fr/mentions-legales'
+const CGV_URL = getPlatformUrl('/cgv') || 'https://ordria.fr/cgv'
 
 export function AuthFooter({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
@@ -23,7 +23,7 @@ export function AuthFooter({ className = '' }: { className?: string }) {
       <p className="text-[13px] text-black/30 font-medium">
         {t('auth.terms_text', { defaultValue: "En continuant, vous acceptez les" })}{' '}
         <Link
-          href={TERMS_URL}
+          href={MENTIONS_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="text-black/50 hover:text-black/70 transition-colors"
@@ -32,7 +32,7 @@ export function AuthFooter({ className = '' }: { className?: string }) {
         </Link>{' '}
         {t('auth.and', { defaultValue: 'and' })}{' '}
         <Link
-          href={PRIVACY_URL}
+          href={CGV_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="text-black/50 hover:text-black/70 transition-colors"
@@ -66,20 +66,20 @@ export function CopyrightFooter({
         </p>
         <nav className="flex items-center gap-x-5">
           <Link
-            href={TERMS_URL}
+            href={MENTIONS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className={`${link} transition-colors`}
           >
-            {t('auth.terms_of_service', { defaultValue: 'Terms of Service' })}
+            {t('common.mentions_legales', { defaultValue: 'Mentions légales' })}
           </Link>
           <Link
-            href={PRIVACY_URL}
+            href={CGV_URL}
             target="_blank"
             rel="noopener noreferrer"
             className={`${link} transition-colors`}
           >
-            {t('auth.privacy_policy', { defaultValue: 'Privacy Policy' })}
+            {t('common.cgv', { defaultValue: 'CGV' })}
           </Link>
         </nav>
       </div>

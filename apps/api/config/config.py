@@ -364,7 +364,10 @@ def get_learnhouse_config() -> LearnHouseConfig:
         or "filesystem"
     )  # default to filesystem
 
-    env_bucket_name = os.environ.get("LEARNHOUSE_S3_API_BUCKET_NAME")
+    env_bucket_name = (
+        os.environ.get("LEARNHOUSE_S3_API_BUCKET_NAME")
+        or os.environ.get("AWS_STORAGE_BUCKET_NAME")
+    )
     env_endpoint_url = os.environ.get("LEARNHOUSE_S3_API_ENDPOINT_URL")
     bucket_name = (
         yaml_config.get("hosting_config", {})

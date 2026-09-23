@@ -89,12 +89,17 @@ async def create_video_block(
 
     # Kick off HLS transcoding (adaptive streaming), reusing the same pipeline as
     # video activities. No-op unless LEARNHOUSE_HLS_ENABLED; until ready the
-    # player uses the faststart MP4 fallback.
+    # player uses the faststart MP4 fallback. Never fails the upload — but a
+    # silent pass here makes queue problems undiagnosable, so log loudly.
     try:
         from src.services.utils.hls_jobs import enqueue_block
         enqueue_block(activity_uuid, block_uuid)
     except Exception:  # pragma: no cover
-        pass
+        import logging
+        logging.getLogger(__name__).exception(
+            "Failed to enqueue HLS transcode for block %s (activity %s)",
+            block_uuid, activity_uuid,
+        )
 
     block = BlockRead.model_validate(block)
 

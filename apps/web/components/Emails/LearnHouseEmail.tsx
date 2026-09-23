@@ -46,7 +46,7 @@ export interface LearnHouseEmailProps {
   cta?: { label: string; href: string }
 }
 
-const LOGO_URL = 'https://ordria.fr/ordria-o.svg'
+const LOGO_URL = 'https://learn.ordria.fr/brands/ordria/ordria-horizontal-dark.svg'
 
 export function LearnHouseEmail({
   accentColor,
@@ -62,7 +62,7 @@ export function LearnHouseEmail({
     <Html>
       <Head />
       <Preview>{subtitle}</Preview>
-      <Body style={{ backgroundColor: '#f5f5f5', fontFamily: 'Inter, Helvetica, Arial, sans-serif', margin: 0, padding: '24px 0' }}>
+      <Body style={{ backgroundColor: '#f7f9f9', fontFamily: 'Satoshi, Helvetica, Arial, sans-serif', margin: 0, padding: '24px 0' }}>
         <Container style={{ backgroundColor: '#ffffff', borderRadius: 16, overflow: 'hidden', maxWidth: 560, margin: '0 auto', border: '1px solid #eee' }}>
           {/* Accent bar */}
           <div style={{ height: 6, backgroundColor: accentColor }} />

@@ -14,7 +14,7 @@ import logging
 import uvicorn
 import sentry_sdk
 from sentry_sdk.integrations.logging import LoggingIntegration
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.gzip import GZipMiddleware
 
 from config.config import LearnHouseConfig, get_learnhouse_config
@@ -53,6 +53,25 @@ app = FastAPI(
     redoc_url="/redoc" if learnhouse_config.general_config.development_mode else None,
     version="1.3.1",
 )
+
+# Unhandled exceptions must be DIAGNOSABLE: the default plain-text
+# "Internal Server Error" hides the cause entirely (no stack reaches
+# wrangler tail on Containers). Return the exception type, message and
+# the tail of the traceback in the response body so the exact failure
+# point is visible to the caller (and log the full trace to stdout).
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    import traceback
+    from fastapi.responses import JSONResponse
+    tb = traceback.format_exc()
+    print(f"UNHANDLED {request.method} {request.url.path}: {tb}", flush=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": f"Unhandled {type(exc).__name__}: {str(exc)[:300]}",
+            "traceback": tb[-1800:],
+        },
+    )
 
 # Middleware
 configure_cors(app)

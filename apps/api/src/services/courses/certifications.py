@@ -16,6 +16,7 @@ from src.db.courses.certifications import (
 )
 from src.db.courses.courses import Course
 from src.db.courses.chapter_activities import ChapterActivity
+from src.db.courses.activities import Activity
 from src.db.trail_steps import TrailStep
 from src.db.users import PublicUser, AnonymousUser
 from src.security.rbac import check_resource_access, AccessAction
@@ -419,9 +420,20 @@ async def is_course_fully_completed(
 
     Uses COUNT aggregates instead of fetching all rows so this stays fast
     even on large courses.
+
+    Only PUBLISHED activities count toward completion. Unpublished/draft
+    activities are invisible to learners (they cannot be completed through
+    the app), so counting them would make the course permanently
+    incomplete — e.g. an author drafting the next module would retroactively
+    block certification for learners who finished every visible activity.
     """
     total_activities = (await db_session.execute(
-        select(func.count(ChapterActivity.id)).where(ChapterActivity.course_id == course_id)
+        select(func.count(func.distinct(ChapterActivity.activity_id)))
+        .join(Activity, Activity.id == ChapterActivity.activity_id)  # type: ignore
+        .where(
+            ChapterActivity.course_id == course_id,
+            Activity.published == True,  # noqa: E712
+        )
     )).scalar_one()
     if not total_activities:
         return False
@@ -433,10 +445,12 @@ async def is_course_fully_completed(
             (ChapterActivity.activity_id == TrailStep.activity_id)
             & (ChapterActivity.course_id == TrailStep.course_id),
         )
+        .join(Activity, Activity.id == ChapterActivity.activity_id)  # type: ignore
         .where(
             TrailStep.user_id == user_id,
             TrailStep.course_id == course_id,
-            TrailStep.complete == True,
+            TrailStep.complete == True,  # noqa: E712
+            Activity.published == True,  # noqa: E712
         )
     )).scalar_one()
 
@@ -463,46 +477,27 @@ async def check_course_completion_and_create_certificate(
     - It should only create certificates for users who have actually completed the course
     - The function is called from mark_activity_as_done_for_user which already has RBAC checks
     """
-    
-    total_activities = (await db_session.execute(
-        select(func.count(ChapterActivity.id)).where(ChapterActivity.course_id == course_id)
-    )).scalar_one()
 
-    if not total_activities:
-        return False  # No activities in course
+    if not await is_course_fully_completed(user_id, course_id, db_session):
+        return False
 
-    completed_count = (await db_session.execute(
-        select(func.count(func.distinct(TrailStep.activity_id)))
-        .join(
-            ChapterActivity,
-            (ChapterActivity.activity_id == TrailStep.activity_id)
-            & (ChapterActivity.course_id == TrailStep.course_id),
-        )
-        .where(
-            TrailStep.user_id == user_id,
-            TrailStep.course_id == course_id,
-            TrailStep.complete == True,
-        )
-    )).scalar_one()
+    # All activities completed, check if certification exists for this course
+    statement = select(Certifications).where(Certifications.course_id == course_id)
+    certification = (await db_session.execute(statement)).scalars().first()
 
-    if completed_count >= total_activities:
-        # All activities completed, check if certification exists for this course
-        statement = select(Certifications).where(Certifications.course_id == course_id)
-        certification = (await db_session.execute(statement)).scalars().first()
-        
-        if certification and certification.id:
-            # SECURITY: Create certificate user link (system operation, no RBAC needed here)
-            # This is called from mark_activity_as_done_for_user which already has proper RBAC checks
-            try:
-                await create_certificate_user(request, user_id, certification.id, db_session)
-                return True  # Newly completed
-            except HTTPException as e:
-                if e.status_code == 400 and "already has a certificate" in e.detail:
-                    # Certificate already exists — course was completed before
-                    return False
-                else:
-                    raise e
-        
+    if certification and certification.id:
+        # SECURITY: Create certificate user link (system operation, no RBAC needed here)
+        # This is called from mark_activity_as_done_for_user which already has proper RBAC checks
+        try:
+            await create_certificate_user(request, user_id, certification.id, db_session)
+            return True  # Newly completed
+        except HTTPException as e:
+            if e.status_code == 400 and "already has a certificate" in e.detail:
+                # Certificate already exists — course was completed before
+                return False
+            else:
+                raise e
+
     return False
 
 

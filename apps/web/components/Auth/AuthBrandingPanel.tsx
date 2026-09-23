@@ -162,8 +162,14 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
 
           {noOrg ? (
             /* No-org apex panel — platform layout: heading at the TOP, no logo
-               box, platform copy. */
+               box, platform copy. Baseline de la charte Ordria en kicker. */
             <div className="max-w-md text-white">
+              <p
+                className="mb-3 text-[13px] font-medium uppercase"
+                style={{ letterSpacing: '0.16em', color: '#8fa3ff' }}
+              >
+                Mettre de l&rsquo;ordre, simplement
+              </p>
               <h1 className="font-black text-[28px] leading-tight tracking-tight">
                 {noOrgTitle}
               </h1>

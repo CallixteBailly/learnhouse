@@ -74,6 +74,16 @@ export class LearnHouseApiContainer extends Container {
     // Media on R2 via the S3-compatible API (credentials are secrets)
     LEARNHOUSE_CONTENT_DELIVERY_TYPE: "s3api",
     AWS_STORAGE_BUCKET_NAME: "learnhouse-content",
+    // The API reads THIS name (config/config.py) — without it the storage code
+    // falls back to its "learnhouse-media" default and every upload 500s
+    // (NoSuchBucket).
+    LEARNHOUSE_S3_API_BUCKET_NAME: "learnhouse-content",
+    // HLS pipeline (adaptive renditions + hover sprites). Without the enable
+    // flag, uploads stay progressive-only (playable, no quality ladder).
+    // In-process consumer: the single container instance runs the queue
+    // consumer alongside the API (ffmpeg runs as subprocesses).
+    LEARNHOUSE_HLS_ENABLED: "true",
+    LEARNHOUSE_HLS_INPROCESS_WORKER: "true",
     // Local Redis started by the image's entrypoint
     LEARNHOUSE_REDIS_CONNECTION_STRING: "redis://127.0.0.1:6379/0",
     LEARNHOUSE_REDIS_URL: "redis://127.0.0.1:6379",

@@ -44,11 +44,11 @@
     "help": "ความช่วยเหลือ",
     "help_menu": {
       "documentation": "เอกสาร",
-      "website": "เว็บไซต์ LearnHouse",
+      "website": "เว็บไซต์ Ordria",
       "discord": "Discord",
       "report_feedback": "รายงานปัญหาหรือความคิดเห็น",
       "feedback_title": "ส่งความคิดเห็น",
-      "feedback_description": "ช่วยเราปรับปรุง LearnHouse โดยแบ่งปันความคิด รายงานข้อบกพร่อง หรือแนะนำฟีเจอร์ใหม่",
+      "feedback_description": "ช่วยเราปรับปรุง Ordria โดยแบ่งปันความคิด รายงานข้อบกพร่อง หรือแนะนำฟีเจอร์ใหม่",
       "feedback_placeholder": "บอกเราว่าคุณคิดอย่างไร...",
       "feedback_success": "ขอบคุณสำหรับความคิดเห็นของคุณ!",
       "send_feedback": "ส่งความคิดเห็น",
@@ -215,7 +215,7 @@
     "organizations": "องค์กร",
     "billing": "การเรียกเก็บเงิน",
     "create_organization": "สร้างองค์กร",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "ไม่สามารถลบองค์กรนี้ได้ กรุณาลองอีกครั้ง",
     "org_actions": "การจัดการองค์กร",
     "manage_upgrade": "จัดการ / อัปเกรด",
@@ -366,11 +366,11 @@
     "privacy_policy": "นโยบายความเป็นส่วนตัว",
     "image_title_forgot": "รีเซ็ตรหัสผ่านของคุณ",
     "image_subtitle_forgot": "เราจะช่วยให้คุณกลับเข้าสู่บัญชีได้ในเวลาอันรวดเร็ว",
-    "image_title_login": "ยินดีต้อนรับกลับสู่ LearnHouse",
+    "image_title_login": "ยินดีต้อนรับกลับสู่ Ordria",
     "image_subtitle_login": "ทำต่อจากที่ค้างไว้ — คอร์ส นักเรียน และเครื่องมือของคุณรอคุณอยู่",
     "image_title_reset": "ใกล้เสร็จแล้ว",
     "image_subtitle_reset": "สร้างรหัสผ่านที่รัดกุมเพื่อรักษาความปลอดภัยของบัญชี",
-    "image_title_signup": "เริ่มต้นการสอนด้วย LearnHouse",
+    "image_title_signup": "เริ่มต้นการสอนด้วย Ordria",
     "image_subtitle_signup": "สร้างบัญชีและเปิดตัวคอร์สแรกของคุณได้ในไม่กี่นาที",
     "image_title_verify": "ยืนยันอีเมลของคุณ",
     "image_subtitle_verify": "ขั้นตอนง่าย ๆ เพียงขั้นเดียวเพื่อรักษาความปลอดภัยของบัญชีและเริ่มต้นใช้งาน",
@@ -1422,7 +1422,7 @@
           "description": "กำหนดค่าการตั้งค่าส่วนตัว รหัสผ่าน อีเมล"
         }
       },
-      "learnhouse_university": "มหาวิทยาลัย LearnHouse",
+      "learnhouse_university": "มหาวิทยาลัย Ordria",
       "welcome_back": "ยินดีต้อนรับกลับ",
       "plan": "แผน",
       "create_course": "สร้างคอร์สเรียน",
@@ -2329,9 +2329,9 @@
         "footer_text_desc": "ข้อความที่กำหนดเองที่แสดงที่ด้านล่างของหน้าองค์กรของคุณ",
         "default_language": "ภาษาเริ่มต้น",
         "default_language_desc": "ภาษาที่ผู้เยี่ยมชมใหม่เห็นโดยค่าเริ่มต้นและภาษาที่ใช้สำหรับอีเมลที่ส่งในนามขององค์กรนี้ สมาชิกยังคงสามารถเปลี่ยนภาษาของอินเทอร์เฟซของตนได้",
-        "watermark_desc": "แสดงลายน้ำแบรนด์ LearnHouse บนหน้าองค์กรของคุณ",
+        "watermark_desc": "แสดงลายน้ำแบรนด์ Ordria บนหน้าองค์กรของคุณ",
         "watermark_free_plan": "ลายน้ำจะแสดงตลอดเวลาบนแผนฟรี",
-        "watermark_label": "ลายน้ำ \"Made with LearnHouse\"",
+        "watermark_label": "ลายน้ำ \"Made with Ordria\"",
         "watermark_ee": "ซ่อนโดยใบอนุญาต Enterprise Edition ของคุณ"
       },
       "images": {
@@ -4735,10 +4735,10 @@
       },
       "teach_the_world": {
         "title": "เรียนรู้และเติบโต",
-        "description": "แหล่งข้อมูลเพื่อช่วยให้คุณใช้ LearnHouse ได้อย่างเต็มที่",
+        "description": "แหล่งข้อมูลเพื่อช่วยให้คุณใช้ Ordria ได้อย่างเต็มที่",
         "classroom": "ห้องเรียน",
         "classroom_desc": "เรียนรู้วิธีเติบโตและจัดการคอร์สของคุณ",
-        "university": "มหาวิทยาลัย LearnHouse",
+        "university": "มหาวิทยาลัย Ordria",
         "university_desc": "คู่มือ เคล็ดลับ และแนวปฏิบัติที่ดี"
       },
       "add_content": {
@@ -4768,7 +4768,7 @@
       }
     },
     "welcome": {
-      "title": "ยินดีต้อนรับสู่ LearnHouse",
+      "title": "ยินดีต้อนรับสู่ Ordria",
       "subtitle": "สร้างคอร์ส เชิญผู้เรียน และแบ่งปันความรู้กับโลก",
       "get_started": "เริ่มต้น",
       "features_title": "ทุกอย่างที่คุณต้องการ",
@@ -5068,7 +5068,7 @@
   "embed": {
     "not_supported_description": "กิจกรรมประเภทนี้ต้องการการยืนยันตัวตนและไม่สามารถฝังได้",
     "not_supported_title": "กิจกรรมนี้ไม่รองรับ",
-    "powered_by": "ขับเคลื่อนโดย LearnHouse",
+    "powered_by": "ขับเคลื่อนโดย Ordria",
     "visit_activity": "ไปที่หน้ากิจกรรม"
   },
   "migration": {
@@ -5563,7 +5563,7 @@
         "title": "ต้องการทดลองใช้?",
         "body": "ไปที่",
         "link": "หน้านักพัฒนา",
-        "suffix": "เพื่อทดลองใช้ LearnHouse แทน"
+        "suffix": "เพื่อทดลองใช้ Ordria แทน"
       },
       "validation": {
         "required": "จำเป็นต้องกรอก",

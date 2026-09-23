@@ -15,6 +15,8 @@ from src.db.courses.certifications import (
     CertificationUpdate,
     Certifications,
 )
+from src.db.courses.activities import Activity, ActivityTypeEnum, ActivitySubTypeEnum
+from src.db.courses.chapter_activities import ChapterActivity
 from src.db.courses.courses import Course
 from src.db.trail_runs import StatusEnum, TrailRun
 from src.db.trail_steps import TrailStep
@@ -127,6 +129,39 @@ async def _create_trail_complete_graph(db, org, course, user):
     await db.refresh(trail_run)
 
     return trail, trail_run
+
+
+async def _add_activity_to_chapter(
+    db, org, course, chapter, *, activity_id: int, published: bool
+):
+    """Attach an extra activity to the course chapter (draft or published)."""
+    activity = Activity(
+        id=activity_id,
+        name=f"Activity {activity_id}",
+        activity_type=ActivityTypeEnum.TYPE_DYNAMIC,
+        activity_sub_type=ActivitySubTypeEnum.SUBTYPE_DYNAMIC_PAGE,
+        content={"type": "doc", "content": []},
+        published=published,
+        org_id=org.id,
+        course_id=course.id,
+        activity_uuid=f"activity_test_{activity_id}",
+        creation_date="2024-01-01T00:00:00",
+        update_date="2024-01-01T00:00:00",
+    )
+    db.add(activity)
+    await db.commit()
+    link = ChapterActivity(
+        order=activity_id,
+        chapter_id=chapter.id,
+        activity_id=activity.id,
+        course_id=course.id,
+        org_id=org.id,
+        creation_date="2024-01-01T00:00:00",
+        update_date="2024-01-01T00:00:00",
+    )
+    db.add(link)
+    await db.commit()
+    return activity
 
 
 class TestCreateCertification:
@@ -1155,6 +1190,69 @@ class TestCompletionHelpers:
 
         assert result is False
 
+    @pytest.mark.asyncio
+    async def test_unpublished_activity_does_not_block_certificate(
+        self, db, course, org, chapter, regular_user, activity, mock_request
+    ):
+        """Regression: a draft (unpublished) activity attached to the course
+        must not make it uncompletable — learners can neither see nor
+        complete drafts, so counting them blocked certification forever."""
+        from src.services.courses.certifications import is_course_fully_completed
+
+        certification = await _create_certification(
+            db,
+            course,
+            cert_uuid="cert_draft_not_blocking",
+        )
+        # Draft activity in the same course, never completed by anyone.
+        await _add_activity_to_chapter(
+            db, org, course, chapter, activity_id=2, published=False
+        )
+        await _create_trail_complete_graph(db, org, course, regular_user)
+        trail_step = TrailStep(
+            complete=True,
+            teacher_verified=False,
+            grade="",
+            data={},
+            trailrun_id=1,
+            trail_id=1,
+            activity_id=activity.id,
+            course_id=course.id,
+            org_id=org.id,
+            user_id=regular_user.id,
+            creation_date="2024-01-01T00:00:00",
+            update_date="2024-01-01T00:00:00",
+        )
+        db.add(trail_step)
+        await db.commit()
+
+        assert await is_course_fully_completed(regular_user.id, course.id, db) is True
+
+        with patch(
+            "src.services.courses.certifications.track",
+            new_callable=AsyncMock,
+        ), patch(
+            "src.services.courses.certifications.dispatch_webhooks",
+            new_callable=AsyncMock,
+        ):
+            result = await check_course_completion_and_create_certificate(
+                mock_request,
+                regular_user.id,
+                course.id,
+                db,
+            )
+
+        assert result is True
+        created = (
+            await db.execute(
+                select(CertificateUser).where(
+                    CertificateUser.certification_id == certification.id,
+                    CertificateUser.user_id == regular_user.id,
+                )
+            )
+        ).scalars().first()
+        assert created is not None
+
 
 class TestCertificateLookup:
     @pytest.mark.asyncio
@@ -1371,5 +1469,21 @@ class TestIsCourseFullyCompleted:
         )
 
         result = await is_course_fully_completed(regular_user.id, course_no_acts.id, db)
+
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_is_course_fully_completed_only_unpublished_activities(
+        self, db, org, course, chapter, regular_user
+    ):
+        """A course whose only activities are drafts has nothing to complete:
+        completion stays False (no certified empty course)."""
+        from src.services.courses.certifications import is_course_fully_completed
+
+        await _add_activity_to_chapter(
+            db, org, course, chapter, activity_id=1, published=False
+        )
+
+        result = await is_course_fully_completed(regular_user.id, course.id, db)
 
         assert result is False

@@ -79,7 +79,12 @@ RUN useradd --create-home --uid 1001 appuser \
     && mkdir -p /tmp/nginx /tmp/api-logs \
     && chown -R appuser:appuser /app /tmp/nginx /tmp/api-logs \
     && chmod -R a+rX /app /home/appuser \
-    && chmod 755 /home/appuser
+    && chmod 755 /home/appuser \
+    # Content staging root (local temp before R2 upload). Must be writable by
+    # ANY runtime UID — the platform may remap the execution user, and a
+    # non-writable root makes every upload die on an unhandled PermissionError.
+    && mkdir -p /app/api/content \
+    && chmod 777 /app/api/content
 USER appuser
 ENV HOME=/home/appuser
 
@@ -97,3 +102,7 @@ EXPOSE 8080
 CMD ["/app/start-api.sh"]
 
 # 2026-09-05: env bump (LEARNHOUSE_FRONTEND_DOMAIN/SSL) — comment-only change to force a rollout so the running instance restarts with the new environment.
+
+# rollout marker 2026-09-09: env vars (HLS) require instance restart
+# rollout marker 2026-09-09b: worker env (HLS) needs instance restart
+# rollout marker 2026-09-22: certifications fix (completion counts published activities only)

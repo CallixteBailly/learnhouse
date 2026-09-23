@@ -46,11 +46,11 @@
     "help": "Aiuto",
     "help_menu": {
       "documentation": "Documentazione",
-      "website": "Sito web LearnHouse",
+      "website": "Sito web Ordria",
       "discord": "Discord",
       "report_feedback": "Segnala problema o feedback",
       "feedback_title": "Invia Feedback",
-      "feedback_description": "Aiutaci a migliorare LearnHouse condividendo i tuoi pensieri, segnalando bug o suggerendo nuove funzionalità.",
+      "feedback_description": "Aiutaci a migliorare Ordria condividendo i tuoi pensieri, segnalando bug o suggerendo nuove funzionalità.",
       "feedback_placeholder": "Dicci cosa pensi...",
       "feedback_success": "Grazie per il tuo feedback!",
       "send_feedback": "Invia Feedback",
@@ -215,7 +215,7 @@
     "organizations": "Organizzazioni",
     "billing": "Fatturazione",
     "create_organization": "Crea organizzazione",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "Impossibile eliminare questa organizzazione. Riprova.",
     "org_actions": "Azioni dell’organizzazione",
     "manage_upgrade": "Gestisci / Aggiorna",
@@ -353,11 +353,11 @@
     "privacy_policy": "l’Informativa sulla privacy",
     "image_title_forgot": "Reimposta la password.",
     "image_subtitle_forgot": "Ti aiutiamo a rientrare nel tuo account in un attimo.",
-    "image_title_login": "Bentornato su LearnHouse.",
+    "image_title_login": "Bentornato su Ordria.",
     "image_subtitle_login": "Riprendi da dove avevi lasciato — i tuoi corsi, gli studenti e gli strumenti ti aspettano.",
     "image_title_reset": "Ci sei quasi.",
     "image_subtitle_reset": "Crea una password robusta per mantenere sicuro il tuo account.",
-    "image_title_signup": "Inizia a insegnare con LearnHouse.",
+    "image_title_signup": "Inizia a insegnare con Ordria.",
     "image_subtitle_signup": "Crea il tuo account e lancia il tuo primo corso in pochi minuti.",
     "image_title_verify": "Verifica la tua email.",
     "image_subtitle_verify": "Un rapido passaggio per proteggere il tuo account e iniziare.",
@@ -1400,7 +1400,7 @@
           "description": "Configura le tue impostazioni personali, password ed email"
         }
       },
-      "learnhouse_university": "Università LearnHouse",
+      "learnhouse_university": "Università Ordria",
       "welcome_back": "Bentornato",
       "plan": "piano",
       "create_course": "Crea corso",
@@ -2305,9 +2305,9 @@
         "footer_text_desc": "Testo personalizzato visualizzato in fondo alle pagine della tua organizzazione",
         "default_language": "Lingua predefinita",
         "default_language_desc": "La lingua mostrata per impostazione predefinita ai nuovi visitatori e usata per le email inviate per conto di questa organizzazione. I membri possono comunque cambiare la propria lingua dell'interfaccia.",
-        "watermark_desc": "Mostra il watermark LearnHouse sulle pagine della tua organizzazione",
+        "watermark_desc": "Mostra il watermark Ordria sulle pagine della tua organizzazione",
         "watermark_free_plan": "Il watermark è sempre mostrato nel piano gratuito",
-        "watermark_label": "Watermark \"Made with LearnHouse\"",
+        "watermark_label": "Watermark \"Made with Ordria\"",
         "watermark_ee": "Nascosto dalla tua licenza Enterprise Edition"
       },
       "images": {
@@ -4967,10 +4967,10 @@
       },
       "teach_the_world": {
         "title": "Impara e cresci",
-        "description": "Risorse per aiutarti a ottenere il massimo da LearnHouse.",
+        "description": "Risorse per aiutarti a ottenere il massimo da Ordria.",
         "classroom": "L'aula",
         "classroom_desc": "Impara a far crescere e gestire i tuoi corsi",
-        "university": "Università LearnHouse",
+        "university": "Università Ordria",
         "university_desc": "Guide, suggerimenti e buone pratiche"
       },
       "add_content": {
@@ -5000,7 +5000,7 @@
       }
     },
     "welcome": {
-      "title": "Benvenuto su LearnHouse",
+      "title": "Benvenuto su Ordria",
       "subtitle": "Crea corsi, invita studenti e condividi la conoscenza con il mondo.",
       "get_started": "Inizia",
       "features_title": "Tutto ciò di cui hai bisogno",
@@ -5044,7 +5044,7 @@
   "embed": {
     "not_supported_description": "Questo tipo di attività richiede l'autenticazione e non può essere incorporato.",
     "not_supported_title": "Questa attività non è supportata",
-    "powered_by": "Powered by LearnHouse",
+    "powered_by": "Powered by Ordria",
     "visit_activity": "Visita la pagina dell'attività"
   },
   "migration": {
@@ -5539,7 +5539,7 @@
         "title": "Vuoi fare una prova?",
         "body": "Vai alla",
         "link": "pagina Sviluppatori",
-        "suffix": "per provare invece LearnHouse."
+        "suffix": "per provare invece Ordria."
       },
       "validation": {
         "required": "Obbligatorio",

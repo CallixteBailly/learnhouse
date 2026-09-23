@@ -50,6 +50,25 @@ async def get_instance_info(db_session: AsyncSession = Depends(get_db_session)):
     top_domain = _strip_port(frontend_domain)
     tenancy = config.hosting_config.tenancy
 
+    # Diagnostics: Redis + HLS queue health (is the transcode pipeline alive?).
+    redis_probe = {"configured": False, "ping": False, "queue_len": None, "error": None}
+    try:
+        from src.core.redis import get_redis_client
+        from src.services.utils.hls_jobs import hls_enabled, REDIS_QUEUE_KEY
+        client = get_redis_client()
+        redis_probe["configured"] = client is not None
+        if client is not None:
+            redis_probe["ping"] = bool(client.ping())
+            redis_probe["queue_len"] = int(client.llen(REDIS_QUEUE_KEY))
+    except Exception as e:
+        redis_probe["error"] = f"{type(e).__name__}: {str(e)[:120]}"
+    hls_diag = {"enabled": None}
+    try:
+        from src.services.utils.hls_jobs import hls_enabled
+        hls_diag["enabled"] = hls_enabled()
+    except Exception:
+        pass
+
     result = {
         "mode": get_deployment_mode(),
         "tenancy": tenancy,
@@ -58,6 +77,12 @@ async def get_instance_info(db_session: AsyncSession = Depends(get_db_session)):
         "default_org_slug": default_org_slug,
         "frontend_domain": frontend_domain,
         "top_domain": top_domain,
+        # Diagnostics: which content backend the running process resolved
+        # (env LEARNHOUSE_CONTENT_DELIVERY_TYPE vs config.yaml default).
+        "content_delivery": config.hosting_config.content_delivery.type,
+        "content_bucket": config.hosting_config.content_delivery.s3api.bucket_name,
+        "redis": redis_probe,
+        "hls": hls_diag,
     }
 
     set_cached_instance_info(result)

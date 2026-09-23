@@ -13,7 +13,7 @@ from src.services.utils.video_processing import ensure_faststart
 logger = logging.getLogger(__name__)
 
 
-_CONTENT_ROOT = "content"
+_CONTENT_ROOT = os.environ.get("LEARNHOUSE_CONTENT_DIR", "content")
 
 
 def _safe_content_path(*parts: str) -> str:
@@ -138,9 +138,17 @@ async def upload_content(
         # The S3 key stays a clean relative content path.
         s3_key = f"content/{type_of_dir}/{uuid}/{directory}/{file_and_format}"
 
-        # Write to local temp file for S3 upload
-        with open(local_path, "wb") as f:
-            f.write(file_binary)
+        # Write to local temp file for S3 upload. Wrapped so an unwritable
+        # staging root surfaces as a NAMED error instead of a bare 500.
+        try:
+            with open(local_path, "wb") as f:
+                f.write(file_binary)
+        except OSError as e:
+            logger.exception("Cannot write staging file %s", local_path)
+            raise HTTPException(
+                status_code=500,
+                detail=f"Storage staging failed ({type(e).__name__}: {str(e)[:200]})",
+            )
 
         # Move the MP4 index atom to the front before uploading so long videos
         # stream/seek smoothly from R2 (no-op for non-MP4 and when ffmpeg is
@@ -153,8 +161,8 @@ async def upload_content(
             await asyncio.to_thread(s3.head_object, Bucket=bucket_name, Key=s3_key)
             logger.debug("S3 upload successful: %s", s3_key)
         except (ClientError, BotoCoreError) as e:
-            logger.error("S3 upload failed: %s", e)
-            raise HTTPException(status_code=500, detail="File upload to storage failed")
+            logger.exception("S3 upload failed for %s (local=%s, key=%s)", local_path, os.path.getsize(local_path) if os.path.isfile(local_path) else '?', s3_key)
+            raise HTTPException(status_code=500, detail=f"File upload to storage failed ({type(e).__name__}: {str(e)[:200]})")
         finally:
             # Clean up local temp file after S3 upload
             try:
