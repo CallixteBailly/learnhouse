@@ -37,10 +37,15 @@ async def _resolve_job(db_session: AsyncSession, job: Any) -> Optional[dict]:
     other = other.strip() if isinstance(other, str) else ""
 
     if title_id is not None:
+        # Malformed ids (e.g. "abc") must yield a clean 400, not a ValueError 500.
+        try:
+            title_id = int(title_id)
+        except (ValueError, TypeError):
+            raise _http("INVALID_JOB", "Unknown or inactive job title")
         jt = (
             await db_session.execute(
                 select(JobTitle).where(
-                    JobTitle.id == int(title_id),
+                    JobTitle.id == title_id,
                     JobTitle.is_active == True,  # noqa: E712
                 )
             )
@@ -64,6 +69,18 @@ def _consent_stamp() -> dict:
     }
 
 
+def _consent_given(value: Any) -> bool:
+    """A consent is given either fresh (True) or as an already-stamped dict.
+
+    Accepting the stamped shape makes the validator re-runnable on its own
+    output (stamps are simply re-written server-side), so a caller that
+    validates twice can never trip CONSENT_REQUIRED on its own stamps.
+    """
+    if value is True:
+        return True
+    return isinstance(value, dict) and value.get("accepted") is True
+
+
 async def validate_and_normalize_signup_profile(
     db_session: AsyncSession, user_object
 ) -> None:
@@ -85,7 +102,7 @@ async def validate_and_normalize_signup_profile(
 
     raw = extra.get("consents")
     raw = raw if isinstance(raw, dict) else {}
-    if raw.get("terms") is not True or raw.get("privacy") is not True:
+    if not _consent_given(raw.get("terms")) or not _consent_given(raw.get("privacy")):
         raise _http("CONSENT_REQUIRED", "Terms and privacy consents are required")
     extra["consents"] = {"terms": _consent_stamp(), "privacy": _consent_stamp()}
 

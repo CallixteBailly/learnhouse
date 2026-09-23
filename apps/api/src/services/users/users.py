@@ -224,11 +224,9 @@ async def create_user_with_invite(
     # Usage check
     await check_limits_with_usage("members", org_id, db_session)
 
-    # Ordria enriched signup: job (required) + phone (optional) + RGPD consents.
-    # OAuth signups skip the requirement — the soft banner collects the job later.
-    if not is_oauth:
-        await validate_and_normalize_signup_profile(db_session, user_object)
-
+    # NOTE: the enriched-signup contract (job/phone/consents) is enforced exactly
+    # once, inside create_user() below — do NOT validate here too: a second pass
+    # over the already-stamped consents would wrongly 400 (CONSENT_REQUIRED).
     user = await create_user(
         request,
         db_session,

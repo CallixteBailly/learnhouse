@@ -114,3 +114,46 @@ async def test_empty_job_other_rejected(db):
     with pytest.raises(HTTPException) as exc:
         await validate_and_normalize_signup_profile(db, user)
     assert exc.value.detail["code"] == "INVALID_JOB"
+
+
+@pytest.mark.asyncio
+async def test_malformed_job_title_id_rejected_as_400(db):
+    """A garbage title_id (non-numeric string) must 400, not 500."""
+    user = _user(profile={"job": {"title_id": "abc"}},
+                 extra_metadata={"consents": _consents()})
+    with pytest.raises(HTTPException) as exc:
+        await validate_and_normalize_signup_profile(db, user)
+    assert exc.value.status_code == 400
+    assert exc.value.detail["code"] == "INVALID_JOB"
+
+
+@pytest.mark.asyncio
+async def test_validation_is_rerunnable_on_its_own_output(db):
+    """Re-validating an already-normalized signup must not raise.
+
+    The invite path delegates to create_user, which enforces the contract
+    exactly once — but the validator must stay idempotent so any future
+    double call cannot 400 on its own server-stamped consents.
+    """
+    # "other" free-text job shape.
+    user = _user(profile={"job": {"other": "Architecte 3D"}, "phone": " 06 12 34 56 78 "},
+                 extra_metadata={"consents": _consents()})
+    await validate_and_normalize_signup_profile(db, user)
+    await validate_and_normalize_signup_profile(db, user)  # must not raise
+    for kind in ("terms", "privacy"):
+        stamp = user.extra_metadata["consents"][kind]
+        assert stamp["accepted"] is True
+        assert stamp["version"] == CONSENT_TEXT_VERSION
+        assert stamp["accepted_at"]
+
+    # Catalog job shape: normalized output re-resolves via its title_id.
+    await seed_default_job_titles(db)
+    jt = (await db.execute(
+        select(JobTitle).where(JobTitle.slug == "community_manager")
+    )).scalars().first()
+    user = _user(profile={"job": {"title_id": jt.id}},
+                 extra_metadata={"consents": _consents()})
+    await validate_and_normalize_signup_profile(db, user)
+    await validate_and_normalize_signup_profile(db, user)  # must not raise
+    assert user.profile["job"]["title_id"] == jt.id
+    assert user.extra_metadata["consents"]["terms"]["accepted"] is True

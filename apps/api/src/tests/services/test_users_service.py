@@ -50,12 +50,16 @@ def _user_create(
     first_name: str = "New",
     last_name: str = "User",
 ):
+    # Enriched-signup contract: non-OAuth creations must carry a job and both
+    # consents (validate_and_normalize_signup_profile). Harmless for OAuth.
     return UserCreate(
         username=username,
         first_name=first_name,
         last_name=last_name,
         email=email,
         password=password,
+        profile={"job": {"other": "Testeur"}},
+        extra_metadata={"consents": {"terms": True, "privacy": True}},
     )
 
 
@@ -341,6 +345,8 @@ class TestCreateAndUpdateUser:
                     last_name="User",
                     email="newuser@test.com",
                     password="Password123!",
+                    profile={"job": {"other": "Testeur"}},
+                    extra_metadata={"consents": {"terms": True, "privacy": True}},
                 ),
                 org.id,
             )
@@ -497,6 +503,8 @@ class TestCreateAndUpdateUser:
                     last_name="User",
                     email="solo@test.com",
                     password="Password123!",
+                    profile={"job": {"other": "Testeur"}},
+                    extra_metadata={"consents": {"terms": True, "privacy": True}},
                 ),
             )
 
@@ -511,6 +519,8 @@ class TestCreateAndUpdateUser:
                         last_name="User",
                         email="solo2@test.com",
                         password="Password123!",
+                        profile={"job": {"other": "Testeur"}},
+                        extra_metadata={"consents": {"terms": True, "privacy": True}},
                     ),
                 )
 
