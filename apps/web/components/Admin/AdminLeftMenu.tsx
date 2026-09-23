@@ -1,5 +1,6 @@
 'use client'
 import {
+  Briefcase,
   Buildings,
   ChartBar,
   Key,
@@ -64,6 +65,11 @@ function AdminTopMenu() {
             href="/admin/analytics"
             icon={<ChartBar size={16} weight="fill" />}
             label="Analytics"
+          />
+          <NavLink
+            href="/admin/job-titles"
+            icon={<Briefcase size={16} weight="fill" />}
+            label="Job titles"
           />
           <NavLink
             href="/admin/developers"
