@@ -1,0 +1,730 @@
+{
+ "courses": {
+  "ia-quotidien-metier": {
+   "uuid": "course_bf4fe4a0-4b61-4e87-bed4-eb5fe4caf485",
+   "id": 5,
+   "chapters": [
+    {
+     "id": 12,
+     "title": "Pourquoi tout le monde parle d'IA",
+     "activities": [
+      {
+       "uuid": "activity_a384af5d-98d8-483f-8aed-8f195fc30278",
+       "title": "Le vrai visage de l'IA au travail"
+      },
+      {
+       "uuid": "activity_7b1b6a14-b6a1-472a-a919-dad90f615072",
+       "title": "Combien de temps ça vaut vraiment"
+      },
+      {
+       "uuid": "activity_ae192bb3-e3e2-4362-9ffe-62c0ca72f159",
+       "title": "Quiz : l'IA au quotidien"
+      }
+     ]
+    },
+    {
+     "id": 13,
+     "title": "Vos premiers pas concrets",
+     "activities": [
+      {
+       "uuid": "activity_a920c2f8-cd78-4a42-be87-070428729c71",
+       "title": "Choisir et prendre en main son assistant"
+      },
+      {
+       "uuid": "activity_c945bec1-b3ce-491a-8e46-35b1ea4d31e4",
+       "title": "Votre premier gain de temps ce soir"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "fonctionnement-assistant-ia": {
+   "uuid": "course_040cb800-a71d-4173-bd87-4e04044ad7da",
+   "id": 6,
+   "chapters": [
+    {
+     "id": 14,
+     "title": "La machine à compléter du texte",
+     "activities": [
+      {
+       "uuid": "activity_4d073e69-fe25-400c-985c-bc50d0c16ea0",
+       "title": "Prédire le mot suivant : le moteur de l'IA"
+      },
+      {
+       "uuid": "activity_47cfcbaa-11dd-48b9-9052-d1405ad3720d",
+       "title": "Pourquoi l'IA se trompe (et comment le repérer)"
+      },
+      {
+       "uuid": "activity_a8a67482-58cc-4b55-8d44-ea27a09e44eb",
+       "title": "Quiz : comprendre la machine"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "confiance-et-verification-ia": {
+   "uuid": "course_987fa55d-0927-4cfc-827d-52334f04ae65",
+   "id": 7,
+   "chapters": [
+    {
+     "id": 15,
+     "title": "La vérification qui prend 30 secondes",
+     "activities": [
+      {
+       "uuid": "activity_04ec77d9-82eb-40d7-93dd-fb71722ed20a",
+       "title": "La règle des 3 verrous"
+      },
+      {
+       "uuid": "activity_e5d510a4-b8d5-4cfc-bc2d-c214ebadd4d2",
+       "title": "Les zones rouges : quand ne PAS utiliser l'IA"
+      },
+      {
+       "uuid": "activity_a3eb50df-5f5e-4c67-92f0-e2c26adc4243",
+       "title": "Quiz : confiance et vérification"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "donnees-rgpd-simplement": {
+   "uuid": "course_09e13c92-2660-42f4-9a94-6e0f914316b2",
+   "id": 8,
+   "chapters": [
+    {
+     "id": 16,
+     "title": "Où vont vos textes",
+     "activities": [
+      {
+       "uuid": "activity_13032bd0-db4a-4ec0-ae3c-1a740d969557",
+       "title": "Le voyage d'une donnée"
+      },
+      {
+       "uuid": "activity_075a7816-4e8e-44a4-ac79-b683fd71b2a3",
+       "title": "RGPD pratique : les 5 réflexes"
+      },
+      {
+       "uuid": "activity_65232e99-d8e7-41e5-9274-111eb3b6ede7",
+       "title": "Quiz : données et RGPD"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "couts-et-limites-ia": {
+   "uuid": "course_0d8dce7f-8f40-47fc-a360-adc5dd8258ed",
+   "id": 9,
+   "chapters": [
+    {
+     "id": 17,
+     "title": "Comment on paie l'IA",
+     "activities": [
+      {
+       "uuid": "activity_5d103da2-bc47-4ff2-8740-8b02fe82b609",
+       "title": "Forfaits et consommations : le menu expliqué"
+      },
+      {
+       "uuid": "activity_305f5762-553d-4358-91cd-79289ec000e9",
+       "title": "Les limites à connaître avant de promettre"
+      },
+      {
+       "uuid": "activity_7d64d3fc-4073-4bfb-a802-e568831438d8",
+       "title": "Quiz : coûts et limites"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "premier-prompt-efficace": {
+   "uuid": "course_aa0cf6dc-f5f2-4d4c-8016-9299ba9f4059",
+   "id": 10,
+   "chapters": [
+    {
+     "id": 18,
+     "title": "La méthode des 3 C",
+     "activities": [
+      {
+       "uuid": "activity_10d4ed86-8049-4918-8119-a2ce26914484",
+       "title": "Contexte, Consigne, Contraintes"
+      },
+      {
+       "uuid": "activity_a439c2d0-6501-453f-8946-323bc405bea5",
+       "title": "Corriger une réponse décevante"
+      },
+      {
+       "uuid": "activity_551e8793-61f4-4c2c-a008-35f261e0786f",
+       "title": "Quiz : la méthode des 3 C"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "contexte-metier-prompt": {
+   "uuid": "course_fabbc7d4-4599-4285-a0c7-815bfc00edd5",
+   "id": 11,
+   "chapters": [
+    {
+     "id": 19,
+     "title": "Votre fiche métier réutilisable",
+     "activities": [
+      {
+       "uuid": "activity_d1dfdb01-a0c9-431e-bf5d-6e3dffb3b125",
+       "title": "Construire la fiche métier en 10 minutes"
+      },
+      {
+       "uuid": "activity_3b053cd4-89e7-4978-84bf-14842a7ee543",
+       "title": "Adapter le ton au destinataire"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "iterer-avec-lia": {
+   "uuid": "course_471fda18-b747-46ff-958b-74e3b3d1a217",
+   "id": 12,
+   "chapters": [
+    {
+     "id": 20,
+     "title": "La boucle d'itération",
+     "activities": [
+      {
+       "uuid": "activity_be67f2de-0a7e-428a-8949-0cf2d92e879f",
+       "title": "Demander, évaluer, affiner, livrer"
+      },
+      {
+       "uuid": "activity_2b0ebf18-6c37-4e59-ac8e-38d37c151d52",
+       "title": "Faire réviser son propre texte par l'IA"
+      },
+      {
+       "uuid": "activity_faea5971-f6eb-4099-9b67-1e4bdde8a416",
+       "title": "Quiz : itérer efficacement"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "prompts-systeme-gabarits": {
+   "uuid": "course_a6e6ddf1-e658-46a6-b3a4-ceb142b16b59",
+   "id": 13,
+   "chapters": [
+    {
+     "id": 21,
+     "title": "Le prompt système : votre mode d'emploi permanent",
+     "activities": [
+      {
+       "uuid": "activity_563d707d-d2b9-4b2f-95dd-db7b0c7f1bbb",
+       "title": "Écrire son prompt système métier"
+      },
+      {
+       "uuid": "activity_a6e3215f-cd24-4e13-9fb4-c36d1a5d22e8",
+       "title": "Constituer sa bibliothèque de gabarits"
+      },
+      {
+       "uuid": "activity_286a3af4-41f5-456a-bedf-28bf552e26fd",
+       "title": "Quiz : prompts système et gabarits"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "bibliotheque-prompts-metier": {
+   "uuid": "course_ae37b828-5cdf-469f-b8b2-8c100bd6bbcb",
+   "id": 14,
+   "chapters": [
+    {
+     "id": 22,
+     "title": "Devis et communication commerciale",
+     "activities": [
+      {
+       "uuid": "activity_9dd60f95-89d4-4c10-bfd5-7bc23092bfa9",
+       "title": "10 prompts devis et commerce"
+      },
+      {
+       "uuid": "activity_383411b0-2bd1-42f6-89bf-3b6dbd532e49",
+       "title": "10 prompts relances et emails délicats"
+      },
+      {
+       "uuid": "activity_0504d3ec-d6b6-4a3b-8fd3-25ce6184be6a",
+       "title": "Quiz : la bibliothèque"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "devis-automatises": {
+   "uuid": "course_b4da0f30-3bf2-41a7-b71a-165fed4c4c93",
+   "id": 15,
+   "chapters": [
+    {
+     "id": 23,
+     "title": "Du chantier au devis en 5 minutes",
+     "activities": [
+      {
+       "uuid": "activity_6256a2ab-65a6-4eca-992d-fcd5411d5d21",
+       "title": "La méthode des 5 minutes chrono"
+      },
+      {
+       "uuid": "activity_f6c89c6f-cf14-4760-b01a-1cc37c3193dc",
+       "title": "Les oublis qui coûtent cher"
+      },
+      {
+       "uuid": "activity_962a38c7-b9b4-4261-ac77-51d31dd924cc",
+       "title": "Quiz : devis au chrono"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "relances-automatiques": {
+   "uuid": "course_3dd15588-4e47-4a4a-9439-b3662f9b4cfa",
+   "id": 16,
+   "chapters": [
+    {
+     "id": 24,
+     "title": "Le système des 3 niveaux",
+     "activities": [
+      {
+       "uuid": "activity_62ac1f8a-d918-4964-acc8-08b0d25d6bd8",
+       "title": "Construire sa séquence de relance"
+      },
+      {
+       "uuid": "activity_8b1a0b8a-862f-46fd-90cd-ab3108e0178d",
+       "title": "Programmer sans y penser"
+      },
+      {
+       "uuid": "activity_2d2a10f6-5435-4529-9789-4a5a492a60ce",
+       "title": "Quiz : relances"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "factures-ocr-classement": {
+   "uuid": "course_d65334f9-b664-4225-aa86-5b3bd0127571",
+   "id": 17,
+   "chapters": [
+    {
+     "id": 25,
+     "title": "La facture photographiée devient saisie",
+     "activities": [
+      {
+       "uuid": "activity_019e469a-5e62-46de-abbd-4bb8c4148eb6",
+       "title": "L'OCR assisté : 80 % du travail fait"
+      },
+      {
+       "uuid": "activity_3bdbdce1-aca1-4c7d-857d-ecc307274ccd",
+       "title": "Classer pour retrouver en 10 secondes"
+      },
+      {
+       "uuid": "activity_75d098fc-fb11-4e88-82a3-90386d99e89d",
+       "title": "Quiz : factures et OCR"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "emails-comptes-rendus-5min": {
+   "uuid": "course_89e2436c-cf44-47b7-826a-ded5f8607e34",
+   "id": 18,
+   "chapters": [
+    {
+     "id": 26,
+     "title": "Dicter en marchant",
+     "activities": [
+      {
+       "uuid": "activity_669e96c4-b7f1-4ba9-a44e-d383d7036576",
+       "title": "La dictée structurée en 90 secondes"
+      },
+      {
+       "uuid": "activity_0fccba8a-a141-471d-854c-863f370f2949",
+       "title": "Les emails du soir traités en 10 minutes"
+      },
+      {
+       "uuid": "activity_bc5436f5-82a7-4a97-acd0-b3ba70135fe8",
+       "title": "Quiz : dicter et structurer"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "tableau-de-bord-metier": {
+   "uuid": "course_6371feae-6fd7-4ed1-83ae-a58c82c99ec9",
+   "id": 19,
+   "chapters": [
+    {
+     "id": 27,
+     "title": "Vos 5 chiffres vitaux",
+     "activities": [
+      {
+       "uuid": "activity_fa5d0989-1756-4a38-b9e9-99ef0a9ab017",
+       "title": "Choisir ses indicateurs (et rien d'autre)"
+      },
+      {
+       "uuid": "activity_5ba3ad5a-a817-46e5-80de-fad728259aa0",
+       "title": "L'IA analyste : de l'export au diagnostic"
+      },
+      {
+       "uuid": "activity_9f2907c3-f5d8-4d29-8a24-fa3ce0682c7d",
+       "title": "Quiz : pilotage"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "ia-restaurant": {
+   "uuid": "course_da86be2f-97db-4d38-84e7-af8a4c5ca0b6",
+   "id": 20,
+   "chapters": [
+    {
+     "id": 28,
+     "title": "Le back-office du service",
+     "activities": [
+      {
+       "uuid": "activity_cd7d2c5e-c014-4da1-af7e-e49259f651de",
+       "title": "Réservations et confirmations automatiques"
+      },
+      {
+       "uuid": "activity_dc22879e-5a65-4ba1-9405-6c3164f70b94",
+       "title": "Devis traiteur en 3 minutes"
+      },
+      {
+       "uuid": "activity_d18c93a1-42d3-45a3-9253-0d112318b086",
+       "title": "Stocks et achats sans surprise"
+      },
+      {
+       "uuid": "activity_58ce0d5f-5d2f-447b-9656-7e7d1dcdc03d",
+       "title": "Quiz : restaurant"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "ia-garage": {
+   "uuid": "course_f0966d5a-81c4-4bcd-81bb-4408473865b0",
+   "id": 21,
+   "chapters": [
+    {
+     "id": 29,
+     "title": "Du diagnostic au devis",
+     "activities": [
+      {
+       "uuid": "activity_a6898cf8-455e-4930-85af-e4992a039848",
+       "title": "Le devis de réparation express"
+      },
+      {
+       "uuid": "activity_2b747707-5d73-4049-9466-ae324302532b",
+       "title": "Pièces détachées : commander sans doublon"
+      },
+      {
+       "uuid": "activity_cb391af0-2e5b-4d69-8df4-01151f00c0f5",
+       "title": "Planning atelier : une voiture par poste, pas deux"
+      },
+      {
+       "uuid": "activity_98fe3af6-84cd-4b5a-80ee-a02b876045f0",
+       "title": "Quiz : garage"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "ia-btp-artisan": {
+   "uuid": "course_0a67be26-084e-4195-9d71-5e0a7d325c8b",
+   "id": 22,
+   "chapters": [
+    {
+     "id": 30,
+     "title": "Le devis chantier détaillé",
+     "activities": [
+      {
+       "uuid": "activity_e41d5dd5-0a7f-4463-b05e-7ba89683c402",
+       "title": "Le devis qui tient compte du réel"
+      },
+      {
+       "uuid": "activity_3bb21711-091c-4bb6-9664-3ca0ce0b9cce",
+       "title": "Suivi de chantier avec photos"
+      },
+      {
+       "uuid": "activity_61f0ee80-8e50-4649-9008-371c654b7c63",
+       "title": "Situations et facture finale"
+      },
+      {
+       "uuid": "activity_dec4823c-833b-4538-bf59-9c83ae56534c",
+       "title": "Quiz : BTP et artisans"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "ia-cabinet-comptable": {
+   "uuid": "course_4f5607be-94e9-43e1-a523-57cb1b559667",
+   "id": 23,
+   "chapters": [
+    {
+     "id": 31,
+     "title": "La chaîne OCR avec relecture",
+     "activities": [
+      {
+       "uuid": "activity_3759e9dc-1ba0-45be-a4d7-87f84a0269a0",
+       "title": "OCR industriel : vitesse ET fiabilité"
+      },
+      {
+       "uuid": "activity_72e596f5-4246-4e9a-b34e-2413149e3e81",
+       "title": "Relances clients et suivi des dossiers"
+      },
+      {
+       "uuid": "activity_5b908be3-61b4-4e26-91a1-ffad66f2194e",
+       "title": "Quiz : cabinet comptable"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "ia-salon-institut": {
+   "uuid": "course_c1c47dac-ee9b-44fd-a752-01b7add93def",
+   "id": 24,
+   "chapters": [
+    {
+     "id": 32,
+     "title": "Le rendez-vous qui ne tombe pas à l'eau",
+     "activities": [
+      {
+       "uuid": "activity_944ca50c-a08a-44a2-959f-5d0d3a44ecbf",
+       "title": "Rappels SMS et gestion des absences"
+      },
+      {
+       "uuid": "activity_e7f8e513-ef85-49f4-b208-9e8ac4157b83",
+       "title": "Fiches clients intelligentes et fidélité"
+      },
+      {
+       "uuid": "activity_8ba4cf12-b107-4b38-963d-d00a6135c270",
+       "title": "Publications Instagram sans y passer ses soirées"
+      },
+      {
+       "uuid": "activity_1a35793f-ef6d-4d0f-85bf-cde232830dfb",
+       "title": "Quiz : salon et institut"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "ia-commerce": {
+   "uuid": "course_0950b6a5-e509-4d31-bf91-5f2e2c6191c1",
+   "id": 25,
+   "chapters": [
+    {
+     "id": 33,
+     "title": "Vendre en ligne sans y passer ses nuits",
+     "activities": [
+      {
+       "uuid": "activity_40d86637-1079-4eba-9806-4fe6b19e5ff3",
+       "title": "Fiches produits en série"
+      },
+      {
+       "uuid": "activity_f51a91d5-c348-4a31-a68b-69401d974dfb",
+       "title": "SAV rapide et paniers abandonnés"
+      },
+      {
+       "uuid": "activity_d2686e30-c95f-4d0d-9761-5150729b6535",
+       "title": "Quiz : commerce"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "tableurs-calculs-ia": {
+   "uuid": "course_024ebc91-dc9e-4f04-b63b-0426d67e0747",
+   "id": 26,
+   "chapters": [
+    {
+     "id": 34,
+     "title": "Le tableau qui répond aux questions",
+     "activities": [
+      {
+       "uuid": "activity_387aaa58-ad39-47bd-b6b4-4d896e19a9ee",
+       "title": "Faire analyser un tableau"
+      },
+      {
+       "uuid": "activity_a76060d6-cc00-4444-98d3-6ee9880423a3",
+       "title": "Les formules enfin expliquées"
+      },
+      {
+       "uuid": "activity_035e176d-cdf0-4a90-82e7-b5803f632f85",
+       "title": "Quiz : tableurs"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "presentations-supports-ia": {
+   "uuid": "course_c6863615-288b-4214-bb28-cbab50fb2d66",
+   "id": 27,
+   "chapters": [
+    {
+     "id": 35,
+     "title": "De l'idée au déroulé",
+     "activities": [
+      {
+       "uuid": "activity_28a66a66-bcb7-4592-861b-d6ef95d7c90b",
+       "title": "Structurer une présentation qui convainc"
+      },
+      {
+       "uuid": "activity_00fd33db-60ad-42be-8cec-27aefd3bc254",
+       "title": "Visuels et mise en forme sans designer"
+      },
+      {
+       "uuid": "activity_a4af0588-2c3d-44bf-820d-2b3d89afff00",
+       "title": "Quiz : présentations"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "visuels-images-pro": {
+   "uuid": "course_8451e5bd-1d60-4c3c-a73b-9be828e03ad7",
+   "id": 28,
+   "chapters": [
+    {
+     "id": 36,
+     "title": "Le prompt d'image qui donne le bon résultat",
+     "activities": [
+      {
+       "uuid": "activity_6b483340-ba50-4c0a-8899-bb76b6435158",
+       "title": "La recette du prompt d'image"
+      },
+      {
+       "uuid": "activity_96dfc195-f6b4-47bc-83e0-8003f06c1553",
+       "title": "Droits, cohérence et bonnes pratiques"
+      },
+      {
+       "uuid": "activity_4c4df515-8f17-426c-8a79-e0bb324d5b1f",
+       "title": "Quiz : visuels"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "resumer-traduire-adapter": {
+   "uuid": "course_550d1473-9755-43a5-83e2-52d1bac7e00b",
+   "id": 29,
+   "chapters": [
+    {
+     "id": 37,
+     "title": "Le document long dompté",
+     "activities": [
+      {
+       "uuid": "activity_33f06650-e18c-4524-abb5-2a16a9aa7f9d",
+       "title": "Résumer sans trahir"
+      },
+      {
+       "uuid": "activity_f93db145-0c24-445b-95cb-ca9839ec7881",
+       "title": "Traduire et adapter sans trahir le ton"
+      },
+      {
+       "uuid": "activity_592b888e-bacb-42df-9c6d-e31498cf044f",
+       "title": "Quiz : résumer et traduire"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "automatiser-chaine-complete": {
+   "uuid": "course_3b2217a0-dd06-4139-ac9e-7d08c87cffbc",
+   "id": 30,
+   "chapters": [
+    {
+     "id": 38,
+     "title": "L'anatomie d'une automatisation",
+     "activities": [
+      {
+       "uuid": "activity_db84e7b4-7b12-41de-bbaf-a679178114e8",
+       "title": "Déclencheur, étapes, contrôle humain"
+      },
+      {
+       "uuid": "activity_44c3fffc-f662-49f3-9009-8b77f7379730",
+       "title": "Chiffrer avant d'automatiser"
+      },
+      {
+       "uuid": "activity_4573e3b1-add9-4bd0-ab02-c7cc799ec394",
+       "title": "Quiz : chaînes d'automatisation"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "charte-ia-referent": {
+   "uuid": "course_2dfac878-7650-453d-b0a0-34f910e8f4f8",
+   "id": 31,
+   "chapters": [
+    {
+     "id": 39,
+     "title": "La charte en une page",
+     "activities": [
+      {
+       "uuid": "activity_bdd66111-9e1a-45df-9dae-d17f7d226ce6",
+       "title": "Les 6 blocs d'une charte utile"
+      },
+      {
+       "uuid": "activity_123c1fc2-3aa0-44b8-822d-5975b02c2501",
+       "title": "Le référent IA : le phare de l'équipe"
+      },
+      {
+       "uuid": "activity_de1fa330-d1bf-4ef8-8aee-6da1bd389a9e",
+       "title": "Quiz : charte et référent"
+      }
+     ]
+    }
+   ],
+   "published": true
+  },
+  "plan-deploiement-30-jours": {
+   "uuid": "course_09e38824-1bd0-4b04-b422-a401877c1474",
+   "id": 32,
+   "chapters": [
+    {
+     "id": 40,
+     "title": "Le fil rouge et le plan",
+     "activities": [
+      {
+       "uuid": "activity_67d2eac8-4952-4949-b002-c6a837c8c376",
+       "title": "Semaines 1 et 2 : socle et premier gain"
+      },
+      {
+       "uuid": "activity_fbe351c2-dfbf-476c-92d9-c6f04fb1d005",
+       "title": "Semaines 3 et 4 : extension, mesure, pérennité"
+      },
+      {
+       "uuid": "activity_4fe60787-6f5c-48d6-bffa-5f6d7e5d5d03",
+       "title": "Quiz final : le déploiement"
+      }
+     ]
+    }
+   ],
+   "published": true
+  }
+ }
+}

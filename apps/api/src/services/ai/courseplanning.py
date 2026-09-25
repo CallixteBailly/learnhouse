@@ -29,6 +29,19 @@ MAX_ACTIVITY_ITERATIONS = 6
 # Feature flag: Enable activity content generation (disabled for now)
 ENABLE_ACTIVITY_CONTENT_GENERATION = True
 
+# Ordria house style: the em dash (U+2014) is banned from all generated course
+# content. The system prompts forbid it; this sanitizer guarantees it even if
+# the model disobeys. String chunks carry whole code points, so a per-chunk
+# replace can never split the character across chunks.
+EM_DASH = "\u2014"
+
+
+def sanitize_generated_text(text: str) -> str:
+    """Replace em dashes with simple hyphens in generated course content."""
+    if not text:
+        return text
+    return text.replace(EM_DASH, "-")
+
 
 def get_redis_connection():
     """Get Redis connection if available"""
@@ -212,6 +225,7 @@ IMPORTANT GUIDELINES:
 - Include practical, hands-on activities when appropriate
 - Make activity descriptions specific and actionable
 - Activity names should be descriptive (e.g., "Introduction to Variables", "Quiz: Testing Your Knowledge")
+- NEVER use the em dash character (the long dash, Unicode U+2014) anywhere in the generated content. Use a comma, a colon, parentheses, or a simple hyphen "-" instead.
 
 ACTIVITY TYPES AND SUGGESTED BLOCKS:
 Activities in LearnHouse use a rich content editor with various block types. For each activity, suggest appropriate blocks:
@@ -272,6 +286,8 @@ def build_activity_content_system_prompt(
     return f"""You are an expert content creator for online courses. Generate educational content for the following context:
 
 IMPORTANT: Generate ALL text content in {language_name}. The user's language is {language_name}, so all paragraphs, headings, quiz questions, answers, flipcard content, and callouts must be written in {language_name}.
+
+TYPOGRAPHY RULE (mandatory): NEVER use the em dash character (the long dash, Unicode U+2014) anywhere in the generated text. Use a comma, a colon, parentheses, or a simple hyphen "-" instead.
 
 COURSE: <user_content>{course_name}</user_content>
 COURSE DESCRIPTION: <user_content>{course_description}</user_content>
@@ -438,6 +454,7 @@ IMPORTANT: You MUST incorporate the materials provided above into the course pla
             history=history,
             timeout=300.0,
         ):
+            chunk = sanitize_generated_text(chunk)
             full_response += chunk
             yield chunk
 
@@ -518,6 +535,7 @@ Please modify the content according to the user's request. Output ONLY the compl
             temperature=0.7,
             timeout=300.0,
         ):
+            chunk = sanitize_generated_text(chunk)
             full_response += chunk
             yield chunk
 

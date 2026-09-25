@@ -14,6 +14,7 @@ import logging
 from uuid import uuid4
 
 from src.services.ai.base import get_chat_session_history, save_message_to_history
+from src.services.ai.courseplanning import sanitize_generated_text
 from src.services.ai.llm import generate, model_for_tier
 from src.services.ai.rag.content_extraction import extract_text_from_prosemirror
 from src.services.ai.schemas.quiz import GeneratedQuiz
@@ -32,7 +33,9 @@ Rules:
 - Write in the same language as the user's request/content.
 - Base questions strictly on the provided course content when it is supplied;
   do not invent facts that contradict it.
-- Return ONLY the structured quiz — no commentary."""
+- NEVER use the em dash character (the long dash, Unicode U+2014). Use a comma,
+  a colon, parentheses, or a simple hyphen "-" instead.
+- Return ONLY the structured quiz - no commentary."""
 
 
 def _build_prompt(prompt: str, num_questions: int, difficulty: str | None, context: str) -> str:
@@ -52,7 +55,7 @@ def _to_block_quiz(generated: GeneratedQuiz) -> dict:
         answers = [
             {
                 "answer_id": f"answer_{uuid4()}",
-                "answer": a.answer,
+                "answer": sanitize_generated_text(a.answer),
                 "correct": bool(a.correct),
             }
             for a in q.answers
@@ -60,7 +63,7 @@ def _to_block_quiz(generated: GeneratedQuiz) -> dict:
         questions.append(
             {
                 "question_id": f"question_{uuid4()}",
-                "question": q.question,
+                "question": sanitize_generated_text(q.question),
                 "type": q.type,
                 "answers": answers,
             }
