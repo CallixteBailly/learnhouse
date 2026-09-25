@@ -84,3 +84,6 @@ hcaptcha-*.png
 stripe-register-state.png
 .tmp-stripe-browser/
 .tmp-stripe-watch/
+
+# vérifications locales navigateur (racine uniquement)
+/*.png
