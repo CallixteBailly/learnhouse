@@ -81,21 +81,9 @@ const PlanBadge: React.FC<PlanBadgeProps> = ({
   noMargin = false,
   variant = 'light'
 }) => {
-  // Don't show badge if user meets the requirement (unless alwaysShow)
-  if (!alwaysShow && planMeetsRequirement(currentPlan, requiredPlan)) {
-    return null
-  }
-
-  const capitalizedPlan = requiredPlan.charAt(0).toUpperCase() + requiredPlan.slice(1)
-  const planStyles = variant === 'dark' ? getDarkPlanStyles(requiredPlan) : getPlanStyles(requiredPlan)
-  const sizeStyles = getSizeStyles(size)
-  const marginClass = noMargin ? '' : 'ml-1.5'
-
-  return (
-    <span className={`${marginClass} ${sizeStyles} font-semibold rounded-md border ${planStyles}`}>
-      {capitalizedPlan}
-    </span>
-  )
+  // Ordria : pas de paliers de plan — aucun badge de plan n'est jamais affiché.
+  // Le composant est conservé pour ne pas casser les imports existants.
+  return null
 }
 
 export default PlanBadge

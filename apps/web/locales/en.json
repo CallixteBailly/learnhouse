@@ -360,7 +360,7 @@
     "image_title_forgot": "Reset your password.",
     "image_subtitle_forgot": "We'll help you get back into your account in no time.",
     "image_title_login": "Welcome back to Ordria.",
-    "image_subtitle_login": "Pick up where you left off — your courses, students, and tools are waiting.",
+    "image_subtitle_login": "Pick up where you left off, your courses, students, and tools are waiting.",
     "image_title_reset": "Almost there.",
     "image_subtitle_reset": "Create a strong password to keep your account secure.",
     "image_title_signup": "Start teaching with Ordria.",
@@ -624,7 +624,7 @@
         "plan_generated": "Plan updated",
         "plan_generated_hint": "Check the Plan tab to review and edit.",
         "describe_course": "Describe Your Course",
-        "describe_course_hint": "Use the chat on the right to describe the course you want — topic, audience, and goals.",
+        "describe_course_hint": "Use the chat on the right to describe the course you want, topic, audience, and goals.",
         "generating_plan": "Generating your course plan...",
         "chapters": "Chapters",
         "activities": "activities",
@@ -1461,8 +1461,8 @@
     "retry_assignment_title": "Try this assignment again?",
     "retry_assignment_confirm": "Your current submission and answers will be reset so you can start over. Your previous grade will be replaced once you resubmit.",
     "retry_assignment_remaining": "You have {{remaining}} attempt{{plural}} left after this one.",
-    "retry_assignment_last": "This is your last attempt — make it count.",
-    "retry_assignment_success": "Your work has been reset — give it another shot.",
+    "retry_assignment_last": "This is your last attempt, make it count.",
+    "retry_assignment_success": "Your work has been reset, give it another shot.",
     "retry_assignment_failed": "Couldn't reset your submission. Please try again.",
     "retry_no_attempts_left": "No retries left",
     "quiz": {
@@ -1595,7 +1595,7 @@
       "confirm_label": "Type {{username}} to confirm",
       "deleting": "Deleting…",
       "zone_subtitle": "Permanently delete your account. This cannot be undone.",
-      "zone_body": "This removes your account and access. Any organization you are the sole admin of — and all of its courses and content — will be deleted too. Organizations with other admins are kept; you are simply removed from them."
+      "zone_body": "This removes your account and access. Any organization you are the sole admin of, and all of its courses and content, will be deleted too. Organizations with other admins are kept; you are simply removed from them."
     }
   },
   "user": {
@@ -3356,7 +3356,7 @@
         "done": "Done"
       },
       "usage": {
-        "plan_resource_usage": "Plan & Resource Usage",
+        "plan_resource_usage": "Resource Usage",
         "courses": "Courses",
         "members_label": "Members",
         "admin_seats": "Admin Seats",
@@ -4022,7 +4022,7 @@
             "auth_required_submit": "Authentication required. Please sign in to submit your task.",
             "hint_optional": "Hint (optional)",
             "paste_blocked": "Pasting is disabled for this assignment",
-            "paste_blocked_hint": "Pasting is disabled — type your answer directly."
+            "paste_blocked_hint": "Pasting is disabled, type your answer directly."
           },
           "short_answer": {
             "prompt_label": "Question prompt",
@@ -4039,13 +4039,13 @@
               "regex": "Regular expression"
             },
             "explanation_label": "Explanation (shown on correct answer)",
-            "explanation_placeholder": "Optional — explain why the answer is correct",
+            "explanation_placeholder": "Optional, explain why the answer is correct",
             "your_answer_placeholder": "Type your answer...",
             "student_answer_label": "Student's answer",
             "accepted_answers_label": "Accepted answers",
             "no_answer": "No answer submitted",
             "correct": "Correct",
-            "incorrect": "Not quite — try again"
+            "incorrect": "Not quite, try again"
           },
           "number_answer": {
             "prompt_label": "Question prompt",
@@ -4054,16 +4054,16 @@
             "tolerance_label": "Tolerance (±)",
             "unit_label": "Unit (optional)",
             "unit_placeholder": "m/s², kg, °C...",
-            "unit_hint": "Shown next to the answer field. Not enforced — students only type numbers.",
+            "unit_hint": "Shown next to the answer field. Not enforced, students only type numbers.",
             "explanation_label": "Explanation (shown on correct answer)",
-            "explanation_placeholder": "Optional — explain how to arrive at the answer",
+            "explanation_placeholder": "Optional, explain how to arrive at the answer",
             "preview_label": "Accepts",
             "your_answer_placeholder": "Enter a number...",
             "student_answer_label": "Student's answer",
             "accepted_range_label": "Accepted range",
             "no_answer": "No answer submitted",
             "correct": "Correct",
-            "incorrect": "Not quite — try again"
+            "incorrect": "Not quite, try again"
           },
           "code": {
             "student_behavior_label": "Student behavior",
@@ -4181,7 +4181,7 @@
         },
         "tasks": {
           "title": "Task performance",
-          "subtitle": "Average score per task — low bars highlight where students struggle",
+          "subtitle": "Average score per task, low bars highlight where students struggle",
           "empty": "Per-task performance will appear after graded submissions come in",
           "avg_grade": "Average grade",
           "attempts": "attempts"
@@ -4193,7 +4193,7 @@
         },
         "attention": {
           "title": "May need support",
-          "subtitle": "Students who did not pass — consider reaching out",
+          "subtitle": "Students who did not pass, consider reaching out",
           "empty": "Everyone who was graded passed. Nice work!"
         }
       },
@@ -4231,9 +4231,9 @@
             "auto_grading_description": "Grade and complete the activity automatically when the student submits. Only works when every task can be graded without a human (quizzes, forms, code).",
             "auto_grading_disabled_file": "Automatic grading is unavailable because this assignment has a file submission task that needs human review.",
             "anti_copy_paste_label": "Block copy & paste",
-            "anti_copy_paste_description": "Discourage pasting AI-generated answers by blocking paste events in the code editor and text inputs. Note: this is a deterrent — tech-savvy students can bypass it.",
+            "anti_copy_paste_description": "Discourage pasting AI-generated answers by blocking paste events in the code editor and text inputs. Note: this is a deterrent, tech-savvy students can bypass it.",
             "show_correct_answers_label": "Reveal correct answers after grading",
-            "show_correct_answers_description": "Once the submission is graded, show students the right answers alongside their own — which quiz options were correct, the expected short or number answer, and the correct form blanks.",
+            "show_correct_answers_description": "Once the submission is graded, show students the right answers alongside their own, which quiz options were correct, the expected short or number answer, and the correct form blanks.",
             "allow_retries_label": "Allow retries",
             "allow_retries_description": "Let students reset and re-attempt the assignment after it's graded. Each retry wipes their previous answers and counts as a new attempt.",
             "max_retries_label": "Maximum attempts",
@@ -4280,7 +4280,7 @@
             "auto_grading_label": "Automatic grading",
             "auto_grading_description": "Grade and complete the activity automatically when the student submits. Only works when every task can be graded without a human.",
             "anti_copy_paste_label": "Block copy & paste",
-            "anti_copy_paste_description": "Discourage pasting AI-generated answers by blocking paste events. Note: this is a deterrent — it can be bypassed.",
+            "anti_copy_paste_description": "Discourage pasting AI-generated answers by blocking paste events. Note: this is a deterrent, it can be bypassed.",
             "show_correct_answers_label": "Reveal correct answers after grading",
             "show_correct_answers_description": "Once graded, students see the right answers next to their own.",
             "submit": "Create activity"
@@ -4628,7 +4628,7 @@
         "expand_video": "Expand video",
         "download_video": "Download video",
         "converting_title": "Video conversion in progress",
-        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
         "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
@@ -4947,7 +4947,7 @@
         "avg_rate": "Avg Rate",
         "needs_attention": "Needs Attention",
         "total_samples": "Total Samples",
-        "more_expand": "+{{count}} more — click to expand",
+        "more_expand": "+{{count}} more, click to expand",
         "activities_count": "{{count}} activities",
         "pct_of_total": "% of Total",
         "bar_width_hint": "Bar width = relative views",
@@ -5067,7 +5067,7 @@
       },
       "activity_dropoff": {
         "title": "Drop-off Points",
-        "subtitle": "Where learners stop progressing — last completed activity",
+        "subtitle": "Where learners stop progressing, last completed activity",
         "total_dropoffs": "Total Drop-offs",
         "dropoff_points": "Drop-off Points"
       },
@@ -5101,7 +5101,7 @@
         "avg_between": "avg {{unit}} between completions",
         "transitions_tracked": "transitions tracked",
         "raw_hours_avg": "raw hours avg",
-        "description": "Measures how quickly learners progress from one activity to the next. Lower is better — it means learners are moving through content faster."
+        "description": "Measures how quickly learners progress from one activity to the next. Lower is better, it means learners are moving through content faster."
       },
       "time_to_completion": {
         "title": "Time to Completion",
@@ -5235,7 +5235,7 @@
       },
       "add_content": {
         "title": "A lesson worth showing up for",
-        "description": "Add a video, page or quiz — give learners a real reason to enroll.",
+        "description": "Add a video, page or quiz, give learners a real reason to enroll.",
         "action": "Add content"
       },
       "brand_school": {
@@ -5245,17 +5245,17 @@
       },
       "share_grow": {
         "title": "Your school’s front door",
-        "description": "Go live and grab your shareable link — the place you’ll send every learner.",
+        "description": "Go live and grab your shareable link, the place you’ll send every learner.",
         "action": "Open my school"
       },
       "invite_learners": {
         "title": "Welcome your first learner",
-        "description": "Share your join link or invite people — get that first learner through the door.",
+        "description": "Share your join link or invite people, get that first learner through the door.",
         "action": "Invite learners"
       },
       "build_community": {
         "title": "Keep learners coming back",
-        "description": "Open a community space so your learners stay active — and bring their friends.",
+        "description": "Open a community space so your learners stay active, and bring their friends.",
         "action": "Open community"
       }
     },
@@ -5311,7 +5311,7 @@
         "goal": "Start monetizing your courses and build a learning community.",
         "highlights": {
           "courses": "Unlimited courses",
-          "courses_desc": "Create as many courses as you need — no limits on your curriculum.",
+          "courses_desc": "Create as many courses as you need, no limits on your curriculum.",
           "members": "Up to 500 members",
           "members_desc": "Grow your learner base and manage them in one place.",
           "payments": "Accept payments",
@@ -5369,7 +5369,7 @@
       "trigger_authenticated_title": "Access: signed-in users only",
       "trigger_restricted_title": "Access: specific user groups only",
       "usergroups_header": "User groups",
-      "usergroups_none_assigned": "No groups assigned — nobody but admins can open this.",
+      "usergroups_none_assigned": "No groups assigned, nobody but admins can open this.",
       "usergroups_remove_title": "Remove",
       "usergroups_loading": "Loading groups…",
       "usergroups_none_in_org": "No user groups exist yet in this org.",
@@ -5468,7 +5468,7 @@
     "recurring_subscription": "recurring subscription",
     "what_youre_getting": "What you're getting",
     "pack_immediate": "Takes effect immediately after payment",
-    "pack_cancel_anytime": "Cancel anytime — stays active until end of billing period",
+    "pack_cancel_anytime": "Cancel anytime, stays active until end of billing period",
     "pack_credits_reset": "Credits reset each billing cycle",
     "after_purchase": "After purchase",
     "unlimited": "Unlimited",
@@ -5518,9 +5518,9 @@
     "canceled_desc": "Your subscription will be canceled at the end of your current billing period. You'll keep full access until then.",
     "back_to_plan_usage": "Back to Plan & Usage",
     "back_to_orgs": "Back to organizations",
-    "pack_purchased": "Add-on purchased — your limits are updated.",
-    "checkout_success": "Subscription updated — welcome to your new plan!",
-    "checkout_cancelled": "Checkout cancelled — no changes were made.",
+    "pack_purchased": "Add-on purchased, your limits are updated.",
+    "checkout_success": "Subscription updated, welcome to your new plan!",
+    "checkout_cancelled": "Checkout cancelled, no changes were made.",
     "load_failed": "We couldn't load your organizations.",
     "no_permission": "You don't have permission to manage billing for this organization.",
     "no_permission_hint": "Only an organization admin can view or change the plan.",
@@ -5635,7 +5635,7 @@
     "toast": {
       "creating": "Creating organization…",
       "created": "Organization created!",
-      "checkoutFailed": "Organization created — you can upgrade from Plan & Usage.",
+      "checkoutFailed": "Organization created, you can upgrade from Plan & Usage.",
       "failed": "Failed to create organization"
     },
     "steps": {
@@ -5700,7 +5700,7 @@
     "consent_privacy": "I accept the",
     "consent_privacy_link": "privacy policy",
     "consent_required": "You must accept to continue",
-    "complete_profile_banner": "Complete your profile — tell us your job for tailored recommendations.",
+    "complete_profile_banner": "Complete your profile, tell us your job for tailored recommendations.",
     "complete_profile_cta": "Complete"
   }
 }

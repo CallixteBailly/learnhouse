@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const orgslug = await getAuthOrgSlug()
 
   if (!orgslug) {
-    return { title: 'Réinitialiser le mot de passe — Ordria Learning' }
+    return { title: 'Réinitialiser le mot de passe | Ordria Learning' }
   }
 
   let org: any = null

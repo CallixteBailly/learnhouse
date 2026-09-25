@@ -80,11 +80,11 @@ const RESTRICTED_WORDS = ['sex', 'test']
 const STEP_NUMBER: Record<Step, number> = {
   'use-type': 1,
   usage: 2,
-  'choose-plan': 3,
-  'create-org': 4,
-  success: 4,
+  'choose-plan': 3, // Ordria : étape plan sautée — jamais atteinte
+  'create-org': 3,
+  success: 3,
 }
-const TOTAL_STEPS = 4
+const TOTAL_STEPS = 3
 
 // ── Animation ─────────────────────────────────────────────────────────────────
 
@@ -862,13 +862,13 @@ export default function CreateNewOrgPage() {
           }
           toast.error(
             t('hub_new.toast.checkoutFailed', {
-              defaultValue: 'Organization created — you can upgrade from Plan & Usage.',
+              defaultValue: 'Organization created, you can upgrade from Plan & Usage.',
             })
           )
         } catch {
           toast.error(
             t('hub_new.toast.checkoutFailed', {
-              defaultValue: 'Organization created — you can upgrade from Plan & Usage.',
+              defaultValue: 'Organization created, you can upgrade from Plan & Usage.',
             })
           )
         }
@@ -889,20 +889,22 @@ export default function CreateNewOrgPage() {
   }
 
   // Navigation helpers
+  // Ordria : pas de paliers de plan — l'étape "choose-plan" est sautée,
+  // on passe directement de l'usage au formulaire de création.
   const goBack = () => {
     setDir(-1)
     if (step === 'usage') setStep('use-type')
     else if (step === 'choose-plan') setStep('usage')
-    else if (step === 'create-org') setStep('choose-plan')
+    else if (step === 'create-org') setStep('usage')
   }
   const advance = () => {
     setDir(1)
     if (step === 'use-type' && useType) setStep('usage')
-    else if (step === 'usage' && canAdvanceUsage) setStep('choose-plan')
+    else if (step === 'usage' && canAdvanceUsage) setStep('create-org')
   }
   const skip = () => {
     setDir(1)
-    setStep('choose-plan')
+    setStep('create-org')
   }
 
   const stepNumber = STEP_NUMBER[step]

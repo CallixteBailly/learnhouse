@@ -323,6 +323,39 @@ export default async function middleware(req: NextRequest) {
   const isHubRoot = HUB_ROOT_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   )
+
+  // -------------------------------------------------------------------------
+  // 2b. Org entry bridge (/enter/{slug}) — path-based org selection.
+  //
+  //     Multi-tenancy normally routes orgs on subdomains ({slug}.domain), but
+  //     a second-level wildcard certificate is a paid Cloudflare option. This
+  //     central-LMS deployment instead keeps every org on the SAME hostname:
+  //     visiting /enter/{slug} pins the org via the LH_org cookie and bounces
+  //     to /home, which the tenant catch-all then rewrites to that org.
+  //     Shareable per-client URL: https://learn.ordria.fr/enter/protech
+  // -------------------------------------------------------------------------
+  const enterMatch = pathname.match(/^\/enter\/([a-z0-9-]+)\/?$/i)
+  if (enterMatch) {
+    const slug = enterMatch[1].toLowerCase()
+    // /home is the hub (org picker) regardless of cookie — land the user on
+    // the org's course list instead, which the tenant catch-all scopes to
+    // the pinned org.
+    const url = new URL('/courses', req.url)
+    const search = req.nextUrl.search
+    if (search) url.search = search
+    const response = NextResponse.redirect(url)
+    // Same name AND domain scope as setOrgCookies below — otherwise the
+    // host-only and domain cookies coexist and the domain one wins on read.
+    response.cookies.set({
+      name: 'LH_org',
+      value: slug,
+      domain: cookieDomainFor(instance, undefined),
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    })
+    return response
+  }
+
   if (pathname === '/home' || (instance.tenancy === 'multi' && isHubRoot)) {
     // `/account/*` ALSO exists as an org-scoped dashboard route
     // (/orgs/{slug}/account/[subpage] — general/security/purchases). On an org

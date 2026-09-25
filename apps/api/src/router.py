@@ -13,6 +13,7 @@ from src.routers import monitoring
 from src.routers import stream
 from src.routers import api_tokens
 from src.routers import webhooks
+from src.routers.payments import payments as payments_router_module
 from src.routers.integrations import zapier as zapier_integration
 from src.routers.ai import ai, magicblocks, courseplanning, rag, images, quiz, assignment_gen, scenario, audio
 from src.routers.boards import boards_playground
@@ -170,6 +171,15 @@ def _mount_saas_only_routers(target_router: APIRouter) -> None:
 
 
 _mount_saas_only_routers(v1_router)
+# Ordria OSS payments (offers / checkout / enrollments / Stripe webhook).
+# Mixed router: public endpoints (public-listing, public offer, by-resource,
+# webhook) are anonymous; admin endpoints enforce org-admin via
+# require_org_admin inside the router module.
+v1_router.include_router(
+    payments_router_module.router,
+    prefix="/payments",
+    tags=["payments"],
+)
 v1_router.include_router(
     blocks.router,
     prefix="/blocks",

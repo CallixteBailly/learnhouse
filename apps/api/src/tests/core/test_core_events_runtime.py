@@ -450,8 +450,9 @@ def test_ee_hook_registration_and_paid_access(monkeypatch):
     assert ee_hooks.is_multi_org_allowed() is True
     monkeypatch.setattr("src.core.deployment_mode.get_deployment_mode", lambda: "saas")
     assert ee_hooks.is_multi_org_allowed() is True
+    # Ordria: multi-org deliberately unlocked on this self-hosted build.
     monkeypatch.setattr("src.core.deployment_mode.get_deployment_mode", lambda: "free")
-    assert ee_hooks.is_multi_org_allowed() is False
+    assert ee_hooks.is_multi_org_allowed() is True
 
     result = asyncio.run(
         ee_hooks.check_ee_activity_paid_access(

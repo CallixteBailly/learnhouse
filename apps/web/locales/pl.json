@@ -367,7 +367,7 @@
     "image_title_forgot": "Zresetuj hasło.",
     "image_subtitle_forgot": "Pomożemy Ci błyskawicznie wrócić do Twojego konta.",
     "image_title_login": "Witaj ponownie w Ordria.",
-    "image_subtitle_login": "Kontynuuj od miejsca, w którym skończyłeś — Twoje kursy, kursanci i narzędzia czekają.",
+    "image_subtitle_login": "Kontynuuj od miejsca, w którym skończyłeś, Twoje kursy, kursanci i narzędzia czekają.",
     "image_title_reset": "Już prawie gotowe.",
     "image_subtitle_reset": "Utwórz silne hasło, aby zabezpieczyć swoje konto.",
     "image_title_signup": "Zacznij uczyć z Ordria.",
@@ -633,7 +633,7 @@
         "plan_generated": "Plan zaktualizowany",
         "plan_generated_hint": "Sprawdź kartę Plan, aby przejrzeć i edytować.",
         "describe_course": "Opisz swój kurs",
-        "describe_course_hint": "Użyj czatu po prawej stronie, aby opisać kurs — temat, odbiorców i cele.",
+        "describe_course_hint": "Użyj czatu po prawej stronie, aby opisać kurs, temat, odbiorców i cele.",
         "generating_plan": "Generowanie planu kursu...",
         "chapters": "Rozdziały",
         "activities": "aktywności",
@@ -1034,8 +1034,8 @@
     "retry_assignment_title": "Spróbować to zadanie ponownie?",
     "retry_assignment_confirm": "Twoje obecne zgłoszenie i odpowiedzi zostaną zresetowane, aby móc zacząć od nowa. Twoja poprzednia ocena zostanie zastąpiona po ponownym wysłaniu.",
     "retry_assignment_remaining": "Masz {{remaining}} próbę{{plural}} pozostałą po tej.",
-    "retry_assignment_last": "To Twoja ostatnia próba — wykorzystaj ją dobrze.",
-    "retry_assignment_success": "Twoja praca została zresetowana — spróbuj jeszcze raz.",
+    "retry_assignment_last": "To Twoja ostatnia próba, wykorzystaj ją dobrze.",
+    "retry_assignment_success": "Twoja praca została zresetowana, spróbuj jeszcze raz.",
     "retry_assignment_failed": "Nie można zresetować Twojego zgłoszenia. Spróbuj ponownie.",
     "retry_no_attempts_left": "Brak pozostałych prób"
   },
@@ -3425,7 +3425,7 @@
           },
           "view_rights": {
             "description": "Pokaż wszystkie uprawnienia tej roli",
-            "title": "{{roleName}} — Uprawnienia"
+            "title": "{{roleName}}, Uprawnienia"
           }
         },
         "toasts": {
@@ -3571,7 +3571,7 @@
             "auth_required_submit": "Wymagana autoryzacja. Zaloguj się, aby przesłać zadanie składowe.",
             "hint_optional": "Wskazówka (opcjonalnie)",
             "paste_blocked": "Wklejanie jest wyłączone dla tego zadania",
-            "paste_blocked_hint": "Wklejanie jest wyłączone — wpisz swoją odpowiedź bezpośrednio."
+            "paste_blocked_hint": "Wklejanie jest wyłączone, wpisz swoją odpowiedź bezpośrednio."
           },
           "code": {
             "student_behavior_label": "Zachowanie ucznia",
@@ -3604,13 +3604,13 @@
               "regex": "Wyrażenie regularne"
             },
             "explanation_label": "Wyjaśnienie (pokazywane przy poprawnej odpowiedzi)",
-            "explanation_placeholder": "Opcjonalne — wyjaśnij dlaczego odpowiedź jest poprawna",
+            "explanation_placeholder": "Opcjonalne, wyjaśnij dlaczego odpowiedź jest poprawna",
             "your_answer_placeholder": "Wpisz swoją odpowiedź...",
             "student_answer_label": "Odpowiedź ucznia",
             "accepted_answers_label": "Akceptowane odpowiedzi",
             "no_answer": "Brak przesłanej odpowiedzi",
             "correct": "Poprawnie",
-            "incorrect": "Nie do końca — spróbuj ponownie"
+            "incorrect": "Nie do końca, spróbuj ponownie"
           },
           "number_answer": {
             "prompt_label": "Treść pytania",
@@ -3621,14 +3621,14 @@
             "unit_placeholder": "m/s², kg, °C...",
             "unit_hint": "Wyświetlana obok pola odpowiedzi. Niewymagana.",
             "explanation_label": "Wyjaśnienie (pokazywane przy poprawnej odpowiedzi)",
-            "explanation_placeholder": "Opcjonalne — wyjaśnij jak dojść do odpowiedzi",
+            "explanation_placeholder": "Opcjonalne, wyjaśnij jak dojść do odpowiedzi",
             "preview_label": "Akceptuje",
             "your_answer_placeholder": "Wprowadź liczbę...",
             "student_answer_label": "Odpowiedź ucznia",
             "accepted_range_label": "Akceptowany zakres",
             "no_answer": "Brak przesłanej odpowiedzi",
             "correct": "Poprawnie",
-            "incorrect": "Nie do końca — spróbuj ponownie"
+            "incorrect": "Nie do końca, spróbuj ponownie"
           }
         }
       },
@@ -3730,7 +3730,7 @@
         },
         "tasks": {
           "title": "Wyniki zadań",
-          "subtitle": "Średni wynik na zadanie — niskie słupki wskazują, gdzie uczniowie mają trudności",
+          "subtitle": "Średni wynik na zadanie, niskie słupki wskazują, gdzie uczniowie mają trudności",
           "empty": "Wyniki zadań pojawią się po pierwszych ocenach",
           "avg_grade": "Średnia ocena",
           "attempts": "prób"
@@ -3742,7 +3742,7 @@
         },
         "attention": {
           "title": "Może potrzebować wsparcia",
-          "subtitle": "Uczniowie, którzy nie zaliczyli — warto się z nimi skontaktować",
+          "subtitle": "Uczniowie, którzy nie zaliczyli, warto się z nimi skontaktować",
           "empty": "Wszyscy ocenieni zaliczyli. Świetna robota!"
         }
       },
@@ -3784,7 +3784,7 @@
             "auto_grading_disabled_file": "Automatyczne ocenianie jest niedostępne ponieważ to zadanie zawiera przesłanie pliku które wymaga przeglądu przez człowieka.",
             "grading_type_hint": "Jak oceny są wyświetlane uczniom",
             "grading_options_hint": "Zachowanie przy wysłaniu",
-            "show_correct_answers_description": "Po ocenieniu zgłoszenia pokaż uczniom poprawne odpowiedzi obok ich własnych — które opcje quizu były poprawne, oczekiwaną krótką lub liczbową odpowiedź oraz poprawne uzupełnienia w formularzu.",
+            "show_correct_answers_description": "Po ocenieniu zgłoszenia pokaż uczniom poprawne odpowiedzi obok ich własnych, które opcje quizu były poprawne, oczekiwaną krótką lub liczbową odpowiedź oraz poprawne uzupełnienia w formularzu.",
             "show_correct_answers_label": "Pokaż poprawne odpowiedzi po ocenieniu",
             "allow_retries_label": "Zezwól na próby",
             "allow_retries_description": "Pozwól uczniom zresetować i ponowić próbę zadania po ocenieniu. Każda próba usuwa poprzednie odpowiedzi i liczy się jako nowa próba.",
@@ -4267,7 +4267,7 @@
         "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "uploading": "Przesyłanie wideo...",
         "converting_title": "Video conversion in progress",
-        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
         "fullscreen_video": "Play in fullscreen"
       }
     },
@@ -4487,7 +4487,7 @@
         "avg_rate": "Śr. wskaźnik",
         "needs_attention": "Wymaga uwagi",
         "total_samples": "Łącznie próbek",
-        "more_expand": "+{{count}} więcej — kliknij, aby rozwinąć",
+        "more_expand": "+{{count}} więcej, kliknij, aby rozwinąć",
         "activities_count": "{{count}} aktywności",
         "pct_of_total": "% całości",
         "bar_width_hint": "Szerokość paska = względne wyświetlenia",
@@ -4607,7 +4607,7 @@
       },
       "activity_dropoff": {
         "title": "Punkty porzuceń",
-        "subtitle": "Gdzie uczniowie przestają robić postępy — ostatnia ukończona aktywność",
+        "subtitle": "Gdzie uczniowie przestają robić postępy, ostatnia ukończona aktywność",
         "total_dropoffs": "Łącznie porzuceń",
         "dropoff_points": "Punkty porzuceń"
       },
@@ -4641,7 +4641,7 @@
         "avg_between": "śr. {{unit}} między ukończeniami",
         "transitions_tracked": "śledzonych przejść",
         "raw_hours_avg": "surowa śr. godzin",
-        "description": "Mierzy jak szybko uczniowie przechodzą od jednej aktywności do następnej. Niższy wynik jest lepszy — oznacza, że uczniowie szybciej przechodzą przez treści."
+        "description": "Mierzy jak szybko uczniowie przechodzą od jednej aktywności do następnej. Niższy wynik jest lepszy, oznacza, że uczniowie szybciej przechodzą przez treści."
       },
       "time_to_completion": {
         "title": "Czas do ukończenia",
@@ -4745,7 +4745,7 @@
       },
       "add_content": {
         "title": "Lekcja warta uwagi",
-        "description": "Dodaj film, stronę lub quiz — daj kursantom prawdziwy powód, by się zapisać.",
+        "description": "Dodaj film, stronę lub quiz, daj kursantom prawdziwy powód, by się zapisać.",
         "action": "Dodaj treść"
       },
       "brand_school": {
@@ -4755,17 +4755,17 @@
       },
       "share_grow": {
         "title": "Drzwi wejściowe Twojej szkoły",
-        "description": "Uruchom szkołę i pobierz link do udostępniania — miejsce, do którego skierujesz każdego kursanta.",
+        "description": "Uruchom szkołę i pobierz link do udostępniania, miejsce, do którego skierujesz każdego kursanta.",
         "action": "Otwórz moją szkołę"
       },
       "invite_learners": {
         "title": "Powitaj swojego pierwszego kursanta",
-        "description": "Udostępnij link dołączenia lub zaproś osoby — niech pierwszy kursant przekroczy próg.",
+        "description": "Udostępnij link dołączenia lub zaproś osoby, niech pierwszy kursant przekroczy próg.",
         "action": "Zaproś kursantów"
       },
       "build_community": {
         "title": "Spraw, by kursanci wracali",
-        "description": "Otwórz przestrzeń społeczności, aby Twoi kursanci pozostali aktywni — i przyprowadzali znajomych.",
+        "description": "Otwórz przestrzeń społeczności, aby Twoi kursanci pozostali aktywni, i przyprowadzali znajomych.",
         "action": "Otwórz społeczność"
       }
     },
@@ -5119,7 +5119,7 @@
         "goal": "Zacznij zarabiać na swoich kursach i buduj społeczność edukacyjną.",
         "highlights": {
           "courses": "Nieograniczone kursy",
-          "courses_desc": "Twórz tyle kursów, ile potrzebujesz — bez limitów programu nauczania.",
+          "courses_desc": "Twórz tyle kursów, ile potrzebujesz, bez limitów programu nauczania.",
           "members": "Do 500 członków",
           "members_desc": "Powiększ bazę uczniów i zarządzaj nią w jednym miejscu.",
           "payments": "Przyjmuj płatności",
@@ -5177,7 +5177,7 @@
       "trigger_authenticated_title": "Dostęp: tylko zalogowani użytkownicy",
       "trigger_restricted_title": "Dostęp: wybrane grupy użytkowników",
       "usergroups_header": "Grupy użytkowników",
-      "usergroups_none_assigned": "Brak przypisanych grup — tylko administratorzy mogą otworzyć.",
+      "usergroups_none_assigned": "Brak przypisanych grup, tylko administratorzy mogą otworzyć.",
       "usergroups_remove_title": "Usuń",
       "usergroups_loading": "Ładowanie grup…",
       "usergroups_none_in_org": "W tej organizacji nie ma jeszcze grup użytkowników.",
@@ -5429,7 +5429,7 @@
     "recurring_subscription": "subskrypcja cykliczna",
     "what_youre_getting": "Co otrzymujesz",
     "pack_immediate": "Działa od razu po dokonaniu płatności",
-    "pack_cancel_anytime": "Anuluj w dowolnej chwili — pozostaje aktywny do końca okresu rozliczeniowego",
+    "pack_cancel_anytime": "Anuluj w dowolnej chwili, pozostaje aktywny do końca okresu rozliczeniowego",
     "pack_credits_reset": "Kredyty są odnawiane w każdym cyklu rozliczeniowym",
     "after_purchase": "Po zakupie",
     "unlimited": "Bez limitu",
@@ -5479,9 +5479,9 @@
     "canceled_desc": "Twoja subskrypcja zostanie anulowana na koniec bieżącego okresu rozliczeniowego. Do tego czasu zachowasz pełny dostęp.",
     "back_to_plan_usage": "Powrót do Planu i zużycia",
     "back_to_orgs": "Powrót do organizacji",
-    "pack_purchased": "Pakiet zakupiony — Twoje limity zostały zaktualizowane.",
-    "checkout_success": "Subskrypcja zaktualizowana — witamy w Twoim nowym planie!",
-    "checkout_cancelled": "Kasa anulowana — nie wprowadzono żadnych zmian.",
+    "pack_purchased": "Pakiet zakupiony, Twoje limity zostały zaktualizowane.",
+    "checkout_success": "Subskrypcja zaktualizowana, witamy w Twoim nowym planie!",
+    "checkout_cancelled": "Kasa anulowana, nie wprowadzono żadnych zmian.",
     "load_failed": "Nie mogliśmy załadować Twoich organizacji.",
     "no_permission": "Nie masz uprawnień do zarządzania rozliczeniami dla tej organizacji.",
     "no_permission_hint": "Tylko administrator organizacji może wyświetlać lub zmieniać plan.",
@@ -5596,7 +5596,7 @@
     "toast": {
       "creating": "Tworzenie organizacji…",
       "created": "Organizacja utworzona!",
-      "checkoutFailed": "Organizacja utworzona — możesz ulepszyć plan w sekcji Plan i zużycie.",
+      "checkoutFailed": "Organizacja utworzona, możesz ulepszyć plan w sekcji Plan i zużycie.",
       "failed": "Nie udało się utworzyć organizacji"
     },
     "steps": {
@@ -5669,7 +5669,7 @@
     "consent_privacy": "J'accepte la",
     "consent_privacy_link": "politique de confidentialité",
     "consent_required": "Vous devez accepter pour continuer",
-    "complete_profile_banner": "Complétez votre profil — indiquez votre métier pour des recommandations sur mesure.",
+    "complete_profile_banner": "Complétez votre profil, indiquez votre métier pour des recommandations sur mesure.",
     "complete_profile_cta": "Compléter"
   }
 }

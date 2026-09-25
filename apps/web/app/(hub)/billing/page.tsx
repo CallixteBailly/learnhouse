@@ -139,11 +139,11 @@ function BillingClient() {
       queryClient.invalidateQueries({ queryKey: ['orgs', 'user'] })
       toast.success(
         packPurchased
-          ? t('billing.pack_purchased', { defaultValue: 'Add-on purchased — your limits are updated.' })
-          : t('billing.checkout_success', { defaultValue: 'Subscription updated — welcome to your new plan!' }),
+          ? t('billing.pack_purchased', { defaultValue: 'Add-on purchased, your limits are updated.' })
+          : t('billing.checkout_success', { defaultValue: 'Subscription updated, welcome to your new plan!' }),
       )
     } else if (checkoutParam === 'cancelled') {
-      toast(t('billing.checkout_cancelled', { defaultValue: 'Checkout cancelled — no changes were made.' }))
+      toast(t('billing.checkout_cancelled', { defaultValue: 'Checkout cancelled, no changes were made.' }))
     }
     const sp = new URLSearchParams(Array.from(searchParams?.entries() ?? []))
     ;['checkout', 'session_id', 'pack_purchased', 'pack'].forEach((k) => sp.delete(k))

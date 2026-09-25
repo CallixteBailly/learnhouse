@@ -111,9 +111,14 @@ export async function resolveMultiTenant(args: {
     return { slug: sub, source: 'subdomain' }
   }
 
-  // 3. Cookie (only on non-base hosts; on the bare apex we want the default
-  // org picker rather than silently restoring the last-visited org)
-  if (cookieOrgslug && host && !isSameHost(host, baseDomain) && !isLocalhost(host)) {
+  // 3. Cookie. Originally restricted to non-base hosts (custom domains keep
+  //    their last org across auth redirects). Ordria central-LMS deployment:
+  //    the base domain itself carries org context via LH_org (set by the
+  //    /enter/{slug} bridge) because per-org subdomains would need a paid
+  //    second-level wildcard certificate. The /home hub stays org-agnostic —
+  //    the middleware intercepts it before this resolver's catch-all — so
+  //    honoring the cookie on the base host only pins org CONTENT paths.
+  if (cookieOrgslug && host && !isLocalhost(host)) {
     return { slug: cookieOrgslug, source: 'cookie' }
   }
 

@@ -8,7 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const orgslug = await getAuthOrgSlug()
 
   if (!orgslug) {
-    return { title: 'Forgot Password — Ordria Learning' }
+    return { title: 'Forgot Password | Ordria Learning' }
   }
 
   let org: any = null

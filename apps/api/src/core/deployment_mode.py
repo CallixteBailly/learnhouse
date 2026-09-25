@@ -21,8 +21,11 @@ DeploymentMode = Literal['saas', 'oss', 'ee']
 # Features blocked in OSS mode but available in EE and plan-gated in SaaS.
 # Audit logs and advanced analytics ship natively in this build (see
 # src/services/audit and src/services/analytics), so they are not listed.
+# Ordria: payments is reimplemented natively in OSS (src/routers/payments +
+# src/services/payments — Stripe Checkout on the platform account), so it is
+# no longer gated to EE here.
 EE_ONLY_FEATURES: frozenset[str] = frozenset({
-    'sso', 'payments', 'scorm'
+    'sso', 'scorm'
 })
 
 

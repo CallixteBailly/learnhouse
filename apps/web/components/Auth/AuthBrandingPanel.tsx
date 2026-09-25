@@ -77,7 +77,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
   // No-org platform copy (defaults mirror the platform login illustration).
   const noOrgTitle = title || 'Welcome back to Ordria Learning.'
   const noOrgSubtitle =
-    subtitle || 'Pick up where you left off — your courses, students, and tools are waiting.'
+    subtitle || 'Pick up where you left off, your courses, students, and tools are waiting.'
   // Treat the no-org illustration like a photo background: dark scrim, no
   // blueprint-grid overlay.
   const hasCustomBackground = noOrg || (background_type !== 'gradient' && background_image)
@@ -113,7 +113,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
         )}
 
         {/* Dark scrim for org photo backgrounds (centered text needs it).
-            The no-org illustration stays vivid — it's darkened only at the top. */}
+            The no-org illustration stays vivid, it's darkened only at the top. */}
         {hasCustomBackground && !noOrg && (
           <div className="absolute inset-0 bg-black/30" />
         )}

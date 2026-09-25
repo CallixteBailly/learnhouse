@@ -37,7 +37,7 @@ const expose = localFont({
 
 export const metadata: Metadata = {
   title: { default: 'Ordria Learning', template: '%s' },
-  description: 'Mettre de l\u2019ordre, simplement — la plateforme d\u2019apprentissage Ordria.',
+  description: 'Mettre de l\u2019ordre, simplement : la plateforme d\u2019apprentissage Ordria.',
   icons: {
     icon: '/favicon.ico',
     apple: '/brands/ordria/apple-touch-icon.png',

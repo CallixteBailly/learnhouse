@@ -26,6 +26,10 @@ export interface Env {
   AWS_SECRET_ACCESS_KEY?: string;
   LEARNHOUSE_INITIAL_ADMIN_EMAIL?: string;
   LEARNHOUSE_INITIAL_ADMIN_PASSWORD?: string;
+  /** Stripe platform account (Ordria payments) — restricted key preferred */
+  STRIPE_SECRET_KEY?: string;
+  /** Stripe webhook signing secret for /payments/stripe/webhook */
+  STRIPE_WEBHOOK_SECRET?: string;
 
   // ── Non-secret overrides (optional) ──────────────────────────────────
   LEARNHOUSE_IS_AI_ENABLED?: string;
@@ -56,6 +60,14 @@ export class LearnHouseApiContainer extends Container {
     LEARNHOUSE_COOKIE_DOMAIN: "",
     LEARNHOUSE_INITIAL_ORG_NAME: "OrdIA Learning",
     LEARNHOUSE_INITIAL_ORG_SLUG: "default",
+    // Multi-tenant LMS: each client company gets its own org space. Activates
+    // the web middleware's multi-org resolver (org picker + LH_org cookie) and
+    // the API-side multi-org paths. The EE gates themselves are unlocked for
+    // this self-hosted deployment (ee_hooks.is_multi_org_allowed + the
+    // LEARNHOUSE_TENANCY_ALLOW_OSS override in config.py).
+    LEARNHOUSE_TENANCY: "multi",
+    LEARNHOUSE_TENANCY_ALLOW_OSS: "1",
+    LEARNHOUSE_DOMAIN: "learn.ordria.fr",
     // Public frontend origin — used for links inside emails (password reset,
     // invitations, email verification). Without this the API falls back to
     // its "localhost:3000" default and sends dead links in production.
@@ -112,6 +124,10 @@ const FORWARD_TO_CONTAINER = [
   "NEXTAUTH_SECRET",
   "COLLAB_INTERNAL_KEY",
   "LEARNHOUSE_AI_API_KEY",
+  "TYPESAFE_API_KEY",
+  // Stripe (Ordria payments — platform account)
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
   "AWS_ENDPOINT_URL_S3",
   "AWS_ACCESS_KEY_ID",
   "AWS_SECRET_ACCESS_KEY",

@@ -39,7 +39,7 @@ import { FilePenLine } from 'lucide-react'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { getUriWithOrg } from '@services/config/config'
 import { usePlan } from '@components/Hooks/usePlan'
-import { PlanLevel, planMeetsRequirement } from '@services/plans/plans'
+import { PlanLevel, isPlanGated, planMeetsRequirement } from '@services/plans/plans'
 import PlanBadge from '@components/Dashboard/Shared/PlanRestricted/PlanBadge'
 import WelcomeGlobe from './WelcomeGlobe'
 import { useTranslation } from 'react-i18next'
@@ -409,7 +409,11 @@ export default function OnboardingBar() {
                             const Icon = config?.icon || BookOpen
                             const actionHref = getActionHref(step.id)
                             const requiredPlan = step.requiredPlan as PlanLevel | undefined
-                            const isLocked = requiredPlan && !planMeetsRequirement(currentPlan, requiredPlan)
+                            // Ordria : pas de paliers de plan — jamais verrouillé en self-hosted.
+                            const isLocked =
+                              isPlanGated() &&
+                              !!requiredPlan &&
+                              !planMeetsRequirement(currentPlan, requiredPlan)
 
                             return (
                               <motion.div

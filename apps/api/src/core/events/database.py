@@ -92,8 +92,10 @@ else:
 
     # Detect connection poolers (Supavisor, PgBouncer) to use a smaller
     # client-side pool so we don't overwhelm the pooler's upstream limit.
+    # Neon's pooler hostname is <endpoint>-pooler.<region>.aws.neon.tech.
     is_pooled = (
         "pooler.supabase" in sql_url
+        or "-pooler." in sql_url
         or ":6543/" in sql_url
         or ":6432/" in sql_url
         or "pgbouncer" in sql_url.lower()

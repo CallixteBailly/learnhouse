@@ -280,7 +280,7 @@ const LoginClient = (props: LoginClientProps) => {
       welcomeText={t('auth.login_to')}
       title={t('auth.image_title_login', { defaultValue: 'Welcome back to Ordria Learning.' })}
       subtitle={t('auth.image_subtitle_login', {
-        defaultValue: 'Pick up where you left off — your courses, students, and tools are waiting.',
+        defaultValue: 'Pick up where you left off, your courses, students, and tools are waiting.',
       })}
     >
         {/* Error Top Bar */}

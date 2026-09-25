@@ -301,7 +301,7 @@ function OrgRow({ org, access_token }: { org: any; access_token: string }) {
   return (
     <div className="relative flex items-center p-4 bg-white rounded-2xl border-2 border-[var(--ordria-border)] hover:border-[var(--ordria-accent)] transition-all group duo-card-hover" style={{ boxShadow: '0 4px 0 var(--ordria-border)' }}>
       <Link
-        href={getUriWithOrg(org.slug, '/')}
+        href={`/enter/${org.slug}`}
         className="flex items-center flex-1 min-w-0"
       >
         {org.logo_image ? (

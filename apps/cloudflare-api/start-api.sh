@@ -73,12 +73,27 @@ cd /app/collab
 NODE_OPTIONS="--max-old-space-size=128" nohup node dist/index.js > /tmp/api-logs/collab.log 2>&1 &
 echo "[start] Collab server starting on :4000"
 
-# ── 5. FastAPI backend ──
+# ── 5. FastAPI backend (supervised) ──
 # Bind loopback: nginx (the only exposed port) proxies everything.
 # CWD must be /app/api — uvicorn imports the "app" module from it.
+# SUPERVISOR: uvicorn treats DB unavailability at startup as fatal
+# (2026-09-23 outage: Neon quota exceeded → "Application startup failed.
+# Exiting." → nginx 502 forever). Restart every 15s so the API self-heals
+# the moment the database accepts connections again.
+# PYTHONUNBUFFERED=1: startup tracebacks must survive a kill (no block
+# buffering) — this is what made the crash finally diagnosable.
 cd /app/api
-nohup /app/api/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 9000 --timeout-keep-alive 600 > /tmp/api-logs/api.log 2>&1 &
-echo "[start] FastAPI starting on :9000"
+echo "[start] launching uvicorn at $(date -u '+%H:%M:%S')" > /tmp/api-logs/api.log
+(
+    while true; do
+        PYTHONUNBUFFERED=1 /app/api/.venv/bin/uvicorn app:app \
+            --host 127.0.0.1 --port 9000 --timeout-keep-alive 600 \
+            >> /tmp/api-logs/api.log 2>&1
+        echo "[supervisor] uvicorn exited (code $?) at $(date -u '+%H:%M:%S') — retry in 15s" >> /tmp/api-logs/api.log
+        sleep 15
+    done
+) &
+echo "[start] FastAPI starting on :9000 (supervised)"
 
 # ── 6. Frontend — ONLY on the Render all-in-one image (Cloudflare serves
 # the frontend from a Worker; /app/web does not exist there). ──

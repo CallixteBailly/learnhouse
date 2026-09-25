@@ -76,7 +76,6 @@ import { useQuery } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
 import { RequestBodyWithAuthHeader } from '@services/utils/ts/requests'
 import { getAssignmentsFromACourse } from '@services/courses/assignments'
-import { getDeploymentMode } from '@services/config/config'
 import PlanBadge from '@components/Dashboard/Shared/PlanRestricted/PlanBadge'
 import { isPlanGated } from '@services/plans/plans'
 import { usePlan } from '@components/Hooks/usePlan'
@@ -86,26 +85,6 @@ import OnboardingSidebarBox from '@components/Dashboard/Onboarding/OnboardingSid
 import { useOnboarding } from '@components/Hooks/useOnboarding'
 import Logo from '@components/Objects/Brand/Logo'
 
-// Scattered night-sky starfield for the free-plan upgrade box. Fixed positions
-// (top/left %) so the constellation is stable across renders; `north` is the
-// brighter amber guide star. dim/bright drive the idle twinkle amplitude.
-const UPGRADE_STARS: {
-  top: string; left: string; size: number; delay: number; dim: number; bright: number; north?: boolean
-}[] = [
-  { top: '8%', left: '50%', size: 2.5, delay: 0.0, dim: 0.5, bright: 1, north: true },
-  { top: '14%', left: '12%', size: 1, delay: 0.6, dim: 0.15, bright: 0.6 },
-  { top: '10%', left: '30%', size: 1.5, delay: 1.1, dim: 0.2, bright: 0.7 },
-  { top: '22%', left: '20%', size: 1, delay: 0.3, dim: 0.15, bright: 0.55 },
-  { top: '30%', left: '38%', size: 1, delay: 1.5, dim: 0.1, bright: 0.5 },
-  { top: '18%', left: '66%', size: 1.5, delay: 0.9, dim: 0.2, bright: 0.75 },
-  { top: '26%', left: '78%', size: 1, delay: 0.2, dim: 0.15, bright: 0.6 },
-  { top: '12%', left: '88%', size: 1, delay: 1.8, dim: 0.1, bright: 0.5 },
-  { top: '34%', left: '60%', size: 1, delay: 1.3, dim: 0.15, bright: 0.55 },
-  { top: '6%', left: '72%', size: 1, delay: 0.5, dim: 0.1, bright: 0.5 },
-  { top: '32%', left: '90%', size: 1.5, delay: 1.0, dim: 0.2, bright: 0.65 },
-  { top: '20%', left: '44%', size: 1, delay: 2.0, dim: 0.1, bright: 0.45 },
-]
-
 function DashLeftMenu() {
   const org = useOrg() as any
   const session = useLHSession() as any
@@ -113,7 +92,6 @@ function DashLeftMenu() {
   const { track } = useLHAnalytics('dashboard')
   const pathname = usePathname() || ''
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [upgradeHovered, setUpgradeHovered] = useState(false)
   // Onboarding takes over the search slot until setup is complete / dismissed.
   const onboarding = useOnboarding()
   const showOnboarding =
@@ -192,16 +170,11 @@ function DashLeftMenu() {
 
 
   const plan = usePlan()
-  const mode = getDeploymentMode()
   // Only org managers (admins/superadmins) see billing surfaces — non-admins
   // shouldn't manage the plan/subscription.
   const { canManageOrg } = useAdminStatus()
 
   if (!org || !session) return null
-  const planLabel =
-    mode === 'ee' ? 'Enterprise Edition' :
-    mode === 'oss' ? 'OSS' :
-    plan  // SaaS: show actual plan name
 
   // Multi-org (SaaS) hub: the apex /home, /new, /billing routes only exist in
   // multi tenancy. The user's organizations (deduped) come from the session.
@@ -216,13 +189,6 @@ function DashLeftMenu() {
     }
     return orgs
   })()
-  const planPillColor =
-    mode === 'ee' ? 'bg-amber-100 text-amber-700' :
-    mode === 'oss' ? 'bg-emerald-100 text-emerald-700' :
-    plan === 'enterprise' ? 'bg-amber-100 text-amber-700' :
-    plan === 'pro' ? 'bg-purple-100 text-purple-700' :
-    plan === 'standard' ? 'bg-blue-100 text-blue-700' :
-    'bg-gray-100 text-gray-500'
 
   // Feature visibility from API resolved_features
   const rf = org?.config?.config?.resolved_features
@@ -255,7 +221,7 @@ function DashLeftMenu() {
           className={cn("flex items-center transition-opacity hover:opacity-70", isCollapsed ? "" : "space-x-3")}
           href={'/'}
         >
-          {plan === 'enterprise' && org?.logo_image ? (
+          {org?.logo_image ? (
             <img
               src={getOrgLogoMediaDirectory(org.org_uuid, org.logo_image)}
               alt={org?.name}
@@ -275,12 +241,6 @@ function DashLeftMenu() {
             <div className="flex flex-col min-w-0">
               <span className="font-extrabold text-sm text-[#3c3c3c] truncate">
                 {org?.name}
-              </span>
-              <span className={cn(
-                "mt-0.5 inline-flex w-fit items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider",
-                planPillColor
-              )}>
-                {planLabel}
               </span>
             </div>
           )}
@@ -918,130 +878,6 @@ function DashLeftMenu() {
         </AdminAuthorization>
       </div>
 
-      {/* Free-plan upgrade box — replaces the old full-width top banner.
-          Sits in the sidebar's empty space; multi-org / SaaS, free plan only.
-          Twinkling stars on top; on hover it reveals the premium features the
-          org is missing, the gold glow swells and the button sweeps a shimmer. */}
-      {multiOrg && plan === 'free' && !isCollapsed && canManageOrg && (
-        <motion.div
-          className="relative overflow-hidden shrink-0 px-4 pt-6 pb-4"
-          onHoverStart={() => setUpgradeHovered(true)}
-          onHoverEnd={() => setUpgradeHovered(false)}
-        >
-          {/* Blueprint grid — same motif as the login/home pages, fading in
-              from the bottom. No card/border; it blends into the sidebar. */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px),
-                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)`,
-              backgroundSize: '56px 56px, 56px 56px, 14px 14px, 14px 14px',
-              maskImage: 'linear-gradient(to top, black 0%, transparent 80%)',
-              WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 80%)',
-            }}
-          />
-          {/* Gold glow rising from the bottom — swells on hover. */}
-          <motion.div
-            className="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none"
-            initial={false}
-            animate={{ opacity: upgradeHovered ? 1 : 0.5 }}
-            transition={{ duration: 0.45, ease: 'easeOut' }}
-            style={{
-              background:
-                'radial-gradient(120% 90% at 50% 100%, rgba(250,204,21,0.12), rgba(255,255,255,0.05) 38%, transparent 72%)',
-            }}
-          />
-          {/* Night-sky starfield — scattered points of light that twinkle and
-              brighten on hover. The single amber "north star" is the plan you're
-              reaching for; the white stars are the features it unlocks below. */}
-          <div className="absolute inset-x-0 top-0 h-1/2 pointer-events-none">
-            {UPGRADE_STARS.map((s, i) => (
-              <motion.span
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  top: s.top,
-                  left: s.left,
-                  width: s.size,
-                  height: s.size,
-                  background: s.north ? 'rgb(252,211,77)' : 'rgba(255,255,255,0.95)',
-                  boxShadow: s.north
-                    ? '0 0 6px 1px rgba(250,204,21,0.7)'
-                    : s.size >= 2
-                      ? '0 0 4px 0.5px rgba(255,255,255,0.6)'
-                      : 'none',
-                }}
-                animate={{
-                  opacity: upgradeHovered ? [s.dim + 0.2, 1, s.dim + 0.2] : [s.dim, s.bright, s.dim],
-                  scale: upgradeHovered ? [1, s.north ? 1.5 : 1.7, 1] : [1, 1.2, 1],
-                }}
-                transition={{
-                  duration: (upgradeHovered ? 1.3 : 2.4) + s.size * 0.3,
-                  repeat: Infinity,
-                  delay: s.delay,
-                  ease: 'easeInOut',
-                }}
-              />
-            ))}
-          </div>
-
-          <motion.div layout className="relative">
-            {/* Plan badge + CTA headline (replaces the plain "Free plan" title). */}
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-white/10 text-white/55 text-[8px] font-bold uppercase tracking-wider">
-              {t('plan.free_plan_title', { defaultValue: 'Free plan' })}
-            </span>
-            <p className="mt-2 text-[13px] font-bold text-white leading-tight">
-              {t('plan.free_plan_cta', { defaultValue: 'Unlock the full platform' })}
-            </p>
-
-            {/* Stable one-line pitch — no layout shift on hover; hover only
-                intensifies the gold glow / starfield / button halo. */}
-            <p className="mt-1 text-[11px] leading-relaxed text-[#afafaf]">
-              {t('plan.free_plan_desc', {
-                defaultValue: 'Everything you need to teach, sell & grow.',
-              })}
-            </p>
-
-            <motion.a
-              href={getMainDomainUri(`/billing?org=${org?.slug ?? ''}`)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              animate={{
-                boxShadow: upgradeHovered
-                  ? '0 0 0 1px rgba(250,204,21,0.5), 0 8px 24px -6px rgba(250,204,21,0.35)'
-                  : '0 0 0 0 rgba(250,204,21,0)',
-              }}
-              transition={{ duration: 0.35 }}
-              className="mt-3 relative overflow-hidden flex items-center justify-center gap-1.5 w-full rounded-lg bg-white text-[#0f0f10] text-[13px] font-semibold py-2"
-            >
-              <span className="relative z-10 flex items-center gap-1.5">
-                <Rocket size={13} weight="duotone" />
-                {t('plan.upgrade', { defaultValue: 'Upgrade' })}
-              </span>
-              {/* Diagonal shimmer sweep across the button. */}
-              <motion.span
-                aria-hidden
-                className="absolute top-0 bottom-0 w-1/3 -skew-x-12 pointer-events-none"
-                style={{
-                  background:
-                    'linear-gradient(90deg, transparent, rgba(0,0,0,0.07), transparent)',
-                }}
-                animate={{ left: ['-40%', '140%'] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatDelay: upgradeHovered ? 0.4 : 2,
-                  ease: 'easeInOut',
-                }}
-              />
-            </motion.a>
-          </motion.div>
-        </motion.div>
-      )}
-
       {/* Bottom Section */}
       <div className="border-t border-[#e5e5e5] py-3 px-3 shrink-0">
         <div className="space-y-1">
@@ -1183,14 +1019,6 @@ function DashLeftMenu() {
                       <span>{t('common.home', { defaultValue: 'Home' })}</span>
                     </a>
                   </HoverMenuItem>
-                  {canManageOrg && (
-                    <HoverMenuItem asChild>
-                      <a href={getMainDomainUri(`/billing?org=${org?.slug ?? ''}`)} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
-                        <CurrencyCircleDollar size={16} weight="fill" />
-                        <span>{t('common.billing', { defaultValue: 'Billing' })}</span>
-                      </a>
-                    </HoverMenuItem>
-                  )}
                   {myOrgs.length > 0 && <HoverMenuSeparator />}
                   {myOrgs.map((o: any) => (
                     <HoverMenuItem key={o.id} asChild>

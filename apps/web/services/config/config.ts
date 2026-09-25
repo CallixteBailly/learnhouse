@@ -316,6 +316,15 @@ export const getUriWithOrg = (orgslug: string, path: string) => {
       return path
     }
 
+    // Central-LMS cookie tenancy (Ordria): when the user is on the apex base
+    // domain itself, org context is carried by the LH_org cookie (set via the
+    // /enter/{slug} bridge) rather than a per-org subdomain — second-level
+    // wildcard certificates being a paid Cloudflare option. Keep navigation
+    // relative so every org link stays on the central host.
+    if (isSameHost(currentHostname, baseDomain)) {
+      return path
+    }
+
     // Safety net: only synthesize an absolute subdomain URL when the user is
     // on the apex base domain itself (e.g. the org-selection screen) or on
     // some subdomain of it. On any other host — localhost, a host that

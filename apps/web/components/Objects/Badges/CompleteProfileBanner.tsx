@@ -26,12 +26,15 @@ export function CompleteProfileBanner({ orgslug }: { orgslug: string }) {
   if (!user || hasJob || dismissed) return null
 
   return (
-    <div className="w-full bg-[var(--ordria-accent)]/10 border-b border-[var(--ordria-accent)]/30">
+    <div
+      className="fixed top-0 left-0 right-0 bg-[var(--ordria-accent)]/10 border-b border-[var(--ordria-accent)]/30 backdrop-blur-sm"
+      style={{ zIndex: 'var(--z-nav-menu)' }}
+    >
       <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center gap-3">
         <Briefcase size={16} className="text-[var(--ordria-accent)] shrink-0" />
         <p className="grow text-sm text-[var(--ordria-foreground)]">
           {t('signup.complete_profile_banner', {
-            defaultValue: 'Complétez votre profil — indiquez votre métier pour des recommandations sur mesure.',
+            defaultValue: 'Complétez votre profil : indiquez votre métier pour des recommandations sur mesure.',
           })}
         </p>
         <Link

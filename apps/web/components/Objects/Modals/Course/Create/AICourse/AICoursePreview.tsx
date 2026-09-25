@@ -16,6 +16,7 @@ import {
   parseActivityContentFromStream,
   ENABLE_ACTIVITY_CONTENT_GENERATION,
 } from '@services/ai/courseplanning'
+import { AICoursePlanAudit } from './AICoursePlanAudit'
 import { updateActivity } from '@services/courses/activities'
 
 interface AICoursePreviewProps {
@@ -194,16 +195,25 @@ function AICoursePreview({
       {/* Tab content */}
       <div className="flex-1 relative overflow-hidden">
         {activeTab === 'plan' ? (
-          <PlanTabContent
-            plan={plan}
-            onUpdatePlan={onUpdatePlan}
-            isLoading={isLoading}
-            streamingContent={streamingContent}
-            isCourseCreated={isCourseCreated}
-            onCreateCourse={onCreateCourse}
-            isCreatingCourse={isCreatingCourse}
-            onOpenInEditor={onOpenInEditor}
-          />
+          <div className="absolute inset-0 flex flex-col">
+            {accessToken && (
+              <div className="flex-shrink-0">
+                <AICoursePlanAudit plan={plan} accessToken={accessToken} />
+              </div>
+            )}
+            <div className="flex-1 min-h-0 relative">
+              <PlanTabContent
+                plan={plan}
+                onUpdatePlan={onUpdatePlan}
+                isLoading={isLoading}
+                streamingContent={streamingContent}
+                isCourseCreated={isCourseCreated}
+                onCreateCourse={onCreateCourse}
+                isCreatingCourse={isCreatingCourse}
+                onOpenInEditor={onOpenInEditor}
+              />
+            </div>
+          </div>
         ) : (
           <ContentTabContent
             plan={plan}

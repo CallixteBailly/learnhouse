@@ -354,7 +354,7 @@
     "image_title_forgot": "أعد تعيين كلمة مرورك.",
     "image_subtitle_forgot": "سنساعدك على العودة إلى حسابك في لمح البصر.",
     "image_title_login": "مرحبًا بعودتك إلى Ordria.",
-    "image_subtitle_login": "تابِع من حيث توقفت — دوراتك وطلابك وأدواتك في انتظارك.",
+    "image_subtitle_login": "تابِع من حيث توقفت, دوراتك وطلابك وأدواتك في انتظارك.",
     "image_title_reset": "أوشكت على الانتهاء.",
     "image_subtitle_reset": "أنشئ كلمة مرور قوية للحفاظ على أمان حسابك.",
     "image_title_signup": "ابدأ التدريس مع Ordria.",
@@ -621,7 +621,7 @@
         "plan_generated": "تم تحديث الخطة",
         "plan_generated_hint": "تحقق من علامة تبويب الخطة للمراجعة والتعديل.",
         "describe_course": "صف دورتك",
-        "describe_course_hint": "استخدم المحادثة على اليمين لوصف الدورة التي تريدها — الموضوع والجمهور والأهداف.",
+        "describe_course_hint": "استخدم المحادثة على اليمين لوصف الدورة التي تريدها, الموضوع والجمهور والأهداف.",
         "generating_plan": "جارٍ إنشاء خطة الدورة...",
         "chapters": "الفصول",
         "activities": "الأنشطة",
@@ -1023,8 +1023,8 @@
     "retry_assignment_title": "تريد محاولة هذا الواجب مرة أخرى؟",
     "retry_assignment_confirm": "سيتم إعادة تعيين تقديمك الحالي والإجابات حتى تتمكن من البدء من جديد. سيتم استبدال درجتك السابقة بمجرد إعادة التقديم.",
     "retry_assignment_remaining": "لديك {{remaining}} محاولة{{plural}} متبقية بعد هذه.",
-    "retry_assignment_last": "هذه محاولتك الأخيرة — اجعلها تستحق.",
-    "retry_assignment_success": "تم إعادة تعيين عملك — حاول مرة أخرى.",
+    "retry_assignment_last": "هذه محاولتك الأخيرة, اجعلها تستحق.",
+    "retry_assignment_success": "تم إعادة تعيين عملك, حاول مرة أخرى.",
     "retry_assignment_failed": "تعذر إعادة تعيين تقديمك. يرجى المحاولة مرة أخرى.",
     "retry_no_attempts_left": "لا توجد محاولات متبقية"
   },
@@ -3559,7 +3559,7 @@
             "auth_required_submit": "المصادقة مطلوبة. يرجى تسجيل الدخول لتسليم المهمة.",
             "hint_optional": "تلميح (اختياري)",
             "paste_blocked": "اللصق معطّل لهذا الواجب",
-            "paste_blocked_hint": "اللصق معطّل — اكتب إجابتك مباشرة."
+            "paste_blocked_hint": "اللصق معطّل, اكتب إجابتك مباشرة."
           },
           "code": {
             "student_behavior_label": "سلوك الطالب",
@@ -3592,13 +3592,13 @@
               "regex": "تعبير عادي"
             },
             "explanation_label": "شرح (يُعرض عند الإجابة الصحيحة)",
-            "explanation_placeholder": "اختياري — اشرح سبب صحة الإجابة",
+            "explanation_placeholder": "اختياري, اشرح سبب صحة الإجابة",
             "your_answer_placeholder": "اكتب إجابتك...",
             "student_answer_label": "إجابة الطالب",
             "accepted_answers_label": "الإجابات المقبولة",
             "no_answer": "لم تُقدَّم إجابة",
             "correct": "صحيح",
-            "incorrect": "ليس صحيحًا تمامًا — حاول مرة أخرى"
+            "incorrect": "ليس صحيحًا تمامًا, حاول مرة أخرى"
           },
           "number_answer": {
             "prompt_label": "نص السؤال",
@@ -3607,16 +3607,16 @@
             "tolerance_label": "التسامح (±)",
             "unit_label": "الوحدة (اختياري)",
             "unit_placeholder": "م/ث²، كجم، °م...",
-            "unit_hint": "تُعرض بجانب حقل الإجابة. غير مفروضة — يُدخل الطلاب أرقامًا فقط.",
+            "unit_hint": "تُعرض بجانب حقل الإجابة. غير مفروضة, يُدخل الطلاب أرقامًا فقط.",
             "explanation_label": "شرح (يُعرض عند الإجابة الصحيحة)",
-            "explanation_placeholder": "اختياري — اشرح كيفية الوصول للإجابة",
+            "explanation_placeholder": "اختياري, اشرح كيفية الوصول للإجابة",
             "preview_label": "يقبل",
             "your_answer_placeholder": "أدخل رقمًا...",
             "student_answer_label": "إجابة الطالب",
             "accepted_range_label": "النطاق المقبول",
             "no_answer": "لم تُقدَّم إجابة",
             "correct": "صحيح",
-            "incorrect": "ليس صحيحًا تمامًا — حاول مرة أخرى"
+            "incorrect": "ليس صحيحًا تمامًا, حاول مرة أخرى"
           }
         }
       },
@@ -3718,7 +3718,7 @@
         },
         "tasks": {
           "title": "أداء المهام",
-          "subtitle": "متوسط الدرجة لكل مهمة — الأعمدة المنخفضة تبرز ما يصعب على الطلاب",
+          "subtitle": "متوسط الدرجة لكل مهمة, الأعمدة المنخفضة تبرز ما يصعب على الطلاب",
           "empty": "سيظهر أداء المهام بعد تصحيح التسليمات",
           "avg_grade": "متوسط الدرجة",
           "attempts": "محاولات"
@@ -3730,7 +3730,7 @@
         },
         "attention": {
           "title": "قد يحتاجون إلى دعم",
-          "subtitle": "الطلاب الذين لم ينجحوا — فكر في التواصل معهم",
+          "subtitle": "الطلاب الذين لم ينجحوا, فكر في التواصل معهم",
           "empty": "جميع من تم تصحيحهم نجحوا. أحسنت!"
         }
       },
@@ -3772,7 +3772,7 @@
             "auto_grading_disabled_file": "التقييم التلقائي غير متاح لأن هذا الواجب يحتوي على مهمة تسليم ملف تحتاج إلى مراجعة بشرية.",
             "grading_type_hint": "كيف تُعرض الدرجات على الطلاب",
             "grading_options_hint": "السلوك عند التسليم",
-            "show_correct_answers_description": "بمجرد تقييم الإرسال، أظهر للطلاب الإجابات الصحيحة بجانب إجاباتهم — أيّ خيارات الاختبار كانت صحيحة، والإجابة القصيرة أو الرقمية المتوقعة، وفراغات النموذج الصحيحة.",
+            "show_correct_answers_description": "بمجرد تقييم الإرسال، أظهر للطلاب الإجابات الصحيحة بجانب إجاباتهم, أيّ خيارات الاختبار كانت صحيحة، والإجابة القصيرة أو الرقمية المتوقعة، وفراغات النموذج الصحيحة.",
             "show_correct_answers_label": "إظهار الإجابات الصحيحة بعد التقييم",
             "allow_retries_label": "السماح بإعادة المحاولة",
             "allow_retries_description": "اسمح للطلاب بإعادة تعيين وإعادة محاولة الواجب بعد تقييمه. كل محاولة تمحو إجاباتهم السابقة وتحتسب كمحاولة جديدة.",
@@ -4174,7 +4174,7 @@
         "expand_video": "توسيع الفيديو",
         "download_video": "تحميل الفيديو",
         "converting_title": "Video conversion in progress",
-        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes — this page updates automatically.",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
         "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
@@ -4481,7 +4481,7 @@
         "avg_rate": "متوسط المعدل",
         "needs_attention": "يحتاج انتباه",
         "total_samples": "إجمالي العينات",
-        "more_expand": "+{{count}} المزيد — انقر للتوسيع",
+        "more_expand": "+{{count}} المزيد, انقر للتوسيع",
         "activities_count": "{{count}} أنشطة",
         "pct_of_total": "% من الإجمالي",
         "bar_width_hint": "عرض الشريط = المشاهدات النسبية",
@@ -4601,7 +4601,7 @@
       },
       "activity_dropoff": {
         "title": "نقاط التوقف",
-        "subtitle": "أين يتوقف المتعلمون عن التقدم — آخر نشاط مكتمل",
+        "subtitle": "أين يتوقف المتعلمون عن التقدم, آخر نشاط مكتمل",
         "total_dropoffs": "إجمالي حالات التوقف",
         "dropoff_points": "نقاط التوقف"
       },
@@ -4635,7 +4635,7 @@
         "avg_between": "متوسط {{unit}} بين الإنجازات",
         "transitions_tracked": "انتقالات متتبعة",
         "raw_hours_avg": "متوسط الساعات الخام",
-        "description": "يقيس مدى سرعة تقدم المتعلمين من نشاط إلى آخر. الأقل أفضل — يعني أن المتعلمين يتنقلون عبر المحتوى بشكل أسرع."
+        "description": "يقيس مدى سرعة تقدم المتعلمين من نشاط إلى آخر. الأقل أفضل, يعني أن المتعلمين يتنقلون عبر المحتوى بشكل أسرع."
       },
       "time_to_completion": {
         "title": "الوقت حتى الإنجاز",
@@ -4995,7 +4995,7 @@
       },
       "add_content": {
         "title": "درس يستحق الحضور",
-        "description": "أضف فيديو أو صفحة أو اختبارًا — امنح المتعلّمين سببًا حقيقيًا للالتحاق.",
+        "description": "أضف فيديو أو صفحة أو اختبارًا, امنح المتعلّمين سببًا حقيقيًا للالتحاق.",
         "action": "إضافة محتوى"
       },
       "brand_school": {
@@ -5005,17 +5005,17 @@
       },
       "share_grow": {
         "title": "بوابة مدرستك",
-        "description": "انطلق واحصل على رابطك القابل للمشاركة — المكان الذي سترسل إليه كل متعلّم.",
+        "description": "انطلق واحصل على رابطك القابل للمشاركة, المكان الذي سترسل إليه كل متعلّم.",
         "action": "افتح مدرستي"
       },
       "invite_learners": {
         "title": "رحّب بأول متعلّم لديك",
-        "description": "شارك رابط الانضمام أو ادعُ الناس — اجعل ذلك المتعلّم الأول يدخل من الباب.",
+        "description": "شارك رابط الانضمام أو ادعُ الناس, اجعل ذلك المتعلّم الأول يدخل من الباب.",
         "action": "دعوة المتعلّمين"
       },
       "build_community": {
         "title": "اجعل المتعلّمين يعودون",
-        "description": "افتح مساحة مجتمعية ليبقى متعلّموك نشطين — ويأتوا بأصدقائهم.",
+        "description": "افتح مساحة مجتمعية ليبقى متعلّموك نشطين, ويأتوا بأصدقائهم.",
         "action": "افتح المجتمع"
       }
     },
@@ -5107,7 +5107,7 @@
         "goal": "ابدأ بتحقيق الدخل من دوراتك وبناء مجتمع تعليمي.",
         "highlights": {
           "courses": "دورات غير محدودة",
-          "courses_desc": "أنشئ عدد الدورات التي تحتاجها — بلا حدود على منهجك.",
+          "courses_desc": "أنشئ عدد الدورات التي تحتاجها, بلا حدود على منهجك.",
           "members": "حتى 500 عضو",
           "members_desc": "وسّع قاعدة المتعلمين وأدرهم في مكان واحد.",
           "payments": "قبول المدفوعات",
@@ -5165,7 +5165,7 @@
       "trigger_authenticated_title": "الوصول: للمستخدمين المسجّلين فقط",
       "trigger_restricted_title": "الوصول: مجموعات مستخدمين محدّدة",
       "usergroups_header": "مجموعات المستخدمين",
-      "usergroups_none_assigned": "لا توجد مجموعات مُعيّنة — فقط المسؤولون يمكنهم الفتح.",
+      "usergroups_none_assigned": "لا توجد مجموعات مُعيّنة, فقط المسؤولون يمكنهم الفتح.",
       "usergroups_remove_title": "إزالة",
       "usergroups_loading": "جارٍ تحميل المجموعات…",
       "usergroups_none_in_org": "لا توجد مجموعات مستخدمين في هذه المؤسسة بعد.",
@@ -5417,7 +5417,7 @@
     "recurring_subscription": "اشتراك متكرر",
     "what_youre_getting": "ما الذي ستحصل عليه",
     "pack_immediate": "يسري المفعول فورًا بعد الدفع",
-    "pack_cancel_anytime": "ألغِ في أي وقت — يبقى نشطًا حتى نهاية فترة الفوترة",
+    "pack_cancel_anytime": "ألغِ في أي وقت, يبقى نشطًا حتى نهاية فترة الفوترة",
     "pack_credits_reset": "تُعاد تهيئة الأرصدة كل دورة فوترة",
     "after_purchase": "بعد الشراء",
     "unlimited": "غير محدود",
@@ -5467,9 +5467,9 @@
     "canceled_desc": "سيتم إلغاء اشتراكك في نهاية فترة الفوترة الحالية. ستحتفظ بالوصول الكامل حتى ذلك الحين.",
     "back_to_plan_usage": "العودة إلى الخطة والاستخدام",
     "back_to_orgs": "العودة إلى المؤسسات",
-    "pack_purchased": "تم شراء الإضافة — تم تحديث الحدود الخاصة بك.",
-    "checkout_success": "تم تحديث الاشتراك — مرحباً بك في الخطة الجديدة!",
-    "checkout_cancelled": "تم إلغاء الدفع — لم يتم إجراء أي تغييرات.",
+    "pack_purchased": "تم شراء الإضافة, تم تحديث الحدود الخاصة بك.",
+    "checkout_success": "تم تحديث الاشتراك, مرحباً بك في الخطة الجديدة!",
+    "checkout_cancelled": "تم إلغاء الدفع, لم يتم إجراء أي تغييرات.",
     "load_failed": "تعذر علينا تحميل منظماتك.",
     "no_permission": "ليس لديك إذن لإدارة الفواتير لهذه المنظمة.",
     "no_permission_hint": "فقط مسؤول المنظمة يمكنه عرض أو تغيير الخطة.",
@@ -5584,7 +5584,7 @@
     "toast": {
       "creating": "جارٍ إنشاء المؤسسة…",
       "created": "تم إنشاء المؤسسة!",
-      "checkoutFailed": "تم إنشاء المؤسسة — يمكنك الترقية من الخطة والاستخدام.",
+      "checkoutFailed": "تم إنشاء المؤسسة, يمكنك الترقية من الخطة والاستخدام.",
       "failed": "فشل إنشاء المؤسسة"
     },
     "steps": {
@@ -5657,7 +5657,7 @@
     "consent_privacy": "J'accepte la",
     "consent_privacy_link": "politique de confidentialité",
     "consent_required": "Vous devez accepter pour continuer",
-    "complete_profile_banner": "Complétez votre profil — indiquez votre métier pour des recommandations sur mesure.",
+    "complete_profile_banner": "Complétez votre profil, indiquez votre métier pour des recommandations sur mesure.",
     "complete_profile_cta": "Compléter"
   }
 }
