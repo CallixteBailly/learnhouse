@@ -83,3 +83,4 @@ hc*.png
 hcaptcha-*.png
 stripe-register-state.png
 .tmp-stripe-browser/
+.tmp-stripe-watch/
