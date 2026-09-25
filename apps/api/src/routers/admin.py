@@ -929,7 +929,7 @@ def _support_url() -> str:
     The old `{platform}/dashboard/support` path 404s (the platform dashboard is
     gone on .io), so use a support mailto that can never break.
     """
-    return "mailto:hello@learnhouse.app"
+    return "mailto:contact@ordria.fr"
 
 
 def _render_magic_link_error(title: str, message: str) -> HTMLResponse:
