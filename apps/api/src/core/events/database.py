@@ -84,10 +84,23 @@ else:
     #   statement_cache_size=0           → disable asyncpg's own per-connection LRU
     #   prepared_statement_name_func=""  → force unnamed prepared statements
     #   prepared_statement_cache_size=0  → disable SQLAlchemy's adapter-level LRU
+    #
+    # The two timeouts below ARE genuine asyncpg.connect() kwargs and are
+    # forwarded as-is (2026-09-26 hang fix):
+    #   command_timeout=30 → a query stuck on a silently-dead connection (Neon
+    #     autosuspend/resume dropping it through the pooler) is killed after
+    #     30 s instead of holding a pool slot FOREVER. Without it, ~15 stuck
+    #     queries exhaust the pool and every DB-touching route (incl. /health)
+    #     hangs until the container is manually recreated — observed 3× in one
+    #     night of bulk course writes.
+    #   timeout=15 → connection/handshake timeout so pool growth can't hang
+    #     either. Migrations are unaffected: autoinstall.py builds its own engine.
     _connect_args = {
         "statement_cache_size": 0,
         "prepared_statement_name_func": lambda: "",
         "prepared_statement_cache_size": 0,
+        "command_timeout": 30,
+        "timeout": 15,
     }
 
     # Detect connection poolers (Supavisor, PgBouncer) to use a smaller

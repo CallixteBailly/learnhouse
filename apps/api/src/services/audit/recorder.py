@@ -13,6 +13,7 @@ inside a catch-all guard: an audit failure must never surface to the client.
 
 from __future__ import annotations
 
+import asyncio
 import ipaddress
 import json
 import logging
@@ -25,6 +26,7 @@ from starlette.requests import Request
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from src.db.audit_logs import AuditLog
+from src.core.redis import get_redis_client
 from src.security.auth import decode_jwt, extract_jwt_from_request
 from src.services.audit.lookups import (
     find_user_by_email,
@@ -36,6 +38,19 @@ from src.services.audit.lookups import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Actor resolution (email → user_id/username/org_id) costs up to 4 SELECTs per
+# audited request. Under write bursts (bulk content updates) that multiplies
+# DB round-trips through the small pooler-sized connection pool and is a major
+# contributor to pool starvation (2026-09-26 hang analysis). The mapping is
+# stable for minutes, so it is cached in the local Redis for a short TTL.
+# Attribution staleness ≤5 min is acceptable for an audit trail.
+ACTOR_CACHE_TTL_SECONDS = 300
+ACTOR_CACHE_PREFIX = "audit:actor:"
+# Even with the cache, a slow audit must NEVER hold a pool slot for long: the
+# module docstring already promises best-effort recording ("an audit failure
+# must never surface to the client") — this timeout enforces it.
+AUDIT_RECORD_TIMEOUT_SECONDS = 5
 
 AUDITED_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 API_PREFIX = "/api/v1/"
@@ -334,6 +349,33 @@ async def _resolve_org_id(
     return await sole_organization_id(db_session)
 
 
+def _actor_cache_get(email: str) -> Optional[dict[str, Any]]:
+    """Cached {user_id, username, org_id} for an email, or None (miss/disabled)."""
+    client = get_redis_client()
+    if client is None or not email:
+        return None
+    try:
+        raw = client.get(ACTOR_CACHE_PREFIX + email)
+        return json.loads(raw) if raw else None
+    except Exception:
+        logger.debug("audit: actor cache read failed", exc_info=True)
+        return None
+
+
+def _actor_cache_set(email: str, data: dict[str, Any]) -> None:
+    client = get_redis_client()
+    if client is None or not email:
+        return
+    try:
+        client.set(
+            ACTOR_CACHE_PREFIX + email,
+            json.dumps(data),
+            ex=ACTOR_CACHE_TTL_SECONDS,
+        )
+    except Exception:
+        logger.debug("audit: actor cache write failed", exc_info=True)
+
+
 async def record_request(
     scope: Scope,
     body: bytes,
@@ -351,35 +393,50 @@ async def record_request(
     if email is None and static_username is None:
         email = login_identifier(path, body, content_type)
 
+    cached = _actor_cache_get(email) if email else None
+    if cached is not None:
+        user_id = cached.get("user_id")
+        username = cached.get("username") or static_username
+        org_id = cached.get("org_id")
+    else:
+        async with open_session() as db_session:
+            user_id: Optional[int] = None
+            username: Optional[str] = static_username
+
+            if email:
+                user = await find_user_by_email(db_session, email)
+                if user is not None:
+                    user_id, username = user.id, user.username
+                elif path in LOGIN_PATHS:
+                    # Unknown account: keep the attempted identifier visible so
+                    # enumeration / brute-force patterns remain investigable.
+                    username = email
+
+            org_id = await _resolve_org_id(db_session, request, path_params, user_id)
+
+        # Only cache fully-resolved actors (known user): anonymous/failed
+        # logins must re-run their attribution each time.
+        if email and user_id is not None:
+            _actor_cache_set(
+                email,
+                {"user_id": user_id, "username": username, "org_id": org_id},
+            )
+
+    entry = AuditLog(
+        org_id=org_id,
+        user_id=user_id,
+        username=username,
+        resource=path_info.resource,
+        resource_id=path_info.resource_id,
+        action=f"{method} {path_info.normalized}"[:255],
+        path=path[:512],
+        method=method[:10],
+        status_code=status_code,
+        ip_address=extract_client_ip(request),
+        user_agent=(request.headers.get("user-agent") or "")[:300] or None,
+        payload=build_payload(body, content_type, body_truncated),
+    )
     async with open_session() as db_session:
-        user_id: Optional[int] = None
-        username: Optional[str] = static_username
-
-        if email:
-            user = await find_user_by_email(db_session, email)
-            if user is not None:
-                user_id, username = user.id, user.username
-            elif path in LOGIN_PATHS:
-                # Unknown account: keep the attempted identifier visible so
-                # enumeration / brute-force patterns remain investigable.
-                username = email
-
-        org_id = await _resolve_org_id(db_session, request, path_params, user_id)
-
-        entry = AuditLog(
-            org_id=org_id,
-            user_id=user_id,
-            username=username,
-            resource=path_info.resource,
-            resource_id=path_info.resource_id,
-            action=f"{method} {path_info.normalized}"[:255],
-            path=path[:512],
-            method=method[:10],
-            status_code=status_code,
-            ip_address=extract_client_ip(request),
-            user_agent=(request.headers.get("user-agent") or "")[:300] or None,
-            payload=build_payload(body, content_type, body_truncated),
-        )
         db_session.add(entry)
         await db_session.commit()
 
@@ -436,7 +493,20 @@ class AuditLogMiddleware:
             # the failed attempt still appears in the trail.
             status = status_holder["status"] or 500
             try:
-                await record_request(scope, b"".join(body_chunks), truncated, status)
+                # Best-effort by design (docstring): a slow audit — cold DB,
+                # saturated pool — must never hold a connection slot or delay
+                # the response pipeline. The timeout makes that enforceable.
+                await asyncio.wait_for(
+                    record_request(scope, b"".join(body_chunks), truncated, status),
+                    timeout=AUDIT_RECORD_TIMEOUT_SECONDS,
+                )
+            except asyncio.TimeoutError:
+                logger.warning(
+                    "audit: recording %s %s timed out after %ss (dropped)",
+                    scope.get("method"),
+                    scope.get("path"),
+                    AUDIT_RECORD_TIMEOUT_SECONDS,
+                )
             except Exception:
                 logger.warning(
                     "audit: failed to record %s %s",

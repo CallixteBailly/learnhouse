@@ -33,10 +33,11 @@ RUN bun run build
 FROM python:3.14-slim-bookworm AS runner
 
 # nginx (front door) + curl (healthchecks) + netcat (DB wait) +
-# redis-server (local cache) + ffmpeg (HLS transcoding) + node (collab).
+# redis-server (local cache) + ffmpeg (HLS transcoding) + node (collab)
+# + procps (pgrep/pkill — the health watchdog restarts a hung uvicorn).
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        nginx curl netcat-openbsd ca-certificates redis-server ffmpeg gnupg unzip \
+        nginx curl netcat-openbsd ca-certificates redis-server ffmpeg gnupg unzip procps \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && apt-get purge -y gnupg \

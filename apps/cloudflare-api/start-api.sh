@@ -95,6 +95,35 @@ echo "[start] launching uvicorn at $(date -u '+%H:%M:%S')" > /tmp/api-logs/api.l
 ) &
 echo "[start] FastAPI starting on :9000 (supervised)"
 
+# ── 5b. Health watchdog ──
+# The supervisor above only reacts to uvicorn EXITING. The observed failure
+# mode (2026-09-26, 3 crashes in one night) is a HANG: DB pool connections
+# stuck on silently-dead links → every DB route (incl. /health, which pings
+# the DB) stops answering while the process stays alive. This watchdog probes
+# /health every 60 s and, after 3 consecutive failures (≥3 min, so boot and
+# brief Neon cold starts never trigger it), kills uvicorn — the supervisor
+# above then relaunches it with a fresh pool. Self-healing in ~3 min instead
+# of a manual container recreation (+2 min of downtime).
+(
+    fail=0
+    sleep 90   # grace: migrations + boot must settle first
+    while true; do
+        if curl -sf -m 20 http://127.0.0.1:9000/api/v1/health > /dev/null 2>&1; then
+            fail=0
+        else
+            fail=$((fail + 1))
+            echo "[watchdog] health FAIL $fail/3 at $(date -u '+%H:%M:%S')" >> /tmp/api-logs/watchdog.log
+            if [ "$fail" -ge 3 ]; then
+                echo "[watchdog] 3 consecutive failures — restarting uvicorn at $(date -u '+%H:%M:%S')" >> /tmp/api-logs/watchdog.log
+                pkill -f "uvicorn app:app" 2>/dev/null
+                fail=0
+            fi
+        fi
+        sleep 60
+    done
+) &
+echo "[start] Health watchdog armed (60s probe, 3 strikes → restart)"
+
 # ── 6. Frontend — ONLY on the Render all-in-one image (Cloudflare serves
 # the frontend from a Worker; /app/web does not exist there). ──
 if [ -d /app/web ]; then
@@ -116,7 +145,7 @@ fi
 # observability.
 touch /tmp/nginx-error.log /tmp/nginx-access.log
 ( sleep 2; exec tail -n +1 -F /tmp/nginx-error.log /tmp/nginx-access.log \
-    /tmp/api-logs/api.log /tmp/api-logs/collab.log \
+    /tmp/api-logs/api.log /tmp/api-logs/watchdog.log /tmp/api-logs/collab.log \
     /tmp/api-logs/install-stdout.log /tmp/api-logs/web.log 2>/dev/null ) &
 LISTEN_PORT="${PORT:-8080}"
 sed "s/8080/${LISTEN_PORT}/g" /etc/nginx/nginx-api.conf > /tmp/nginx-api.conf
