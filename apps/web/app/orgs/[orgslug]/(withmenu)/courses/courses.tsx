@@ -215,8 +215,19 @@ function Courses(props: CourseProps) {
       <GeneralWrapperStyled>
         <div className="flex flex-col space-y-2 mb-2">
           <div className="flex items-center justify-between">
-            <div style={{ fontFamily: 'var(--font-display, Sora)' }} className="text-[var(--ordria-foreground)]">
-              <TypeOfContentTitle title={t('courses.courses')} type="cou" />
+            <div className="flex items-baseline gap-3">
+              <div style={{ fontFamily: 'var(--font-display, Sora)' }} className="text-[var(--ordria-foreground)]">
+                <TypeOfContentTitle title={t('courses.courses')} type="cou" />
+              </div>
+              {allCourses.length > 0 && (
+                <span
+                  className="text-sm font-mono font-bold pb-1"
+                  style={{ color: 'var(--ordria-muted)' }}
+                  data-testid="courses-count"
+                >
+                  {filteredCourses.length}/{allCourses.length}
+                </span>
+              )}
             </div>
             <AuthenticatedClientElement
               checkMethod="roles"

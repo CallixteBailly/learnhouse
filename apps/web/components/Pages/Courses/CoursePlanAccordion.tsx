@@ -10,6 +10,7 @@ interface CoursePlanAccordionProps {
   orgslug: string
   courseuuid: string
   currentActivityUuid: string | null
+  isStarted?: boolean
   isActivityDone: (activity: any) => boolean
   guardLink: (activityPath: string) => string
 }
@@ -38,6 +39,7 @@ function CoursePlanAccordion({
   orgslug,
   courseuuid,
   currentActivityUuid,
+  isStarted = false,
   isActivityDone,
   guardLink,
 }: CoursePlanAccordionProps) {
@@ -264,7 +266,9 @@ function CoursePlanAccordion({
                           {done
                             ? t('courses.review_activity', 'Revoir')
                             : isCurrent
-                              ? t('courses.resume', 'Reprendre')
+                              ? isStarted
+                                ? t('courses.resume', 'Reprendre')
+                                : t('courses.start_course', 'Commencer')
                               : t('courses.open_activity', 'Ouvrir')}
                         </span>
                       </Link>

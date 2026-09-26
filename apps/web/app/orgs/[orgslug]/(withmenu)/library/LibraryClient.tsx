@@ -65,7 +65,18 @@ function LibraryClient({ orgslug }: { orgslug: string }) {
         <GeneralWrapperStyled>
           <div className="flex flex-col space-y-2 mb-2">
             <div className="flex items-center justify-between">
-              <TypeOfContentTitle title={t('library.library')} type="cou" />
+              <div className="flex items-baseline gap-3">
+                <TypeOfContentTitle title={t('library.library')} type="cou" />
+                {(folders.length > 0 || rootItems.length > 0) && (
+                  <span
+                    className="text-sm font-mono font-bold pb-1"
+                    style={{ color: 'var(--ordria-muted)' }}
+                    data-testid="library-count"
+                  >
+                    {folders.length + rootItems.length}
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="flex flex-col gap-7">
@@ -86,13 +97,22 @@ function LibraryClient({ orgslug }: { orgslug: string }) {
               )}
 
               {folders.length === 0 && rootItems.length === 0 && (
-                <div className="col-span-full flex flex-col justify-center items-center py-12 px-4 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50/30">
-                  <div className="p-4 bg-white rounded-full nice-shadow mb-4">
-                    <FolderSimple className="w-8 h-8 text-gray-300" weight="duotone" />
+                <div
+                  className="col-span-full flex flex-col justify-center items-center py-14 px-4 border-2 border-dashed rounded-2xl"
+                  style={{ borderColor: 'var(--ordria-border)', background: 'var(--ordria-surface)' }}
+                >
+                  <div
+                    className="p-4 rounded-full mb-4"
+                    style={{ background: 'var(--ordria-accent-bg)' }}
+                  >
+                    <FolderSimple className="w-8 h-8" weight="duotone" style={{ color: 'var(--ordria-accent-secondary)' }} />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-600 mb-1">
-                    {isError ? t('library.error_loading') : t('library.empty_folder')}
+                  <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-display, Sora)', color: 'var(--ordria-foreground)' }}>
+                    {isError ? t('library.error_loading', 'Erreur lors du chargement') : t('library.empty_folder', 'Votre bibliothèque est vide pour le moment')}
                   </h3>
+                  <p className="text-sm text-center" style={{ color: 'var(--ordria-muted)' }}>
+                    {t('library.empty_hint', 'Les dossiers et ressources partagés par votre organisation apparaîtront ici.')}
+                  </p>
                 </div>
               )}
             </div>

@@ -22,6 +22,7 @@ import CourseAuthors from '@components/Objects/Courses/CourseAuthors/CourseAutho
 import { Breadcrumbs } from '@components/Objects/Breadcrumbs/Breadcrumbs'
 import { useLHSession } from '@components/Contexts/LHSessionContext'
 import { useQuery } from '@tanstack/react-query'
+import { detectMetier } from '@/lib/course-visuals'
 import { queryKeys } from '@/lib/query/keys'
 import { useTranslation } from 'react-i18next'
 import CourseCommunitySection from '@components/Objects/Communities/CourseCommunitySection'
@@ -298,11 +299,11 @@ const CourseClient = (props: any) => {
       {courseTags.map((tag) => (
         <span
           key={tag}
-          className="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full"
+          className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full"
           style={{
-            background: 'var(--ordria-surface)',
-            color: 'var(--ordria-muted)',
-            border: '1.5px solid var(--ordria-border)',
+            background: 'var(--ordria-accent-bg)',
+            color: 'var(--ordria-accent-secondary)',
+            border: '1.5px solid var(--ordria-accent-border)',
             fontFamily: 'var(--ordria-font-body)',
           }}
         >
@@ -334,11 +335,11 @@ const CourseClient = (props: any) => {
 
             {/* ===== Héros — mobile (wireframe M1) ===== */}
             <div className="md:hidden order-2 space-y-3">
-              {/* Couverture 16:9 pleine largeur */}
+              {/* Couverture 16:9 pleine largeur — photo de remplacement par métier si aucune miniature */}
               <img
                 src={course.thumbnail_image
                   ? getCourseThumbnailMediaDirectory(org?.org_uuid, course?.course_uuid, course?.thumbnail_image)
-                  : '/empty_thumbnail.png'}
+                  : detectMetier(course).image}
                 alt={course.name}
                 className="block w-full aspect-video rounded-lg object-cover ring-1 ring-inset ring-black/10 shadow-lg bg-[var(--ordria-surface)]"
                 fetchPriority="high"
@@ -487,14 +488,29 @@ const CourseClient = (props: any) => {
                       </div>
                     );
                   } else {
+                    const fallback = detectMetier(course)
                     return (
                       <div
                         className="inset-0 ring-1 ring-inset ring-black/10 rounded-lg shadow-xl relative w-full aspect-video bg-cover bg-center overflow-hidden"
                         style={{
-                          backgroundImage: `url('/empty_thumbnail.png')`,
-                          backgroundSize: 'auto',
+                          backgroundImage: `url(${fallback.image})`,
                         }}
-                      ></div>
+                      >
+                        {/* Overlay dégradé brand pour la lisibilité (même traitement que la landing) */}
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            background:
+                              'linear-gradient(135deg, oklch(0.23 0.06 264 / 0.55) 0%, oklch(0.23 0.06 264 / 0.15) 50%, transparent 100%)',
+                          }}
+                          aria-hidden="true"
+                        />
+                        {fallback.label && (
+                          <span className="absolute bottom-3 left-3 yt-badge yt-badge--solid">
+                            {fallback.label}
+                          </span>
+                        )}
+                      </div>
                     );
                   }
                 })()}
@@ -623,6 +639,7 @@ const CourseClient = (props: any) => {
               orgslug={orgslug}
               courseuuid={courseuuid}
               currentActivityUuid={currentActivityUuid}
+              isStarted={isStarted}
               isActivityDone={isActivityDone}
               guardLink={guardLink}
             />

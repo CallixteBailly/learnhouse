@@ -118,17 +118,36 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
 
   const cleanUuid = removeCoursePrefix(course.course_uuid)
 
+  // Modèle d'état « formation commencée » (refonte) — étendu au catalogue
   const courseProgress = (() => {
-    if (!trailData?.runs) return 0
+    if (!trailData?.runs) return { pct: 0, completed: 0, total: 0, started: false }
     const run = trailData.runs.find((r: any) => {
       const runUuid = r.course?.course_uuid?.replace('course_', '')
       return runUuid === cleanUuid
     })
-    if (!run) return 0
+    if (!run) return { pct: 0, completed: 0, total: 0, started: false }
     const completedCount = (run.steps || []).filter((s: any) => s.complete).length
     const totalActivities = run.course_total_steps || (run.steps || []).length
-    return totalActivities > 0 ? Math.round((completedCount / totalActivities) * 100) : 0
+    return {
+      pct: totalActivities > 0 ? Math.round((completedCount / totalActivities) * 100) : 0,
+      completed: completedCount,
+      total: totalActivities,
+      started: true,
+    }
   })()
+
+  // Adaptation catalogue (refonte) — jamais sur les cartes du backoffice (isDashboard)
+  const courseTags: string[] = !isDashboard
+    ? (Array.isArray(course.tags) ? course.tags.join(',') : (course.tags || ''))
+        .split(',').map((s: string) => s.trim()).filter(Boolean).slice(0, 3)
+    : []
+  const ctaLabel = isDashboard
+    ? t('courses.start_learning')
+    : courseProgress.pct >= 100
+      ? t('courses.review_activity', 'Revoir')
+      : courseProgress.started
+        ? t('courses.resume', 'Reprendre')
+        : t('courses.start_learning')
 
   const handleCardOpen = () => {
     track(AnalyticsEvent.CourseCardOpened, {
@@ -299,11 +318,37 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
           </p>
         )}
 
+        {!isDashboard && courseTags.length > 0 && (
+          <div className="flex flex-wrap gap-1 pt-0.5">
+            {courseTags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+                style={{
+                  background: 'var(--ordria-surface)',
+                  color: 'var(--ordria-muted)',
+                  border: '1px solid var(--ordria-border)',
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="duo-progress-bar mt-2">
-          <div className="duo-progress-fill" style={{ width: `${courseProgress}%` }}></div>
+          <div className="duo-progress-fill" style={{ width: `${courseProgress.pct}%` }}></div>
         </div>
-        {courseProgress > 0 && (
-          <span className="text-[10px] font-bold mt-1" style={{ color: 'var(--ordria-accent-secondary)' }}>{courseProgress}%</span>
+        {courseProgress.started && (
+          <span
+            className="text-[10px] font-bold mt-1 flex items-center gap-1"
+            style={{ color: courseProgress.pct >= 100 ? 'var(--ordria-foreground)' : 'var(--ordria-accent-secondary)' }}
+          >
+            {courseProgress.pct >= 100 && <CheckSquare className="w-3 h-3" />}
+            {courseProgress.pct >= 100
+              ? t('courses.completed_label', 'Terminé')
+              : `${courseProgress.completed}/${courseProgress.total} · ${courseProgress.pct}%`}
+          </span>
         )}
 
         <div className="pt-1.5 flex items-center gap-2 border-t border-[var(--ordria-border)]">
@@ -345,7 +390,7 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
         
         <Link prefetch={false} href={courseLink} onClick={handleCardOpen} className="block">
           <button className="duo-btn-success w-full mt-2" style={{ height: '40px', fontSize: '13px' }}>
-            {t('courses.start_learning')}
+            {ctaLabel}
           </button>
         </Link>
       </div>

@@ -2866,6 +2866,18 @@
     backdrop-filter: blur(6px);
     border: 1px solid oklch(1 0 0 / 0.2);
   }
+  /* Badge pleine opacité — catégorie sur photo (lisibilité maximale) */
+  .yt-badge--solid {
+    background: #fff;
+    color: var(--ordria-ink);
+    box-shadow: 0 1px 4px oklch(0 0 0 / 0.25);
+  }
+  /* Badge sombre plein — durée, style plateforme vidéo */
+  .yt-badge--dark {
+    background: oklch(0.145 0.004 107 / 0.92);
+    color: #fff;
+    backdrop-filter: blur(4px);
+  }
 
   /* Filtres catégories — chips */
   .yt-chip {

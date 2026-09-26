@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { useTrail } from '@/hooks/queries/useTrail'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { Play, ArrowRight, Sparkles, Clock, Bookmark, Mail } from 'lucide-react'
+import { detectMetier, getCourseTags } from '@/lib/course-visuals'
 
 interface LandingClassicProps {
   courses: any[]
@@ -30,20 +31,7 @@ function getThumbnail(course: any, orgUuid?: string) {
   return null
 }
 
-/** Parse tags d'un cours → tableau de strings */
-function getCourseTags(course: any): string[] {
-  const raw = course?.tags
-  if (Array.isArray(raw)) return raw.filter(Boolean)
-  if (typeof raw === 'string') {
-    try {
-      const parsed = JSON.parse(raw)
-      return Array.isArray(parsed) ? parsed.filter(Boolean) : raw.split(',').map((s) => s.trim()).filter(Boolean)
-    } catch {
-      return raw.split(',').map((s) => s.trim()).filter(Boolean)
-    }
-  }
-  return []
-}
+/** Parse tags d'un cours → tableau de strings (implémentation partagée : lib/course-visuals) */
 
 /** Durée fictive basée sur le nombre d'activités — donne un vibe YouTube */
 function getCourseDuration(course: any): string | null {
@@ -57,85 +45,8 @@ function getCourseDuration(course: any): string | null {
   return h > 0 ? `${h}h${m.toString().padStart(2, '0')}` : `${m} min`
 }
 
-/** Visuel distinctif par métier quand pas de thumbnail image.
- *  Utilise des photos Unsplash réelles (vérifiées) au lieu d'emojis.
- *  Détecte le métier depuis le nom du cours. */
-const METIER_VISUALS: Record<string, { image: string; label: string }> = {
-  restaurant: {
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
-    label: 'Restaurateur',
-  },
-  barbier: {
-    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
-    label: 'Barbier',
-  },
-  artisan: {
-    image: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=800&q=80',
-    label: 'Artisan',
-  },
-  garagiste: {
-    image: 'https://images.unsplash.com/photo-1632823469850-1b7b1e8b7e1e?auto=format&fit=crop&w=800&q=80',
-    label: 'Garagiste',
-  },
-  coiffeur: {
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
-    label: 'Coiffeur',
-  },
-  ia: {
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
-    label: 'IA',
-  },
-  immobilier: {
-    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
-    label: 'Immobilier',
-  },
-  digital: {
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
-    label: 'Digital',
-  },
-  marketing: {
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
-    label: 'Marketing',
-  },
-}
-
-/** Pool d'images de fallback aléatoires (style tech/business) quand aucun
- *  métier n'est détecté — pioche déterministe basée sur l'UUID du cours. */
-const FALLBACK_IMAGES = [
-  'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
-]
-
-function detectMetier(course: any): { image: string; label: string } {
-  const name = (course?.name || '').toLowerCase()
-  const tags = getCourseTags(course).join(' ').toLowerCase()
-  const haystack = `${name} ${tags}`
-  // Ordre de priorité : métiers spécifiques d'abord
-  if (haystack.includes('restaurant') || haystack.includes('restaur'))
-    return METIER_VISUALS.restaurant
-  if (haystack.includes('barbier') || haystack.includes('coiffeur'))
-    return METIER_VISUALS.coiffeur
-  if (haystack.includes('artisan'))
-    return METIER_VISUALS.artisan
-  if (haystack.includes('garagiste') || haystack.includes('auto') || haystack.includes('mécan'))
-    return METIER_VISUALS.garagiste
-  if (haystack.includes('immobilier') || haystack.includes('agent'))
-    return METIER_VISUALS.immobilier
-  if (haystack.includes('digital') || haystack.includes('transformation'))
-    return METIER_VISUALS.digital
-  if (haystack.includes('marketing') || haystack.includes('communication'))
-    return METIER_VISUALS.marketing
-  if (haystack.includes('ia') || haystack.includes('intelligence') || haystack.includes('automatisation'))
-    return METIER_VISUALS.ia
-  // Fallback : image aléatoire déterministe (stable par UUID)
-  const uuid: string = course?.course_uuid || ''
-  const idx = uuid.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) % FALLBACK_IMAGES.length
-  return { image: FALLBACK_IMAGES[idx], label: '' }
-}
+/** Visuel distinctif par métier quand pas de thumbnail — implémentation
+ *  partagée dans lib/course-visuals (photos Unsplash vérifiées). */
 
 /** Rendu JSX d'un visuel fallback (photo Unsplash + overlay dégradé) pour une card */
 function VisualFallback({ course, size = 'normal' }: { course: any; size?: 'normal' | 'hero' }) {
@@ -159,8 +70,8 @@ function VisualFallback({ course, size = 'normal' }: { course: any; size?: 'norm
       />
       {label && (
         <span
-          className="absolute bottom-3 left-3 font-display font-bold uppercase tracking-widest text-white/90"
-          style={{ fontSize: labelSize, letterSpacing: '0.15em', textShadow: '0 2px 8px oklch(0 0 0 / 0.6)' }}
+          className="absolute bottom-3 left-3 yt-badge yt-badge--solid"
+          style={{ fontSize: labelSize }}
         >
           {label}
         </span>
@@ -207,12 +118,12 @@ function HeroFeature({ course, orgslug, orgUuid }: { course: any; orgslug: strin
                   Nouveau
                 </span>
                 {duration && (
-                  <span className="yt-badge yt-badge--ghost">
+                  <span className="yt-badge yt-badge--dark">
                     <Clock size={11} /> {duration}
                   </span>
                 )}
               </div>
-              <span className="yt-badge yt-badge--ghost">À la une</span>
+              <span className="yt-badge yt-badge--solid">À la une</span>
             </div>
 
             {/* Bottom content */}
@@ -368,9 +279,9 @@ function VideoLibrary({ courses, orgslug, orgUuid }: { courses: any[]; orgslug: 
                     {/* Top badges */}
                     <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        {tags[0] && <span className="yt-badge yt-badge--ghost">{tags[0]}</span>}
+                        {tags[0] && <span className="yt-badge yt-badge--solid">{tags[0]}</span>}
                       </div>
-                      {duration && <span className="yt-badge yt-badge--ghost">{duration}</span>}
+                      {duration && <span className="yt-badge yt-badge--dark">{duration}</span>}
                     </div>
                     {/* Play overlay au hover */}
                     <div className="yt-thumb__play">
@@ -479,7 +390,7 @@ function DeepDives({ courses, orgslug, orgUuid }: { courses: any[]; orgslug: str
                           </div>
                           {duration && (
                             <div className="absolute bottom-2.5 right-2.5">
-                              <span className="yt-badge yt-badge--ghost">{duration}</span>
+                              <span className="yt-badge yt-badge--dark">{duration}</span>
                             </div>
                           )}
                           <div className="yt-thumb__play">
