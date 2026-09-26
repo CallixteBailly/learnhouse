@@ -357,6 +357,28 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
         ">
           ${t('certificate.certificate_verify_message')} ${qrCodeLink}
         </div>
+        
+        ${userCertificate.certification.config.certification_qualiopi ? `
+        <div style="
+          position: absolute;
+          bottom: 16px;
+          left: 40px;
+          right: 40px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-top: 10px;
+          border-top: 1px solid #e5e7eb;
+          text-align: left;
+        ">
+          <img src="${window.location.origin}/brands/protech/qualiopi-logo.png" alt="Qualiopi" style="width: 70px; height: 42px; object-fit: contain; flex-shrink: 0;" />
+          <div style="line-height: 1.35;">
+            <div style="font-size: 10px; font-weight: 600; color: #374151;">Qualiopi - processus certifié - République Française</div>
+            <div style="font-size: 9px; color: #4b5563;">La certification qualité a été délivrée au titre de la catégorie d'actions suivante : • ACTIONS DE FORMATION</div>
+            ${userCertificate.certification.config.certification_qualiopi_nda ? `<div style="font-size: 9px; color: #4b5563;">N° NDA : ${userCertificate.certification.config.certification_qualiopi_nda}</div>` : ''}
+          </div>
+        </div>
+        ` : ''}
       `;
 
       // Add to document temporarily
@@ -543,6 +565,8 @@ const CourseEndView: React.FC<CourseEndViewProps> = ({
                       day: 'numeric'
                     })}
                     qrCodeLink={qrCodeLink}
+                    qualiopiEnabled={!!userCertificate.certification.config.certification_qualiopi}
+                    qualiopiNda={userCertificate.certification.config.certification_qualiopi_nda}
                   />
                 </div>
               </div>

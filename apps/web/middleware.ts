@@ -337,10 +337,11 @@ export default async function middleware(req: NextRequest) {
   const enterMatch = pathname.match(/^\/enter\/([a-z0-9-]+)\/?$/i)
   if (enterMatch) {
     const slug = enterMatch[1].toLowerCase()
-    // /home is the hub (org picker) regardless of cookie — land the user on
-    // the org's course list instead, which the tenant catch-all scopes to
-    // the pinned org.
-    const url = new URL('/courses', req.url)
+    // Land on the org's own landing page (hero + courses), not the course
+    // list: each org gets a proper home page. `/` with the freshly-pinned
+    // cookie resolves through the tenant catch-all to /orgs/{slug}/, which
+    // renders the org-scoped landing (LandingClassic / LandingCustom).
+    const url = new URL('/', req.url)
     const search = req.nextUrl.search
     if (search) url.search = search
     const response = NextResponse.redirect(url)
@@ -357,6 +358,20 @@ export default async function middleware(req: NextRequest) {
   }
 
   if (pathname === '/home' || (instance.tenancy === 'multi' && isHubRoot)) {
+    // Org-pinned /home: when the visitor has explicitly chosen a non-default
+    // org (LH_org from /enter/{slug} or the profile switcher), `/home` renders
+    // THAT org's landing page instead of the global picker — members stay
+    // inside their organization. The full org picker remains at
+    // /organizations and in the profile dropdown's Organizations submenu.
+    if (pathname === '/home') {
+      const pinnedSlug = req.cookies.get('LH_org')?.value
+      if (pinnedSlug && pinnedSlug !== instance.default_org_slug) {
+        const response = NextResponse.rewrite(new URL(`/orgs/${pinnedSlug}/`, req.url))
+        setInstanceCookies(response, instance)
+        return response
+      }
+    }
+
     // `/account/*` ALSO exists as an org-scoped dashboard route
     // (/orgs/{slug}/account/[subpage] — general/security/purchases). On an org
     // subdomain or custom domain it must resolve there, NOT the apex hub (which

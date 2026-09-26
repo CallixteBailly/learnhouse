@@ -5,7 +5,7 @@ import {
   Textarea,
 } from '@components/Objects/StyledElements/Form/Form';
 import { useFormik } from 'formik';
-import { AlertTriangle, Award, FileText, Settings } from 'lucide-react';
+import { AlertTriangle, Award, BadgeCheck, FileText, Settings } from 'lucide-react';
 import CertificatePreview from './CertificatePreview';
 import * as Form from '@radix-ui/react-form';
 import React, { useEffect, useState, useRef } from 'react';
@@ -120,6 +120,8 @@ function EditCourseCertification(props: EditCourseCertificationProps) {
       certification_type: config.certification_type || 'completion',
       certificate_pattern: config.certificate_pattern || 'professional',
       certificate_instructor: config.certificate_instructor || getInstructorName(),
+      certification_qualiopi: !!config.certification_qualiopi,
+      certification_qualiopi_nda: config.certification_qualiopi_nda || '',
     };
   };
 
@@ -143,7 +145,9 @@ function EditCourseCertification(props: EditCourseCertificationProps) {
           certification_description: formik.values.certification_description || courseStructure?.description || '',
           certification_type: formik.values.certification_type || 'completion',
           certificate_pattern: formik.values.certificate_pattern || 'professional',
-          certificate_instructor: formik.values.certificate_instructor || '',
+          certificate_instructor: formik.values.certification_instructor || '',
+          certification_qualiopi: !!formik.values.certification_qualiopi,
+          certification_qualiopi_nda: formik.values.certification_qualiopi_nda || '',
         };
 
         const result = await createCertification(
@@ -241,6 +245,8 @@ function EditCourseCertification(props: EditCourseCertificationProps) {
             certification_type: formikValues.certification_type,
             certificate_pattern: formikValues.certificate_pattern,
             certificate_instructor: formikValues.certificate_instructor,
+            certification_qualiopi: !!formikValues.certification_qualiopi,
+            certification_qualiopi_nda: formikValues.certification_qualiopi_nda || '',
           }
         }
       };
@@ -449,6 +455,49 @@ function EditCourseCertification(props: EditCourseCertificationProps) {
                         />
                       </Form.Control>
                     </FormField>
+
+                    {/* Qualiopi Accreditation (French training-quality certification) */}
+                    <div className="flex flex-col bg-gray-50 -space-y-1 px-3 sm:px-5 py-3 rounded-md mb-3">
+                      <h3 className="font-bold text-md text-gray-800 flex items-center gap-2">
+                        <BadgeCheck size={16} />
+                        {t('dashboard.courses.certification.sections.qualiopi.title', 'Accréditation Qualiopi')}
+                      </h3>
+                      <p className="text-gray-500 text-xs sm:text-sm">
+                        {t('dashboard.courses.certification.sections.qualiopi.subtitle', 'Affiche la mention légale Qualiopi sur le certificat (organismes de formation certifiés).')}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between px-1">
+                      <FormLabelAndMessage
+                        label={t('dashboard.courses.certification.form.qualiopi_label', 'Activer la mention Qualiopi')}
+                      />
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={!!formik.values.certification_qualiopi}
+                          onChange={(e) => formik.setFieldValue('certification_qualiopi', e.target.checked)}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+
+                    {formik.values.certification_qualiopi && (
+                      <FormField name="certification_qualiopi_nda">
+                        <FormLabelAndMessage
+                          label={t('dashboard.courses.certification.form.qualiopi_nda_label', 'N° NDA (numéro de déclaration d\'activité)')}
+                        />
+                        <Form.Control asChild>
+                          <Input
+                            style={{ backgroundColor: 'white' }}
+                            onChange={formik.handleChange}
+                            value={formik.values.certification_qualiopi_nda}
+                            type="text"
+                            placeholder="11911019391"
+                          />
+                        </Form.Control>
+                      </FormField>
+                    )}
                   </Form.Root>
                 </div>
 
@@ -472,6 +521,8 @@ function EditCourseCertification(props: EditCourseCertificationProps) {
                         certificationType={formik.values.certification_type}
                         certificatePattern={formik.values.certificate_pattern}
                         certificateInstructor={formik.values.certificate_instructor}
+                        qualiopiEnabled={!!formik.values.certification_qualiopi}
+                        qualiopiNda={formik.values.certification_qualiopi_nda}
                       />
                     </div>
                   </div>

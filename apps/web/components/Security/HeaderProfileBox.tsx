@@ -278,7 +278,15 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                         <DropdownMenuSubContent className="max-h-72 overflow-auto">
                           {myOrgs.map((o: any) => (
                             <DropdownMenuItem key={o.id} asChild>
-                              <Link href={getUriWithOrg(o.slug, '/')} className="flex items-center space-x-2">
+                              {/* Central-LMS cookie tenancy: getUriWithOrg keeps
+                                  navigation on the current host, so switching to
+                                  a DIFFERENT org must go through the /enter/{slug}
+                                  bridge to re-pin the LH_org cookie. Same-org
+                                  links stay relative. */}
+                              <Link
+                                href={o.slug && o.slug !== org?.slug ? `/enter/${o.slug}` : getUriWithOrg(o.slug, '/')}
+                                className="flex items-center space-x-2"
+                              >
                                 {o.logo_image ? (
                                   <img src={getOrgLogoMediaDirectory(o.org_uuid, o.logo_image)} alt="" className="w-5 h-5 rounded object-cover shrink-0 ring-1 ring-inset ring-black/5" />
                                 ) : (

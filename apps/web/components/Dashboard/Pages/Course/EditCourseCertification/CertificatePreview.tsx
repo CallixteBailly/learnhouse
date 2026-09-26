@@ -12,6 +12,8 @@ interface CertificatePreviewProps {
   certificateId?: string;
   awardedDate?: string;
   qrCodeLink?: string;
+  qualiopiEnabled?: boolean;
+  qualiopiNda?: string;
 }
 
 const CertificatePreview: React.FC<CertificatePreviewProps> = ({
@@ -22,7 +24,9 @@ const CertificatePreview: React.FC<CertificatePreviewProps> = ({
   certificateInstructor,
   certificateId,
   awardedDate,
-  qrCodeLink
+  qrCodeLink,
+  qualiopiEnabled,
+  qualiopiNda
 }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const org = useOrg() as any;
@@ -563,6 +567,30 @@ const CertificatePreview: React.FC<CertificatePreviewProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Qualiopi accreditation block (French training-quality certification) */}
+          {qualiopiEnabled && (
+            <div className="mt-4 pt-3 border-t border-gray-200 flex items-center gap-3">
+              <img
+                src="/brands/protech/qualiopi-logo.png"
+                alt="Qualiopi - processus certifié - République Française"
+                className="w-16 h-10 sm:w-20 sm:h-12 object-contain shrink-0"
+              />
+              <div className="text-left leading-snug">
+                <p className="text-[9px] sm:text-[10px] font-semibold text-gray-700">
+                  Qualiopi - processus certifié - République Française
+                </p>
+                <p className="text-[8px] sm:text-[9px] text-gray-600">
+                  La certification qualité a été délivrée au titre de la catégorie d&apos;actions suivante : • ACTIONS DE FORMATION
+                </p>
+                {qualiopiNda && (
+                  <p className="text-[8px] sm:text-[9px] text-gray-600">
+                    N° NDA : {qualiopiNda}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
