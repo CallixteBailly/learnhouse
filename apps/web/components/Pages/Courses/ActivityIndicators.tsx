@@ -386,7 +386,6 @@ function ActivityIndicators(props: Props) {
   }, [allActivities, isActivityDone]);
 
   const totalCount = allActivities.length;
-  const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   // Find which chapter the current activity belongs to
   const currentChapterIndex = useMemo(() => {
@@ -427,21 +426,49 @@ function ActivityIndicators(props: Props) {
               isActivityCurrent={isActivityCurrent}
               t={t}
             />
-            <span>{completedCount}/{totalCount}</span>
+            <span className="flex items-center gap-1.5">
+              <span>{completedCount}/{totalCount}</span>
+              <CertificationBadge
+                courseid={courseid}
+                orgslug={orgslug}
+                isCompleted={isCourseCompleted}
+              />
+            </span>
           </div>
-          <div className="duo-progress-bar w-full rounded-full">
-            <div
-              className="duo-progress-fill"
-              style={{ width: `${progressPercent}%` }}
-            />
+          {/* Bande de segments groupés par chapitre (gap élargi = frontière, wireframe M2) */}
+          <div className="flex items-center w-full">
+            {course.chapters.map((chapter: any, chapterIndex: number) => (
+              <div
+                key={chapter.id}
+                className={`flex flex-1 items-center gap-[3px] ${chapterIndex > 0 ? 'ml-2' : ''}`}
+              >
+                {chapter.activities.map((activity: any) => {
+                  const isDone = isActivityDone(activity)
+                  const isCurrent = isActivityCurrent(activity)
+                  return (
+                    <Link
+                      key={activity.activity_uuid}
+                      prefetch={false}
+                      href={
+                        getUriWithOrg(orgslug, '') +
+                        `/course/${courseid}/activity/${activity.activity_uuid.replace('activity_', '')}`
+                      }
+                      className="flex-1 min-w-[8px]"
+                      aria-label={activity.name}
+                    >
+                      <div
+                        className={`h-[7px] rounded-full transition-all ${getActivityClass(activity)} ${
+                          isCurrent ? 'ring-2 ring-offset-1' : ''
+                        }`}
+                        style={isCurrent ? { '--tw-ring-color': 'var(--ordria-accent)' } as any : undefined}
+                      />
+                    </Link>
+                  )
+                })}
+              </div>
+            ))}
           </div>
         </div>
-
-        <CertificationBadge
-          courseid={courseid}
-          orgslug={orgslug}
-          isCompleted={isCourseCompleted}
-        />
 
         {enableNavigation && (
           <button

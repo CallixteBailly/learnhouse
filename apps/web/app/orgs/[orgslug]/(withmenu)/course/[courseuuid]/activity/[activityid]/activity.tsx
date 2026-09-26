@@ -493,7 +493,6 @@ function ActivityClient(props: ActivityClientProps) {
   const currentChapterIdx = course?.chapters?.findIndex((ch: any) =>
     ch.activities.some((a: any) => a.id === activity?.id)
   ) ?? -1
-  const totalChapters = course?.chapters?.length ?? 0
   const completedActivityCount = trailData?.runs?.find((r: any) => r.course_uuid === course?.course_uuid)?.steps?.filter((s: any) => s.complete)?.length ?? 0
   const totalActivityCount = allActivities.length
 
@@ -798,7 +797,7 @@ function ActivityClient(props: ActivityClientProps) {
                   />
                 ) : (
                   <div className="space-y-4 pt-0 relative">
-                    {/* Mobile: sticky course info bar */}
+                    {/* Mobile: sticky course info bar — bande de progression (wireframe M2) */}
                     <div className="md:hidden sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-3 py-2 -mx-3">
                       <div className="flex items-center justify-between gap-2">
                         <Link href={getUriWithOrg(orgslug, '') + `/course/${courseuuid}`} className="flex items-center gap-2 min-w-0">
@@ -807,19 +806,28 @@ function ActivityClient(props: ActivityClientProps) {
                             {course.name}
                           </span>
                         </Link>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-xs font-mono text-[var(--ordria-muted)]">
-                            {completedActivityCount}/{totalActivityCount}
-                          </span>
-                          {totalChapters > 0 && (
-                            <span className="text-xs font-semibold text-[var(--ordria-muted)]">
-                              Ch.{currentChapterIdx + 1}/{totalChapters}
-                            </span>
-                          )}
-                        </div>
+                        {activity && (
+                          <div className="shrink-0">
+                            <ActivityShareDropdown
+                              activityName={activity.name}
+                              activityUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                              orgslug={orgslug}
+                              courseUuid={course.course_uuid}
+                              activityId={activity.activity_uuid ? activity.activity_uuid.replace('activity_', '') : activityid.replace('activity_', '')}
+                              activityType={activity.activity_type}
+                            />
+                          </div>
+                        )}
                       </div>
-                      <div className="mt-1.5 duo-progress-bar" style={{ height: '4px' }}>
-                        <div className="duo-progress-fill" style={{ width: `${totalActivityCount > 0 ? (completedActivityCount / totalActivityCount) * 100 : 0}%` }}></div>
+                      {/* Bande de segments groupés par chapitre (variante mobile d'ActivityIndicators) */}
+                      <div className="mt-1.5">
+                        <ActivityIndicators
+                          course_uuid={courseuuid}
+                          current_activity={activityid}
+                          orgslug={orgslug}
+                          course={course}
+                          trailData={trailData}
+                        />
                       </div>
                     </div>
 
@@ -1099,7 +1107,17 @@ function ActivityClient(props: ActivityClientProps) {
                               orgslug={orgslug}
                             />
                           </div>
-                          <div className="flex items-center justify-between md:justify-end space-x-2 order-2 md:order-none">
+                          {/* Position courante (mobile, wireframe M2) */}
+                          {currentIndex >= 0 && totalActivityCount > 0 && (
+                            <div
+                              className="md:hidden order-2 text-center text-xs font-mono font-semibold"
+                              style={{ color: 'var(--ordria-muted)' }}
+                              data-testid="activity-position-indicator"
+                            >
+                              {currentIndex + 1}/{totalActivityCount}
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between md:justify-end space-x-2 order-3 md:order-none">
                             <ActivityActions
                               activity={activity}
                               activityid={activityid}
