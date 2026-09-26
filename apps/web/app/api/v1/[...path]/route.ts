@@ -40,7 +40,7 @@ async function proxyToBackend(request: NextRequest): Promise<Response> {
       method: request.method,
       headers,
       body,
-      // @ts-ignore — needed for streaming request bodies in Node.js
+      // @ts-ignore · needed for streaming request bodies in Node.js
       duplex: 'half',
       signal: controller.signal,
     } as RequestInit)
@@ -60,7 +60,7 @@ async function proxyToBackend(request: NextRequest): Promise<Response> {
       responseHeaders.append(key, value)
     })
 
-    // Stream the response body directly — no buffering
+    // Stream the response body directly · no buffering
     // This preserves SSE streams, file downloads, and binary responses
     return new Response(backendResponse.body, {
       status: backendResponse.status,

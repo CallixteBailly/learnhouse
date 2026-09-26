@@ -2,7 +2,7 @@
 //
 // Faithful port of the platform repo's app/api/payments/route.ts. The webhook
 // self-authenticates by verifying the Stripe signature against
-// STRIPE_WEBHOOK_SECRET, so it does NOT call assertSaaSBilling() — an
+// STRIPE_WEBHOOK_SECRET, so it does NOT call assertSaaSBilling() · an
 // unconfigured deployment simply has no STRIPE_WEBHOOK_SECRET and every event
 // fails signature verification with a 400.
 import { NextResponse } from "next/server";
@@ -21,7 +21,7 @@ import {
   sendPaymentFailedMail,
 } from "@services/billing/emails";
 
-// Lazy Stripe client (see services/billing/stripe.ts) — instantiating at module
+// Lazy Stripe client (see services/billing/stripe.ts) · instantiating at module
 // load without a key throws and breaks `next build` / keyless deployments.
 let _stripeClient: any = null;
 const stripe: any = new Proxy(
@@ -50,7 +50,7 @@ async function planFromSubscription(subscription: any): Promise<string | undefin
 
 // Simple in-memory idempotency cache (event_id -> timestamp).
 // Stripe retries webhooks, so we skip events we've already processed.
-// TTL: 5 minutes — Stripe won't retry faster than that.
+// TTL: 5 minutes · Stripe won't retry faster than that.
 // NOTE: in-memory, so it does NOT dedupe across serverless instances; the
 // downstream service calls are all idempotent, which covers the gap.
 const processedEvents = new Map<string, number>();
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Invalid signature", ok: false }, { status: 400 });
   }
 
-  // Idempotency check — skip duplicate events
+  // Idempotency check · skip duplicate events
   cleanupProcessedEvents();
   if (processedEvents.has(event.id)) {
     return NextResponse.json({ result: "duplicate", ok: true });
@@ -177,7 +177,7 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
       await deactivatePackInternally(orgId, subscription.id);
     } else if (eventType === "customer.subscription.updated") {
       if (subscription.cancel_at_period_end) {
-        // User requested cancellation — mark as canceling but keep active until period end
+        // User requested cancellation · mark as canceling but keep active until period end
         await markPackCancelingInternally(orgId, subscription.id);
       } else if (status === "active") {
         // Reactivated (e.g. user undid cancellation) or renewed
@@ -185,7 +185,7 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
           await activatePackInternally(orgId, packId, subscription.id);
         }
       } else if (status === "past_due" || status === "unpaid") {
-        // Payment failed — deactivate pack until payment succeeds
+        // Payment failed · deactivate pack until payment succeeds
         console.warn(`Pack subscription ${subscription.id} is ${status} for org ${orgId}`);
         await deactivatePackInternally(orgId, subscription.id);
       } else if (status === "paused") {
@@ -202,7 +202,7 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
       });
     } else if (eventType === "customer.subscription.updated") {
       if (subscription.cancel_at_period_end) {
-        // Plan is canceling — keep current plan until period ends
+        // Plan is canceling · keep current plan until period ends
         console.log(`Plan subscription canceling for org ${orgId}, access continues until period end`);
       } else if (status === "active") {
         // Derive from price so billing-portal plan changes reconcile correctly.
@@ -213,7 +213,7 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
           console.warn(`[webhook] could not resolve plan for active subscription ${subscription.id} (org ${orgId}); price id not in catalog?`);
         }
       } else if (status === "past_due" || status === "unpaid") {
-        // Payment failed — notify user but keep plan active for grace period
+        // Payment failed · notify user but keep plan active for grace period
         console.warn(`Plan subscription ${subscription.id} is ${status} for org ${orgId}`);
         const customer = await stripe.customers.retrieve(subscription.customer);
         if (customer?.email) {

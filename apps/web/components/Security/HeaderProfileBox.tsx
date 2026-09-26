@@ -51,7 +51,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
   const { track } = useLHAnalytics()
   const colors = getMenuColorClasses(primaryColor)
 
-  // The user's organizations (deduped) from the session roles — used by the
+  // The user's organizations (deduped) from the session roles · used by the
   // "My Organizations" submenu. Only relevant in multi-org (SaaS) mode, where
   // the apex hub (/home, /new, /billing) exists.
   const multiOrg = isMultiOrgModeEnabled()
@@ -280,11 +280,12 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                             <DropdownMenuItem key={o.id} asChild>
                               {/* Central-LMS cookie tenancy: getUriWithOrg keeps
                                   navigation on the current host, so switching to
-                                  a DIFFERENT org must go through the /enter/{slug}
-                                  bridge to re-pin the LH_org cookie. Same-org
-                                  links stay relative. */}
+                                  a DIFFERENT org must cross to that org's
+                                  explicit /orgs/{slug}/ URL (which re-pins the
+                                  LH_org cookie and keeps the org visible in
+                                  the address bar). Same-org links stay relative. */}
                               <Link
-                                href={o.slug && o.slug !== org?.slug ? `/enter/${o.slug}` : getUriWithOrg(o.slug, '/')}
+                                href={o.slug && o.slug !== org?.slug ? `/orgs/${o.slug}/` : getUriWithOrg(o.slug, '/')}
                                 className="flex items-center space-x-2"
                               >
                                 {o.logo_image ? (
@@ -310,7 +311,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   </>
                 )}
                 <DropdownMenuSeparator />
-                {/* DÉSACTIVÉ — Sélecteur de langue (OrdIA Learning : FR uniquement)
+                {/* DÉSACTIVÉ · Sélecteur de langue (OrdIA Learning : FR uniquement)
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="flex items-center gap-2 space-x-2">
                     <Globe size={14} weight="fill" />

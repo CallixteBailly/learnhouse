@@ -468,9 +468,11 @@ function EditCourseCertification(props: EditCourseCertificationProps) {
                     </div>
 
                     <div className="flex items-center justify-between px-1">
-                      <FormLabelAndMessage
-                        label={t('dashboard.courses.certification.form.qualiopi_label', 'Activer la mention Qualiopi')}
-                      />
+                      {/* Plain label: FormLabel requires a FormField context and
+                          this toggle is wired straight to formik, not to a field. */}
+                      <span className="grow text-sm">
+                        {t('dashboard.courses.certification.form.qualiopi_label', 'Activer la mention Qualiopi')}
+                      </span>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
                           type="checkbox"

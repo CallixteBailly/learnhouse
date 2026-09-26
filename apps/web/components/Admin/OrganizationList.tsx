@@ -12,7 +12,7 @@ import { Buildings, Globe, User, CaretLeft, CaretRight, BookOpen, MagnifyingGlas
 import CreateOrganizationModal from '@components/Admin/CreateOrganizationModal'
 import EELicenseError from '@components/Admin/EELicenseError'
 
-/** Ensure a URL only uses http/https — returns '#' for anything else. */
+/** Ensure a URL only uses http/https · returns '#' for anything else. */
 function safeHref(url: string): string {
   try {
     const { protocol } = new URL(url)
@@ -84,7 +84,7 @@ const PLANS_SAAS = ['all', 'free', 'paid', 'standard', 'pro', 'enterprise'] as c
 const PAGE_SIZE = 20
 
 function Sparkline({ data, max }: { data: number[]; max: number }) {
-  if (data.length === 0) return <span className="text-white/20 text-xs">—</span>
+  if (data.length === 0) return <span className="text-white/20 text-xs">·</span>
   const h = 20
   const w = 56
   const step = w / Math.max(data.length - 1, 1)
@@ -256,7 +256,7 @@ export default function OrganizationList() {
     enabled: !!accessToken,
     staleTime: 60_000,
     placeholderData: (prev) => prev,
-    // Don't retry a 503 ee_license_inactive — the license state won't change
+    // Don't retry a 503 ee_license_inactive · the license state won't change
     // mid-render and retries just add latency to the failure banner.
     retry: (failureCount, err: any) => err?.status !== 503 && failureCount < 2,
   })

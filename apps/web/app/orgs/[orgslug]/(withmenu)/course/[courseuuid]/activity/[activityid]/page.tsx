@@ -20,7 +20,7 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
 
   // A draft course/activity 403s for an anonymous server session (expired
   // browser token, rotated refresh token…). Throwing here would crash the
-  // whole route into the generic error page — degrade to minimal metadata
+  // whole route into the generic error page · degrade to minimal metadata
   // instead and let the client-side fetches render the proper "no access"
   // state.
   let org: any = null
@@ -40,7 +40,7 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
       ),
     ])
   } catch {
-    // Unpublished/forbidden or backend hiccup — fall back to org-only
+    // Unpublished/forbidden or backend hiccup · fall back to org-only
     // metadata so the page still renders.
     try {
       org = await getOrganizationContextInfo(params.orgslug, {
@@ -55,7 +55,7 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
   // Check if this is the course end page
   const isCourseEnd = params.activityid === 'end';
   const seoConfig = getOrgSeoConfig(org)
-  const rawTitle = isCourseEnd ? `Congratulations — ${course_meta.name} Course` : `${activity.name} — ${course_meta.name} Course`
+  const rawTitle = isCourseEnd ? `Congratulations · ${course_meta.name} Course` : `${activity.name} · ${course_meta.name} Course`
   const pageTitle = seoConfig.default_meta_title_suffix ? `${rawTitle}${seoConfig.default_meta_title_suffix}` : rawTitle
 
   const orgOgImageUrl = seoConfig.default_og_image

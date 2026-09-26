@@ -215,7 +215,7 @@ function TaskCodeObject({ view, assignmentTaskUUID, user_id }: TaskCodeObjectPro
 
   // Anti-copy-paste: if the assignment has anti_copy_paste enabled, inject a
   // CodeMirror extension that blocks paste events and shows a toast. Only
-  // applied in the student view — teachers and graders can paste freely.
+  // applied in the student view · teachers and graders can paste freely.
   const antiPasteEnabled =
     view === 'student' && !!assignment?.assignment_object?.anti_copy_paste
 
@@ -328,7 +328,7 @@ function TaskCodeObject({ view, assignmentTaskUUID, user_id }: TaskCodeObjectPro
     }
   }, [view, assignmentTaskUUID, assignment?.assignment_tasks, taskSubmissionsMap])
 
-  // Grading view still uses per-task fetches — there's only ever one task
+  // Grading view still uses per-task fetches · there's only ever one task
   // open at a time in the grading modal so the N+1 cost doesn't apply.
   useEffect(() => {
     if (view === 'grading') {
@@ -368,7 +368,7 @@ function TaskCodeObject({ view, assignmentTaskUUID, user_id }: TaskCodeObjectPro
 
   // Student-gating helpers: derived from the student-behavior flags.
   // `visibleResults` is the subset of run results that are NOT hidden test
-  // cases — those are the only ones the student can see and reason about.
+  // cases · those are the only ones the student can see and reason about.
   const visibleResults = results.filter((r) => {
     const tc = contents.test_cases.find((t) => t.id === r.id)
     return !tc?.hidden
@@ -426,7 +426,7 @@ function TaskCodeObject({ view, assignmentTaskUUID, user_id }: TaskCodeObjectPro
     setIsRunning(true)
     setShowResults(true)
     try {
-      // Always run ALL test cases — hidden ones just have details masked in the UI
+      // Always run ALL test cases · hidden ones just have details masked in the UI
       const resp = await fetch(`${getAPIUrl()}code/execute-batch`, {
         method: 'POST',
         headers: {
@@ -542,7 +542,7 @@ function TaskCodeObject({ view, assignmentTaskUUID, user_id }: TaskCodeObjectPro
         finalGrade = totalCount > 0 ? Math.round((passedCount / totalCount) * maxPoints) : 0
       }
 
-      const feedback = `Auto graded: ${passedCount}/${totalCount} tests passed — ${finalGrade}/${maxPoints} points`
+      const feedback = `Auto graded: ${passedCount}/${totalCount} tests passed · ${finalGrade}/${maxPoints} points`
 
       const values = {
         assignment_task_submission_uuid: userSubmissions.assignment_task_submission_uuid,
@@ -887,7 +887,7 @@ function TaskCodeObject({ view, assignmentTaskUUID, user_id }: TaskCodeObjectPro
               </div>
             )}
 
-            {/* Run Button — only if the task allows students to run */}
+            {/* Run Button · only if the task allows students to run */}
             {contents.allow_student_run !== false && (
               <div className="flex items-center space-x-2">
                 <button
@@ -901,7 +901,7 @@ function TaskCodeObject({ view, assignmentTaskUUID, user_id }: TaskCodeObjectPro
               </div>
             )}
 
-            {/* Submission gating notice — when the teacher requires passing
+            {/* Submission gating notice · when the teacher requires passing
                 all visible tests before save. */}
             {submissionGatedByPassing && !allVisiblePassing && (
               <div className="flex items-center space-x-1.5 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5 w-fit">
@@ -920,7 +920,7 @@ function TaskCodeObject({ view, assignmentTaskUUID, user_id }: TaskCodeObjectPro
               />
             )}
 
-            {/* Reference solution — revealed after a saved submission when
+            {/* Reference solution · revealed after a saved submission when
                 the teacher chose to show it. */}
             {contents.show_solution_after_submit === true &&
               contents.solution_code &&
@@ -1118,7 +1118,7 @@ function TestResultsPanel({
               )}
               {isHidden && !result.passed && (
                 <div className="mt-1 pl-6 text-xs text-slate-400 italic">
-                  Details hidden — this is a hidden test case
+                  Details hidden · this is a hidden test case
                 </div>
               )}
             </div>

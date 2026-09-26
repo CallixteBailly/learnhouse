@@ -54,7 +54,7 @@ const AdminAuthorization: React.FC<AuthorizationProps> = ({ children, authorizat
     }
 
     if (!isUserAuthenticated) {
-      // org can still be null on the very first render (query in flight) —
+      // org can still be null on the very first render (query in flight) ·
       // falling back to the default slug keeps the redirect working instead
       // of crashing the whole dashboard.
       router.push(getUriWithOrg(org?.slug || 'default', '/login'));

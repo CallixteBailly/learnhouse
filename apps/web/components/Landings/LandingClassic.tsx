@@ -33,7 +33,7 @@ function getThumbnail(course: any, orgUuid?: string) {
 
 /** Parse tags d'un cours → tableau de strings (implémentation partagée : lib/course-visuals) */
 
-/** Durée fictive basée sur le nombre d'activités — donne un vibe YouTube */
+/** Durée fictive basée sur le nombre d'activités · donne un vibe YouTube */
 function getCourseDuration(course: any): string | null {
   const activities =
     (course?.chapters?.reduce((acc: number, ch: any) => acc + (ch?.activities?.length || 0), 0)) || 0
@@ -45,7 +45,7 @@ function getCourseDuration(course: any): string | null {
   return h > 0 ? `${h}h${m.toString().padStart(2, '0')}` : `${m} min`
 }
 
-/** Visuel distinctif par métier quand pas de thumbnail — implémentation
+/** Visuel distinctif par métier quand pas de thumbnail · implémentation
  *  partagée dans lib/course-visuals (photos Unsplash vérifiées). */
 
 /** Rendu JSX d'un visuel fallback (photo Unsplash + overlay dégradé) pour une card */
@@ -81,7 +81,7 @@ function VisualFallback({ course, size = 'normal' }: { course: any; size?: 'norm
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   Section 1 — Hero cinématique 16:9
+   Section 1 · Hero cinématique 16:9
    Dernier cours publié, autoplay-on-hover (zoom + play)
    ─────────────────────────────────────────────────────────────────────────── */
 
@@ -110,7 +110,7 @@ function HeroFeature({ course, orgslug, orgUuid }: { course: any; orgslug: strin
             <div className="yt-hero__overlay" />
             <div className="yt-hero__grain" />
 
-            {/* Top bar — badges */}
+            {/* Top bar · badges */}
             <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="yt-badge yt-badge--signal">
@@ -168,7 +168,7 @@ function HeroFeature({ course, orgslug, orgUuid }: { course: any; orgslug: strin
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   Section 2 — Vidéothèque (Video Library)
+   Section 2 · Vidéothèque (Video Library)
    Grille chronologique avec filtres par catégorie, hover-to-preview
    ─────────────────────────────────────────────────────────────────────────── */
 
@@ -218,7 +218,7 @@ function VideoLibrary({ courses, orgslug, orgUuid }: { courses: any[]; orgslug: 
           </span>
         </div>
 
-        {/* Filtres — chips */}
+        {/* Filtres · chips */}
         {categories.length > 1 && (
           <div
             className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4 mb-8"
@@ -326,7 +326,7 @@ function VideoLibrary({ courses, orgslug, orgUuid }: { courses: any[]; orgslug: 
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   Section 3 — Reviews / Deep-dives
+   Section 3 · Reviews / Deep-dives
    Cours feature en format long "read-along" (sticky thumbnail + texte)
    ─────────────────────────────────────────────────────────────────────────── */
 
@@ -368,7 +368,7 @@ function DeepDives({ courses, orgslug, orgUuid }: { courses: any[]; orgslug: str
                 <div
                   className={`grid gap-6 md:gap-12 items-center grid-cols-1 ${isReversed ? 'md:grid-cols-[1fr_1.1fr]' : 'md:grid-cols-[1.1fr_1fr]'}`}
                 >
-                  {/* Sticky companion — thumbnail */}
+                  {/* Sticky companion · thumbnail */}
                   <div className={isReversed ? 'md:order-2' : ''}>
                     <Link href={link} prefetch={false} className="block group">
                       <div className="yt-sticky-companion">
@@ -440,7 +440,7 @@ function DeepDives({ courses, orgslug, orgUuid }: { courses: any[]; orgslug: str
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   Section 4 — Recommandations "Par où commencer"
+   Section 4 · Recommandations "Par où commencer"
    Cards curatoriales avec badge Débutant / Premium / Pick
    ─────────────────────────────────────────────────────────────────────────── */
 
@@ -467,7 +467,7 @@ function Recommendations({ courses, orgslug, orgUuid }: { courses: any[]; orgslu
             {t('courses.recommendations_title', 'Par où commencer')}
           </h2>
           <p className="mt-2 text-[var(--ordria-muted)] text-base md:text-lg" style={{ maxWidth: '52ch', textWrap: 'pretty' }}>
-            {t('courses.recommendations_subtitle', 'Trois choix sûrs pour démarrer — selon votre niveau et votre métier.')}
+            {t('courses.recommendations_subtitle', 'Trois choix sûrs pour démarrer · selon votre niveau et votre métier.')}
           </p>
         </div>
 
@@ -523,7 +523,7 @@ function Recommendations({ courses, orgslug, orgUuid }: { courses: any[]; orgslu
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   Section 5 — Newsletter
+   Section 5 · Newsletter
    Input avec placeholder typewriter qui cycle les pitches
    ─────────────────────────────────────────────────────────────────────────── */
 
@@ -665,7 +665,7 @@ function Newsletter() {
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   Composant racine — LandingClassic
+   Composant racine · LandingClassic
    ─────────────────────────────────────────────────────────────────────────── */
 
 function LandingClassic({ courses, orgslug, org_id }: LandingClassicProps) {
@@ -679,10 +679,10 @@ function LandingClassic({ courses, orgslug, org_id }: LandingClassicProps) {
 
   return (
     <div className="w-full bg-[var(--ordria-background)]">
-      {/* Section 1 — Hero (dernier cours) */}
+      {/* Section 1 · Hero (dernier cours) */}
       {latestCourse && <HeroFeature course={latestCourse} orgslug={orgslug} orgUuid={orgUuid} />}
 
-      {/* Section 2 — Vidéothèque (les autres cours) */}
+      {/* Section 2 · Vidéothèque (les autres cours) */}
       {libraryCourses.length > 0 && (
         <VideoLibrary courses={libraryCourses} orgslug={orgslug} orgUuid={orgUuid} />
       )}
@@ -692,13 +692,13 @@ function LandingClassic({ courses, orgslug, org_id }: LandingClassicProps) {
         <VideoLibrary courses={safeCourses} orgslug={orgslug} orgUuid={orgUuid} />
       )}
 
-      {/* Section 3 — Deep dives */}
+      {/* Section 3 · Deep dives */}
       <DeepDives courses={safeCourses} orgslug={orgslug} orgUuid={orgUuid} />
 
-      {/* Section 4 — Recommandations */}
+      {/* Section 4 · Recommandations */}
       <Recommendations courses={safeCourses} orgslug={orgslug} orgUuid={orgUuid} />
 
-      {/* Section 5 — Newsletter */}
+      {/* Section 5 · Newsletter */}
       <Newsletter />
     </div>
   )

@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import Providers from '@components/Providers'
 import localFont from 'next/font/local'
 
-/* Charte Ordria — typographies livrées (« Rendu Ordria », sept. 2026) :
+/* Charte Ordria · typographies livrées (« Rendu Ordria », sept. 2026) :
    - Satoshi (baseline) : police de texte de l'interface
    - Expose (logo) : police de marque / display */
 const satoshi = localFont({
@@ -52,7 +52,7 @@ export default function RootLayout({
   return (
     <html className={`${satoshi.variable} ${expose.variable}`} lang="en" suppressHydrationWarning>
       <head>
-        {/* Synchronous script — blocks parsing to guarantee window.__RUNTIME_CONFIG__ exists before any JS runs.
+        {/* Synchronous script · blocks parsing to guarantee window.__RUNTIME_CONFIG__ exists before any JS runs.
             Next.js <Script strategy="beforeInteractive"> is not truly blocking in all browsers (Safari). */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src="/runtime-config.js" />

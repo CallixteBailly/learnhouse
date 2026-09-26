@@ -88,7 +88,7 @@ const GRADING_TYPES: {
         color: 'text-blue-600',
         selectedBorder: 'border-blue-400',
         selectedBg: 'bg-blue-50',
-        illustration: '0 — 100',
+        illustration: '0 · 100',
     },
     {
         value: 'PERCENTAGE',
@@ -118,7 +118,7 @@ const GRADING_TYPES: {
         color: 'text-rose-600',
         selectedBorder: 'border-rose-400',
         selectedBg: 'bg-rose-50',
-        illustration: '0.0 — 4.0',
+        illustration: '0.0 · 4.0',
     },
 ];
 
@@ -130,7 +130,7 @@ const EditAssignmentForm: React.FC<EditAssignmentFormProps> = ({
     const { t } = useTranslation()
     const queryClient = useQueryClient()
 
-    // Auto-grading is incompatible with file-submission tasks — those need
+    // Auto-grading is incompatible with file-submission tasks · those need
     // human review. If any such task exists, we force the toggle off and
     // show a note explaining why.
     const hasFileSubmissionTask = (assignment.assignment_tasks || []).some(
@@ -147,7 +147,7 @@ const EditAssignmentForm: React.FC<EditAssignmentFormProps> = ({
             anti_copy_paste: assignment.anti_copy_paste || false,
             show_correct_answers: assignment.show_correct_answers || false,
             allow_retries: assignment.allow_retries || false,
-            // 0 means unlimited — kept as a number so the input below stays
+            // 0 means unlimited · kept as a number so the input below stays
             // numeric and the backend doesn't have to coerce strings.
             max_retries:
                 typeof assignment.max_retries === 'number' ? assignment.max_retries : 0,

@@ -81,7 +81,7 @@ const PlanBadge: React.FC<PlanBadgeProps> = ({
   noMargin = false,
   variant = 'light'
 }) => {
-  // Ordria : pas de paliers de plan — aucun badge de plan n'est jamais affiché.
+  // Ordria : pas de paliers de plan · aucun badge de plan n'est jamais affiché.
   // Le composant est conservé pour ne pas casser les imports existants.
   return null
 }

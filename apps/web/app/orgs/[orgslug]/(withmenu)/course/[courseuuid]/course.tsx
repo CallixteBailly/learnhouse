@@ -65,7 +65,7 @@ const CourseClient = (props: any) => {
     }
   }, [courseId, courseUuidForTracking, track])
 
-  // Fetch trail data — shared cache with useTrail hook used elsewhere
+  // Fetch trail data · shared cache with useTrail hook used elsewhere
   const { data: trailData } = useTrail(org?.id);
 
   useEffect(() => {
@@ -333,9 +333,9 @@ const CourseClient = (props: any) => {
               ]} />
             </div>
 
-            {/* ===== Héros — mobile (wireframe M1) ===== */}
+            {/* ===== Héros · mobile (wireframe M1) ===== */}
             <div className="md:hidden order-2 space-y-3">
-              {/* Couverture 16:9 pleine largeur — photo de remplacement par métier si aucune miniature */}
+              {/* Couverture 16:9 pleine largeur · photo de remplacement par métier si aucune miniature */}
               <img
                 src={course.thumbnail_image
                   ? getCourseThumbnailMediaDirectory(org?.org_uuid, course?.course_uuid, course?.thumbnail_image)
@@ -362,7 +362,7 @@ const CourseClient = (props: any) => {
               {heroProgress()}
             </div>
 
-            {/* ===== Héros — desktop 7/5 (wireframe D1) ===== */}
+            {/* ===== Héros · desktop 7/5 (wireframe D1) ===== */}
             <div className="hidden md:grid grid-cols-[7fr_5fr] gap-8 order-2 items-start">
               <div className="min-w-0 space-y-4">
                 <div className="flex justify-between items-start gap-4">
@@ -515,10 +515,10 @@ const CourseClient = (props: any) => {
                   }
                 })()}
 
-                {/* Actions (Commencer/Quitter, offres payantes, contributeur) — logique inchangée */}
+                {/* Actions (Commencer/Quitter, offres payantes, contributeur) · logique inchangée */}
                 <CoursesActions courseuuid={courseuuid} orgslug={orgslug} course={course} trailData={trailData} />
 
-                {/* Auteurs — version compacte rétractable */}
+                {/* Auteurs · version compacte rétractable */}
                 <details className="bg-white rounded-2xl border border-[var(--ordria-border)] overflow-hidden group">
                   <summary className="cursor-pointer p-3 list-none flex items-center gap-2 hover:bg-[var(--ordria-surface)] transition-colors">
                     {course.authors?.[0]?.user && (
@@ -644,7 +644,7 @@ const CourseClient = (props: any) => {
               guardLink={guardLink}
             />
 
-            {/* ActivityIndicators — conservé masqué (préchargement / parité de données) */}
+            {/* ActivityIndicators · conservé masqué (préchargement / parité de données) */}
             {(() => {
               const cleanCourseUuid = course.course_uuid?.replace('course_', '');
               const run = trailData?.runs?.find(
@@ -685,7 +685,7 @@ const CourseClient = (props: any) => {
             </div>{/* ferme le flex flex-col wrapper d'ordre */}
           </GeneralWrapperStyled>
 
-          {/* Mobile Actions Box — CTA collant (Commencer/Quitter), conservé */}
+          {/* Mobile Actions Box · CTA collant (Commencer/Quitter), conservé */}
           {isMobile && (
             <div className="md:hidden sticky bottom-0 z-30 pb-3 -mx-4 px-4 pt-3 mt-6"
               style={{

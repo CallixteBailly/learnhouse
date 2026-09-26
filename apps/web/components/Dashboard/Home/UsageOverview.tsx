@@ -102,7 +102,7 @@ export default function UsageOverview() {
       enabled: orgFeatures?.courses?.enabled !== false,
       href: '/dash/courses',
     },
-    // DÉSACTIVÉ — OrdIA Learning : communities, podcasts, boards masqués.
+    // DÉSACTIVÉ · OrdIA Learning : communities, podcasts, boards masqués.
     // Pour réactiver : passer "enabled" à true ou restaurer la condition originale.
     {
       key: 'communities',

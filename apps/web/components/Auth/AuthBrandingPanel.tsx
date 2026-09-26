@@ -11,7 +11,7 @@ import Logo from '@components/Objects/Brand/Logo'
 interface AuthBrandingPanelProps {
   org: any
   welcomeText?: string
-  // No-org (apex) panel copy — platform-style title + subtitle shown at the top
+  // No-org (apex) panel copy · platform-style title + subtitle shown at the top
   // of the illustration. Falls back to the login wording when omitted.
   title?: string
   subtitle?: string
@@ -89,7 +89,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
         {/* Base layer: org's chosen background (gradient | custom | unsplash) */}
         <div className="absolute inset-0" style={getBackgroundStyle()} />
 
-        {/* Blueprint + dot overlays — ONLY for gradient fallback (no photo) */}
+        {/* Blueprint + dot overlays · ONLY for gradient fallback (no photo) */}
         {!hasCustomBackground && (
           <>
             <div
@@ -161,7 +161,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
           )}
 
           {noOrg ? (
-            /* No-org apex panel — platform layout: heading at the TOP, no logo
+            /* No-org apex panel · platform layout: heading at the TOP, no logo
                box, platform copy. Baseline de la charte Ordria en kicker. */
             <div className="max-w-md text-white">
               <p
@@ -178,7 +178,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
               </p>
             </div>
           ) : (
-            /* Org panel — centered logo + name (unchanged). */
+            /* Org panel · centered logo + name (unchanged). */
             <>
               <div className="flex-1 flex items-center justify-center">
                 <div className={cn(

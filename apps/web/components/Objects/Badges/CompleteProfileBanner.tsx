@@ -10,7 +10,7 @@ const DISMISS_KEY = 'lh_profile_job_dismissed'
 
 export function CompleteProfileBanner({ orgslug }: { orgslug: string }) {
   const { t } = useTranslation()
-  // useLHSession() returns { data: Session | null, ... } | null — the session
+  // useLHSession() returns { data: Session | null, ... } | null · the session
   // user (UserRead) carries `profile`, so no extra getUser fetch is needed.
   const session = useLHSession() as any
   const [dismissed, setDismissed] = React.useState(true)

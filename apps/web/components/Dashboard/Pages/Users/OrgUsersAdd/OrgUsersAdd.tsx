@@ -61,7 +61,7 @@ function OrgUsersAdd() {
   const [sendSummary, setSendSummary] = useState<InviteSummary | null>(null)
   const [searchValue, setSearchValue] = useState('')
   const [page, setPage] = useState(1)
-  // Shown when a free org hits its member limit — a contextual upgrade paywall.
+  // Shown when a free org hits its member limit · a contextual upgrade paywall.
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const { track } = useLHAnalytics('dashboard')
 

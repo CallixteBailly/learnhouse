@@ -275,7 +275,7 @@ function AssignmentTitle() {
     );
 }
 
-// Skeuomorphic badge tokens — vertical gradient + colored ring + colored
+// Skeuomorphic badge tokens · vertical gradient + colored ring + colored
 // drop shadow + inset white highlight for a soft "raised pill" look. Same
 // values used in the assignments dashboard (page.tsx in /dash/assignments)
 // so the design language matches across both views.

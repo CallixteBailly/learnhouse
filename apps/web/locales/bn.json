@@ -7,6 +7,7 @@
     "your_organizations": "আপনার সংস্থাসমূহ",
     "no_orgs_message": "মনে হচ্ছে আপনি এখনও কোনও সংস্থার সদস্য নন। এখানে দেখার জন্য একটি সংস্থায় যোগ দিন।",
     "assignments": "অ্যাসাইনমেন্ট",
+    "formations": "প্রশিক্ষণ",
     "boards": "বোর্ড",
     "payments": "পেমেন্ট",
     "playgrounds": "Playgrounds",
@@ -135,7 +136,7 @@
         },
         "api_access": {
           "title": "প্রো ফিচার",
-          "description": "API অ্যাক্সেস একটি প্রিমিয়াম ফিচার যা শুধুমাত্র LearnHouse-এর Pro পরিকল্পনা বা তার উপরের সংস্থাগুলির জন্য উপলব্ধ। আপনার সংস্থার ডেটায় প্রোগ্রামেটিক অ্যাক্সেস আনলক করতে আপগ্রেড করুন।"
+          "description": "API অ্যাক্সেস একটি প্রিমিয়াম ফিচার যা শুধুমাত্র Ordria-এর Pro পরিকল্পনা বা তার উপরের সংস্থাগুলির জন্য উপলব্ধ। আপনার সংস্থার ডেটায় প্রোগ্রামেটিক অ্যাক্সেস আনলক করতে আপগ্রেড করুন।"
         }
       },
       "current_plan": "বর্তমান প্ল্যান",
@@ -571,14 +572,14 @@
     "import": {
       "scorm_package": "SCORM প্যাকেজ",
       "scorm_description": "SCORM 1.2 বা SCORM 2004 প্যাকেজ আমদানি করুন",
-      "learnhouse_courses": "LearnHouse কোর্স",
-      "learnhouse_description": "LearnHouse থেকে রপ্তানি করা কোর্স আমদানি করুন",
+      "learnhouse_courses": "Ordria কোর্স",
+      "learnhouse_description": "Ordria থেকে রপ্তানি করা কোর্স আমদানি করুন",
       "upload_package": "প্যাকেজ আপলোড করুন",
       "configure": "কনফিগার করুন",
       "complete": "সম্পূর্ণ",
       "click_to_upload": "আপলোড করতে ক্লিক করুন বা টেনে আনুন",
-      "learnhouse_format": "LearnHouse কোর্স রপ্তানি (.zip)",
-      "learnhouse_info": "LearnHouse কোর্স রপ্তানি প্যাকেজ (.zip) আপলোড করুন। আপনি কোন কোর্স আমদানি করবেন তা নির্বাচন করতে এবং আমদানি বিকল্পগুলি কনফিগার করতে পারবেন।",
+      "learnhouse_format": "Ordria কোর্স রপ্তানি (.zip)",
+      "learnhouse_info": "Ordria কোর্স রপ্তানি প্যাকেজ (.zip) আপলোড করুন। আপনি কোন কোর্স আমদানি করবেন তা নির্বাচন করতে এবং আমদানি বিকল্পগুলি কনফিগার করতে পারবেন।",
       "analyze_package": "প্যাকেজ বিশ্লেষণ করুন",
       "ready_to_analyze": "বিশ্লেষণের জন্য প্রস্তুত",
       "invalid_file_format": "অনুগ্রহ করে একটি .zip ফাইল আপলোড করুন",
@@ -1481,8 +1482,8 @@
       "import_course": "কোর্স আমদানি করুন",
       "import_scorm": "SCORM প্যাকেজ আমদানি করুন",
       "import_scorm_description": "নতুন কোর্স তৈরি করতে SCORM প্যাকেজ আমদানি করুন",
-      "import_learnhouse": "LearnHouse কোর্স আমদানি করুন",
-      "import_learnhouse_description": "LearnHouse রপ্তানি প্যাকেজ থেকে কোর্স আমদানি করুন",
+      "import_learnhouse": "Ordria কোর্স আমদানি করুন",
+      "import_learnhouse_description": "Ordria রপ্তানি প্যাকেজ থেকে কোর্স আমদানি করুন",
       "import_select_type": "আমদানি করতে প্যাকেজের ধরন নির্বাচন করুন",
       "no_courses": "এখনও কোনো কোর্স নেই",
       "create_course_placeholder": "কন্টেন্ট যোগ করতে কোর্স তৈরি করুন",

@@ -254,7 +254,7 @@ export default function PricingGrid({
                         {ENTERPRISE_PLAN.tagline}
                       </p>
                       <a
-                        href="https://learnhouse.app/contact?subject=business"
+                        href="https://ordria.fr/mentions-legales"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block mt-6 px-5 py-2.5 text-[14px] font-bold bg-white text-black rounded-lg hover:bg-white/90 transition-colors"

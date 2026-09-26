@@ -69,12 +69,12 @@ i18n
     }
   });
 
-// Load the detected language if it's not English — export the promise
+// Load the detected language if it's not English · export the promise
 // so I18nProvider can wait for resources before rendering
 export const initialLocaleReady = loadLocale(i18n.language.split('-')[0]);
 
 /**
- * Switch language safely — preloads the bundle before switching
+ * Switch language safely · preloads the bundle before switching
  * so the UI never flashes English as a fallback.
  */
 export async function changeLanguage(lng: string) {

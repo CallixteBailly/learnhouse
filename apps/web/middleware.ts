@@ -337,11 +337,11 @@ export default async function middleware(req: NextRequest) {
   const enterMatch = pathname.match(/^\/enter\/([a-z0-9-]+)\/?$/i)
   if (enterMatch) {
     const slug = enterMatch[1].toLowerCase()
-    // Land on the org's own landing page (hero + courses), not the course
-    // list: each org gets a proper home page. `/` with the freshly-pinned
-    // cookie resolves through the tenant catch-all to /orgs/{slug}/, which
-    // renders the org-scoped landing (LandingClassic / LandingCustom).
-    const url = new URL('/', req.url)
+    // Land on the org's own landing page under its explicit org-scoped URL
+    // (/orgs/{slug}/) — the organization stays visible in the address bar
+    // (multi-tenant best practice) instead of living only in a cookie. The
+    // /orgs/... handler below re-pins LH_org from the path.
+    const url = new URL(`/orgs/${slug}/`, req.url)
     const search = req.nextUrl.search
     if (search) url.search = search
     const response = NextResponse.redirect(url)
@@ -538,6 +538,36 @@ export default async function middleware(req: NextRequest) {
       setInstanceCookies(response, instance)
       return response
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // 10b. Explicit org-scoped path (/orgs/{slug}/...) — serve as-is.
+  //
+  //     These URLs are the shareable, org-visible form. Multi-tenant best
+  //     practice puts the organization in the URL rather than in an invisible
+  //     cookie: a link opened by someone else lands on the right org, browser
+  //     history shows where you are, and there is no "silent" org context.
+  //     Without this rule the catch-all would double-prefix the path
+  //     (/orgs/{slug}/orgs/{slug}/...) and 404. The cookie is still refreshed
+  //     from the path so org-relative links (/courses, /course/{uuid}) keep
+  //     resolving through the catch-all.
+  // -------------------------------------------------------------------------
+  const explicitOrgMatch = pathname.match(/^\/orgs\/([a-z0-9-]+)(?:\/|$)/i)
+  if (explicitOrgMatch) {
+    const slug = explicitOrgMatch[1].toLowerCase()
+    const requestHeaders = tenantRequestHeaders(req, { slug, source: 'cookie' }, instance)
+    const response = NextResponse.rewrite(new URL(`${pathname}${search}`, req.url), {
+      request: { headers: requestHeaders },
+    })
+    response.cookies.set({
+      name: 'LH_org',
+      value: slug,
+      domain: cookieDomainFor(instance, undefined),
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    })
+    setInstanceCookies(response, instance)
+    return response
   }
 
   // -------------------------------------------------------------------------

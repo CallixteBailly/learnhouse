@@ -80,7 +80,7 @@ const RESTRICTED_WORDS = ['sex', 'test']
 const STEP_NUMBER: Record<Step, number> = {
   'use-type': 1,
   usage: 2,
-  'choose-plan': 3, // Ordria : étape plan sautée — jamais atteinte
+  'choose-plan': 3, // Ordria : étape plan sautée · jamais atteinte
   'create-org': 3,
   success: 3,
 }
@@ -113,7 +113,7 @@ function friendlyCreateError(e: any, fallback: string): string {
     return fallback
   }
   const msg = typeof e?.message === 'string' ? e.message.trim() : ''
-  // A JSON-stringified payload leaked through as the message — don't show it raw.
+  // A JSON-stringified payload leaked through as the message · don't show it raw.
   if (!msg || msg.startsWith('[') || msg.startsWith('{')) return fallback
   return msg
 }
@@ -604,7 +604,7 @@ function CreateOrgForm({
                 />
               </Form.Control>
               <span className="px-4 py-3 bg-gray-50 text-black/25 border-l border-gray-100 shrink-0 text-[13px] font-medium select-none">
-                .learnhouse.io
+                .ordria.fr
               </span>
             </div>
             {formik.errors.slug === 'test_hint' && <TestHint t={t} />}
@@ -660,13 +660,13 @@ function CreateOrgSuccess({ slug, t }: { slug: string; t: any }) {
     setGoing(true)
     // Single-domain (.io) consolidation: the apex and the org subdomain share
     // the .{top_domain}-scoped session cookie, so the session already covers the
-    // subdomain — no cross-domain code-mint/token-exchange handoff is needed.
+    // subdomain · no cross-domain code-mint/token-exchange handoff is needed.
     // Refresh once to mint a fresh access token, then land on the new org's
     // onboarding (the first page for a brand-new org).
     try {
       await fetch('/api/auth/refresh', { credentials: 'include' })
     } catch {
-      /* non-fatal — the existing session cookie still carries over */
+      /* non-fatal · the existing session cookie still carries over */
     }
     window.location.href = getUriWithOrg(slug, '/dash/onboarding')
   }
@@ -807,7 +807,7 @@ export default function CreateNewOrgPage() {
       const newSlug = newOrg?.slug ?? values.slug
       track(AnalyticsEvent.OrgCreated, { plan: selectedPlan, billing, use_type: useType, slug: newSlug })
 
-      // The creator is now an admin of this org — record them in the marketing
+      // The creator is now an admin of this org · record them in the marketing
       // audience (Loops), along with the onboarding choices as contact
       // properties (use_types, chosen_plans, …). Fire-and-forget & SaaS-gated
       // server-side; the email is taken from the verified session there.
@@ -889,7 +889,7 @@ export default function CreateNewOrgPage() {
   }
 
   // Navigation helpers
-  // Ordria : pas de paliers de plan — l'étape "choose-plan" est sautée,
+  // Ordria : pas de paliers de plan · l'étape "choose-plan" est sautée,
   // on passe directement de l'usage au formulaire de création.
   const goBack = () => {
     setDir(-1)
@@ -943,7 +943,7 @@ export default function CreateNewOrgPage() {
   return (
     <div className="fixed inset-0 z-[100] bg-white overflow-y-auto">
       <div className="relative min-h-screen">
-        {/* Blueprint grid — fades in from bottom */}
+        {/* Blueprint grid · fades in from bottom */}
         <div
           className="absolute inset-0 pointer-events-none z-0"
           style={{

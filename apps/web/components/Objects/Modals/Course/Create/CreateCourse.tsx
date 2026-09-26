@@ -7,6 +7,7 @@ import FormLayout, {
   FormLabelAndMessage,
 } from '@components/Objects/StyledElements/Form/Form'
 import * as Form from '@radix-ui/react-form'
+import { getUriWithOrg } from '@services/config/config'
 import { createNewCourse } from '@services/courses/courses'
 import { createChapter } from '@services/courses/chapters'
 import { getOrganizationContextInfoWithoutCredentials } from '@services/organizations/orgs'
@@ -49,7 +50,7 @@ function CreateCourseModal({ closeModal, orgslug }: any) {
   const [orgId, setOrgId] = React.useState(null) as any
   const [showUnsplashPicker, setShowUnsplashPicker] = React.useState(false)
   const [isUploading, setIsUploading] = React.useState(false)
-  // Shown when a free org hits its course limit — a contextual upgrade paywall.
+  // Shown when a free org hits its course limit · a contextual upgrade paywall.
   const [showUpgradeModal, setShowUpgradeModal] = React.useState(false)
 
   const validationSchema = Yup.object().shape({
@@ -131,7 +132,7 @@ function CreateCourseModal({ closeModal, orgslug }: any) {
           // popup so a brand-new course lands the teacher on the core creation
           // action (their first activity) instead of an empty settings page.
           const courseId = res.data.course_uuid?.replace('course_', '') || res.data.course_uuid
-          router.push(`/dash/courses/course/${courseId}/content?new_activity=1`)
+          router.push(getUriWithOrg(orgslug, `/dash/courses/course/${courseId}/content?new_activity=1`))
         } else {
           toast.dismiss(toast_loading)
           const detail = typeof res.data?.detail === 'string' ? res.data.detail : ''

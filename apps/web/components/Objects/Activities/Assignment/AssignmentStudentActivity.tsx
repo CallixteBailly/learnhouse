@@ -24,13 +24,13 @@ function AssignmentStudentActivity() {
   const taskSubmissionsMap = useAssignmentTaskSubmissions() as Record<string, any> | null;
 
   // Per-task grading is rendered inline only after the whole assignment has
-  // been graded — that's when raw task grades are guaranteed to reflect the
+  // been graded · that's when raw task grades are guaranteed to reflect the
   // server-verified value (auto-grade or teacher override). Before that,
   // task.grade is the placeholder 0 from save-progress.
   const isGraded = Array.isArray(submission) && submission.length > 0 && submission[0].submission_status === 'GRADED';
 
   // Attempt indicator. Only worth showing when the teacher actually enabled
-  // retries and the student has burned at least one attempt — otherwise it's
+  // retries and the student has burned at least one attempt · otherwise it's
   // noise.
   const allowRetries = !!assignments?.assignment_object?.allow_retries;
   const maxRetries = Number(assignments?.assignment_object?.max_retries || 0);
@@ -43,7 +43,7 @@ function AssignmentStudentActivity() {
   // server (50% for NUMERIC / PERCENTAGE / PASS_FAIL, 60% for ALPHABET /
   // GPA_SCALE). Otherwise a student with 55% on a numeric-graded task sees
   // "Not Passed" inline while the same score is "Pass" at the assignment
-  // level — exactly the mismatch the teacher tried to avoid.
+  // level · exactly the mismatch the teacher tried to avoid.
   const gradingType = assignments?.assignment_object?.grading_type;
   const passingThreshold =
     gradingType === 'ALPHABET' || gradingType === 'GPA_SCALE' ? 60 : 50;

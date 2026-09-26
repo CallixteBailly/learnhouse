@@ -146,7 +146,7 @@ function AssignmentBoxUI({ type, view, currentPoints, currentFeedback, maxPoints
                         </div>
                     }
 
-                    {/* Grading controls — shared between 'grading' and 'custom-grading' views */}
+                    {/* Grading controls · shared between 'grading' and 'custom-grading' views */}
                     {isGradingMode && maxPoints !== undefined && gradeCustomFC && (
                         <div className='flex flex-wrap sm:flex-nowrap w-full sm:w-auto px-0.5 py-0.5 rounded-md gap-2 sm:space-x-2 items-center'>
                             {currentPoints !== undefined && currentPoints > 0 && (
@@ -205,7 +205,7 @@ function AssignmentBoxUI({ type, view, currentPoints, currentFeedback, maxPoints
                 </div>
             </div>
 
-            {/* Per-task feedback — saved together with the manual grade. */}
+            {/* Per-task feedback · saved together with the manual grade. */}
             {isGradingMode && gradeCustomFC && (
                 <div className='flex items-start gap-2 mb-3 px-1'>
                     <MessageSquare size={14} className='text-gray-400 mt-2 flex-none' />

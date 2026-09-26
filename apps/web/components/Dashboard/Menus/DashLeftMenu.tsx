@@ -44,7 +44,6 @@ import {
   Lightning,
 } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
-import { DiscordIcon } from '@components/Objects/Icons/DiscordIcon'
 import CommandPaletteTrigger from '@components/Dashboard/CommandPalette/CommandPaletteTrigger'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -97,11 +96,20 @@ function DashLeftMenu() {
   const showOnboarding =
     !isCollapsed && onboarding.welcomeSeen && !onboarding.dismissed && !onboarding.allCompleted
 
+  // Org-aware href: keeps every dashboard link inside the current organization.
+  // Bare /dash links fall back to the LH_org cookie, which can drift to another
+  // org (e.g. after visiting the default org's home) and silently switch the
+  // user to the wrong back-office.
+  const dash = (path: string) => getUriWithOrg(org?.slug, path)
+
   const isActivePath = (path: string) => {
+    // Strip the /orgs/{slug} prefix so active-state matching works on both
+    // org-prefixed and bare dashboard URLs.
+    const bare = pathname.replace(/^\/orgs\/[^/]+/, '') || '/'
     if (path === '/dash') {
-      return pathname === '/dash' || pathname === '/dash/'
+      return bare === '/dash' || bare === '/dash/'
     }
-    return pathname === path || pathname.startsWith(path + '/')
+    return bare === path || bare.startsWith(path + '/')
   }
   const [recentAssignments, setRecentAssignments] = useState<any[]>([])
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false)
@@ -170,7 +178,7 @@ function DashLeftMenu() {
 
 
   const plan = usePlan()
-  // Only org managers (admins/superadmins) see billing surfaces — non-admins
+  // Only org managers (admins/superadmins) see billing surfaces · non-admins
   // shouldn't manage the plan/subscription.
   const { canManageOrg } = useAdminStatus()
 
@@ -194,7 +202,7 @@ function DashLeftMenu() {
   const rf = org?.config?.config?.resolved_features
   const isEnabled = (feature: string) => rf?.[feature]?.enabled === true
 
-  // DÉSACTIVÉ — OrdIA Learning : seuls Cours et Library (Formations) sont actifs.
+  // DÉSACTIVÉ · OrdIA Learning : seuls Cours et Library (Formations) sont actifs.
   // Pour réactiver : remplacer "false" par "isEnabled('...')"
   const showLibrary = isEnabled('folders')
   const showCommunities = true
@@ -229,7 +237,7 @@ function DashLeftMenu() {
             />
           ) : (
             <Logo
-              /* Mark only — the lockup's "Ordria Learning" text next to the org
+              /* Mark only · the lockup's "Ordria Learning" text next to the org
                  name duplicated the brand and forced the name to truncate. */
               variant="mark"
               size="sm"
@@ -256,7 +264,7 @@ function DashLeftMenu() {
           </button>
         )}
 
-        {/* Onboarding progress reuses this header's bottom border as its track —
+        {/* Onboarding progress reuses this header's bottom border as its track ·
             a neon purple gradient that glows out from the border. */}
         {showOnboarding && (
           <>
@@ -277,7 +285,7 @@ function DashLeftMenu() {
         )}
       </div>
 
-      {/* Search trigger — replaced by the onboarding progress in this slot until
+      {/* Search trigger · replaced by the onboarding progress in this slot until
           setup is complete (then the search box returns). */}
       <div className={cn('px-3', showOnboarding ? 'pt-2' : 'pt-3')}>
         {showOnboarding ? (
@@ -292,7 +300,7 @@ function DashLeftMenu() {
         <AdminAuthorization authorizationMode="component">
           <div className="space-y-1">
             <MenuLink
-              href="/dash"
+              href={dash('/dash')}
               icon={<House size={20} weight="fill" />}
               label={t('common.home')}
               isCollapsed={isCollapsed}
@@ -307,7 +315,7 @@ function DashLeftMenu() {
                   <HoverMenuLabel className="text-[#777] font-medium">{t('courses.courses')}</HoverMenuLabel>
                   <HoverMenuSeparator />
                   <HoverMenuItem asChild>
-                    <Link href="/dash/courses" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/courses')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <BookOpen size={16} weight="fill" />
                       <span>{t('common.all_courses')}</span>
                     </Link>
@@ -319,7 +327,7 @@ function DashLeftMenu() {
                       {recentCourses.map((course: any) => (
                         <HoverMenuItem key={course.course_uuid} asChild>
                           <Link
-                            href={`/dash/courses/course/${course.course_uuid.replace('course_', '')}/settings`}
+                            href={dash(`/dash/courses/course/${course.course_uuid.replace('course_', '')}/settings`)}
                             className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors"
                           >
                             <PencilSimple size={14} className="text-[#afafaf]" />
@@ -336,7 +344,7 @@ function DashLeftMenu() {
                 const active = isActivePath('/dash/courses')
                 return (
                   <Link
-                    href="/dash/courses"
+                    href={dash('/dash/courses')}
                     aria-label="Open courses menu"
                     aria-current={active ? 'page' : undefined}
                     className={cn(
@@ -378,7 +386,7 @@ function DashLeftMenu() {
                   <HoverMenuLabel className="text-[#777] font-medium">{t('common.assignments')}</HoverMenuLabel>
                   <HoverMenuSeparator />
                   <HoverMenuItem asChild>
-                    <Link href="/dash/assignments" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/assignments')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Files size={16} weight="fill" />
                       <span>{t('common.all_assignments')}</span>
                     </Link>
@@ -390,7 +398,7 @@ function DashLeftMenu() {
                       {recentAssignments.map((assignment: any) => (
                         <HoverMenuItem key={assignment.assignment_uuid} asChild>
                           <Link
-                            href={`/dash/assignments/${assignment.assignment_uuid.replace('assignment_', '')}?subpage=editor`}
+                            href={dash(`/dash/assignments/${assignment.assignment_uuid.replace('assignment_', '')}?subpage=editor`)}
                             className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors"
                           >
                             <PencilSimple size={14} className="text-[#afafaf]" />
@@ -410,7 +418,7 @@ function DashLeftMenu() {
                 const active = isActivePath('/dash/assignments')
                 return (
                   <Link
-                    href="/dash/assignments"
+                    href={dash('/dash/assignments')}
                     aria-label="Open assignments menu"
                     aria-current={active ? 'page' : undefined}
                     className={cn(
@@ -446,7 +454,7 @@ function DashLeftMenu() {
             </div>
             {showLibrary && (
               <MenuLink
-                href="/dash/library"
+                href={dash('/dash/library')}
                 icon={<FolderSimple size={20} weight="fill" />}
                 label={t('library.library')}
                 isCollapsed={isCollapsed}
@@ -455,7 +463,7 @@ function DashLeftMenu() {
             )}
             {showCommunities && (
               <MenuLink
-                href="/dash/communities"
+                href={dash('/dash/communities')}
                 icon={<ChatsCircle size={20} weight="fill" />}
                 label={t('communities.title')}
                 isCollapsed={isCollapsed}
@@ -464,7 +472,7 @@ function DashLeftMenu() {
             )}
             {showPodcasts && (
               <MenuLink
-                href="/dash/podcasts"
+                href={dash('/dash/podcasts')}
                 icon={<Headphones size={20} weight="fill" />}
                 label={t('podcasts.podcasts')}
                 isCollapsed={isCollapsed}
@@ -473,7 +481,7 @@ function DashLeftMenu() {
             )}
             {showBoards && (
               <MenuLink
-                href="/dash/boards"
+                href={dash('/dash/boards')}
                 icon={<ChalkboardSimple size={20} weight="fill" />}
                 label={t('boards.boards')}
                 isCollapsed={isCollapsed}
@@ -482,7 +490,7 @@ function DashLeftMenu() {
             )}
             {showPlaygrounds && (
               <MenuLink
-                href="/dash/playgrounds"
+                href={dash('/dash/playgrounds')}
                 icon={<Cube size={20} weight="fill" />}
                 label={t('common.playgrounds')}
                 isCollapsed={isCollapsed}
@@ -496,31 +504,31 @@ function DashLeftMenu() {
                   <HoverMenuLabel className="text-[#777] font-medium">{t('common.users')}</HoverMenuLabel>
                   <HoverMenuSeparator />
                   <HoverMenuItem asChild>
-                    <Link href="/dash/users/settings/users" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/users/settings/users')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Users size={16} weight="fill" />
                       <span>{t('dashboard.users.settings.tabs.users')}</span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/users/settings/usergroups" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/users/settings/usergroups')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <UsersThree size={16} weight="fill" />
                       <span className="flex items-center">{t('dashboard.users.settings.tabs.usergroups')}<PlanBadge currentPlan={plan} requiredPlan="standard" variant="dark" /></span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/users/settings/roles" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/users/settings/roles')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Shield size={16} weight="fill" />
                       <span className="flex items-center">{t('dashboard.users.settings.tabs.roles')}<PlanBadge currentPlan={plan} requiredPlan="pro" variant="dark" /></span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/users/settings/signups" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/users/settings/signups')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <ClipboardText size={16} weight="fill" />
                       <span>{t('dashboard.users.settings.tabs.signups')}</span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/users/settings/add" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/users/settings/add')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <UserPlus size={16} weight="fill" />
                       <span>{t('dashboard.users.settings.tabs.add')}</span>
                     </Link>
@@ -532,7 +540,7 @@ function DashLeftMenu() {
                 const active = isActivePath('/dash/users')
                 return (
                   <Link
-                    href="/dash/users/settings/users"
+                    href={dash('/dash/users/settings/users')}
                     aria-label="Open users menu"
                     aria-current={active ? 'page' : undefined}
                     className={cn(
@@ -568,7 +576,7 @@ function DashLeftMenu() {
 
             {showPayments && (
               <MenuLink
-                href="/dash/payments/overview"
+                href={dash('/dash/payments/overview')}
                 icon={<CurrencyCircleDollar size={20} weight="fill" />}
                 label={t('common.payments')}
                 isCollapsed={isCollapsed}
@@ -583,39 +591,39 @@ function DashLeftMenu() {
                   <HoverMenuLabel className="text-[#777] font-medium">{t('common.organization')}</HoverMenuLabel>
                   <HoverMenuSeparator />
                   <HoverMenuItem asChild>
-                    <Link href="/dash/org/settings/general" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/org/settings/general')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Gear size={16} weight="fill" />
                       <span>{t('dashboard.organization.settings.tabs.general')}</span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/org/settings/branding" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/org/settings/branding')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Palette size={16} weight="fill" />
                       <span>{t('dashboard.organization.settings.tabs.branding')}</span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/org/settings/landing" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/org/settings/landing')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Rocket size={16} weight="fill" />
                       <span>{t('dashboard.organization.settings.tabs.landing')}</span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/org/settings/ai" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/org/settings/ai')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Robot size={16} weight="fill" />
                       <span className="flex items-center">{t('dashboard.organization.settings.tabs.ai')}<PlanBadge currentPlan={plan} requiredPlan="standard" variant="dark" /></span>
                     </Link>
                   </HoverMenuItem>
                   {canManageOrg && (
                     <HoverMenuItem asChild>
-                      <Link href="/dash/org/settings/usage" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                      <Link href={dash('/dash/org/settings/usage')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                         <ChartBar size={16} weight="fill" />
                         <span>{t('dashboard.organization.settings.tabs.usage') || 'Usage'}</span>
                       </Link>
                     </HoverMenuItem>
                   )}
                   <HoverMenuItem asChild>
-                    <Link href="/dash/org/settings/other" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/org/settings/other')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Wrench size={16} weight="fill" />
                       <span>{t('dashboard.organization.settings.tabs.other')}</span>
                     </Link>
@@ -627,7 +635,7 @@ function DashLeftMenu() {
                 const active = isActivePath('/dash/org')
                 return (
                   <Link
-                    href="/dash/org/settings/general"
+                    href={dash('/dash/org/settings/general')}
                     aria-label="Open organization menu"
                     aria-current={active ? 'page' : undefined}
                     className={cn(
@@ -668,31 +676,31 @@ function DashLeftMenu() {
                   <HoverMenuLabel className="text-[#777] font-medium">{t('dashboard.developers.breadcrumb', { defaultValue: 'Developers' })}</HoverMenuLabel>
                   <HoverMenuSeparator />
                   <HoverMenuItem asChild>
-                    <Link href="/dash/developers/api" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/developers/api')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Key size={16} weight="fill" />
                       <span className="flex items-center">{t('dashboard.organization.settings.tabs.api', { defaultValue: 'API Access' })}<PlanBadge currentPlan={plan} requiredPlan="pro" variant="dark" /></span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/developers/automations" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/developers/automations')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Lightning size={16} weight="fill" />
                       <span className="flex items-center">{t('dashboard.organization.settings.tabs.automations', { defaultValue: 'Automations' })}<PlanBadge currentPlan={plan} requiredPlan="pro" variant="dark" /></span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/developers/domains" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/developers/domains')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <LinkSimple size={16} weight="fill" />
                       <span className="flex items-center">{t('dashboard.organization.settings.tabs.domains', { defaultValue: 'Domains' })}<PlanBadge currentPlan={plan} requiredPlan="standard" variant="dark" /></span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/developers/seo" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/developers/seo')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <MagnifyingGlass size={16} weight="fill" />
                       <span>SEO</span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/developers/sso" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/developers/sso')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <Lock size={16} weight="fill" />
                       <span className="flex items-center">{t('dashboard.organization.settings.tabs.sso', { defaultValue: 'SSO' })}<PlanBadge currentPlan={plan} requiredPlan="enterprise" variant="dark" /></span>
                     </Link>
@@ -704,7 +712,7 @@ function DashLeftMenu() {
                 const active = isActivePath('/dash/developers')
                 return (
                   <Link
-                    href="/dash/developers/api"
+                    href={dash('/dash/developers/api')}
                     aria-label="Open developers menu"
                     aria-current={active ? 'page' : undefined}
                     className={cn(
@@ -745,13 +753,13 @@ function DashLeftMenu() {
                   <HoverMenuLabel className="text-[#777] font-medium">Analytics</HoverMenuLabel>
                   <HoverMenuSeparator />
                   <HoverMenuItem asChild>
-                    <Link href="/dash/analytics" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/analytics')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <ChartBar size={16} weight="fill" />
                       <span>{t('analytics.tabs.overview')}</span>
                     </Link>
                   </HoverMenuItem>
                   <HoverMenuItem asChild>
-                    <Link href="/dash/analytics" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                    <Link href={dash('/dash/analytics')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                       <ChartLine size={16} weight="fill" />
                       <span className="flex items-center">{t('analytics.tabs.advanced')}{isPlanGated() && <PlanBadge currentPlan={plan} requiredPlan="enterprise" variant="dark" />}</span>
                     </Link>
@@ -763,7 +771,7 @@ function DashLeftMenu() {
                 const active = isActivePath('/dash/analytics')
                 return (
                   <Link
-                    href="/dash/analytics"
+                    href={dash('/dash/analytics')}
                     aria-label="Analytics"
                     aria-current={active ? 'page' : undefined}
                     className={cn(
@@ -811,7 +819,7 @@ function DashLeftMenu() {
                     <HoverMenuSeparator />
                     {!showCommunities && (
                       <HoverMenuItem asChild>
-                        <Link href="/dash/communities" className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                        <Link href={dash('/dash/communities')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                           <ChatsCircle size={16} weight="fill" />
                           <span>{t('communities.title')}</span>
                         </Link>
@@ -819,7 +827,7 @@ function DashLeftMenu() {
                     )}
                     {!showPodcasts && (
                       <HoverMenuItem asChild>
-                        <Link href="/dash/podcasts" className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                        <Link href={dash('/dash/podcasts')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                           <Headphones size={16} weight="fill" />
                           <span>{t('podcasts.podcasts')}</span>
                         </Link>
@@ -827,7 +835,7 @@ function DashLeftMenu() {
                     )}
                     {!showBoards && (
                       <HoverMenuItem asChild>
-                        <Link href="/dash/boards" className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                        <Link href={dash('/dash/boards')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                           <ChalkboardSimple size={16} weight="fill" />
                           <span>{t('common.boards')}</span>
                         </Link>
@@ -835,7 +843,7 @@ function DashLeftMenu() {
                     )}
                     {!showPlaygrounds && (
                       <HoverMenuItem asChild>
-                        <Link href="/dash/playgrounds" className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                        <Link href={dash('/dash/playgrounds')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                           <Cube size={16} weight="fill" />
                           <span>{t('common.playgrounds')}</span>
                         </Link>
@@ -843,7 +851,7 @@ function DashLeftMenu() {
                     )}
                     {!showPayments && (
                       <HoverMenuItem asChild>
-                        <Link href="/dash/payments/overview" className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                        <Link href={dash('/dash/payments/overview')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#afafaf] hover:text-[#777] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                           <CurrencyCircleDollar size={16} weight="fill" />
                           <span>{t('common.payments')}</span>
                         </Link>
@@ -949,7 +957,7 @@ function DashLeftMenu() {
                 <HoverMenuSeparator />
                 <HoverMenuItem asChild>
                   <a
-                    href="https://docs.learnhouse.app"
+                    href="https://ordria.fr"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors"
@@ -960,24 +968,13 @@ function DashLeftMenu() {
                 </HoverMenuItem>
                 <HoverMenuItem asChild>
                   <a
-                    href="https://learnhouse.app"
+                    href="https://ordria.fr"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors"
                   >
                     <Globe size={16} weight="fill" />
                     <span>{t('common.help_menu.website')}</span>
-                  </a>
-                </HoverMenuItem>
-                <HoverMenuItem asChild>
-                  <a
-                    href="https://discord.gg/learnhouse"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors"
-                  >
-                    <DiscordIcon size={16} />
-                    <span>{t('common.help_menu.discord')}</span>
                   </a>
                 </HoverMenuItem>
                 <HoverMenuSeparator />
@@ -1065,7 +1062,7 @@ function DashLeftMenu() {
                 </div>
                 <HoverMenuSeparator />
                 <HoverMenuItem asChild>
-                  <Link href="/account/general" className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
+                  <Link href={dash('/account/general')} className="flex items-center gap-2 px-3 py-2 text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] cursor-pointer transition-colors">
                     <Gear size={16} weight="fill" />
                     <span>{t('common.settings')}</span>
                   </Link>

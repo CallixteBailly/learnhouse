@@ -15,7 +15,7 @@ export const VIDEO_FILE_EXTENSIONS = [
 /**
  * Containers most browsers can play natively via <video> (H.264/AAC mp4
  * family, WebM, Ogg). Formats outside this list (mkv/avi/wmv/flv/mpeg/3gp)
- * become watchable once the server's HLS transcode completes — the UI shows a
+ * become watchable once the server's HLS transcode completes · the UI shows a
  * "conversion in progress" state instead of a broken player until then.
  */
 export const PROGRESSIVELY_PLAYABLE_VIDEO_EXTENSIONS = [

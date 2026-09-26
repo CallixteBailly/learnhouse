@@ -85,5 +85,8 @@ stripe-register-state.png
 .tmp-stripe-browser/
 .tmp-stripe-watch/
 
+# fabrique de cours ad hoc (scripts + exports ZIP volumineux, souvent >100 Mo)
+.tmp-course-factory/
+
 # vérifications locales navigateur (racine uniquement)
 /*.png

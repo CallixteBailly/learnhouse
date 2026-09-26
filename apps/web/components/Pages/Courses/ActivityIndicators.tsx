@@ -241,7 +241,7 @@ const MobileChapterSelector = memo(({
             return (
               <div key={chapter.id}>
                 <div className={`px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide ${isCurrentChapter ? 'text-teal-600' : 'text-gray-400'}`}>
-                  {t('courses.chapter')} {chapterIdx + 1} — {completedInChapter}/{chapter.activities.length}
+                  {t('courses.chapter')} {chapterIdx + 1} · {completedInChapter}/{chapter.activities.length}
                 </div>
                 {chapter.activities.map((activity: any) => {
                   const isDone = isActivityDone(activity)
@@ -508,7 +508,7 @@ function ActivityIndicators(props: Props) {
 
             return (
               <div key={chapter.id} className="flex-1 flex items-center min-w-0">
-                {/* Chapter circle — glued to the left of the bar */}
+                {/* Chapter circle · glued to the left of the bar */}
                 <ToolTip
                   sideOffset={8}
                   unstyled
@@ -544,7 +544,7 @@ function ActivityIndicators(props: Props) {
                   )}
                 </ToolTip>
 
-                {/* Activity segments — glued to circle, flush together */}
+                {/* Activity segments · glued to circle, flush together */}
                 <div className="flex-1 flex items-center min-w-0 -ml-[4px]">
                   {chapter.activities.map((activity: any, activityIndex: number) => {
                     const isDone = isActivityDone(activity)

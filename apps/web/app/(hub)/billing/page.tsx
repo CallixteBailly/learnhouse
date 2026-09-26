@@ -79,7 +79,7 @@ function BillingClient() {
 
   // Live prices/limits from Stripe (falls back to static catalog on failure).
   // Use the query's own loading flag: fetchPrices() resolves to null on failure,
-  // so `!prices` would stay true forever and pin the cards on the skeleton —
+  // so `!prices` would stay true forever and pin the cards on the skeleton ·
   // isPricesLoading goes false once the query settles, letting the static
   // catalog prices render.
   const { data: prices, isLoading: isPricesLoading } = useQuery({
@@ -158,14 +158,14 @@ function BillingClient() {
   // via a direct link (the menu entries are already hidden for non-admins).
   const canManage = canManageOrgFromSession(session, org?.id)
 
-  // Don't spin forever if the orgs request failed — surface an error instead.
+  // Don't spin forever if the orgs request failed · surface an error instead.
   const showLoader = isLoading || (isAuthenticated && !orgsError && (orgsLoading || !org))
 
   return (
     <div className="fixed inset-0 z-[100] bg-white overflow-y-auto">
       <Toaster />
       <div className="relative min-h-screen">
-        {/* Blueprint grid — fades in from bottom */}
+        {/* Blueprint grid · fades in from bottom */}
         <div
           className="absolute inset-0 pointer-events-none z-0"
           style={{

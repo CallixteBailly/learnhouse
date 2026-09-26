@@ -1,5 +1,5 @@
 // Guard for operator-configured server-to-server URLs (backend API).
-// Rule: http/https only, hostname required, private/reserved hosts rejected —
+// Rule: http/https only, hostname required, private/reserved hosts rejected ·
 // except the documented local dev default. Applied before any server-side
 // fetch so a misconfigured env var can never turn into an SSRF pivot.
 

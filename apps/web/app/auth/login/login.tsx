@@ -137,7 +137,7 @@ const LoginClient = (props: LoginClientProps) => {
   }
 
   const handleResendVerification = async () => {
-    // org?.id is undefined on the org-less apex — the backend resends by email
+    // org?.id is undefined on the org-less apex · the backend resends by email
     // without an org, so we only require the email here.
     if (!unverifiedEmail) return
 
@@ -264,11 +264,11 @@ const LoginClient = (props: LoginClientProps) => {
         track(AnalyticsEvent.LoginFailed, { method: 'credentials', error_type: loginErrorType })
         setShowErrorModal(true);
         setIsSubmitting(false);
-        // Single-use token was consumed by this attempt — refresh for the retry.
+        // Single-use token was consumed by this attempt · refresh for the retry.
         turnstileRef.current?.reset();
       } else {
         track(AnalyticsEvent.LoginSucceeded, { method: 'credentials' })
-        // First signIn already authenticated and set cookies — just redirect
+        // First signIn already authenticated and set cookies · just redirect
         window.location.href = callbackUrl;
       }
     },

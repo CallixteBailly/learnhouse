@@ -181,7 +181,7 @@ function TaskQuizObject({ view, assignmentTaskUUID, user_id }: TaskQuizObjectPro
         });
     }
 
-    // Used only by grading view — student view hydrates from useAssignments() context
+    // Used only by grading view · student view hydrates from useAssignments() context
     async function getAssignmentTaskUI() {
         if (assignmentTaskUUID) {
             const res = await getAssignmentTask(assignmentTaskUUID, access_token);

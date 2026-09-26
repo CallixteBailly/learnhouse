@@ -62,7 +62,7 @@ function HomeClient() {
     }
   }, [isLoading, isAuthenticated, router])
 
-  // A brand-new (org-less) user has no orgs yet — send them straight to create
+  // A brand-new (org-less) user has no orgs yet · send them straight to create
   // their first org rather than a confusing empty hub. Mirrors the platform's
   // post-signup onboarding hop.
   useEffect(() => {

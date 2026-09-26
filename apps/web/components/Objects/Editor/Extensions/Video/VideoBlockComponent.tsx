@@ -282,7 +282,7 @@ function VideoBlockComponent(props: ExtendedNodeViewProps) {
     : null
 
   // Fetch the fresh block once we have its uuid, to learn whether HLS is ready
-  // — and keep polling every 10s while it isn't (bounded), so a video that
+  // · and keep polling every 10s while it isn't (bounded), so a video that
   // still needs transcoding flips to playable without a manual refresh.
   const blockUuid = blockObject?.block_uuid
   React.useEffect(() => {

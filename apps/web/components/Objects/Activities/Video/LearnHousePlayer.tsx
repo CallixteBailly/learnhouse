@@ -8,7 +8,7 @@ import { guessVideoMime } from '@/lib/video-formats'
 
 const SEEK_SECONDS = 15
 
-/* Register ±15s seek-button components once (Video.js Button API — no plugin). */
+/* Register ±15s seek-button components once (Video.js Button API · no plugin). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function registerSeekButtons(videojs: any) {
   const Button = videojs.getComponent('Button')
@@ -147,7 +147,7 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
       const player = videojs(videoEl, {
         controls: true,
         // fill (not fluid) so the player always fills its aspect-video parent and
-        // the control bar is visible IMMEDIATELY — even before video metadata
+        // the control bar is visible IMMEDIATELY · even before video metadata
         // loads or if the source errors. `fluid` sized from metadata, so a slow/
         // broken source left the player collapsed with no visible controls.
         fill: true,
@@ -225,7 +225,7 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
       // own orientation while fullscreen (a 16:9 video fullscreened on a phone
       // held portrait gets auto-rotated to landscape instead of letterboxing).
       // Only Android Chrome supports orientation lock (and only in
-      // fullscreen); iOS Safari ignores it — best-effort, purely cosmetic.
+      // fullscreen); iOS Safari ignores it · best-effort, purely cosmetic.
       const alignOrientation = async () => {
         const orientation = (screen as any).orientation
         if (!orientation?.lock) return
@@ -238,7 +238,7 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
             orientation.unlock?.()
           }
         } catch {
-          /* unsupported or denied — cosmetic only */
+          /* unsupported or denied · cosmetic only */
         }
       }
       player.on('fullscreenchange', alignOrientation)
@@ -268,7 +268,7 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
 
       // video.js's full-window fallback (where the Fullscreen API is missing)
       // keeps the player DOM in place, trapped below the page chrome's
-      // stacking contexts — the video ends up BEHIND nav/toasts instead of
+      // stacking contexts · the video ends up BEHIND nav/toasts instead of
       // covering them. Park the element on <body> for the duration. React
       // never manages this node (it's created imperatively above), so moving
       // it is safe; it's put back before dispose so the container stays
@@ -307,7 +307,7 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
         metaLoaded = true
         clearWatchdog()
         // Report the intrinsic dimensions so the parent can adopt the video's
-        // real aspect ratio (portrait/square) — harmless when nothing listens.
+        // real aspect ratio (portrait/square) · harmless when nothing listens.
         try {
           const w = player.videoWidth?.() ?? 0
           const h = player.videoHeight?.() ?? 0
@@ -329,7 +329,7 @@ const LearnHousePlayer: React.FC<LearnHousePlayerProps> = ({
         /* seek buttons are best-effort */
       }
 
-      // Casual-download deterrents (cosmetic — not real protection; the segments
+      // Casual-download deterrents (cosmetic · not real protection; the segments
       // are AES-128 encrypted server-side for the actual bar-raising). Picture-in-
       // picture is intentionally LEFT ENABLED (users asked for it).
       try {

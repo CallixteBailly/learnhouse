@@ -140,7 +140,7 @@ export default function TaskFileObject({ view, user_id, assignmentTaskUUID }: Ta
         }
     };
 
-    // Used only by grading view — student view hydrates from useAssignments() context
+    // Used only by grading view · student view hydrates from useAssignments() context
     async function getAssignmentTaskUI() {
         if (!access_token) {
             return;

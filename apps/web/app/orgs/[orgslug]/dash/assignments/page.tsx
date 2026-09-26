@@ -106,7 +106,7 @@ function AssignmentsHome() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [autoGradedOnly, setAutoGradedOnly] = useState(false)
 
-  // === Stats — computed from the unfiltered data ===
+  // === Stats · computed from the unfiltered data ===
   const stats = useMemo(() => {
     const allAssignments: any[] = (courseAssignments || []).flat()
     return {
@@ -137,7 +137,7 @@ function AssignmentsHome() {
 
   // Build the filtered course rows. Each entry has { course, assignments } where
   // assignments has been filtered. Courses with zero assignments are always
-  // hidden — empty courses are noise on this dashboard, the teacher uses the
+  // hidden · empty courses are noise on this dashboard, the teacher uses the
   // course editor for those.
   const filteredCourseRows = useMemo(() => {
     if (!courseAssignments || !courses) return []
@@ -168,7 +168,7 @@ function AssignmentsHome() {
         <div className='flex items-start justify-between gap-4 pt-6'>
           <div className='flex flex-col space-y-2'>
             <Breadcrumbs items={[
-              { label: t('common.assignments'), href: '/dash/assignments', icon: <Backpack size={14} /> }
+              { label: t('common.assignments'), href: getUriWithOrg(org.slug, '/dash/assignments'), icon: <Backpack size={14} /> }
             ]} />
             <h1 className="pt-3 flex font-bold text-4xl">{t('dashboard.assignments.home.title')}</h1>
           </div>
@@ -445,7 +445,7 @@ function CourseCard({
 
   return (
     <div className='flex flex-col space-y-3'>
-      {/* Course header — sits above the assignment grid as a section title.
+      {/* Course header · sits above the assignment grid as a section title.
           No outer card wrapper around the whole course because the assignments
           themselves are now the cards. */}
       <div className='flex items-center justify-between gap-3 px-1'>
@@ -476,7 +476,7 @@ function CourseCard({
         </Link>
       </div>
 
-      {/* Assignment grid — 1 column on mobile, 2 on tablet, 3 on desktop */}
+      {/* Assignment grid · 1 column on mobile, 2 on tablet, 3 on desktop */}
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
         {assignments.map((assignment: any) => (
           <AssignmentCard
@@ -543,7 +543,7 @@ function AssignmentCard({
         {assignment.title || t('dashboard.assignments.home.untitled')}
       </Link>
 
-      {/* Description — fixed min-height so cards align even when one has no description */}
+      {/* Description · fixed min-height so cards align even when one has no description */}
       <p className='text-xs text-gray-500 line-clamp-2 min-h-[2rem] mb-3 break-words'>
         {assignment.description || ''}
       </p>
@@ -570,7 +570,7 @@ function AssignmentCard({
         )}
       </div>
 
-      {/* Footer actions — pinned to the bottom of the card. Restored to the
+      {/* Footer actions · pinned to the bottom of the card. Restored to the
           classic white pill-with-nice-shadow look. */}
       <div className='flex items-center gap-2 mt-auto pt-3 border-t border-gray-100'>
         <Link

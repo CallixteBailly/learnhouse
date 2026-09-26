@@ -428,14 +428,14 @@ export default function UserList() {
                         <span className="text-sm text-white/40">
                           {u.creation_date
                             ? new Date(u.creation_date).toLocaleDateString()
-                            : '—'}
+                            : '·'}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm text-white/40">
                           {u.update_date
                             ? new Date(u.update_date).toLocaleDateString()
-                            : '—'}
+                            : '·'}
                         </span>
                       </td>
                     </tr>

@@ -377,7 +377,7 @@ export function CopilotChat({ orgslug }: CopilotProps) {
 
   return (
     <div className="flex h-[calc(100vh-72px)] w-full max-w-(--breakpoint-2xl) mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-      {/* Sidebar — overlay on mobile, inline on desktop */}
+      {/* Sidebar · overlay on mobile, inline on desktop */}
       {sidebarOpen && (
       <>
         {/* Mobile backdrop */}
@@ -435,7 +435,7 @@ export function CopilotChat({ orgslug }: CopilotProps) {
       </>
       )}
 
-      {/* Toggle sidebar button (when closed, desktop only — mobile uses top bar button) */}
+      {/* Toggle sidebar button (when closed, desktop only · mobile uses top bar button) */}
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
@@ -806,7 +806,7 @@ export function AssistantMessage({ content, sources, orgslug, isStreaming, isWai
         </div>
       )}
 
-      {/* Message bubble — full width, relative for badge positioning */}
+      {/* Message bubble · full width, relative for badge positioning */}
       <div className="relative rounded-2xl px-4 py-3 bg-neutral-50 dark:bg-neutral-800/60 nice-shadow">
         {isWaiting ? (
           <ThinkingIndicator />

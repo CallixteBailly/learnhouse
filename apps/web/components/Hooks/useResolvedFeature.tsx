@@ -13,7 +13,7 @@ export interface ResolvedFeatureState {
   /** True when the current plan meets the gate's minimum requirement. */
   meetsPlan: boolean
   /**
-   * Why the gate blocks the user — undefined when the feature is granted.
+   * Why the gate blocks the user · undefined when the feature is granted.
    * `plan` = upgrade needed; `disabled` = plan is OK but feature is toggled off.
    */
   reason?: 'plan' | 'disabled'

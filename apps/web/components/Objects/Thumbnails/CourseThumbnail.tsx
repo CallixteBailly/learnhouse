@@ -118,7 +118,7 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
 
   const cleanUuid = removeCoursePrefix(course.course_uuid)
 
-  // Modèle d'état « formation commencée » (refonte) — étendu au catalogue
+  // Modèle d'état « formation commencée » (refonte) · étendu au catalogue
   const courseProgress = (() => {
     if (!trailData?.runs) return { pct: 0, completed: 0, total: 0, started: false }
     const run = trailData.runs.find((r: any) => {
@@ -136,7 +136,7 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
     }
   })()
 
-  // Adaptation catalogue (refonte) — jamais sur les cartes du backoffice (isDashboard)
+  // Adaptation catalogue (refonte) · jamais sur les cartes du backoffice (isDashboard)
   const courseTags: string[] = !isDashboard
     ? (Array.isArray(course.tags) ? course.tags.join(',') : (course.tags || ''))
         .split(',').map((s: string) => s.trim()).filter(Boolean).slice(0, 3)

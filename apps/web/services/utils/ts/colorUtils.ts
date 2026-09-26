@@ -38,7 +38,7 @@ export function isLightColor(hex: string): boolean {
  */
 export function getMenuColorClasses(primaryColor: string) {
   if (!primaryColor) {
-    // Thème par défaut — Bleu Nuit Ordria (aligné sur ordria.pages.dev)
+    // Thème par défaut · Bleu Nuit Ordria (aligné sur ordria.pages.dev)
     // Header sombre + textes blanc cassé + accents cyan Éclat
     return {
       text: 'text-white/90',

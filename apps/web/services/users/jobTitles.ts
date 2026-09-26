@@ -13,7 +13,7 @@ export interface JobTitle {
  * Fetch the public list of job titles (GET /api/v1/job-titles/public).
  *
  * Called from the signup form (client-side useEffect), so this is a plain
- * async function — no 'use server' — matching the other client-consumed
+ * async function · no 'use server' · matching the other client-consumed
  * services in this directory.
  *
  * Graceful degradation: any failure (network error, non-OK status, malformed

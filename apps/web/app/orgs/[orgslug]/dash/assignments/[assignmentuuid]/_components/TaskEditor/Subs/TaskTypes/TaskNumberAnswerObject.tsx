@@ -176,7 +176,7 @@ function TaskNumberAnswerObject({
   // --- SAVE PROGRESS (student) ---
   // Matches the QUIZ / FORM pattern: persist the draft answer only. Grading
   // is done server-side via _server_verified_task_grade when the assignment
-  // is finalized — either by the auto-grade path on submission or by the
+  // is finalized · either by the auto-grade path on submission or by the
   // teacher clicking "Set final grade". Keeping the client out of the
   // grading loop also means DevTools tampering can't inflate the score.
   async function submitFC() {
@@ -352,7 +352,7 @@ function TaskNumberAnswerObject({
         )}
 
         {/* === STUDENT VIEW === */}
-        {/* Saving is just persisting a draft — no Correct/Incorrect feedback
+        {/* Saving is just persisting a draft · no Correct/Incorrect feedback
             here. The student sees their grade after the whole assignment is
             graded (visible in the activity header badge). */}
         {view === 'student' && (

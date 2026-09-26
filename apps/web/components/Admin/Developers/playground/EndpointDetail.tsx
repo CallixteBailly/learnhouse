@@ -157,7 +157,7 @@ export default function EndpointDetail({
             <Warning size={14} weight="fill" className="text-amber-300 mt-0.5 shrink-0" />
             <span>
               <strong>Session auth only.</strong> API tokens cannot call this endpoint
-              (privilege-escalation block). The live Send button will fail with 403 if you use a token —
+              (privilege-escalation block). The live Send button will fail with 403 if you use a token ·
               copy the snippet and run it as a logged-in superadmin instead.
             </span>
           </div>
@@ -205,7 +205,7 @@ export default function EndpointDetail({
                   <span className="text-white/40">{f.type}</span>
                   {f.required && <span className="text-red-400/80">*</span>}
                   {f.description && (
-                    <span className="text-white/40">— {f.description}</span>
+                    <span className="text-white/40">· {f.description}</span>
                   )}
                 </div>
               ))}
@@ -320,7 +320,7 @@ function ParamRow({
         )}
         <span className="text-[11px] text-white/40">{param.type}</span>
         {param.description && (
-          <span className="text-[11px] text-white/40">— {param.description}</span>
+          <span className="text-[11px] text-white/40">· {param.description}</span>
         )}
       </div>
       {param.picker === 'org_id' ? (

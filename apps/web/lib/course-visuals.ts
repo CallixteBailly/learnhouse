@@ -61,7 +61,7 @@ export const METIER_VISUALS: Record<string, { image: string; label: string }> = 
 }
 
 /** Pool d'images de fallback aléatoires (style tech/business) quand aucun
- *  métier n'est détecté — pioche déterministe basée sur l'UUID du cours. */
+ *  métier n'est détecté · pioche déterministe basée sur l'UUID du cours. */
 const FALLBACK_IMAGES = [
   'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&w=800&q=80',
   'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',

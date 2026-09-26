@@ -192,7 +192,7 @@ function TaskShortAnswerObject({
 
   // --- SAVE PROGRESS (student) ---
   // Matches the QUIZ / FORM pattern: just persist the student's answer. We
-  // deliberately send grade=0 and no feedback — the actual grading happens
+  // deliberately send grade=0 and no feedback · the actual grading happens
   // server-side when the student submits the whole assignment for grading
   // (which triggers _server_verified_task_grade in the backend), or when
   // the teacher clicks "Set final grade" in the EvaluateAssignment modal.
@@ -391,7 +391,7 @@ function TaskShortAnswerObject({
         )}
 
         {/* === STUDENT VIEW === */}
-        {/* No Correct/Incorrect banner here — saving is just persisting a
+        {/* No Correct/Incorrect banner here · saving is just persisting a
             draft. The student learns their grade after the whole assignment
             is submitted + graded (visible in the activity header badge). */}
         {view === 'student' && (

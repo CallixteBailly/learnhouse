@@ -23,13 +23,13 @@ function topDomain(): string | null {
  * Returns `target` only when it is SAFE to navigate to, otherwise `fallback`.
  * Safe = a relative path, or an http(s) URL on the same host or a subdomain of
  * the configured org top-domain (e.g. *.learnhouse.io). Blocks external origins,
- * protocol-relative `//evil.com`, and `javascript:`/`data:` schemes — closing
+ * protocol-relative `//evil.com`, and `javascript:`/`data:` schemes · closing
  * the open-redirect holes on attacker-supplied callbackUrl / returnOrigin.
  */
 export function safeRedirectUrl(target: string | null | undefined, fallback = '/'): string {
   if (!target || typeof target !== 'string') return fallback
   const t = target.trim()
-  // Relative path — but reject protocol-relative `//evil.com`.
+  // Relative path · but reject protocol-relative `//evil.com`.
   if (t.startsWith('/') && !t.startsWith('//')) return t
   if (typeof window === 'undefined') return fallback
   try {

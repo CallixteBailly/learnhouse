@@ -70,7 +70,7 @@ interface SessionCache {
   timestamp: number
 }
 
-// Keep this SHORT — the cached session carries the user's org roles, which the
+// Keep this SHORT · the cached session carries the user's org roles, which the
 // admin feature-gating reads. A long TTL means revoked membership/roles linger
 // in the UI. 2 min balances freshness against redundant /users/session fetches
 // (the authenticated refetch interval is ~1 min).
@@ -218,14 +218,14 @@ export function SessionProvider({
     try {
       broadcastChannelRef.current = new BroadcastChannel(AUTH_BROADCAST_CHANNEL)
     } catch (e) {
-      // Some privacy modes throw on BroadcastChannel — degrade gracefully.
+      // Some privacy modes throw on BroadcastChannel · degrade gracefully.
       console.warn('[auth] BroadcastChannel unavailable:', e)
       return
     }
 
     broadcastChannelRef.current.onmessage = (event) => {
       if (event.data.type === 'LOGOUT') {
-        // Another tab logged out — clear our state (and the session marker) too.
+        // Another tab logged out · clear our state (and the session marker) too.
         authEpochRef.current++
         setSession(null)
         setAccessToken(null)
@@ -242,7 +242,7 @@ export function SessionProvider({
           if (Date.now() - last < 3000) return
           localStorage.setItem('lh_xtab_refresh_at', String(Date.now()))
         } catch {
-          /* localStorage unavailable — fall through and just refresh */
+          /* localStorage unavailable · fall through and just refresh */
         }
         refreshSessionInternalRef.current().catch((e) =>
           console.error('[auth] cross-tab session refresh failed:', e),
@@ -256,9 +256,9 @@ export function SessionProvider({
   }, [])
 
   // Fetch user session from backend.
-  // Returns null when the token is authoritatively rejected (401/403 — caller
+  // Returns null when the token is authoritatively rejected (401/403 · caller
   // should clear auth state) and undefined on transient failures (5xx, network
-  // — caller must keep the current auth state; a backend blip or a container
+  // · caller must keep the current auth state; a backend blip or a container
   // rollout must not log the user out).
   const fetchUserSession = useCallback(async (token: string, expiry?: number): Promise<Session | null | undefined> => {
     try {
@@ -274,7 +274,7 @@ export function SessionProvider({
         if (response.status === 401 || response.status === 403) {
           return null
         }
-        console.warn(`Session fetch failed with status: ${response.status} (transient — keeping auth state)`)
+        console.warn(`Session fetch failed with status: ${response.status} (transient · keeping auth state)`)
         return undefined
       }
 
@@ -295,7 +295,7 @@ export function SessionProvider({
   }, [])
 
   // Check if a session might exist (marker cookie is set alongside httpOnly auth cookies).
-  // Match the cookie name EXACTLY — `includes('LH_session')` also matched unrelated
+  // Match the cookie name EXACTLY · `includes('LH_session')` also matched unrelated
   // names like `LH_session_backup`, falsely reporting a session.
   const hasSessionMarker = useCallback((): boolean => {
     if (typeof document === 'undefined') return false
@@ -365,7 +365,7 @@ export function SessionProvider({
     setTokenExpiry(expiry || null)
 
         const sessionData = await fetchUserSession(token, expiry)
-        // A logout/clear that fired during the await bumped the epoch — abort the
+        // A logout/clear that fired during the await bumped the epoch · abort the
         // write so we don't resurrect a session that was just invalidated.
         if (authEpochRef.current !== epoch) return false
         if (sessionData === null) {
@@ -373,7 +373,7 @@ export function SessionProvider({
           return false
         }
         if (!sessionData) {
-          // Transient failure — keep cookies and auth state; the refetch
+          // Transient failure · keep cookies and auth state; the refetch
           // interval or the next navigation will retry. Only make the
           // loading state resolve so gates don't spin forever.
           setStatus((prev) => (prev === 'loading' ? 'unauthenticated' : prev))
@@ -436,9 +436,9 @@ export function SessionProvider({
         try {
           refreshResult = await refreshAccessToken()
         } catch {
-          // Transient refresh failure — keep auth state and retry later
+          // Transient refresh failure · keep auth state and retry later
           // (interval / next navigation) instead of logging the user out.
-          console.warn('Token refresh failed transiently — keeping auth state')
+          console.warn('Token refresh failed transiently · keeping auth state')
           return null
         }
         if (refreshResult) {
@@ -447,7 +447,7 @@ export function SessionProvider({
           setAccessToken(currentToken)
           setTokenExpiry(currentExpiry)
         } else {
-          // Refresh token authoritatively rejected (401) — user is unauthenticated
+          // Refresh token authoritatively rejected (401) · user is unauthenticated
           clearAuthState()
           return null
         }
@@ -455,7 +455,7 @@ export function SessionProvider({
 
       // Fetch session data with the CURRENT expiry (from refresh, not stale state)
       const sessionData = await fetchUserSession(currentToken, currentExpiry || undefined)
-      // A logout/clear during the awaits bumped the epoch — abort the write so we
+      // A logout/clear during the awaits bumped the epoch · abort the write so we
       // don't resurrect a session that was just invalidated (cross-tab logout).
       if (authEpochRef.current !== epoch) return null
       if (sessionData) {
@@ -470,7 +470,7 @@ export function SessionProvider({
         clearAuthState()
         return null
       } else {
-        // Transient session-fetch failure — keep the last known session; the
+        // Transient session-fetch failure · keep the last known session; the
         // refetch interval will retry.
         return currentToken
       }
@@ -485,7 +485,7 @@ export function SessionProvider({
     let isMounted = true
 
     const initSession = async () => {
-      // Skip entirely if no session marker — no httpOnly refresh token exists
+      // Skip entirely if no session marker · no httpOnly refresh token exists
       if (!hasSessionMarker()) {
         clearAuthState(false)
         return
@@ -499,7 +499,7 @@ export function SessionProvider({
       try {
         refreshResult = await refreshAccessToken()
       } catch {
-        // Backend blip / container rollout — keep the cookies so a reload can
+        // Backend blip / container rollout · keep the cookies so a reload can
         // retry instead of destroying the session.
         transientRefreshError = true
       }
@@ -693,7 +693,7 @@ export function SessionProvider({
           // Store CSRF token in cookie for validation on callback
           setOAuthStateCookie(csrfToken)
 
-          // Always use main domain for redirect URI — only one URI registered with Google
+          // Always use main domain for redirect URI · only one URI registered with Google
           const redirectUri = `${window.location.protocol}//${getLEARNHOUSE_DOMAIN_VAL()}/auth/callback/google`
 
           // Get Google OAuth URL from server (client ID lives server-side only)
@@ -945,7 +945,7 @@ export async function signIn(
     // Store CSRF token in cookie for validation on callback
     setOAuthStateCookie(csrfToken)
 
-    // Always use main domain for redirect URI — only one URI registered with Google
+    // Always use main domain for redirect URI · only one URI registered with Google
     const redirectUri = `${window.location.protocol}//${getLEARNHOUSE_DOMAIN_VAL()}/auth/callback/google`
 
     // Get Google OAuth URL from server (client ID lives server-side only)

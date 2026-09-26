@@ -20,11 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
       tags: ['organizations'],
     })
   } catch {
-    // Stale cookie or unknown org — fall back to generic title
+    // Stale cookie or unknown org · fall back to generic title
   }
 
   return {
-    title: 'Reset Password' + ` — ${org?.name || 'Ordria Learning'}`,
+    title: 'Reset Password' + ` · ${org?.name || 'Ordria Learning'}`,
     robots: { index: false, follow: false },
   }
 }

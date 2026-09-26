@@ -280,7 +280,7 @@ function ActivityClient(props: ActivityClientProps) {
 
   const _queryClient = useQueryClient()
 
-  // Fetch trail data — shares cache key with course page trail query
+  // Fetch trail data · shares cache key with course page trail query
   const { data: trailData, refetch: refetchTrail } = useTrail(org?.id)
 
   // Memoize activity position calculation
@@ -388,7 +388,7 @@ function ActivityClient(props: ActivityClientProps) {
       if (saved !== null) {
         setIsFocusMode(saved === 'true');
       }
-      // Mobile now uses the same normal mode as desktop — no forced focus mode
+      // Mobile now uses the same normal mode as desktop · no forced focus mode
     }
   }, [isMobile]);
 
@@ -797,7 +797,7 @@ function ActivityClient(props: ActivityClientProps) {
                   />
                 ) : (
                   <div className="space-y-4 pt-0 relative">
-                    {/* Mobile: sticky course info bar — bande de progression (wireframe M2) */}
+                    {/* Mobile: sticky course info bar · bande de progression (wireframe M2) */}
                     <div className="md:hidden sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-3 py-2 -mx-3">
                       <div className="flex items-center justify-between gap-2">
                         <Link href={getUriWithOrg(orgslug, '') + `/course/${courseuuid}`} className="flex items-center gap-2 min-w-0">
@@ -1524,7 +1524,7 @@ function NextActivityButton({ course, currentActivityId, orgslug, requireScrollC
   const [bottomReached, setBottomReached] = React.useState(false);
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
 
-  // Scroll tracking local — pour la confirmation "êtes-vous sûr de quitter sans avoir tout lu ?"
+  // Scroll tracking local · pour la confirmation "êtes-vous sûr de quitter sans avoir tout lu ?"
   React.useEffect(() => {
     if (!requireScrollConfirm) return;
     if (typeof window === 'undefined') return;
@@ -1810,7 +1810,7 @@ function AssignmentTools(props: {
     );
     if (res.success) {
       // The backend returns a rich grade object: display_grade, points_summary,
-      // percentage_display, passed, overall_feedback, etc. We just render it —
+      // percentage_display, passed, overall_feedback, etc. We just render it ·
       // no client-side math.
       setGradeData(res.data);
     }
@@ -1914,7 +1914,7 @@ function AssignmentTools(props: {
 
     return (
       <>
-        {/* Compact pill — same footprint and alignment as the Next button */}
+        {/* Compact pill · same footprint and alignment as the Next button */}
         <button
           type="button"
           onClick={() => setIsGradeModalOpen(true)}
@@ -1943,7 +1943,7 @@ function AssignmentTools(props: {
           </div>
         </button>
 
-        {/* Confetti for passing students — fires once each time the modal
+        {/* Confetti for passing students · fires once each time the modal
             opens because react-confetti with recycle={false} plays through
             and the conditional remount restarts it. */}
         {isGradeModalOpen && isPassing && gradeData && (
@@ -1960,7 +1960,7 @@ function AssignmentTools(props: {
           </div>
         )}
 
-        {/* Detail modal — opens on click and auto-opens once when the
+        {/* Detail modal · opens on click and auto-opens once when the
             assignment is auto-graded so students see their result right
             away. */}
         <Modal
@@ -2055,7 +2055,7 @@ function AssignmentTools(props: {
                                     ? 'text-emerald-700'
                                     : 'text-rose-700'
                               }`}>
-                                {tb.submitted ? tb.percentage_display : '—'}
+                                {tb.submitted ? tb.percentage_display : '·'}
                               </span>
                             </div>
                           </div>

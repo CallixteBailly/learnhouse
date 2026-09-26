@@ -8,6 +8,8 @@
  * any test runs — so specs never start against a half-booted stack.
  */
 import { spawnSync } from 'node:child_process'
+import { rmSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
 import {
   ADMIN_EMAIL,
@@ -56,6 +58,15 @@ async function waitForOk(url: string, timeoutMs: number, label: string): Promise
   throw new Error(`Timed out waiting for ${label} at ${url}: ${lastErr}`)
 }
 
+function clearTokenCache(): void {
+  const cacheFile = fileURLToPath(new URL('./.auth/token-cache.json', import.meta.url))
+  try {
+    rmSync(cacheFile, { force: true })
+  } catch {
+    /* best-effort */
+  }
+}
+
 function bootSelfHost(): void {
   console.log(`Booting LearnHouse self-host via CLI (install "${INSTALL_NAME}")…`)
   const cmd = [
@@ -92,6 +103,8 @@ export default async function globalSetup(): Promise<void> {
     console.log(`Reusing existing instance at ${BASE_URL} (boot skipped).`)
   } else {
     bootSelfHost()
+    // A fresh instance means any tokens cached from a previous run are dead.
+    clearTokenCache()
   }
 
   await waitForOk(`${API_URL}/health`, SKIP_BOOT ? 60_000 : BOOT_TIMEOUT_MS, 'API health')
@@ -132,37 +145,36 @@ async function saveLogin(
   password: string,
   statePath: string,
 ): Promise<void> {
-  // API-based login: get the token, then set it in the browser context
-  // via cookie + localStorage. More reliable than UI login (no Turnstile,
-  // no i18n label differences).
-  const token = await api.login(email, password)
-
+  // Log in through the WEB app's auth proxy (/api/auth/login): it sets the
+  // real session cookies (httpOnly LH_access + LH_refresh + LH_session
+  // marker) that the UI actually reads. Injecting guessed cookie/localStorage
+  // names never authenticated the published image. page.request shares the
+  // browser context's cookie jar, so the Set-Cookies land in the state we
+  // save. More reliable than UI login (no Turnstile, no i18n label drift).
   const context = await browser.newContext()
   const page = await context.newPage()
 
-  // Navigate to the app so we can set localStorage/cookies on the right origin
-  await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' }).catch(() => {})
+  // Visit the origin once so localStorage can be seeded below (retry after
+  // the login in case the freshly-booted web was still warming up).
+  let onOrigin = false
+  try {
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' })
+    onOrigin = true
+  } catch {
+    /* retried below */
+  }
 
-  // Inject the session token into the browser context
-  await page.evaluate((tok) => {
-    // LearnHouse stores the session in a cookie named 'lh_session' (or similar)
-    // and/or in localStorage. We set both to cover all session strategies.
-    try { window.localStorage.setItem('lh_session', JSON.stringify({ token: tok })) } catch {}
-    try { window.localStorage.setItem('access_token', tok) } catch {}
-  }, token)
+  const res = await page.request.post(`${BASE_URL}/api/auth/login`, {
+    form: { username: email, password },
+  })
+  if (!res.ok()) {
+    await context.close()
+    throw new Error(`proxy login failed for ${email}: ${res.status()} ${await res.text()}`)
+  }
 
-  // Set the session cookie (the Next.js backend uses next-auth or custom)
-  await context.addCookies([
-    {
-      name: 'lh_session',
-      value: token,
-      domain: new URL(BASE_URL).hostname,
-      path: '/',
-      httpOnly: false,
-      secure: false,
-      sameSite: 'Lax',
-    },
-  ])
+  if (!onOrigin) {
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' })
+  }
 
   // Bake the dismissed-onboarding flag into the saved state so every context
   // reusing this storageState (including ad-hoc ones) skips the first-run UI.

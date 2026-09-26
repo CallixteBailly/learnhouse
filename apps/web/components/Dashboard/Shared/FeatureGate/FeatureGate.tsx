@@ -11,7 +11,7 @@ import {
 } from '@services/features/featureMetadata'
 
 export interface FeatureGateProps {
-  /** Feature key (drives icon, copy, upsell tier — see featureMetadata.ts). */
+  /** Feature key (drives icon, copy, upsell tier · see featureMetadata.ts). */
   feature: FeatureKey
   /**
    * Org slug for the "Go to settings" link in admin-disabled state. Optional;
@@ -22,7 +22,7 @@ export interface FeatureGateProps {
    * - 'dashboard': admin context. When the feature is admin-disabled the card
    *   offers a link to /dash/org/settings/features.
    * - 'public': learner-facing context. Admin-disabled renders a plain "not
-   *   available" message — no settings link.
+   *   available" message · no settings link.
    */
   context?: 'dashboard' | 'public'
   /** Content rendered when the feature is granted. */

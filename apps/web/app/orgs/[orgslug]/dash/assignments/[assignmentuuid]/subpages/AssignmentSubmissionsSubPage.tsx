@@ -31,7 +31,7 @@ type SortField =
     | 'date'             // when the student submitted
     | 'name'             // student display name
     | 'status'           // LATE → SUBMITTED → GRADED (or reverse)
-    | 'grade'            // numeric grade value — highest / lowest first
+    | 'grade'            // numeric grade value · highest / lowest first
     | 'needs_grading'    // put LATE/SUBMITTED before GRADED so teachers see what to review
     | 'late_first'       // LATE submissions at the top
     | 'recently_graded'; // GRADED first, then sorted by submission date
@@ -440,7 +440,7 @@ function SubmissionRow({
                 </div>
             </div>
 
-            {/* Grade — show the computed display_grade (e.g. "B", "85/100",
+            {/* Grade · show the computed display_grade (e.g. "B", "85/100",
                 "Pass") so the list matches the evaluate modal and the
                 student's own view instead of showing a naked raw sum. */}
             {submission.submission_status === 'GRADED' && (
@@ -475,7 +475,7 @@ function SubmissionRow({
                 <span>{status.label}</span>
             </div>
 
-            {/* Attempt indicator — only shown when the student is past the
+            {/* Attempt indicator · only shown when the student is past the
                 first attempt so the row stays uncluttered for the common
                 case of a single submission. */}
             {submission.attempt_number && submission.attempt_number > 1 && (

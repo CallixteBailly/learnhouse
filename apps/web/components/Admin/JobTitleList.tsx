@@ -15,7 +15,7 @@ interface JobTitle {
 }
 
 // NOTE: the admin table is fed by the public list (active titles only).
-// Deactivated titles therefore disappear from this view — the backend does
+// Deactivated titles therefore disappear from this view · the backend does
 // not expose an admin listing endpoint yet.
 export default function JobTitleList() {
   const session = useLHSession() as any

@@ -1,7 +1,7 @@
 /**
- * Edge-safe configuration subset — used by `middleware.ts` (Edge runtime).
+ * Edge-safe configuration subset · used by `middleware.ts` (Edge runtime).
  *
- * IMPORTANT: the middleware must NOT import `./config` — that module reads
+ * IMPORTANT: the middleware must NOT import `./config` · that module reads
  * runtime-config.json through fs/path/process.cwd, and Turbopack fails the
  * Edge bundle on any statically visible Node API. This module only reads
  * build-time-inlined `process.env.NEXT_PUBLIC_*` values, which is exactly

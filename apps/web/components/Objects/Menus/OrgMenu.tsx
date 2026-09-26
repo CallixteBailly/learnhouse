@@ -9,6 +9,7 @@ import { getUriWithOrg } from '@services/config/config'
 import { fetchRAGChatSessions, RAGChatSession } from '@services/ai/ai'
 import { HeaderProfileBox } from '@components/Security/HeaderProfileBox'
 import MenuLinks from './OrgMenuLinks'
+import { OrgSwitcherBadge } from '@components/Objects/Menus/OrgSwitcherBadge'
 import { getOrgLogoMediaDirectory } from '@services/media/media'
 import { useLHSession } from '@components/Contexts/LHSessionContext'
 import { useOrg } from '@components/Contexts/OrgContext'
@@ -28,7 +29,6 @@ import {
   Books,
   FolderSimple,
 } from '@phosphor-icons/react'
-import { DiscordIcon } from '@components/Objects/Icons/DiscordIcon'
 import { menuIcon } from '@components/Objects/Menus/menuIcons'
 import Logo from '@components/Objects/Brand/Logo'
 import {
@@ -176,6 +176,11 @@ export const OrgMenu = (props: any) => {
                 </div>
               </Link>
             </div>
+            {/* Current-org badge + switcher · multi-org users only, so nobody
+                gets "stuck" in an organization without a visible way out. */}
+            <div className="hidden sm:flex shrink-0">
+              <OrgSwitcherBadge />
+            </div>
             <div className={`hidden md:flex ${colors.text}`}>
               <MenuLinks orgslug={orgslug} primaryColor={primaryColor} />
             </div>
@@ -208,7 +213,7 @@ export const OrgMenu = (props: any) => {
                 </TooltipProvider>
               </div>
             </AuthenticatedClientElement>
-            {/* Boards — disabled for OrdIA Learning */}
+            {/* Boards · disabled for OrdIA Learning */}
             {rf?.boards?.enabled && (
               <AuthenticatedClientElement checkMethod="authentication">
                 <div className="hidden md:flex">
@@ -278,7 +283,7 @@ export const OrgMenu = (props: any) => {
                       return (
                         <DropdownMenuItem key={item.id} asChild>
                           <Link
-                            href={item.href}
+                            href={getUriWithOrg(orgslug, item.href)}
                             className="flex items-center gap-2"
                             onClick={() => track(AnalyticsEvent.DashboardEntered, { source: 'org_menu' })}
                           >
@@ -342,17 +347,6 @@ export const OrgMenu = (props: any) => {
                         <span>{t('common.help_menu.website')}</span>
                       </a>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <a
-                        href="https://discord.gg/learnhouse"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2"
-                      >
-                        <DiscordIcon size={16} />
-                        <span>{t('common.help_menu.discord')}</span>
-                      </a>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => setFeedbackModalOpen(true)}
@@ -400,7 +394,7 @@ export const OrgMenu = (props: any) => {
           {/* Search */}
           <SearchBar orgslug={orgslug} className="w-full" primaryColor="" />
 
-          {/* Navigation links — stacked vertical for mobile */}
+          {/* Navigation links · stacked vertical for mobile */}
           <MobileNavLinks orgslug={orgslug} primaryColor={primaryColor} onNavigate={() => setIsMenuOpen(false)} />
 
           {/* Trail progress */}
@@ -417,7 +411,10 @@ export const OrgMenu = (props: any) => {
 
           {/* Profile */}
           <div className="border-t border-white/10 pt-4">
-            <HeaderProfileBox primaryColor={primaryColor} />
+            <OrgSwitcherBadge />
+            <div className="mt-3">
+              <HeaderProfileBox primaryColor={primaryColor} />
+            </div>
           </div>
         </div>
       </div>
@@ -462,7 +459,7 @@ const CopilotMenuButton = ({
   const accessToken = session?.data?.tokens?.access_token
   const [isOpen, setIsOpen] = useState(false)
 
-  // Only fetch when the dropdown is open — avoids firing on every page load
+  // Only fetch when the dropdown is open · avoids firing on every page load
   const { data: sessions } = useQuery<RAGChatSession[]>({
     queryKey: queryKeys.ai.ragSessions(orgslug),
     queryFn: () => fetchRAGChatSessions(accessToken, orgslug),
@@ -578,13 +575,13 @@ const CopilotMenuButton = ({
 }
 
 const LearnHouseLogo = ({ logoFilter }: { logoFilter: string }) => {
-  // Composant local legacy — désormais délégué au <Logo> unifié.
+  // Composant local legacy · désormais délégué au <Logo> unifié.
   // Conservé temporairement pour les éventuels autres usages inline.
   return <Logo variant="lockup" size="sm" animated style={{ filter: logoFilter }} />
 }
 
 /**
- * Menu de navigation mobile — version verticale du MenuLinks desktop.
+ * Menu de navigation mobile · version verticale du MenuLinks desktop.
  * Rend les mêmes liens (config-driven via le contexte org) en stacked vertical,
  * avec fermeture du drawer au clic.
  */

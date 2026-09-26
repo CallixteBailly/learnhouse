@@ -4,8 +4,8 @@ import Link from 'next/link'
 import React from 'react'
 
 /**
- * Logo Ordria — charte « Rendu Ordria » (sept. 2026)
- * Icône : cadre déconstruit (6 rectangles arrondis) — « mettre de l'ordre ».
+ * Logo Ordria · charte « Rendu Ordria » (sept. 2026)
+ * Icône : cadre déconstruit (6 rectangles arrondis) · « mettre de l'ordre ».
  * Wordmark : ORDRIA en Expose (typo de logo de la charte).
  * Baseline : « Mettre de l'ordre, simplement ».
  *
@@ -33,7 +33,7 @@ export interface LogoProps {
   className?: string
   /** Suffixe optionnel après « ORDRIA » (rendu en Satoshi, plus discret) */
   suffix?: string
-  /** Accessibilité — si non fourni, utilise « Ordria Learning » */
+  /** Accessibilité · si non fourni, utilise « Ordria Learning » */
   ariaLabel?: string
   /** Style inline (ex: filter pour header sticky) */
   style?: React.CSSProperties
@@ -55,7 +55,7 @@ function resolveSize(size: LogoSize): number {
 const MARK_ASPECT = 254.28 / 214.38
 
 /**
- * Le symbole — géométrie exacte du logo livré (Fichier 6, monochrome),
+ * Le symbole · géométrie exacte du logo livré (Fichier 6, monochrome),
  * colorée en bleu charte via var(--ordria-accent) = #3b65ff.
  */
 const LogoMark = React.memo(function LogoMark({ size }: { size: number }) {
@@ -96,7 +96,7 @@ export default function Logo({
   ariaLabel,
   style,
 }: LogoProps): React.ReactNode {
-  void animated // l'icône charte est statique — prop conservée pour compat
+  void animated // l'icône charte est statique · prop conservée pour compat
   const markSize = resolveSize(size)
   const textColor = tone === 'light' ? '#f7f9f9' : 'var(--ordria-foreground, #1d1d1b)'
   const label = ariaLabel || 'Ordria Learning'

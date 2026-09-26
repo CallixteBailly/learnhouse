@@ -50,7 +50,7 @@ const SuperadminAuthorization: React.FC<SuperadminAuthorizationProps> = ({
     )
   }
 
-  // Ordria self-hosted: the superadmin dashboard is unlocked in OSS — this
+  // Ordria self-hosted: the superadmin dashboard is unlocked in OSS · this
   // deployment is a multi-tenant LMS and org/user administration is a core
   // operator need (same OSS-native unlock as Audit Logs / Analytics on the
   // API side). Authorization still requires is_superadmin below.

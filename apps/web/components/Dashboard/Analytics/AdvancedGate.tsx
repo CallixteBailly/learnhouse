@@ -9,14 +9,14 @@ export function AdvancedGate({
   children,
 }: {
   isAdvanced: boolean
-  /** Conservé pour compatibilité des appelants — ignoré (pas de paliers de plan). */
+  /** Conservé pour compatibilité des appelants · ignoré (pas de paliers de plan). */
   currentPlan?: string
   children: React.ReactNode
 }) {
   void _currentPlan
   const { t } = useTranslation()
 
-  // Ordria : pas de paliers de plan — l'état verrouillé affiche un simple
+  // Ordria : pas de paliers de plan · l'état verrouillé affiche un simple
   // indicateur "non disponible", sans badge ni lien d'upgrade.
   return (
     <div className="relative min-h-[300px] min-w-0 overflow-hidden">

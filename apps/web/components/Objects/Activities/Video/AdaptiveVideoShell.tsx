@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 
 interface AdaptiveVideoShellProps {
   /**
-   * Intrinsic aspect ratio of the video (width / height), when known —
+   * Intrinsic aspect ratio of the video (width / height), when known ·
    * measured client-side by the player (loadedmetadata) or seeded from the
    * server's HLS metadata. While unknown, the shell falls back to 16:9 so
    * there is never an unbounded/collapsed box.
@@ -31,7 +31,7 @@ const MAX_RATIO = 4
  * Width comes first (bounded by the block's size setting and the available
  * column width); if the resulting height would exceed maxHeightVh (portrait
  * videos on mobile especially), the box is height-capped and the width is
- * recomputed to preserve the ratio — so there is never letterboxing, and a
+ * recomputed to preserve the ratio · so there is never letterboxing, and a
  * 9:16 short never becomes a full-page column.
  *
  * Responsive by construction: a ResizeObserver tracks the available width and

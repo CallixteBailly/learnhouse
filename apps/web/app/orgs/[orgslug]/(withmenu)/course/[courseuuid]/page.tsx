@@ -36,7 +36,7 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
 
   if (!courseResult) {
     return {
-      title: `Course — ${org?.name || 'Ordria Learning'}`,
+      title: `Course · ${org?.name || 'Ordria Learning'}`,
       description: 'Découvrez ce cours sur Ordria Learning',
     }
   }
