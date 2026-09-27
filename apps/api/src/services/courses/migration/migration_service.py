@@ -56,6 +56,8 @@ MAX_TOTAL_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024  # 20GB total across all files
 MAX_SINGLE_FILE_SIZE = 5 * 1024 * 1024 * 1024  # 5GB per file
 STREAM_CHUNK_SIZE = 8 * 1024 * 1024  # 8MB read/write chunks
 MAX_CONCURRENT_UPLOADS = 3  # Max simultaneous upload requests
+# Cap on PDF text injected per document into the structure-suggestion prompt.
+MAX_MIGRATION_DOC_PROMPT_CHARS = 15_000
 
 # Semaphore to limit concurrent upload processing
 _upload_semaphore = asyncio.Semaphore(MAX_CONCURRENT_UPLOADS)
@@ -279,6 +281,39 @@ async def suggest_structure(
         )
     file_list = "\n".join(file_descriptions)
 
+    # Extract text from PDF uploads so the suggested structure reflects the
+    # documents' actual content instead of just their filenames. Scanned
+    # PDFs without a text layer simply contribute nothing.
+    document_context_parts = []
+    for fi in files:
+        if fi.get("extension") != "pdf":
+            continue
+        pdf_path = os.path.join(temp_real, f"{fi['file_id']}.pdf")
+        pdf_real = os.path.realpath(pdf_path)
+        if not pdf_real.startswith(temp_real + os.sep):
+            continue
+        if not os.path.exists(pdf_real):
+            continue
+        try:
+            with open(pdf_real, "rb") as f:
+                from src.services.ai.rag.content_extraction import extract_text_from_pdf
+
+                text = extract_text_from_pdf(f.read())
+        except OSError:
+            continue
+        if not text:
+            continue
+        document_context_parts.append(
+            f"--- {fi['filename']} ---\n{text[:MAX_MIGRATION_DOC_PROMPT_CHARS]}"
+        )
+    document_context = ""
+    if document_context_parts:
+        document_context = (
+            "\n\nDOCUMENT CONTENT (the structure MUST follow the actual content of "
+            "these documents, reusing their real chapter/topic organization):\n\n"
+            + "\n\n".join(document_context_parts)
+        )
+
     # Build file ID mapping
     file_id_mapping = "\n".join(
         f"{fi['filename']} -> {fi['file_id']}" for fi in files
@@ -288,8 +323,9 @@ async def suggest_structure(
         "You are organizing files into an online course structure.\n\n"
         f"Course name: {course_name}\n"
         + (f"Description: {description}\n" if description else "")
-        + f"\nFiles available:\n{file_list}\n\n"
-        "Create a JSON course structure. Group related files into chapters, "
+        + f"\nFiles available:\n{file_list}\n"
+        + document_context
+        + "\n\nCreate a JSON course structure. Group related files into chapters, "
         "and assign each file to an activity within a chapter. Use the original "
         "filenames to infer topic/order. Each activity should have a descriptive "
         "name (not the filename).\n\n"
