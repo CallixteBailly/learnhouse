@@ -107,3 +107,4 @@ CMD ["/app/start-api.sh"]
 # rollout marker 2026-09-09: env vars (HLS) require instance restart
 # rollout marker 2026-09-09b: worker env (HLS) needs instance restart
 # rollout marker 2026-09-22: certifications fix (completion counts published activities only)
+# durability test marker 2026-09-27c

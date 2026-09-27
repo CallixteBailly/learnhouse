@@ -27,6 +27,20 @@ class JoinOrg(BaseModel):
         return str(v)
 
 
+async def _consume_pending_invite(org: Organization, email: Optional[str], db_session) -> None:
+    """Drop the org's pending email-invitation entry for this user (best effort).
+
+    When an invited user finally joins — via an invite link or an open join —
+    their row must leave the "pending invitations" list; otherwise the org
+    admin keeps seeing an invitation in flight for someone who is already a
+    member. Storage is PostgreSQL (durable); any failure must never break the
+    join itself.
+    """
+    from src.services.orgs.invites import delete_invited_user_row
+
+    await delete_invited_user_row(org.id if org.id is not None else 0, email, db_session)
+
+
 async def join_org(
     request: Request,
     args: JoinOrg,
@@ -123,6 +137,8 @@ async def join_org(
             from src.routers.users import _invalidate_session_cache
             _invalidate_session_cache(user.id)
 
+            await _consume_pending_invite(org, user.email, db_session)
+
             # Add user to UserGroup if invite code is linked to one
             if inviteCode.get("usergroup_id"):
                 await add_users_to_usergroup(
@@ -159,6 +175,8 @@ async def join_org(
             _invalidate_session_cache(user.id)
 
             await increase_feature_usage("members", org.id, db_session)
+
+            await _consume_pending_invite(org, user.email, db_session)
 
             return "Great, You're part of the Organization"
 

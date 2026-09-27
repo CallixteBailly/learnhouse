@@ -828,10 +828,11 @@ async def invite_batch_users(
         if not email:
             continue
 
-        # Check if user is already invited
-        invited_user = r.get(f"invited_user:{email}:org:{org.org_uuid}")
+        # Check if user is already invited (PostgreSQL-backed pending list)
+        from src.services.orgs import org_invites_store as invites_store
 
-        if invited_user:
+        already = await invites_store.find_invited_lower(db_session, org.id, email)
+        if already is not None:
             results.append({"email": email, "status": "already_invited"})
             continue
 
@@ -847,21 +848,16 @@ async def invite_batch_users(
             db_session=db_session,
         )
 
-        invited_user_object = {
-            "email": email,
-            "org_id": org.id,
-            "invite_code_uuid": invite_code_uuid,
-            "pending": True,
-            "email_sent": isEmailSent,
-            "expires": ttl,
-            "created_at": datetime.now().isoformat(),
-            "created_by": current_user.user_uuid,
-        }
+        # Persist the pending invitation (PostgreSQL · survives deploys)
+        from src.services.orgs.invites import upsert_invited_user
 
-        r.set(
-            f"invited_user:{email}:org:{org.org_uuid}",
-            json.dumps(invited_user_object),
-            ex=ttl,
+        await upsert_invited_user(
+            db_session,
+            org_id=org.id,
+            email=email,
+            created_by=current_user.user_uuid,
+            invite_code_uuid=invite_code_uuid,
+            email_sent=isEmailSent,
         )
 
         results.append({

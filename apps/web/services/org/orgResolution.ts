@@ -102,7 +102,12 @@ export async function getAuthOrgSlug(): Promise<string | null> {
   const tenancy = await getServerTenancy()
 
   if (tenancy === 'multi') {
-    return await getOrgSlugFromSubdomainViaEE()
+    const slug = await getOrgSlugFromSubdomainViaEE()
+    if (slug) return slug
+    // Central-LMS cookie tenancy: the apex host carries no org subdomain, so
+    // fall back to the LH_org cookie (pinned by /enter/{slug} or an org visit).
+    // Without this, /signup?inviteCode=X resolves no org and a signed-in
+    // invitee gets bounced to /home instead of the "Join <org>" screen.
   }
 
   const cookieStore = await cookies()

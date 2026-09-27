@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
-import { getAPIUrl, getDeploymentMode } from '@services/config/config'
+import { getAPIUrl, getDeploymentMode, getUriWithOrg } from '@services/config/config'
 import { getOrgLogoMediaDirectory, getUserAvatarMediaDirectory } from '@services/media/media'
 import { apiFetch } from '@services/utils/ts/requests'
 import { useLHSession } from '@components/Contexts/LHSessionContext'
@@ -12,8 +12,11 @@ import { Buildings, Globe, User, CaretLeft, CaretRight, BookOpen, MagnifyingGlas
 import CreateOrganizationModal from '@components/Admin/CreateOrganizationModal'
 import EELicenseError from '@components/Admin/EELicenseError'
 
-/** Ensure a URL only uses http/https · returns '#' for anything else. */
+/** Ensure a URL only uses http/https · returns '#' for anything else.
+ * Same-origin app paths (e.g. /orgs/{slug}/dash in central-LMS cookie
+ * tenancy) are internal links, not external schemes — let them through. */
 function safeHref(url: string): string {
+  if (url.startsWith('/')) return url
   try {
     const { protocol } = new URL(url)
     return protocol === 'http:' || protocol === 'https:' ? url : '#'
@@ -449,7 +452,9 @@ export default function OrganizationList() {
         </thead>
         <tbody>
           {paged.map((org) => {
-            const orgUrl = `${typeof window !== 'undefined' ? window.location.protocol : 'http:'}//${org.slug}.${domain}`
+            // Central-LMS cookie tenancy resolves to /orgs/{slug}/... here ·
+            // subdomain deployments keep their absolute URL via getUriWithOrg.
+            const orgUrl = getUriWithOrg(org.slug, '/')
             const sparkData = visitsByOrg.map[org.id] || []
 
             return (
@@ -480,7 +485,7 @@ export default function OrganizationList() {
                   <div className="space-y-1">
                     <a href={safeHref(orgUrl)} rel="noopener" className="flex items-center gap-1.5 text-xs text-blue-400/80 hover:text-blue-400 transition-colors font-mono">
                       <Globe size={12} weight="bold" className="shrink-0" />
-                      <span className="truncate max-w-[180px]">{org.slug}.{domain}</span>
+                      <span className="truncate max-w-[180px]">{orgUrl}</span>
                     </a>
                     {org.custom_domains.map((d) => (
                       <a key={d} href={safeHref(`${typeof window !== 'undefined' ? window.location.protocol : 'http:'}//${d}`)} rel="noopener" className="flex items-center gap-1.5 text-xs text-emerald-400/80 hover:text-emerald-400 transition-colors">
@@ -523,7 +528,7 @@ export default function OrganizationList() {
                 </td>
                 <td className="px-4 py-3">
                   <a
-                    href={safeHref(`${orgUrl}/dash`)}
+                    href={safeHref(getUriWithOrg(org.slug, '/dash'))}
                     rel="noopener"
                     className="inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-white hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors"
                     title="Open org dashboard"

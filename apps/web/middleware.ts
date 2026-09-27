@@ -396,7 +396,15 @@ export default async function middleware(req: NextRequest) {
   if (authPaths.includes(pathname)) {
     // A logged-in user has no business on /login or /signup — bounce them to the
     // hub (the page itself re-verifies, so this is a best-effort UX shortcut).
-    if ((pathname === '/login' || pathname === '/signup') && req.cookies.get('LH_session')?.value) {
+    // EXCEPT invitation links: /signup?inviteCode=X must stay reachable for
+    // signed-in invitees so the "Join <org>" screen can run (org memberships
+    // are granted to existing accounts there).
+    const hasInviteCode = !!req.nextUrl.searchParams.get('inviteCode')
+    if (
+      !hasInviteCode
+      && (pathname === '/login' || pathname === '/signup')
+      && req.cookies.get('LH_session')?.value
+    ) {
       return NextResponse.redirect(new URL('/home', req.url))
     }
     const resolved = await resolveTenant(req, instance)
@@ -555,6 +563,28 @@ export default async function middleware(req: NextRequest) {
   const explicitOrgMatch = pathname.match(/^\/orgs\/([a-z0-9-]+)(?:\/|$)/i)
   if (explicitOrgMatch) {
     const slug = explicitOrgMatch[1].toLowerCase()
+
+    // Org-scoped auth links (/orgs/{slug}/signup, /login) are built by
+    // getUriWithOrg all over the app but the physical auth pages live at the
+    // root (/signup → /auth/signup rewrite). Redirect them to the root path
+    // while re-pinning LH_org from the slug so the auth page resolves and
+    // brands the right org (invite links keep their ?inviteCode query).
+    const authPage = pathname.match(/^\/orgs\/[a-z0-9-]+\/(signup|login)(\/.*)?$/i)
+    if (authPage) {
+      const rest = authPage[2] || ''
+      const target = new URL(`/${authPage[1]}${rest}${search}`, req.url)
+      const redirectResponse = NextResponse.redirect(target)
+      redirectResponse.cookies.set({
+        name: 'LH_org',
+        value: slug,
+        domain: cookieDomainFor(instance, undefined),
+        path: '/',
+        maxAge: 60 * 60 * 24 * 365,
+      })
+      setInstanceCookies(redirectResponse, instance)
+      return redirectResponse
+    }
+
     const requestHeaders = tenantRequestHeaders(req, { slug, source: 'cookie' }, instance)
     const response = NextResponse.rewrite(new URL(`${pathname}${search}`, req.url), {
       request: { headers: requestHeaders },

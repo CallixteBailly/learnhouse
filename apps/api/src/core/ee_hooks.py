@@ -52,6 +52,13 @@ def register_ee_routers(v1_router):
     if hooks and hasattr(hooks, "register_routers"):
         hooks.register_routers(v1_router)
 
+    # Ordria self-hosted: mount the OSS-native superadmin API under the same
+    # /ee/superadmin path the admin dashboard already fetches, so org/user
+    # administration works without the Enterprise folder. Requires
+    # is_superadmin on every route (see src.security.superadmin).
+    from src.routers.ee_superadmin import router as ee_superadmin_router
+    v1_router.include_router(ee_superadmin_router)
+
 def run_ee_startup(app):
     """Call EE to run its startup tasks."""
     hooks = get_ee_hooks()

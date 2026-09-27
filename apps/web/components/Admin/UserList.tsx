@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
 import { getAPIUrl } from '@services/config/config'
 import { getUserAvatarMediaDirectory } from '@services/media/media'
@@ -15,6 +15,9 @@ import {
   Buildings,
   ShieldStar,
   EnvelopeSimple,
+  PencilSimple,
+  X,
+  Trash,
 } from '@phosphor-icons/react'
 
 interface OrgMembership {
@@ -113,12 +116,159 @@ function OrgListTooltip({ orgs }: { orgs: OrgMembership[] }) {
   )
 }
 
+function EditUserModal({
+  user,
+  accessToken,
+  onClose,
+}: {
+  user: GlobalUser
+  accessToken: string
+  onClose: () => void
+}) {
+  const queryClient = useQueryClient()
+  const [form, setForm] = useState({
+    username: user.username,
+    email: user.email,
+    first_name: user.first_name || '',
+    last_name: user.last_name || '',
+    is_superadmin: user.is_superadmin,
+  })
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: [...queryKeys.superadmin.users()] })
+
+  const save = async () => {
+    setSubmitting(true)
+    setError('')
+    try {
+      const res = await fetch(`${getAPIUrl()}ee/superadmin/users/${user.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        setError(d?.detail || `Échec (${res.status})`)
+        return
+      }
+      await invalidate()
+      onClose()
+    } catch {
+      setError('Erreur réseau')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const remove = async () => {
+    if (!window.confirm(`Supprimer définitivement le compte ${user.username} ? Cette action est irréversible.`)) return
+    setSubmitting(true)
+    setError('')
+    try {
+      const res = await fetch(`${getAPIUrl()}ee/superadmin/users/${user.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        setError(d?.detail || `Échec (${res.status})`)
+        return
+      }
+      await invalidate()
+      onClose()
+    } catch {
+      setError('Erreur réseau')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const field = (label: string, key: 'username' | 'email' | 'first_name' | 'last_name', type = 'text') => (
+    <div>
+      <label className="block text-xs text-white/50 mb-1.5">{label}</label>
+      <input
+        type={type}
+        value={form[key]}
+        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+        className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/25"
+      />
+    </div>
+  )
+
+  return (
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md bg-[#191b21] border border-white/[0.1] rounded-2xl p-6 space-y-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-white">Modifier l&apos;utilisateur</h3>
+          <button onClick={onClose} className="text-white/40 hover:text-white/70" aria-label="Fermer">
+            <X size={18} />
+          </button>
+        </div>
+
+        {field('Nom d\'utilisateur', 'username')}
+        {field('Email', 'email', 'email')}
+        <div className="grid grid-cols-2 gap-3">
+          {field('Prénom', 'first_name')}
+          {field('Nom', 'last_name')}
+        </div>
+
+        <label className="flex items-center justify-between bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 cursor-pointer">
+          <span className="flex items-center gap-2 text-sm text-white/80">
+            <ShieldStar size={14} weight="fill" className="text-amber-400" />
+            Superadmin (accès complet à la plateforme)
+          </span>
+          <input
+            type="checkbox"
+            checked={form.is_superadmin}
+            onChange={(e) => setForm({ ...form, is_superadmin: e.target.checked })}
+            className="h-4 w-4 accent-amber-400"
+          />
+        </label>
+
+        {error && <p className="text-xs text-red-400">{error}</p>}
+
+        <div className="flex items-center justify-between pt-1">
+          <button
+            onClick={remove}
+            disabled={submitting}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs text-red-400/80 hover:text-red-400 border border-red-400/25 hover:border-red-400/50 rounded-lg transition-colors disabled:opacity-40"
+          >
+            <Trash size={12} />
+            Supprimer
+          </button>
+          <div className="flex gap-2">
+            <button onClick={onClose} className="px-4 py-2 text-sm text-white/50 hover:text-white/80">
+              Annuler
+            </button>
+            <button
+              onClick={save}
+              disabled={submitting || !form.username.trim() || !form.email.trim()}
+              className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm rounded-lg transition-colors disabled:opacity-40"
+            >
+              {submitting ? '…' : 'Enregistrer'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function UserList() {
   const session = useLHSession() as any
   const accessToken = session?.data?.tokens?.access_token
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const [editingUser, setEditingUser] = useState<GlobalUser | null>(null)
 
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [debouncedSearch, setDebouncedSearch] = useState(
@@ -357,6 +507,9 @@ export default function UserList() {
                   <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase tracking-wider">
                     Updated
                   </th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -438,11 +591,28 @@ export default function UserList() {
                             : '·'}
                         </span>
                       </td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => setEditingUser(u)}
+                          className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white border border-white/[0.1] hover:border-white/25 rounded-md px-2.5 py-1 transition-colors"
+                        >
+                          <PencilSimple size={12} />
+                          Modifier
+                        </button>
+                      </td>
                     </tr>
                   )
                 })}
               </tbody>
             </table>
+
+            {editingUser && (
+              <EditUserModal
+                user={editingUser}
+                accessToken={accessToken || ''}
+                onClose={() => setEditingUser(null)}
+              />
+            )}
 
             {/* Pagination */}
             {totalPages > 1 && (
