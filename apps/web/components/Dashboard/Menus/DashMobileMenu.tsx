@@ -244,7 +244,7 @@ function DashMobileMenu() {
 
                 <div className="h-px bg-[#e5e5e5] mx-2 my-1.5" />
 
-                <PanelItem href="/account/general" icon={<Gear size={15} weight="fill" />} label={t('common.settings')} active={isActive('/account')} onClick={close} />
+                <PanelItem href={m('/account/general')} icon={<Gear size={15} weight="fill" />} label={t('common.settings')} active={isActive('/account')} onClick={close} />
 
                 <button
                   onClick={() => setLangExpanded(v => !v)}

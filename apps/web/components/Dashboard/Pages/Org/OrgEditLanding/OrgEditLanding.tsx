@@ -1245,16 +1245,16 @@ const TextAndImageSectionEditor: React.FC<{
           </Select>
         </div>
 
-        {/* Image */}
+        {/* Image (optional · a text-only section renders full width) */}
         <div>
           <Label>{t('dashboard.organization.landing.text_image_editor.image')}</Label>
           <div className="grid grid-cols-2 gap-4 mt-2">
             <div className="space-y-2">
               <Input
-                value={section.image.url}
+                value={section.image?.url || ''}
                 onChange={(e) => onChange({
                   ...section,
-                  image: { ...section.image, url: e.target.value }
+                  image: { url: e.target.value, alt: section.image?.alt || '' }
                 })}
                 placeholder={t('dashboard.organization.landing.text_image_editor.image_url')}
               />
@@ -1262,23 +1262,23 @@ const TextAndImageSectionEditor: React.FC<{
                 id="text-image-section"
                 onImageUploaded={(url) => onChange({
                   ...section,
-                  image: { ...section.image, url }
+                  image: { url, alt: section.image?.alt || '' }
                 })}
                 buttonText={t('dashboard.organization.landing.text_image_editor.upload_new_image')}
               />
             </div>
             <div>
               <Input
-                value={section.image.alt}
+                value={section.image?.alt || ''}
                 onChange={(e) => onChange({
                   ...section,
-                  image: { ...section.image, alt: e.target.value }
+                  image: { url: section.image?.url || '', alt: e.target.value }
                 })}
                 placeholder={t('dashboard.organization.landing.text_image_editor.alt_text')}
               />
             </div>
           </div>
-          {section.image.url && (
+          {section.image?.url && (
             <div className="mt-4">
               <img
                 src={section.image.url}

@@ -45,35 +45,35 @@ function CourseOverviewPage(props: { params: Promise<CourseOverviewParams> }) {
       key: 'general',
       label: t('dashboard.courses.settings.tabs.general'),
       icon: Info,
-      href: getUriWithOrg(params.orgslug, `/dash/courses/course/${params.courseuuid}/general`),
+      href: `/dash/courses/course/${params.courseuuid}/general`,
       requiredPermission: 'update' as const
     },
     {
       key: 'content',
       label: t('dashboard.courses.settings.tabs.content'),
       icon: GalleryVerticalEnd,
-      href: getUriWithOrg(params.orgslug, `/dash/courses/course/${params.courseuuid}/content`),
+      href: `/dash/courses/course/${params.courseuuid}/content`,
       requiredPermission: 'update_content' as const
     },
     {
       key: 'access',
       label: t('dashboard.courses.settings.tabs.access'),
       icon: Globe,
-      href: getUriWithOrg(params.orgslug, `/dash/courses/course/${params.courseuuid}/access`),
+      href: `/dash/courses/course/${params.courseuuid}/access`,
       requiredPermission: 'manage_access' as const
     },
     {
       key: 'contributors',
       label: t('dashboard.courses.settings.tabs.contributors'),
       icon: UserPen,
-      href: getUriWithOrg(params.orgslug, `/dash/courses/course/${params.courseuuid}/contributors`),
+      href: `/dash/courses/course/${params.courseuuid}/contributors`,
       requiredPermission: 'manage_contributors' as const
     },
     {
       key: 'seo',
       label: t('dashboard.courses.settings.tabs.seo'),
       icon: Search,
-      href: getUriWithOrg(params.orgslug, `/dash/courses/course/${params.courseuuid}/seo`),
+      href: `/dash/courses/course/${params.courseuuid}/seo`,
       requiredPermission: 'update' as const,
       requiresPlan: 'standard' as PlanLevel
     },
@@ -81,7 +81,7 @@ function CourseOverviewPage(props: { params: Promise<CourseOverviewParams> }) {
       key: 'certification',
       label: t('dashboard.courses.settings.tabs.certification'),
       icon: Award,
-      href: getUriWithOrg(params.orgslug, `/dash/courses/course/${params.courseuuid}/certification`),
+      href: `/dash/courses/course/${params.courseuuid}/certification`,
       requiredPermission: 'create_certifications' as const,
       requiresPlan: 'pro' as PlanLevel
     },
@@ -89,7 +89,7 @@ function CourseOverviewPage(props: { params: Promise<CourseOverviewParams> }) {
       key: 'analytics',
       label: t('dashboard.courses.settings.tabs.analytics'),
       icon: ChartBar,
-      href: getUriWithOrg(params.orgslug, `/dash/courses/course/${params.courseuuid}/analytics`),
+      href: `/dash/courses/course/${params.courseuuid}/analytics`,
       requiredPermission: 'update' as const,
       requiresPlan: 'pro' as PlanLevel
     }

@@ -243,7 +243,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem asChild>
-                  <Link href="/account/general" className="flex items-center space-x-2">
+                  <Link href={getUriWithOrg(org?.slug, '/account/general')} className="flex items-center space-x-2">
                     <User size={16} weight="fill" />
                     <span>{t('user.user_settings')}</span>
                   </Link>

@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Briefcase, X } from 'lucide-react'
 import { useLHSession } from '@components/Contexts/LHSessionContext'
+import { getUriWithOrg } from '@services/config/config'
 import { useTranslation } from 'react-i18next'
 
 const DISMISS_KEY = 'lh_profile_job_dismissed'
@@ -38,7 +39,7 @@ export function CompleteProfileBanner({ orgslug }: { orgslug: string }) {
           })}
         </p>
         <Link
-          href={`/${orgslug}/account/general`}
+          href={getUriWithOrg(orgslug, '/account/general')}
           onClick={() => sessionStorage.setItem(DISMISS_KEY, '1')}
           className="text-xs font-bold text-[var(--ordria-accent)] hover:underline shrink-0"
         >

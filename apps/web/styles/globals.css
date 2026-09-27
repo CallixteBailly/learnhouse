@@ -2967,3 +2967,35 @@
 }
 
 
+
+/* =============================================================================
+   Landing custom (org landings) — surfaces navigateur + moment signé mascotte
+   Scope : .landing-custom (racine du moteur LandingCustom)
+   ============================================================================= */
+.landing-custom ::selection {
+  background: rgba(201, 162, 39, 0.32);
+  color: #14161b;
+}
+.landing-custom a:focus-visible,
+.landing-custom button:focus-visible {
+  outline: 2px solid #c9a227;
+  outline-offset: 3px;
+  border-radius: 9999px;
+}
+@keyframes landing-float-key {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+.landing-custom .landing-float {
+  animation: landing-float-key 7s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-custom .landing-float {
+    animation: none;
+  }
+  .landing-custom a,
+  .landing-custom img,
+  .landing-custom .group {
+    transition-duration: 0.01ms !important;
+  }
+}
