@@ -40,9 +40,13 @@ function SignUpClient(props: SignUpClientProps) {
 
   useEffect(() => {
     if (isAuthenticated && !hasOrgToJoin) {
-      router.replace('/home')
+      // Honor ?next / ?redirect (sanitized to an internal same-origin path,
+      // same rule as the login bounce) so a stale server-side redirect to
+      // /signup?redirect=X doesn't eject an authenticated visitor to /home.
+      const raw = searchParams.get('next') ?? searchParams.get('redirect')
+      router.replace(raw && /^\/(?!\/)/.test(raw) ? raw : '/home')
     }
-  }, [isAuthenticated, hasOrgToJoin, router])
+  }, [isAuthenticated, hasOrgToJoin, router, searchParams])
 
   useEffect(() => {
     // On the org-less apex (learn.io/signup) props.org is null · guard it and

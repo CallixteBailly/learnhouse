@@ -2,6 +2,7 @@ import csv
 import io
 import json
 import logging
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -806,6 +807,26 @@ async def invite_batch_users(
     # reached for Members" — which the dashboard turns into a contextual upgrade
     # prompt — instead of being able to queue unlimited invites.
     await check_limits_with_usage("members", org.id, db_session)
+
+    # Email invitations MUST carry a working invite code: on invite-only orgs
+    # /signup without ?inviteCode= is a dead-end code wall (NoTokenScreen), and
+    # even open orgs rely on the code to auto-join at signup. Callers that
+    # didn't select an existing code (superadmin backoffice passes None) get a
+    # dedicated code auto-generated for this batch — one code per batch keeps
+    # the per-org code list readable and is revocable as a unit.
+    from src.services.orgs import org_invites_store as invites_store
+    from src.services.orgs.invites import _generate_code
+
+    if not str(invite_code_uuid or "").strip():
+        auto_code = await invites_store.insert_invite_code(
+            db_session,
+            org_id=org.id,
+            code=_generate_code(),
+            code_uuid=f"org_invite_code_{uuid.uuid4()}",
+            created_by=getattr(current_user, "user_uuid", ""),
+            usergroup_id=None,
+        )
+        invite_code_uuid = auto_code.code_uuid
 
     # Connect to Redis
     r = redis.Redis.from_url(redis_conn_string)

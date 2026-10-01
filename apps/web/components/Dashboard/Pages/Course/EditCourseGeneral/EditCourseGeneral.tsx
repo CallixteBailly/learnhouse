@@ -21,6 +21,7 @@ import {
   CustomSelectValue,
 } from "./CustomSelect";
 import { useTranslation } from 'react-i18next';
+import CourseOrgTransferPanel from './CourseOrgTransferPanel';
 
 type EditCourseStructureProps = {
   orgslug: string
@@ -337,6 +338,7 @@ function EditCourseGeneral(props: EditCourseStructureProps) {
               </FormField>
             </div>
           </FormLayout>
+          {props.course_uuid && <CourseOrgTransferPanel course_uuid={props.course_uuid} />}
         </div>
       </div>
     </div>

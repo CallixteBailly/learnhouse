@@ -45,6 +45,7 @@ import { isFeatureAvailable } from '@services/plans/plans'
 import { getMenuColorClasses } from '@services/utils/ts/colorUtils'
 import AuthenticatedClientElement from '@components/Security/AuthenticatedClientElement'
 import { useJoinBannerVisible, JOIN_BANNER_HEIGHT } from '@components/Objects/Banners/OrgJoinBanner'
+import { useProfileBannerVisible, PROFILE_BANNER_HEIGHT } from '@components/Objects/Badges/CompleteProfileBanner'
 import {
   Tooltip,
   TooltipContent,
@@ -86,7 +87,13 @@ export const OrgMenu = (props: any) => {
     if (sessionUuid) setBubbleSessionToLoad(sessionUuid)
     setBubbleOpen(true)
   }
-  const topOffset = isJoinBannerVisible ? JOIN_BANNER_HEIGHT : 0
+  const isProfileBannerVisible = useProfileBannerVisible()
+  // Both banners are fixed overlays at the top: the navbar must sit below
+  // whichever of them is visible, or they visually cover (and used to swallow
+  // clicks on) the navigation.
+  const topOffset =
+    (isJoinBannerVisible ? JOIN_BANNER_HEIGHT : 0) +
+    (isProfileBannerVisible ? PROFILE_BANNER_HEIGHT : 0)
 
   // Get primary color from org config (v2: customization.general.color, v1: general.color)
   const config = org?.config?.config

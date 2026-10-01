@@ -90,3 +90,6 @@ stripe-register-state.png
 
 # vérifications locales navigateur (racine uniquement)
 /*.png
+
+# cache wrangler local (build/deploys)
+.wrangler/

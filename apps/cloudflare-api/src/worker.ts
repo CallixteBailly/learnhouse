@@ -8,7 +8,7 @@
  * Zone routes point here for:
  *   ordria.app/api/v1*, ordria.app/content*, ordria.app/collab*
  */
-import { Container, getContainer } from "@cloudflare/containers";
+import { Container, getContainer, type StopParams } from "@cloudflare/containers";
 
 export interface Env {
   API_CONTAINER: DurableObjectNamespace<LearnHouseApiContainer>;
@@ -49,6 +49,75 @@ export class LearnHouseApiContainer extends Container {
   sleepAfter = "5m";
   /** nginx answers 200 on /ping — used by the class startup readiness check */
   pingEndpoint = "ping";
+
+  // ── Incident diagnostics (2026-10-01 crash-loop) ─────────────────────────
+  // The DO outlives container restarts, so lastStop survives the loop and
+  // /api/v1/_container-debug reports WHY the previous instance died
+  // (exitCode 137 + reason runtime_signal = OOM kill; 143 = SIGTERM…).
+  lastStop: { exitCode: number; reason: string; at: number } | null = null;
+  stops: Array<{ exitCode: number; reason: string; at: number }> = [];
+
+  override async onStop(params: StopParams): Promise<void> {
+    const entry = {
+      exitCode: params.exitCode,
+      reason: params.reason,
+      at: Date.now(),
+    };
+    this.lastStop = entry;
+    this.stops = [...this.stops.slice(-20), entry];
+    console.log("CONTAINER-STOP " + JSON.stringify(entry));
+    // DO isolates are evicted between container restarts — persist so the
+    // debug route reports the cause across the crash loop.
+    try {
+      await this.ctx.storage.put("lastContainerStop", entry);
+      const prev = (await this.ctx.storage.get<Array<typeof entry>>("containerStops")) ?? [];
+      await this.ctx.storage.put("containerStops", [...prev.slice(-20), entry]);
+    } catch (e) {
+      console.log("CONTAINER-STOP persist failed: " + String(e));
+    }
+    await super.onStop(params);
+  }
+
+  override async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname.endsWith("/_container-debug")) {
+      let persisted: unknown = null;
+      let stops: unknown = [];
+      try {
+        persisted = await this.ctx.storage.get("lastContainerStop");
+        stops = (await this.ctx.storage.get("containerStops")) ?? [];
+      } catch {
+        // storage unavailable — fall back to in-memory
+      }
+      return new Response(
+        JSON.stringify(
+          {
+            lastStop: this.lastStop ?? persisted,
+            recentStops: this.stops.length ? this.stops : stops,
+            now: Date.now(),
+          },
+          null,
+          2,
+        ),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    // Incident tooling: force-stop the container so the next request starts a
+    // fresh one from the application's CURRENT image (used when a rollout
+    // leaves a stale process serving old code — 2026-10-01).
+    if (url.pathname.endsWith("/_container-restart")) {
+      try {
+        await this.stop();
+        return new Response(JSON.stringify({ restarting: true, at: Date.now() }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+      }
+    }
+    return super.fetch(request);
+  }
 
   envVars: Record<string, string> = {
     LEARNHOUSE_API_URL: "http://127.0.0.1:9000",

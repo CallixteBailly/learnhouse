@@ -108,3 +108,12 @@ CMD ["/app/start-api.sh"]
 # rollout marker 2026-09-09b: worker env (HLS) needs instance restart
 # rollout marker 2026-09-22: certifications fix (completion counts published activities only)
 # durability test marker 2026-09-27c
+
+# rollout marker 2026-10-01: DB wait moved to background (boot blocked nginx past the port window → crash-loop)
+
+# rollout marker 2026-10-01b: email URL fix v2 (cookie .localhost discriminator) — force image rebuild
+# rollout marker 2026-10-01c: re-apply fix v2 image (previous build never applied)
+
+# rollout marker 2026-10-01e: invite emails auto-code (fix invite-only dead end)
+# rollout-marker 01f: import uuid for auto invite code
+# rollout-marker 01g: job title optional at signup

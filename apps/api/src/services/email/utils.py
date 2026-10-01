@@ -109,8 +109,18 @@ async def get_org_signup_base_url(
            verified custom domain (primary first). Using the generic
            subdomain for orgs that have a custom domain would be cross-origin
            to the user's existing session on the custom domain.
-        2. Else fall back to ``{slug}.{hosting_config.domain}``.
-        3. Misconfigured (no domain or localhost) → request-derived URL.
+        2. If a shared subdomain cookie domain is in effect — one that
+           actually covers ``hosting_config.domain`` (".learnhouse.app" over
+           learnhouse.app) — build ``{slug}.{hosting_config.domain}``:
+           wildcard DNS exists and subdomains share the session cookie.
+           (".localhost", the config.yaml default, does NOT qualify.)
+        3. Otherwise (multi-org WITHOUT subdomains — central LMS deployments
+           where orgs live at ``/orgs/{slug}``): ``{slug}.{domain}`` has no
+           DNS, so links must be path-based on the frontend origin. The web
+           middleware redirects ``/orgs/{slug}/signup|login|reset|forgot|
+           verify-email`` to the root page while re-pinning LH_org from the
+           slug, so the auth page resolves and brands the right org.
+        4. Misconfigured (no domain or localhost) → request-derived URL.
     """
     config = get_learnhouse_config()
 
@@ -125,10 +135,42 @@ async def get_org_signup_base_url(
             return f"{scheme}://{custom_domain}"
 
     base_domain = (config.hosting_config.domain or "").strip().rstrip("/")
-    if not base_domain or "localhost" in base_domain:
+    frontend_domain = (config.hosting_config.frontend_domain or "").strip().rstrip("/")
+
+    cookie_domain = ""
+    cookie_config = getattr(config.hosting_config, "cookie_config", None)
+    if cookie_config is not None:
+        cookie_domain = str(getattr(cookie_config, "domain", "") or "").strip()
+
+    # Subdomain tenancy is real only when the shared cookie parent actually
+    # covers the configured domain (".learnhouse.app" over learnhouse.app).
+    # The config.yaml default ".localhost" fails this on two counts — an RFC
+    # 6761 reserved TLD (same exemption as config.py's cookie guard) and not
+    # a parent of the domain — yet it still starts with ".", which alone
+    # caused invitation links to point at the unroutable {slug}.{domain}.
+    cookie_parent = cookie_domain.lstrip(".").lower()
+    subdomain_tenancy = (
+        cookie_domain.startswith(".")
+        and cookie_parent != "localhost"
+        and (
+            base_domain.lower() == cookie_parent
+            or base_domain.lower().endswith("." + cookie_parent)
+        )
+    )
+
+    if subdomain_tenancy:
+        if not base_domain or "localhost" in base_domain.lower():
+            return get_base_url_from_request(request)
+        return f"{scheme}://{org_slug}.{base_domain}"
+
+    def _usable(host: str) -> bool:
+        return bool(host) and "localhost" not in host.lower()
+
+    path_host = next((h for h in (frontend_domain, base_domain) if _usable(h)), "")
+    if not path_host:
         return get_base_url_from_request(request)
 
-    return f"{scheme}://{org_slug}.{base_domain}"
+    return f"{scheme}://{path_host}/orgs/{org_slug}"
 
 
 async def _get_primary_verified_custom_domain(db_session, org_id: int) -> Optional[str]:

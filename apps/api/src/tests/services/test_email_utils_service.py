@@ -25,6 +25,9 @@ def _config(**overrides):
         domain=overrides.pop("domain", "learnhouse.app"),
         frontend_domain=overrides.pop("frontend_domain", "app.learnhouse.app"),
         ssl=overrides.pop("ssl", True),
+        cookie_config=SimpleNamespace(
+            domain=overrides.pop("cookie_domain", ""),
+        ),
     )
     general = SimpleNamespace(
         development_mode=overrides.pop("development_mode", False),
@@ -168,26 +171,99 @@ class TestEmailUtilsService:
         [(True, "https://acme.learnhouse.app"), (False, "http://acme.learnhouse.app")],
     )
     async def test_get_org_signup_base_url_builds_org_subdomain(self, ssl, expected):
+        """With a shared subdomain cookie domain (".learnhouse.app" — true SaaS
+        tenancy with wildcard DNS), links point at {slug}.{domain}."""
         request = _request({"origin": "https://app.test"})
 
         with patch(
             "src.services.email.utils.get_learnhouse_config",
             return_value=_config(
                 domain="learnhouse.app",
+                cookie_domain=".learnhouse.app",
                 ssl=ssl,
             ),
         ):
             assert await get_org_signup_base_url("acme", request) == expected
 
     @pytest.mark.asyncio
-    async def test_get_org_signup_base_url_falls_back_for_invalid_or_localhost_domain(
-        self,
-    ):
+    async def test_get_org_signup_base_url_path_based_without_subdomain_cookie(self):
+        """Multi-org WITHOUT a shared subdomain cookie domain (central LMS on
+        learn.ordria.fr): {slug}.{domain} has no DNS, links must be path-based
+        /orgs/{slug} on the frontend origin."""
+        request = _request({"origin": "https://app.test"})
+
+        # EXACT production signature (2026-10-01 regression): the config.yaml
+        # default cookie_domain ".localhost" starts with "." but is an RFC
+        # 6761 reserved TLD and NOT a parent of learn.ordria.fr — it must NOT
+        # trigger the subdomain branch (it produced unroutable
+        # protech.learn.ordria.fr links).
+        with patch(
+            "src.services.email.utils.get_learnhouse_config",
+            return_value=_config(
+                domain="learn.ordria.fr",
+                frontend_domain="learn.ordria.fr",
+                cookie_domain=".localhost",
+                ssl=True,
+            ),
+        ):
+            assert (
+                await get_org_signup_base_url("protech", request)
+                == "https://learn.ordria.fr/orgs/protech"
+            )
+
+        # A cookie parent that doesn't cover the configured domain is not
+        # subdomain tenancy either.
+        with patch(
+            "src.services.email.utils.get_learnhouse_config",
+            return_value=_config(
+                domain="learnhouse.app",
+                frontend_domain="app.learnhouse.app",
+                cookie_domain=".example.com",
+                ssl=True,
+            ),
+        ):
+            assert (
+                await get_org_signup_base_url("acme", request)
+                == "https://app.learnhouse.app/orgs/acme"
+            )
+
+        # frontend_domain is preferred as the public web origin
+        with patch(
+            "src.services.email.utils.get_learnhouse_config",
+            return_value=_config(
+                domain="learn.ordria.fr",
+                frontend_domain="learn.ordria.fr",
+                ssl=True,
+            ),
+        ):
+            assert (
+                await get_org_signup_base_url("protech", request)
+                == "https://learn.ordria.fr/orgs/protech"
+            )
+
+        # no usable frontend_domain → fall back to the configured domain
+        with patch(
+            "src.services.email.utils.get_learnhouse_config",
+            return_value=_config(
+                domain="learn.ordria.fr",
+                frontend_domain="localhost:3000",
+                ssl=True,
+            ),
+        ):
+            assert (
+                await get_org_signup_base_url("protech", request)
+                == "https://learn.ordria.fr/orgs/protech"
+            )
+
+    @pytest.mark.asyncio
+    async def test_get_org_signup_base_url_path_based_falls_back_on_localhost(self):
+        """Path-based branch with no usable configured host at all → the
+        request-derived URL (dev environments)."""
         request = _request({"origin": "https://app.test"})
 
         with patch(
             "src.services.email.utils.get_learnhouse_config",
-            return_value=_config(domain="", ssl=True),
+            return_value=_config(domain="", frontend_domain="", ssl=True),
         ), patch(
             "src.services.email.utils.get_base_url_from_request",
             return_value="https://fallback.test",
@@ -195,9 +271,19 @@ class TestEmailUtilsService:
             assert await get_org_signup_base_url("acme", request) == "https://fallback.test"
             mock_base_url.assert_called_once_with(request)
 
+    @pytest.mark.asyncio
+    async def test_get_org_signup_base_url_falls_back_for_invalid_or_localhost_domain(
+        self,
+    ):
+        """Unusable base domain with NO qualifying cookie parent → the
+        request-derived URL (the old subdomain-misconfiguration fallbacks are
+        unreachable now: a cookie domain that doesn't cover the configured
+        domain can never enable the subdomain branch)."""
+        request = _request({"origin": "https://app.test"})
+
         with patch(
             "src.services.email.utils.get_learnhouse_config",
-            return_value=_config(domain="localhost:3000", ssl=True),
+            return_value=_config(domain="", frontend_domain="", ssl=True),
         ), patch(
             "src.services.email.utils.get_base_url_from_request",
             return_value="https://fallback.test",
@@ -441,7 +527,12 @@ class TestGetPrimaryVerifiedCustomDomain:
 
         with patch(
             "src.services.email.utils.get_learnhouse_config",
-            return_value=_config(tenancy="multi", ssl=True, domain="learnhouse.app"),
+            return_value=_config(
+                tenancy="multi",
+                ssl=True,
+                domain="learnhouse.app",
+                cookie_domain=".learnhouse.app",
+            ),
         ), patch(
             "src.services.email.utils._get_primary_verified_custom_domain",
             new_callable=AsyncMock,

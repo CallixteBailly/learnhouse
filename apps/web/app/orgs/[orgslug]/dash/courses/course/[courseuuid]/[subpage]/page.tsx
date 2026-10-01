@@ -173,7 +173,7 @@ function CourseOverviewPage(props: { params: Promise<CourseOverviewParams> }) {
               <EditCourseStructure orgslug={params.orgslug} />
             ) : null}
             {!rightsLoading && params.subpage == 'general' && hasPermission('update') ? (
-              <EditCourseGeneral orgslug={params.orgslug} />
+              <EditCourseGeneral orgslug={params.orgslug} course_uuid={courseuuid} />
             ) : null}
             {!rightsLoading && params.subpage == 'access' && hasPermission('manage_access') ? (
               <EditCourseAccess orgslug={params.orgslug} />

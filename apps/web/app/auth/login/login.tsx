@@ -36,12 +36,20 @@ const LoginClient = (props: LoginClientProps) => {
   const session = useLHSession() as any;
   const isAuthenticated = session?.status === 'authenticated'
 
-  // A signed-in user has nothing to do on /login → bounce to the hub. The proxy
-  // does this best-effort, but pages must self-handle it too (mirrors signup.tsx).
+  // A signed-in user has nothing to do on /login → bounce them to where they
+  // were heading (?next / ?redirect, sanitized to an internal same-origin
+  // path — same rule as buildCallbackUrl) instead of systematically /home.
+  // Without this, a transient server-side session miss redirecting an
+  // AUTHENTICATED visitor to /login?redirect=X would eject them to /home and
+  // they could never reach X (e.g. their own profile page).
   // Guarded by !isSubmitting so a FRESH login (which flips the session to
   // authenticated) doesn't race the onSubmit's own post-login navigation.
   useEffect(() => {
-    if (isAuthenticated && !isSubmitting) router.replace('/home')
+    if (isAuthenticated && !isSubmitting) {
+      const params = new URLSearchParams(window.location.search)
+      const raw = params.get('next') ?? params.get('redirect')
+      router.replace(raw && /^\/(?!\/)/.test(raw) ? raw : '/home')
+    }
   }, [isAuthenticated, isSubmitting, router])
 
   // Error state with type information

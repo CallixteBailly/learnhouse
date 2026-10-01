@@ -564,12 +564,17 @@ export default async function middleware(req: NextRequest) {
   if (explicitOrgMatch) {
     const slug = explicitOrgMatch[1].toLowerCase()
 
-    // Org-scoped auth links (/orgs/{slug}/signup, /login) are built by
-    // getUriWithOrg all over the app but the physical auth pages live at the
+    // Org-scoped auth links (/orgs/{slug}/signup, /login, /reset, /forgot,
+    // /verify-email) are built by getUriWithOrg in the app AND by the API's
+    // email link builder (get_org_signup_base_url) for invitations, password
+    // resets and email verification — but the physical auth pages live at the
     // root (/signup → /auth/signup rewrite). Redirect them to the root path
     // while re-pinning LH_org from the slug so the auth page resolves and
-    // brands the right org (invite links keep their ?inviteCode query).
-    const authPage = pathname.match(/^\/orgs\/[a-z0-9-]+\/(signup|login)(\/.*)?$/i)
+    // brands the right org (query strings — ?inviteCode, ?resetCode,
+    // ?token — are preserved).
+    const authPage = pathname.match(
+      /^\/orgs\/[a-z0-9-]+\/(signup|login|reset|forgot|verify-email)(\/.*)?$/i,
+    )
     if (authPage) {
       const rest = authPage[2] || ''
       const target = new URL(`/${authPage[1]}${rest}${search}`, req.url)

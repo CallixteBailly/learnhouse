@@ -13,7 +13,7 @@
   // starts (502 for ~55s on first visitor). Cost: negligible (cron
   // triggers are included in the Workers Paid plan).
   "triggers": {
-    "crons": ["*/4 * * * *"]
+    "crons": ["*/4 * * * *"],
   },
   "containers": [
     {
@@ -24,8 +24,14 @@
       // basic = 1/4 vCPU / 1 GiB RAM / 4 GB disk (per current CF instance-type
       // table). Bump to standard-1+ (4 GiB) for heavy video workloads.
       "instance_type": "basic",
-      // Single instance: in-memory collab state + local Redis consistency.
-      "max_instances": 1
+      // Physical-instance cap. The LOGICAL singleton is already guaranteed by
+      // the DO named-instance pattern (getContainer → one DO id → one live
+      // container). Keeping this at 1 deadlocks rollouts: while a replaced
+      // instance lingers in the scheduler's count (2026-10-01 outage: dead
+      // instance counted against the cap → "reached max concurrent instances"
+      // → no replacement could ever start → 503 for 2h). 3 gives replacement
+      // windows headroom; the DO still runs exactly one container.
+      "max_instances": 3
     }
   ],
   "durable_objects": {
