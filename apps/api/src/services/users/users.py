@@ -123,7 +123,8 @@ async def create_user(
     # already registered (account enumeration).
     conflict = (await db_session.execute(
         select(User).where(
-            (User.username == user.username) | (User.email == user.email)
+            (User.username == user.username)
+            | (func.lower(User.email) == user.email.lower())
         )
     )).scalars().first()
 
@@ -345,7 +346,8 @@ async def create_user_without_org(
     # prevent account enumeration via this org-less signup endpoint.
     conflict = (await db_session.execute(
         select(User).where(
-            (User.username == user.username) | (User.email == user.email)
+            (User.username == user.username)
+            | (func.lower(User.email) == user.email.lower())
         )
     )).scalars().first()
 
@@ -410,7 +412,10 @@ async def update_user(
     # via the update endpoint to enumerate other accounts.
     conflict = (await db_session.execute(
         select(User).where(
-            ((User.username == user_object.username) | (User.email == user_object.email))
+            (
+                (User.username == user_object.username)
+                | (func.lower(User.email) == user_object.email.lower())
+            )
             & (User.id != user.id)
         )
     )).scalars().first()
@@ -849,8 +854,11 @@ async def security_get_user(request: Request, db_session: AsyncSession, email: s
     to allow the caller to handle the "user not found" case appropriately
     and prevent email enumeration vulnerabilities.
     """
-    # Check if user exists
-    statement = select(User).where(User.email == email)
+    # Check if user exists.
+    # Case-insensitive: emails are stored verbatim at signup (e.g. capital
+    # first letter) but users type them in any case at login — an exact
+    # match here would silently lock them out.
+    statement = select(User).where(func.lower(User.email) == email.lower())
     user = (await db_session.execute(statement)).scalars().first()
 
     if not user:

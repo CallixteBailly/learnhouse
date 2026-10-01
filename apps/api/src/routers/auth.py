@@ -2,7 +2,7 @@ from datetime import timedelta, datetime, timezone
 from typing import Literal, Optional
 from fastapi import Depends, APIRouter, HTTPException, Response, status, Request, Form
 from pydantic import BaseModel, EmailStr
-from sqlmodel import select
+from sqlmodel import select, func
 from src.db.users import AnonymousUser, User, UserRead
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.core.events.database import get_db_session
@@ -395,7 +395,7 @@ async def login(
         # Unknown user OR wrong password — responses are indistinguishable.
         # The row lookup below runs behind that wall for lockout bookkeeping.
         user_record = (await db_session.execute(
-            select(User).where(User.email == username)
+            select(User).where(func.lower(User.email) == username.lower())
         )).scalars().first()
         if user_record:
             await record_failed_login(

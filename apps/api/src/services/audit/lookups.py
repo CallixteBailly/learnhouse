@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from sqlmodel import select
+from sqlmodel import select, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.core.events.database import _async_session_factory
@@ -27,7 +27,7 @@ def open_session() -> AsyncSession:
 
 
 async def find_user_by_email(db_session: AsyncSession, email: str) -> Optional[User]:
-    statement = select(User).where(User.email == email)
+    statement = select(User).where(func.lower(User.email) == email.lower())
     result = await db_session.scalars(statement)
     return result.first()
 

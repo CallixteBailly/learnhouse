@@ -3,7 +3,7 @@ from datetime import datetime
 import json
 from uuid import uuid4
 from fastapi import HTTPException
-from sqlmodel import select
+from sqlmodel import select, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.organization_config import (
     OrganizationConfig,
@@ -606,7 +606,7 @@ async def install_create_organization_user(
         )
 
     # Email
-    statement = select(User).where(User.email == user.email)
+    statement = select(User).where(func.lower(User.email) == user.email.lower())
     existing_email = (await db_session.execute(statement)).scalars().first()
 
     if existing_email:

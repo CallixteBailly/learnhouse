@@ -1118,6 +1118,7 @@ async def clone_course(
     course_uuid: str,
     current_user: PublicUser | AnonymousUser | APITokenUser,
     db_session: AsyncSession,
+    target_org_id: int | None = None,
 ) -> CourseRead:
     """
     Clone a course with all its chapters, activities, blocks, and files.
@@ -1128,12 +1129,19 @@ async def clone_course(
     - Chapters with their ordering
     - Activities with their files (videos, documents, PDFs)
     - Dynamic activity blocks with their files (images, videos, PDFs)
+    - Assignments with their tasks, and the course certification config
 
     The cloned course will:
     - Have a new course_uuid
-    - Have "(Copy)" appended to the name
+    - Have "(Copy)" appended to the name when cloned within the same org
+      (cross-org duplicates keep the original name)
     - Be set to private (public=False) by default
     - Have the current user as the creator
+
+    When ``target_org_id`` is given and differs from the source org, the clone
+    is created in that organization instead (cross-org duplicate). The caller
+    must be a member of the TARGET org; read access to the source course is
+    still required to copy its content.
     """
     import os
     from src.services.courses.transfer.storage_utils import (
@@ -1147,6 +1155,8 @@ async def clone_course(
     from src.db.courses.blocks import Block
     from src.db.courses.course_chapters import CourseChapter
     from src.db.courses.chapter_activities import ChapterActivity
+    from src.db.courses.assignments import Assignment, AssignmentTask
+    from src.db.courses.certifications import Certifications
 
     # Get the original course
     statement = select(Course).where(Course.course_uuid == course_uuid)
@@ -1164,20 +1174,34 @@ async def clone_course(
     # Also check if user can create courses
     await check_resource_access(request, db_session, current_user, "course_x", AccessAction.CREATE)
 
-    # SECURITY: The clone is written into the ORIGINAL course's org. READ access
+    # SECURITY: The clone is written into the TARGET org. READ access
     # to that course can come from it simply being public, and the "course_x"
     # create check is not bound to a concrete org. Without an explicit membership
     # check, a user from org A who can merely view a public course in org B could
     # clone it (with all its content + files) into org B and make themselves its
     # creator. Require membership in the target org, consistent with create_course.
+    cross_org = target_org_id is not None and target_org_id != original_course.org_id
+    effective_target_org_id = target_org_id if cross_org else original_course.org_id
+
+    if cross_org:
+        target_org_row = (await db_session.execute(
+            select(Organization).where(Organization.id == effective_target_org_id)
+        )).scalars().first()
+        if not target_org_row:
+            raise HTTPException(
+                status_code=404,
+                detail="Target organization not found",
+            )
+
     await require_org_membership(
-        resolve_acting_user_id(current_user), original_course.org_id, db_session
+        resolve_acting_user_id(current_user), effective_target_org_id, db_session
     )
 
-    # Usage check for creating new course
-    await check_limits_with_usage("courses", original_course.org_id, db_session)
+    # Usage check for creating new course (against the TARGET org)
+    await check_limits_with_usage("courses", effective_target_org_id, db_session)
 
-    # Get organization for file operations
+    # Get organizations for file operations: the source org prefixes where files
+    # are READ from, the target org prefix where they are WRITTEN to.
     org_statement = select(Organization).where(Organization.id == original_course.org_id)
     org = (await db_session.execute(org_statement)).scalars().first()
 
@@ -1186,14 +1210,15 @@ async def clone_course(
             status_code=404,
             detail="Organization not found",
         )
+    target_org_uuid = target_org_row.org_uuid if cross_org else org.org_uuid
 
     # Create new course UUID
     new_course_uuid = str(f"course_{uuid4()}")
 
     # Create the new course
     new_course = Course(
-        org_id=original_course.org_id,
-        name=f"{original_course.name} (Copy)",
+        org_id=effective_target_org_id,
+        name=f"{original_course.name} (Copy)" if not cross_org else original_course.name,
         description=original_course.description,
         about=original_course.about,
         learnings=original_course.learnings,
@@ -1214,7 +1239,7 @@ async def clone_course(
     # Copy thumbnail files if they exist
     content_base = "content/orgs"
     original_course_path = f"{content_base}/{org.org_uuid}/courses/{original_course.course_uuid}"
-    new_course_path = f"{content_base}/{org.org_uuid}/courses/{new_course_uuid}"
+    new_course_path = f"{content_base}/{target_org_uuid}/courses/{new_course_uuid}"
 
     # Create new course directory and thumbnails subdirectory (needed for local filesystem)
     if not is_s3_enabled():
@@ -1298,6 +1323,9 @@ async def clone_course(
 
     # Map old chapter IDs to new chapters
     chapter_id_map = {}
+    # Map old activity IDs to (new activity ID, new chapter ID) — used to rewire
+    # assignments onto the cloned activities
+    activity_id_map: dict[int, tuple[int, int]] = {}
 
     for original_chapter, course_chapter in chapter_results:
         new_chapter_uuid = f"chapter_{uuid4()}"
@@ -1307,7 +1335,7 @@ async def clone_course(
             description=original_chapter.description,
             thumbnail_image=original_chapter.thumbnail_image,
             chapter_uuid=new_chapter_uuid,
-            org_id=original_course.org_id,
+            org_id=effective_target_org_id,
             course_id=new_course.id,
             creation_date=str(datetime.now()),
             update_date=str(datetime.now()),
@@ -1323,7 +1351,7 @@ async def clone_course(
         new_course_chapter = CourseChapter(
             course_id=new_course.id,
             chapter_id=new_chapter.id,
-            org_id=original_course.org_id,
+            org_id=effective_target_org_id,
             order=course_chapter.order,
             creation_date=str(datetime.now()),
             update_date=str(datetime.now()),
@@ -1347,7 +1375,7 @@ async def clone_course(
                 content=new_content,
                 details=new_details,
                 published=original_activity.published,
-                org_id=original_course.org_id,
+                org_id=effective_target_org_id,
                 course_id=new_course.id,
                 activity_uuid=new_activity_uuid,
                 creation_date=str(datetime.now()),
@@ -1363,12 +1391,14 @@ async def clone_course(
                 chapter_id=new_chapter.id,
                 activity_id=new_activity.id,
                 course_id=new_course.id,
-                org_id=original_course.org_id,
+                org_id=effective_target_org_id,
                 order=chapter_activity.order,
                 creation_date=str(datetime.now()),
                 update_date=str(datetime.now()),
             )
             db_session.add(new_chapter_activity)
+
+            activity_id_map[original_activity.id] = (new_activity.id, new_chapter.id)
 
             # Copy all activity files recursively
             original_activity_path = f"{original_course_path}/activities/{original_activity.activity_uuid}"
@@ -1433,7 +1463,7 @@ async def clone_course(
                     new_block = Block(
                         block_type=original_block.block_type,
                         content=new_block_content,
-                        org_id=original_course.org_id,
+                        org_id=effective_target_org_id,
                         course_id=new_course.id,
                         chapter_id=new_chapter.id,
                         activity_id=new_activity.id,
@@ -1448,6 +1478,71 @@ async def clone_course(
                 if new_content and block_uuid_map:
                     new_activity.content = _replace_uuids_in_content(new_content, block_uuid_map)
                     db_session.add(new_activity)
+
+    # Copy assignments (with their tasks) onto the cloned activities
+    original_assignments = (await db_session.execute(
+        select(Assignment).where(Assignment.course_id == original_course.id)
+    )).scalars().all()
+    for original_assignment in original_assignments:
+        mapped = activity_id_map.get(original_assignment.activity_id)
+        if mapped is None:
+            continue
+        new_activity_id, new_chapter_id = mapped
+        now_str = str(datetime.now())
+        new_assignment = Assignment(
+            title=original_assignment.title,
+            description=original_assignment.description,
+            due_date=original_assignment.due_date,
+            published=original_assignment.published,
+            grading_type=original_assignment.grading_type,
+            auto_grading=original_assignment.auto_grading,
+            anti_copy_paste=original_assignment.anti_copy_paste,
+            show_correct_answers=original_assignment.show_correct_answers,
+            allow_retries=original_assignment.allow_retries,
+            max_retries=original_assignment.max_retries,
+            org_id=effective_target_org_id,
+            course_id=new_course.id,
+            chapter_id=new_chapter_id,
+            activity_id=new_activity_id,
+            assignment_uuid=f"assignment_{uuid4()}",
+            creation_date=now_str,
+            update_date=now_str,
+        )
+        db_session.add(new_assignment)
+        await db_session.flush()
+
+        original_tasks = (await db_session.execute(
+            select(AssignmentTask).where(AssignmentTask.assignment_id == original_assignment.id)
+        )).scalars().all()
+        for original_task in original_tasks:
+            db_session.add(AssignmentTask(
+                title=original_task.title,
+                description=original_task.description,
+                hint=original_task.hint,
+                reference_file=original_task.reference_file,
+                assignment_type=original_task.assignment_type,
+                contents=dict(original_task.contents) if original_task.contents else {},
+                max_grade_value=original_task.max_grade_value,
+                assignment_task_uuid=f"assignment_task_{uuid4()}",
+                assignment_id=new_assignment.id,
+                org_id=effective_target_org_id,
+                course_id=new_course.id,
+                chapter_id=new_chapter_id,
+                activity_id=new_activity_id,
+                creation_date=now_str,
+                update_date=now_str,
+            ))
+
+    # Copy the course certification config (badge/qualiopi settings) if any
+    original_certification = (await db_session.execute(
+        select(Certifications).where(Certifications.course_id == original_course.id)
+    )).scalars().first()
+    if original_certification:
+        db_session.add(Certifications(
+            course_id=new_course.id,
+            config=dict(original_certification.config) if original_certification.config else {},
+            certification_uuid=f"certification_{uuid4()}",
+        ))
 
     # Single commit for all chapters, activities, blocks, and links
     await db_session.commit()
@@ -1479,6 +1574,63 @@ async def clone_course(
     course_read = CourseRead(**new_course.model_dump(), authors=authors)
 
     return CourseRead.model_validate(course_read)
+
+
+async def move_course(
+    request: Request,
+    course_uuid: str,
+    target_org_id: int,
+    current_user: PublicUser | AnonymousUser | APITokenUser,
+    db_session: AsyncSession,
+    force: bool = False,
+) -> CourseRead:
+    """
+    Move a course to another organization: clone it into the target org, then
+    delete the source course (content files included).
+
+    Learner progress does NOT follow the move: trail runs reference the source
+    course rows and are cascade-deleted with them. As a guard, the move is
+    refused (409) while any learner has a trail run on the course unless
+    ``force`` is set — the admin can then knowingly discard that progress.
+    """
+    from src.db.trail_runs import TrailRun
+
+    statement = select(Course).where(Course.course_uuid == course_uuid)
+    original_course = (await db_session.execute(statement)).scalars().first()
+    if not original_course:
+        raise HTTPException(status_code=404, detail="Course not found")
+
+    if target_org_id == original_course.org_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Target organization is the same as the course's current organization",
+        )
+
+    # RBAC: deleting the source is the strongest permission the move needs.
+    await check_resource_access(
+        request, db_session, current_user, original_course.course_uuid, AccessAction.DELETE
+    )
+
+    if not force:
+        learner_runs = (await db_session.execute(
+            select(TrailRun.id).where(TrailRun.course_id == original_course.id).limit(1)
+        )).scalars().first()
+        if learner_runs is not None:
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "Learners have progress on this course. Moving it deletes that "
+                    "progress on the source organization. Pass force=true to move anyway."
+                ),
+            )
+
+    cloned = await clone_course(
+        request, course_uuid, current_user, db_session, target_org_id=target_org_id
+    )
+
+    await delete_course(request, course_uuid, current_user, db_session)
+
+    return cloned
 
 
 async def get_course_user_rights(

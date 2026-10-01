@@ -1005,7 +1005,7 @@ async def provision_user(
 
     now = datetime.now()
 
-    existing_user = (await db_session.execute(select(User).where(User.email == email))).scalars().first()
+    existing_user = (await db_session.execute(select(User).where(func.lower(User.email) == email.lower()))).scalars().first()
     if existing_user:
         # Email matches an existing account — treat this as "attach to org"
         # rather than "create new user". Previously this raised 400 and left
@@ -1179,7 +1179,7 @@ async def get_user_by_email(
         select(User)
         .join(UserOrganization, UserOrganization.user_id == User.id)  # type: ignore
         .where(
-            User.email == email,
+            func.lower(User.email) == email.lower(),
             UserOrganization.org_id == token_user.org_id,
         )
     )).scalars().first()
@@ -1331,7 +1331,7 @@ async def consume_magic_link_token(
     except HTTPException:
         redirect_to = None  # fall through to default "/" on bad redirect
 
-    user = (await db_session.execute(select(User).where(User.email == email))).scalars().first()
+    user = (await db_session.execute(select(User).where(func.lower(User.email) == email.lower()))).scalars().first()
     if not user:
         raise HTTPException(status_code=410, detail="User no longer exists")
 
@@ -1843,7 +1843,7 @@ async def update_user_profile(
 
     if "email" in updates and updates["email"] != user.email:
         existing = (await db_session.execute(
-            select(User).where(User.email == updates["email"], User.id != user_id)
+            select(User).where(func.lower(User.email) == updates["email"].lower(), User.id != user_id)
         )).scalars().first()
         if existing:
             raise HTTPException(status_code=400, detail="Email already in use")

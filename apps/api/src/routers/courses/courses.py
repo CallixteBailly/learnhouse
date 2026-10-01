@@ -38,6 +38,7 @@ from src.services.courses.courses import (
     search_courses,
     get_course_user_rights,
     clone_course,
+    move_course,
 )
 from src.services.courses.updates import (
     create_update,
@@ -617,6 +618,7 @@ async def api_clone_course(
     course_uuid: str,
     db_session: AsyncSession = Depends(get_db_session),
     current_user: PublicUser = Depends(get_current_user),
+    target_org_id: int | None = None,
 ) -> CourseRead:
     """
     Clone a course with all its chapters, activities, blocks, and files.
@@ -627,18 +629,58 @@ async def api_clone_course(
     - Chapters with their ordering
     - Activities with their files (videos, documents, PDFs)
     - Dynamic activity blocks with their files (images, videos, PDFs)
+    - Assignments with their tasks, and the course certification config
 
     The cloned course will:
     - Have a new course_uuid
-    - Have "(Copy)" appended to the name
+    - Have "(Copy)" appended to the name (same-org clones; cross-org duplicates keep the name)
     - Be set to private (public=False) by default
     - Have the current user as the creator
 
+    Pass ``target_org_id`` to duplicate the course into another organization
+    you are a member of (cross-org duplicate).
+
     **Required Permissions:**
     - Read access to the source course
-    - Create permission for courses in the organization
+    - Create permission for courses in the (target) organization
     """
-    return await clone_course(request, course_uuid, current_user, db_session)
+    return await clone_course(
+        request, course_uuid, current_user, db_session, target_org_id=target_org_id
+    )
+
+
+@router.post(
+    "/{course_uuid}/move",
+    response_model=CourseRead,
+    summary="Move course to another organization",
+    description=(
+        "Move a course to another organization: duplicates it into the target org "
+        "(files included) and deletes the source course. Learner progress does not "
+        "follow the move — refused with 409 while learners have progress on the "
+        "course unless force=true is passed."
+    ),
+    responses={
+        200: {"description": "Course moved; returns the new course", "model": CourseRead},
+        400: {"description": "Target org is the same as the current one"},
+        403: {"description": "User lacks delete permission on the source course or is not a member of the target org"},
+        404: {"description": "Source course or target organization not found"},
+        409: {"description": "Learners have progress on the course (pass force=true to override)"},
+    },
+)
+async def api_move_course(
+    request: Request,
+    course_uuid: str,
+    db_session: AsyncSession = Depends(get_db_session),
+    current_user: PublicUser = Depends(get_current_user),
+    target_org_id: int = ...,
+    force: bool = False,
+) -> CourseRead:
+    """
+    Move a course to another organization (duplicate + delete source).
+    """
+    return await move_course(
+        request, course_uuid, target_org_id, current_user, db_session, force=force
+    )
 
 
 @router.get(
