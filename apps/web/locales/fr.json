@@ -5660,6 +5660,7 @@
     "item_count_one": "{{count}} élément"
   },
   "signup": {
+    "optional": "facultatif",
     "job_label": "Votre métier",
     "job_choose": "Choisir…",
     "job_other": "Autre",

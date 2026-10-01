@@ -45,9 +45,8 @@ const validate = (values: any, t: any) => {
 
   // Bio is optional - no validation required
 
-  if (!values.jobTitleId) {
-    errors.jobTitleId = t('signup.job_required', { defaultValue: 'Veuillez choisir votre métier' })
-  }
+  // Job title is optional: a mid-session org re-pin used to wipe the select
+  // before submit, hard-blocking signup. Keep the field, drop the requirement.
   if (values.jobTitleId === 'other' && !values.jobOther?.trim()) {
     errors.jobOther = t('validation.required', { defaultValue: 'Requis' })
   }
@@ -91,10 +90,12 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
       cancelled = true
     }
   }, [])
+  // No `org_*` in initialValues: the org arrives asynchronously (OrgContext →
+  // props.org fallback), and with enableReinitialize that late landing reset
+  // the whole form mid-typing — wiping the user's job selection. The org is
+  // injected into the payload at submit time instead.
   const formik = useFormik({
     initialValues: {
-      org_slug: org?.slug,
-      org_id: org?.id,
       email: '',
       password: '',
       username: '',
@@ -109,7 +110,6 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
       consentPrivacy: false,
     },
     validate: (values) => validate(values, t),
-    enableReinitialize: true,
     onSubmit: async (values) => {
       setError('')
       setMessage(null)
@@ -117,16 +117,19 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
       track(AnalyticsEvent.SignupSubmitted, { invite_code_present: false, has_bio: !!values.bio })
       try {
         const selectedJob = jobTitles.find((j) => String(j.id) === values.jobTitleId)
-        const profile: Record<string, unknown> = {
-          job: selectedJob
+        const profile: Record<string, unknown> = {}
+        if (values.jobTitleId) {
+          profile['job'] = selectedJob
             ? { title_id: selectedJob.id, slug: selectedJob.slug, label: selectedJob.label, other: null }
-            : { title_id: null, slug: 'other', other: values.jobOther?.trim() || null },
+            : { title_id: null, slug: 'other', other: values.jobOther?.trim() || null }
         }
         if (values.phone?.trim()) {
           profile['phone'] = values.phone.trim()
         }
         const payload = {
           ...values,
+          org_slug: org?.slug,
+          org_id: org?.id,
           profile,
           extra_metadata: { consents: { terms: true, privacy: true } },
         }
@@ -372,7 +375,8 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
           <FormField name="jobTitleId">
             <div className="flex items-center space-x-2 mb-1.5">
               <Form.Label className="grow text-[13px] font-semibold text-[var(--ordria-foreground)]/70">
-                {t('signup.job_label', { defaultValue: 'Votre métier' })}
+                {t('signup.job_label', { defaultValue: 'Votre métier' })}{' '}
+                <span className="font-normal">({t('signup.optional', { defaultValue: 'optional' })})</span>
               </Form.Label>
               {formik.touched.jobTitleId && formik.errors.jobTitleId && (
                 <span className="text-red-500 text-xs flex items-center space-x-1">
@@ -386,7 +390,6 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.jobTitleId}
-                required
                 className="box-border w-full bg-white text-[var(--ordria-foreground)] rounded-lg px-4 border border-[var(--ordria-border)] inline-flex h-[44px] appearance-none items-center focus:outline-none focus:ring-2 focus:ring-[oklch(0.80_0.13_213/0.3)] focus:border-[var(--ordria-accent)] transition-all text-sm"
               >
                 <option value="">{t('signup.job_choose', { defaultValue: 'Choisir…' })}</option>
@@ -507,7 +510,7 @@ function OpenSignUpComponent({ org: propOrg }: OpenSignUpComponentProps = {}) {
 
           <Form.Submit asChild>
             <button
-              disabled={isSubmitting || !!message || (turnstileRequired && !formik.values.turnstileToken) || !formik.values.jobTitleId || !formik.values.consentTerms || !formik.values.consentPrivacy}
+              disabled={isSubmitting || !!message || (turnstileRequired && !formik.values.turnstileToken) || !formik.values.consentTerms || !formik.values.consentPrivacy}
               className="box-border w-full inline-flex h-[44px] rounded-lg items-center justify-center bg-[var(--ordria-accent)] hover:bg-[var(--ordria-accent-hover)] text-[var(--ordria-nuit)] px-[15px] font-bold text-[14px] leading-none mt-2 transition-all disabled:opacity-50"
             >
               {isSubmitting ? (

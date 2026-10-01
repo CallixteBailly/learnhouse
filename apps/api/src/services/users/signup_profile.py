@@ -1,8 +1,8 @@
 # apps/api/src/services/users/signup_profile.py
-"""Ordria enriched-signup contract: job (required), phone (optional), RGPD consents.
+"""Ordria enriched-signup contract: job (optional), phone (optional), RGPD consents.
 
-Storage (spec 2026-09-23):
-  profile["job"]   {"title_id": int|None, "slug": str, "label": str, "other": str|None}
+Storage (spec 2026-09-23, job made optional 2026-10-01):
+  profile["job"]   {"title_id": int|None, "slug": str, "label": str, "other": str|None} | None
   profile["phone"] str | None
   extra_metadata["consents"]["terms"|"privacy"] =
       {"accepted": True, "accepted_at": <server ISO>, "version": CONSENT_TEXT_VERSION}
@@ -87,9 +87,14 @@ async def validate_and_normalize_signup_profile(
     extra = dict(user_object.extra_metadata or {})
 
     job = await _resolve_job(db_session, profile.get("job"))
+    # Job is optional at signup: it was required, but the select proved
+    # unreliable in some client browsers and hard-blocked account creation.
+    # A provided job is still validated below; absent → key dropped, the
+    # user can set it later from the profile page (validate_profile_update).
     if job is None:
-        raise _http("INVALID_JOB", "A job title is required at signup")
-    profile["job"] = job
+        profile.pop("job", None)
+    else:
+        profile["job"] = job
 
     phone = profile.get("phone")
     if phone is not None:

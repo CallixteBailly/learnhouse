@@ -5689,6 +5689,7 @@
     "manage_billing": "Manage billing"
   },
   "signup": {
+    "optional": "optional",
     "job_label": "Your job",
     "job_choose": "Choose…",
     "job_other": "Other",

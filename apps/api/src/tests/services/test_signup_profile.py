@@ -73,12 +73,13 @@ async def test_happy_path_with_other_job(db):
 
 
 @pytest.mark.asyncio
-async def test_missing_job_rejected(db):
+async def test_missing_job_accepted(db):
+    """Job is optional since 2026-10-01: absent job no longer blocks signup."""
     user = _user(extra_metadata={"consents": _consents()})
-    with pytest.raises(HTTPException) as exc:
-        await validate_and_normalize_signup_profile(db, user)
-    assert exc.value.status_code == 400
-    assert exc.value.detail["code"] == "INVALID_JOB"
+    await validate_and_normalize_signup_profile(db, user)  # must not raise
+    assert "job" not in user.profile
+    for kind in ("terms", "privacy"):
+        assert user.extra_metadata["consents"][kind]["accepted"] is True
 
 
 @pytest.mark.asyncio
@@ -115,12 +116,12 @@ async def test_invalid_phone_rejected(db):
 
 
 @pytest.mark.asyncio
-async def test_empty_job_other_rejected(db):
+async def test_empty_job_other_treated_as_absent(db):
+    """A whitespace-only 'other' resolves to no job — accepted as absent."""
     user = _user(profile={"job": {"other": "   "}},
                  extra_metadata={"consents": _consents()})
-    with pytest.raises(HTTPException) as exc:
-        await validate_and_normalize_signup_profile(db, user)
-    assert exc.value.detail["code"] == "INVALID_JOB"
+    await validate_and_normalize_signup_profile(db, user)  # must not raise
+    assert "job" not in user.profile
 
 
 @pytest.mark.asyncio
