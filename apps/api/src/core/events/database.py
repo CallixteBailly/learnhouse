@@ -95,12 +95,16 @@ else:
     #     night of bulk course writes.
     #   timeout=15 → connection/handshake timeout so pool growth can't hang
     #     either. Migrations are unaffected: autoinstall.py builds its own engine.
+    #   server_settings.application_name → labels every pool connection in the
+    #     Neon console (Sessions/monitoring) so app traffic is distinguishable
+    #     from migrations and ad-hoc clients when diagnosing connection storms.
     _connect_args = {
         "statement_cache_size": 0,
         "prepared_statement_name_func": lambda: "",
         "prepared_statement_cache_size": 0,
         "command_timeout": 30,
         "timeout": 15,
+        "server_settings": {"application_name": "learnhouse-api"},
     }
 
     # Detect connection poolers (Supavisor, PgBouncer) to use a smaller

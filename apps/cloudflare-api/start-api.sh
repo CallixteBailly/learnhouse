@@ -103,17 +103,18 @@ echo "[start] FastAPI starting on :9000 (supervised)"
 # ── 5b. Health watchdog ──
 # The supervisor above only reacts to uvicorn EXITING. The observed failure
 # mode (2026-09-26, 3 crashes in one night) is a HANG: DB pool connections
-# stuck on silently-dead links → every DB route (incl. /health, which pings
-# the DB) stops answering while the process stays alive. This watchdog probes
-# /health every 60 s and, after 3 consecutive failures (≥3 min, so boot and
-# brief Neon cold starts never trigger it), kills uvicorn — the supervisor
-# above then relaunches it with a fresh pool. Self-healing in ~3 min instead
-# of a manual container recreation (+2 min of downtime).
+# stuck on silently-dead links → every DB route stops answering while the
+# process stays alive. This watchdog probes /api/v1/health/READY (the
+# DB-aware readiness probe — /api/v1/health itself is pure liveness and
+# would always pass) every 60 s and, after 3 consecutive failures (≥3 min,
+# so boot and brief Neon cold starts never trigger it), kills uvicorn — the
+# supervisor above then relaunches it with a fresh pool. Self-healing in
+# ~3 min instead of a manual container recreation (+2 min of downtime).
 (
     fail=0
     sleep 90   # grace: migrations + boot must settle first
     while true; do
-        if curl -sf -m 20 http://127.0.0.1:9000/api/v1/health > /dev/null 2>&1; then
+        if curl -sf -m 20 http://127.0.0.1:9000/api/v1/health/ready > /dev/null 2>&1; then
             fail=0
         else
             fail=$((fail + 1))
