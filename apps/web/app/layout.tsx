@@ -9,16 +9,16 @@ import localFont from 'next/font/local'
    - Expose (logo) : police de marque / display */
 const satoshi = localFont({
   src: [
-    { path: './fonts/Satoshi-Light.otf', weight: '300', style: 'normal' },
-    { path: './fonts/Satoshi-LightItalic.otf', weight: '300', style: 'italic' },
-    { path: './fonts/Satoshi-Regular.otf', weight: '400', style: 'normal' },
-    { path: './fonts/Satoshi-Italic.otf', weight: '400', style: 'italic' },
-    { path: './fonts/Satoshi-Medium.otf', weight: '500', style: 'normal' },
-    { path: './fonts/Satoshi-MediumItalic.otf', weight: '500', style: 'italic' },
-    { path: './fonts/Satoshi-Bold.otf', weight: '700', style: 'normal' },
-    { path: './fonts/Satoshi-BoldItalic.otf', weight: '700', style: 'italic' },
-    { path: './fonts/Satoshi-Black.otf', weight: '900', style: 'normal' },
-    { path: './fonts/Satoshi-BlackItalic.otf', weight: '900', style: 'italic' },
+    { path: './fonts/Satoshi-Light.woff2', weight: '300', style: 'normal' },
+    { path: './fonts/Satoshi-LightItalic.woff2', weight: '300', style: 'italic' },
+    { path: './fonts/Satoshi-Regular.woff2', weight: '400', style: 'normal' },
+    { path: './fonts/Satoshi-Italic.woff2', weight: '400', style: 'italic' },
+    { path: './fonts/Satoshi-Medium.woff2', weight: '500', style: 'normal' },
+    { path: './fonts/Satoshi-MediumItalic.woff2', weight: '500', style: 'italic' },
+    { path: './fonts/Satoshi-Bold.woff2', weight: '700', style: 'normal' },
+    { path: './fonts/Satoshi-BoldItalic.woff2', weight: '700', style: 'italic' },
+    { path: './fonts/Satoshi-Black.woff2', weight: '900', style: 'normal' },
+    { path: './fonts/Satoshi-BlackItalic.woff2', weight: '900', style: 'italic' },
   ],
   display: 'swap',
   variable: '--font-default',
@@ -26,10 +26,10 @@ const satoshi = localFont({
 
 const expose = localFont({
   src: [
-    { path: './fonts/Expose-Regular.otf', weight: '400', style: 'normal' },
-    { path: './fonts/Expose-Medium.otf', weight: '500', style: 'normal' },
-    { path: './fonts/Expose-Bold.otf', weight: '700', style: 'normal' },
-    { path: './fonts/Expose-Black.otf', weight: '900', style: 'normal' },
+    { path: './fonts/Expose-Regular.woff2', weight: '400', style: 'normal' },
+    { path: './fonts/Expose-Medium.woff2', weight: '500', style: 'normal' },
+    { path: './fonts/Expose-Bold.woff2', weight: '700', style: 'normal' },
+    { path: './fonts/Expose-Black.woff2', weight: '900', style: 'normal' },
   ],
   display: 'swap',
   variable: '--font-expose',
