@@ -1,0 +1,19 @@
+DESCRIPTION >
+    LearnHouse analytics events (ingested by the API via /v0/events?name=events)
+
+TOKEN "learnhouse_ingest" APPEND
+TOKEN "learnhouse_read" READ
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `event_name` String `json:$.event_name`,
+    `org_id` Int32 `json:$.org_id`,
+    `user_id` Int32 `json:$.user_id`,
+    `session_id` String `json:$.session_id`,
+    `properties` String `json:$.properties`,
+    `source` String `json:$.source`,
+    `ip` String `json:$.ip`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "org_id, timestamp"

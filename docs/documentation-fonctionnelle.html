@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ordria Learning · Documentation fonctionnelle complète</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --paper:  #f7f5f0; --ink: #1e2128; --muted: #57606b; --soft: #9aa0ac;
+    --accent: #c9a227; --accent-tint: #fdf6e3; --link: #2563eb;
+    --vert: #16a34a; --rouge: #dc2626;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); line-height: 1.55; padding: 48px 24px 64px; }
+  .frame { max-width: 1080px; margin: 0 auto; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.12; margin-bottom: 8px; }
+  .sous { color: var(--muted); font-size: 14px; max-width: 680px; margin-bottom: 40px; }
+  h2 { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; margin: 52px 0 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  h2 .num { background: var(--ink); color: var(--accent); width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: 0 0 26px; }
+  .h2sous { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  h3 { font-size: 13.5px; font-weight: 700; margin: 22px 0 8px; }
+  p.body { font-size: 14px; color: #374151; max-width: 720px; margin-bottom: 12px; }
+  ul.feat { list-style: none; font-size: 13.5px; color: #374151; margin: 8px 0 16px; }
+  ul.feat li { padding-left: 20px; position: relative; margin-bottom: 6px; }
+  ul.feat li::before { content: ""; position: absolute; left: 4px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  .diagram-frame { border: 1px solid rgba(30,33,40,0.10); border-radius: 8px; background: #ffffff; padding: 20px; margin: 20px 0 8px; overflow-x: auto; }
+  .diagram-frame svg { width: 100%; min-width: 760px; display: block; }
+  .fig-cap { font-size: 11.5px; color: var(--soft); margin: 8px 0 24px; }
+
+  .cards { display: grid; gap: 16px; margin: 16px 0 8px; }
+  .cards.c3 { grid-template-columns: 1.1fr 1fr 0.9fr; }
+  .cards.c2 { grid-template-columns: 1.2fr 1fr; }
+  @media (max-width: 760px) { .cards { grid-template-columns: 1fr !important; } }
+  .card { background: #ffffff; border: 1px solid rgba(30,33,40,0.12); border-radius: 6px; padding: 18px; }
+  .card .eyebrow { margin-bottom: 6px; }
+  .card h4 { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex: 0 0 7px; }
+  .dot.or { background: var(--accent); } .dot.nuit { background: var(--ink); } .dot.bleu { background: var(--link); } .dot.vert { background: var(--vert); }
+  .card ul { list-style: none; font-size: 12.5px; color: #374151; }
+  .card ul li { margin-bottom: 5px; padding-left: 14px; position: relative; }
+  .card ul li::before { content: "·"; position: absolute; left: 2px; color: var(--soft); font-weight: 700; }
+
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 12.5px; background: #fff; border: 1px solid rgba(30,33,40,0.12); border-radius: 8px; overflow: hidden; }
+  table.matrix th, table.matrix td { padding: 9px 12px; text-align: center; border-bottom: 1px solid rgba(30,33,40,0.07); }
+  table.matrix th { background: var(--ink); color: #fff; font-weight: 600; font-size: 11.5px; }
+  table.matrix th:first-child, table.matrix td:first-child { text-align: left; font-weight: 600; }
+  table.matrix td:first-child { color: var(--ink); }
+  table.matrix tr:last-child td { border-bottom: none; }
+  .ok { color: var(--vert); font-weight: 700; } .part { color: var(--accent); font-weight: 700; } .non { color: var(--soft); }
+
+  /* Tables inventaire (2 colonnes) */
+  table.inv { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border: 1px solid rgba(30,33,40,0.12); border-radius: 8px; overflow: hidden; margin: 12px 0 20px; }
+  table.inv th { background: var(--ink); color: #fff; text-align: left; font-weight: 600; font-size: 11.5px; padding: 9px 14px; }
+  table.inv th:last-child { width: 58%; }
+  table.inv td { padding: 8px 14px; border-bottom: 1px solid rgba(30,33,40,0.07); vertical-align: top; }
+  table.inv td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; }
+  table.inv td:last-child { color: #374151; }
+  table.inv tr:last-child td { border-bottom: none; }
+  table.inv tr:nth-child(even) td { background: rgba(30,33,40,0.015); }
+
+  .statut { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 3px 9px; border-radius: 999px; margin-left: 10px; vertical-align: 2px; }
+  .st-vert { background: #f0fdf4; color: var(--vert); border: 1px solid #bbf7d0; }
+  .st-or { background: var(--accent-tint); color: #a1872a; border: 1px solid #eadfa8; }
+  .st-bleu { background: #eff6ff; color: var(--link); border: 1px solid #bfdbfe; }
+
+  .note-box { background: var(--accent-tint); border: 1px solid #eadfa8; border-radius: 8px; padding: 14px 18px; font-size: 13px; color: #374151; margin: 16px 0; }
+  .note-box b { color: var(--ink); }
+  .chemin { font-size: 11px; color: var(--soft); font-family: ui-monospace, monospace; background: rgba(30,33,40,0.04); padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+
+  /* Screenshots de l'application */
+  figure.shot { margin: 24px 0; }
+  figure.shot img { width: 100%; display: block; border: 1px solid rgba(30,33,40,0.14); border-radius: 8px; }
+  figure.shot figcaption { font-size: 11.5px; color: var(--soft); margin-top: 8px; padding: 0 4px; }
+  figure.shot figcaption b { color: var(--muted); }
+  .shot-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  @media (max-width: 760px) { .shot-duo { grid-template-columns: 1fr; } }
+  .shot-duo figure.shot { margin: 0; }
+  .browser-top { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #eceae4; border: 1px solid rgba(30,33,40,0.14); border-bottom: none; border-radius: 8px 8px 0 0; }
+  .browser-top .burl { flex: 1; background: #fff; border: 1px solid rgba(30,33,40,0.10); border-radius: 5px; padding: 3px 10px; font-size: 10.5px; color: var(--muted); font-family: ui-monospace, monospace; }
+  .browser-top .bdot { width: 8px; height: 8px; border-radius: 50%; }
+  figure.shot .browser-top + img { border-radius: 0 0 8px 8px; }
+
+  footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid rgba(30,33,40,0.12); font-size: 11px; color: var(--soft); letter-spacing: 0.04em; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <p class="eyebrow">Documentation fonctionnelle · Plateforme learn.ordria.fr</p>
+  <h1>Tout ce que fait Ordria Learning</h1>
+  <p class="sous">Inventaire complet — de la page vitrine d'un stagiaire jusqu'aux réglages de la plateforme, en passant par l'édition des formations. État au 27 septembre 2026, vérifié en production.</p>
+
+  <!-- ══════════════ 1. ARCHITECTURE ══════════════ -->
+  <h2><span class="num">1</span> Vue d'ensemble de la plateforme</h2>
+  <p class="h2sous">Comment les pièces s'assemblent — navigateur, moteur applicatif, données.</p>
+
+  <div class="diagram-frame">
+  <svg viewBox="0 0 1000 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="arch-title arch-desc">
+    <title id="arch-title">Architecture de la plateforme Ordria</title>
+    <desc id="arch-desc">Diagramme d'architecture montrant l'application web qui interroge l'API conteneurisée chez Cloudflare, laquelle lit et écrit la base PostgreSQL, le stockage médias R2 et le service d'analytics Tinybird.</desc>
+    <defs>
+      <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#57606b"/></marker>
+      <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2563eb"/></marker>
+    </defs>
+    <rect width="100%" height="100%" fill="#ffffff"/>
+    <rect x="40" y="40" width="272" height="384" rx="8" fill="rgba(30,33,40,0.02)" stroke="rgba(30,33,40,0.10)" stroke-width="0.8"/>
+    <rect x="56" y="44" width="88" height="12" rx="2" fill="#ffffff"/>
+    <text x="100" y="53" fill="rgba(30,33,40,0.40)" font-size="7" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.14em">NAVIGATEUR</text>
+    <rect x="372" y="40" width="304" height="384" rx="8" fill="rgba(30,33,40,0.02)" stroke="rgba(30,33,40,0.10)" stroke-width="0.8"/>
+    <rect x="388" y="44" width="120" height="12" rx="2" fill="#ffffff"/>
+    <text x="448" y="53" fill="rgba(30,33,40,0.40)" font-size="7" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.14em">CLOUDFLARE · API</text>
+    <rect x="736" y="40" width="224" height="384" rx="8" fill="rgba(30,33,40,0.02)" stroke="rgba(30,33,40,0.10)" stroke-width="0.8"/>
+    <rect x="752" y="44" width="72" height="12" rx="2" fill="#ffffff"/>
+    <text x="788" y="53" fill="rgba(30,33,40,0.40)" font-size="7" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.14em">DONNÉES</text>
+
+    <line x1="288" y1="124" x2="404" y2="124" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+    <rect x="316" y="106" width="60" height="12" rx="2" fill="#ffffff"/>
+    <text x="346" y="115" fill="#7a8399" font-size="8" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.06em">HTTPS · JSON</text>
+    <line x1="648" y1="124" x2="764" y2="124" stroke="#57606b" stroke-width="1.2" marker-end="url(#arrow)"/>
+    <rect x="684" y="106" width="44" height="12" rx="2" fill="#ffffff"/>
+    <text x="706" y="115" fill="#7a8399" font-size="8" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.06em">SQL</text>
+    <path d="M 528,156 V 228 Q 528,236 536,236 H 728 Q 736,236 736,244 V 262" fill="none" stroke="#57606b" stroke-width="1.2" marker-end="url(#arrow)"/>
+    <rect x="612" y="218" width="52" height="12" rx="2" fill="#ffffff"/>
+    <text x="638" y="227" fill="#7a8399" font-size="8" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.06em">MÉDIAS</text>
+    <path d="M 512,156 V 356 Q 512,364 520,364 H 728 Q 736,364 736,372 V 386" fill="none" stroke="#57606b" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+    <rect x="596" y="346" width="52" height="12" rx="2" fill="#ffffff"/>
+    <text x="622" y="355" fill="#7a8399" font-size="8" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.06em">ÉVÉNEMENTS</text>
+    <line x1="452" y1="264" x2="452" y2="316" stroke="#2563eb" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-link)"/>
+    <rect x="396" y="282" width="112" height="12" rx="2" fill="#ffffff"/>
+    <text x="452" y="291" fill="#7a8399" font-size="8" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.06em">PAIEMENTS</text>
+
+    <rect x="72" y="92" width="216" height="64" rx="6" fill="rgba(87,96,107,0.10)" stroke="#9aa0ac" stroke-width="1"/>
+    <rect x="80" y="98" width="40" height="12" rx="2" fill="transparent" stroke="rgba(154,160,172,0.60)" stroke-width="0.8"/>
+    <text x="100" y="107" fill="rgba(87,96,107,0.90)" font-size="7" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.08em">WEB</text>
+    <text x="180" y="122" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Site apprenant &amp; backoffices</text>
+    <text x="180" y="140" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">learn.ordria.fr · Next.js</text>
+    <rect x="412" y="92" width="236" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <rect x="420" y="98" width="36" height="12" rx="2" fill="transparent" stroke="rgba(30,33,40,0.40)" stroke-width="0.8"/>
+    <text x="438" y="107" fill="rgba(30,33,40,0.80)" font-size="7" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.08em">API</text>
+    <text x="530" y="122" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Moteur applicatif</text>
+    <text x="530" y="140" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">FastAPI · conteneur Cloudflare</text>
+    <rect x="412" y="180" width="236" height="48" rx="6" fill="rgba(30,33,40,0.02)" stroke="rgba(30,33,40,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="530" y="200" fill="#1e2128" font-size="11" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Cache &amp; files d'attente</text>
+    <text x="530" y="216" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">Redis (sessions · vidéos HLS)</text>
+    <rect x="764" y="92" width="160" height="64" rx="6" fill="#fdf6e3" stroke="#c9a227" stroke-width="1.2"/>
+    <rect x="772" y="98" width="44" height="12" rx="2" fill="transparent" stroke="rgba(201,162,39,0.60)" stroke-width="0.8"/>
+    <text x="794" y="107" fill="rgba(161,135,42,0.95)" font-size="7" font-family="Inter, sans-serif" text-anchor="middle" letter-spacing="0.08em">BASE</text>
+    <text x="844" y="122" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">PostgreSQL</text>
+    <text x="844" y="140" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">Tout persiste · Neon</text>
+    <rect x="764" y="262" width="160" height="48" rx="6" fill="rgba(30,33,40,0.05)" stroke="#57606b" stroke-width="1"/>
+    <text x="844" y="282" fill="#1e2128" font-size="11" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Stockage médias</text>
+    <text x="844" y="298" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">R2 · vidéos, images</text>
+    <rect x="764" y="386" width="160" height="48" rx="6" fill="rgba(30,33,40,0.03)" stroke="rgba(30,33,40,0.30)" stroke-width="1"/>
+    <text x="844" y="406" fill="#1e2128" font-size="11" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Analytics</text>
+    <text x="844" y="422" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">Tinybird</text>
+    <rect x="412" y="316" width="236" height="48" rx="6" fill="rgba(30,33,40,0.03)" stroke="rgba(30,33,40,0.30)" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="530" y="336" fill="#1e2128" font-size="11" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Stripe (externe)</text>
+    <text x="530" y="352" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">encaissement des formations</text>
+    <line x1="40" y1="446" x2="960" y2="446" stroke="rgba(30,33,40,0.10)" stroke-width="0.8"/>
+    <text x="40" y="458" fill="#57606b" font-size="8" font-family="Inter, sans-serif" letter-spacing="0.14em">LÉGENDE</text>
+    <text x="140" y="458" fill="#57606b" font-size="8" font-family="Inter, sans-serif">— flux principal</text>
+    <text x="260" y="458" fill="#57606b" font-size="8" font-family="Inter, sans-serif">┄ asynchrone / externe</text>
+    <text x="420" y="458" fill="#57606b" font-size="8" font-family="Inter, sans-serif">▮ or = socle durable (tout survit aux déploiements)</text>
+  </svg>
+  </div>
+  <p class="fig-cap">Fig. 1 — L'application web parle à une API conteneurisée ; PostgreSQL conserve chaque organisation, cours, invitation et progression.</p>
+
+  <p class="body" style="margin-top:20px"><b>La vitrine d'une organisation</b> — chaque client a sa page d'accueil entièrement personnalisable (couleurs, police, sections, images) :</p>
+  <figure class="shot">
+    <div class="browser-top">
+      <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+      <span class="burl">learn.ordria.fr/orgs/protech/</span>
+    </div>
+    <img src="screenshots/app-landing.png" alt="Landing page de PROTECH : héros sombre avec la mascotte, chiffres clés, cartes de formations, logos OPCO, bandeau Qualiopi" loading="lazy">
+    <figcaption><b>Vitrine PROTECH</b> — héros dégradé nuit + mascotte détourée, badge « Organisme certifié Qualiopi », chiffres clés (98 % · 2 formations RS · 100 % CPF), cartes des deux formations, 7 logos OPCO, bandeau Qualiopi, appel à l'action final. Éditable section par section depuis le backoffice (§ 6).</figcaption>
+  </figure>
+
+  <div class="cards c3">
+    <div class="card">
+      <p class="eyebrow">MULTI-ORGANISATIONS</p>
+      <h4><span class="dot nuit"></span>Espaces privés par client</h4>
+      <ul><li>Chaque organisation : ses cours, membres, charte</li><li>Adresse dédiée /orgs/&lt;slug&gt;/</li><li>Landing page personnalisable par org</li><li>Isolation : les données ne fuient pas entre orgs</li></ul>
+    </div>
+    <div class="card">
+      <p class="eyebrow">CLOUDFLARE</p>
+      <h4><span class="dot bleu"></span>Hébergement mondial</h4>
+      <ul><li>API en conteneur, redéploiement sans perte</li><li>Médias sur R2 (livraison rapide)</li><li>Analytics d'événements Tinybird</li></ul>
+    </div>
+    <div class="card">
+      <p class="eyebrow">DURABILITÉ</p>
+      <h4><span class="dot or"></span>Tout survit</h4>
+      <ul><li>Invitations &amp; codes en base</li><li>Progressions, certificats, paiements</li><li>Vérifié par redéploiements forcés</li></ul>
+    </div>
+  </div>
+
+  <!-- ══════════════ 2. ADHÉSION ══════════════ -->
+  <h2><span class="num">2</span> Rejoindre une organisation <span class="statut st-vert">En place</span></h2>
+  <p class="h2sous">L'organisation est sur invitation : personne n'entre sans y avoir été invité ou sans un code.</p>
+
+  <div class="diagram-frame">
+  <svg viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="portes-title portes-desc">
+    <title id="portes-title">Les trois portes d'adhésion</title>
+    <desc id="portes-desc">Flowchart à trois rangées : l'invitation par email et le code de formation mènent au statut de membre apprenant, la voie spontanée sans code est bloquée et passe par un email de contact.</desc>
+    <defs>
+      <marker id="p-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#57606b"/></marker>
+    </defs>
+    <rect width="100%" height="100%" fill="#ffffff"/>
+    <line x1="232" y1="88" x2="284" y2="88" stroke="#57606b" stroke-width="1.2" marker-end="url(#p-arrow)"/>
+    <line x1="460" y1="88" x2="512" y2="88" stroke="#57606b" stroke-width="1.2" marker-end="url(#p-arrow)"/>
+    <path d="M 692,88 H 748 Q 756,88 756,96 V 148 Q 756,156 764,156 H 812" fill="none" stroke="#57606b" stroke-width="1.2" marker-end="url(#p-arrow)"/>
+    <line x1="232" y1="216" x2="284" y2="216" stroke="#57606b" stroke-width="1.2" marker-end="url(#p-arrow)"/>
+    <line x1="460" y1="216" x2="512" y2="216" stroke="#57606b" stroke-width="1.2" marker-end="url(#p-arrow)"/>
+    <path d="M 692,216 H 748 Q 756,216 756,208 V 176 Q 756,168 764,168 H 812" fill="none" stroke="#57606b" stroke-width="1.2" marker-end="url(#p-arrow)"/>
+    <line x1="232" y1="330" x2="284" y2="330" stroke="#57606b" stroke-width="1.2" marker-end="url(#p-arrow)"/>
+    <line x1="460" y1="330" x2="512" y2="330" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#p-arrow)"/>
+
+    <rect x="64" y="56" width="168" height="64" rx="6" fill="#fdf6e3" stroke="#c9a227" stroke-width="1"/>
+    <text x="148" y="82" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Porte 1 · Email</text>
+    <text x="148" y="100" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">inviter depuis le backoffice</text>
+    <rect x="316" y="56" width="144" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <text x="388" y="82" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Lien reçu</text>
+    <text x="388" y="100" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">invitation personnelle</text>
+    <rect x="544" y="56" width="148" height="64" rx="6" fill="rgba(87,96,107,0.10)" stroke="#9aa0ac" stroke-width="1"/>
+    <text x="618" y="82" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">La personne clique</text>
+    <text x="618" y="100" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">crée son compte</text>
+    <rect x="64" y="184" width="168" height="64" rx="6" fill="#fdf6e3" stroke="#c9a227" stroke-width="1"/>
+    <text x="148" y="210" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Porte 2 · Code</text>
+    <text x="148" y="228" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">ex. RS6776-SEP</text>
+    <rect x="316" y="184" width="144" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <text x="388" y="210" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Diffusion libre</text>
+    <text x="388" y="228" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">email · WhatsApp · oral</text>
+    <rect x="544" y="184" width="148" height="64" rx="6" fill="rgba(87,96,107,0.10)" stroke="#9aa0ac" stroke-width="1"/>
+    <text x="618" y="210" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Inscription + code</text>
+    <text x="618" y="228" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">collé à l'inscription</text>
+    <rect x="64" y="298" width="168" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <text x="148" y="324" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Porte 3 · Spontané</text>
+    <text x="148" y="342" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">visiteur sans invitation</text>
+    <rect x="316" y="298" width="144" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <text x="388" y="324" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Code exigé</text>
+    <text x="388" y="342" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">mode sur invitation</text>
+    <rect x="544" y="298" width="148" height="64" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1"/>
+    <text x="618" y="324" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Sans code : bloqué</text>
+    <text x="618" y="342" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">détour : nous contacter</text>
+    <rect x="820" y="136" width="140" height="72" rx="20" fill="#fdf6e3" stroke="#c9a227" stroke-width="1.4"/>
+    <text x="890" y="166" fill="#1e2128" font-size="12" font-weight="700" font-family="Inter, sans-serif" text-anchor="middle">Membre</text>
+    <text x="890" y="184" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">rôle apprenant</text>
+    <line x1="40" y1="386" x2="960" y2="386" stroke="rgba(30,33,40,0.10)" stroke-width="0.8"/>
+    <text x="40" y="398" fill="#57606b" font-size="8" font-family="Inter, sans-serif" letter-spacing="0.14em">LÉGENDE</text>
+    <text x="140" y="398" fill="#57606b" font-size="8" font-family="Inter, sans-serif">— parcours réussi</text>
+    <text x="280" y="398" fill="#57606b" font-size="8" font-family="Inter, sans-serif">┄ refus (sans code)</text>
+    <text x="420" y="398" fill="#57606b" font-size="8" font-family="Inter, sans-serif">▮ or = devient membre apprenant</text>
+  </svg>
+  </div>
+  <p class="fig-cap">Fig. 2 — Les trois portes. En attente d'acceptation, chaque invitation apparaît dans le backoffice avec le badge « Invitation en attente » et disparaît dès que la personne rejoint.</p>
+
+  <div class="note-box"><b>Testé en production le 27/09/2026 :</b> invitation par email réellement reçue, jonction via lien avec code, invitation « en attente » consommée automatiquement à l'arrivée, survie des codes après deux redéploiements forcés.</div>
+
+  <p class="body"><b>L'écran que voit la personne invitée</b> — elle ouvre son lien, l'organisation est déjà reconnue, un clic et elle est membre :</p>
+  <figure class="shot">
+    <div class="browser-top">
+      <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+      <span class="burl">learn.ordria.fr/signup?inviteCode=…</span>
+    </div>
+    <img src="screenshots/app-signup-join.png" alt="Écran Rejoindre l'organisation : le compte détecté à gauche, l'organisation PROTECH à droite, bouton Rejoindre" loading="lazy">
+    <figcaption><b>Rejoindre l'organisation</b> — la personne arrive avec son compte (@test01), l'organisation PROTECH est affichée avec son logo ; le bouton « Rejoindre l'organisation » crée l'adhésion à la seconde. Sans code d'invitation valide, cet écran ne s'ouvre pas : l'organisation reste fermée.</figcaption>
+  </figure>
+
+  <!-- ══════════════ 3. RÔLES ══════════════ -->
+  <h2><span class="num">3</span> Rôles et droits <span class="statut st-vert">En place</span></h2>
+  <p class="h2sous">Le rôle est attribué par organisation — une personne peut être admin chez PROTECH et apprenante ailleurs. Les changements prennent effet immédiatement.</p>
+
+  <table class="matrix">
+    <tr><th>Ce que chacun peut faire</th><th>Apprenant</th><th>Instructor</th><th>Maintainer</th><th>Admin org</th><th>Superadmin</th></tr>
+    <tr><td>Suivre les cours, progresser, obtenir les certificats</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+    <tr><td>Créer et modifier les cours</td><td class="non">—</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+    <tr><td>Gérer les membres, rôles et invitations</td><td class="non">—</td><td class="non">—</td><td class="part">◐</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+    <tr><td>Réglages de l'organisation (charte, landing, fonctions)</td><td class="non">—</td><td class="non">—</td><td class="non">—</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+    <tr><td>Analytics de l'organisation</td><td class="non">—</td><td class="non">—</td><td class="part">◐</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+    <tr><td>Toutes les organisations (plateforme entière)</td><td class="non">—</td><td class="non">—</td><td class="non">—</td><td class="non">—</td><td class="ok">✓</td></tr>
+  </table>
+  <p class="fig-cap">Fig. 3 — Matrice des droits. ◐ = partiel selon configuration. Toute action non autorisée est refusée par l'API, même en forçant l'URL.</p>
+
+  <!-- ══════════════ 4. PARCOURS APPRENANT ══════════════ -->
+  <h2><span class="num">4</span> Parcours apprenant : suivre une formation <span class="statut st-vert">En place</span></h2>
+
+  <div class="diagram-frame">
+  <svg viewBox="0 0 1000 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cours-title cours-desc">
+    <title id="cours-title">Cycle de vie d'une formation</title>
+    <desc id="cours-desc">Processus en cinq étapes : création du cours, publication, progression de l'apprenant, certificat délivré à la complétion, vérifiable publiquement.</desc>
+    <defs><marker id="c-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#57606b"/></marker></defs>
+    <rect width="100%" height="100%" fill="#ffffff"/>
+    <line x1="212" y1="72" x2="256" y2="72" stroke="#57606b" stroke-width="1.2" marker-end="url(#c-arrow)"/>
+    <line x1="412" y1="72" x2="456" y2="72" stroke="#57606b" stroke-width="1.2" marker-end="url(#c-arrow)"/>
+    <line x1="612" y1="72" x2="656" y2="72" stroke="#57606b" stroke-width="1.2" marker-end="url(#c-arrow)"/>
+    <line x1="812" y1="72" x2="856" y2="72" stroke="#57606b" stroke-width="1.2" marker-end="url(#c-arrow)"/>
+    <rect x="56" y="40" width="156" height="64" rx="20" fill="rgba(87,96,107,0.10)" stroke="#9aa0ac" stroke-width="1"/>
+    <text x="134" y="66" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Création</text>
+    <text x="134" y="84" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">pages · quiz · vidéos</text>
+    <rect x="312" y="40" width="100" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <text x="362" y="66" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Publication</text>
+    <text x="362" y="84" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">visible aux membres</text>
+    <rect x="512" y="40" width="100" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <text x="562" y="66" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Progression</text>
+    <text x="562" y="84" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">activité par activité</text>
+    <rect x="712" y="40" width="100" height="64" rx="6" fill="#fdf6e3" stroke="#c9a227" stroke-width="1.4"/>
+    <text x="762" y="66" fill="#1e2128" font-size="12" font-weight="700" font-family="Inter, sans-serif" text-anchor="middle">Certificat</text>
+    <text x="762" y="84" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">PDF nominatif</text>
+    <rect x="912" y="40" width="52" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <text x="938" y="63" fill="#1e2128" font-size="11" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Vérif.</text>
+    <text x="938" y="79" fill="#57606b" font-size="8.5" font-family="Inter, sans-serif" text-anchor="middle">publique</text>
+    <text x="938" y="92" fill="#57606b" font-size="8.5" font-family="Inter, sans-serif" text-anchor="middle">par n°</text>
+    <line x1="40" y1="150" x2="960" y2="150" stroke="rgba(30,33,40,0.10)" stroke-width="0.8"/>
+    <text x="40" y="164" fill="#57606b" font-size="8" font-family="Inter, sans-serif" letter-spacing="0.14em">LÉGENDE</text>
+    <text x="140" y="164" fill="#57606b" font-size="8" font-family="Inter, sans-serif">le certificat se débloque à 100 % des activités publiées</text>
+  </svg>
+  </div>
+  <p class="fig-cap">Fig. 4 — Cycle d'une formation. Les certificats PROTECH portent la mention Qualiopi (n° NDA 11911019391) et se vérifient en ligne par numéro.</p>
+
+  <table class="inv">
+    <tr><th colspan="2">Tout ce que voit et fait l'apprenant</th></tr>
+    <tr><td>Catalogue de cours</td><td>Cartes des formations de son organisation — filtres, recherche, miniatures, états (Reprendre · % · Revoir)</td></tr>
+    <tr><td>Page de cours</td><td>Programme dépliable par chapitres, progression en anneau (%), tags, bouton Reprendre/Commencer</td></tr>
+    <tr><td>Activités</td><td>Pages riches (texte, images, vidéos adaptatives, PDF, audio), quiz notés, devoirs à remettre</td></tr>
+    <tr><td>Barre de progression</td><td>Suivi continu activité par activité, position dans le cours, reprise là où on s'est arrêté</td></tr>
+    <tr><td>Certificats</td><td>Décernés automatiquement à la complétion, PDF nominatif téléchargeable, vérification publique par numéro</td></tr>
+    <tr><td>Recherche</td><td>Recherche unifiée cours / membres de l'organisation</td></tr>
+    <tr><td>Copilot IA</td><td>Assistant qui répond à partir du contenu du cours (activable par org)</td></tr>
+    <tr><td>Profil</td><td>Avatar, informations, métier, langue de l'interface, achats</td></tr>
+    <tr><td>Boards &amp; communautés</td><td>Tableaux kanban de cours et espaces de discussion (selon activation)</td></tr>
+  </table>
+
+  <div class="shot-duo">
+    <figure class="shot">
+      <div class="browser-top">
+        <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+        <span class="burl">learn.ordria.fr/orgs/protech/courses</span>
+      </div>
+      <img src="screenshots/app-catalogue.png" alt="Catalogue des cours PROTECH avec la carte de la formation RS7200" loading="lazy">
+      <figcaption><b>Le catalogue</b> — la carte de formation affiche la miniature, le titre, les tags métier et le bouton d'action adapté à l'état (Commencer · Reprendre · Revoir).</figcaption>
+    </figure>
+    <figure class="shot">
+      <div class="browser-top">
+        <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+        <span class="burl">learn.ordria.fr/orgs/protech/course/b1a0eaf4…</span>
+      </div>
+      <img src="screenshots/app-cours-page.png" alt="Page de la formation RS7200 : titre, progression 15 %, plan dépliable par chapitres" loading="lazy">
+      <figcaption><b>La page de cours</b> — titre et description, progression en anneau (2/13 activités), plan complet par journées avec état de chaque module, certificat indicateur en bas du plan.</figcaption>
+    </figure>
+  </div>
+
+  <figure class="shot">
+    <div class="browser-top">
+      <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+      <span class="burl">learn.ordria.fr/orgs/protech/course/…/activity/94c4ea91…</span>
+    </div>
+    <img src="screenshots/app-activite.png" alt="Activité M1 : page de contenu avec navigation de cours à gauche et contenu à droite" loading="lazy">
+    <figcaption><b>Une activité en lecture</b> — navigation du cours à gauche (position dans le programme), contenu riche à droite, marquage « terminé » automatique en fin de page, bouton pour passer au module suivant.</figcaption>
+  </figure>
+
+  <!-- ══════════════ 5. ÉDITION DES FORMATIONS ══════════════ -->
+  <h2><span class="num">5</span> Édition des cours et formations <span class="statut st-vert">En place</span></h2>
+  <p class="h2sous">L'atelier du formateur : créer un cours, construire son contenu activité par activité, le publier. <span class="chemin">backoffice → Cours → ouvrir un cours</span></p>
+
+  <table class="inv">
+    <tr><th colspan="2">Les 7 onglets d'un cours</th></tr>
+    <tr><td>Général</td><td>Nom, description, miniature (image/vidéo), tags, à-propos complet, objectifs d'apprentissage</td></tr>
+    <tr><td>Contenu</td><td>Le plan du cours : chapitres réordonnables par glisser-déposer, activités, aperçu direct</td></tr>
+    <tr><td>Accès</td><td>Visibilité (catalogue public ou privé), publication, restrictions par groupe</td></tr>
+    <tr><td>Contributeurs</td><td>Inviter des co-auteurs et gérer leurs droits d'édition</td></tr>
+    <tr><td>SEO</td><td>Titre et description pour les moteurs de recherche, aperçu du rendu</td></tr>
+    <tr><td>Certification</td><td>Activer le certificat : nom, description, formateur, n° de série, mention Qualiopi + n° NDA</td></tr>
+    <tr><td>Analytics</td><td>Vues, inscriptions, complétions, temps moyen, activité de ce cours précis</td></tr>
+  </table>
+
+  <table class="inv">
+    <tr><th colspan="2">L'éditeur d'activité (riche, type traitement de texte)</th></tr>
+    <tr><td>Blocs de contenu</td><td>Titres, textes, listes, citations, séparateurs, mise en forme complète</td></tr>
+    <tr><td>Blocs médias</td><td>Vidéo (upload, lecture adaptive HLS, YouTube), images, PDF, audio, fichiers à télécharger</td></tr>
+    <tr><td>Quiz</td><td>Questions à choix, notation, explications — comptent pour la progression</td></tr>
+    <tr><td>Assistant IA</td><td>Génère du contenu de page à partir d'un prompt, directement dans l'éditeur</td></tr>
+    <tr><td>Historique de versions</td><td>Chaque sauvegarde est versionnée ; on peut consulter et restaurer</td></tr>
+    <tr><td>Brouillon / publié</td><td>Chaque activité a son état — seules les activités publiées comptent pour la complétion</td></tr>
+    <tr><td>Verrous d'accès</td><td>Activité publique, réservée à l'achat, ou déverrouillée par une précédente</td></tr>
+    <tr><td>Aperçu apprenant</td><td>Voir exactement ce que verra le stagiaire avant de publier</td></tr>
+  </table>
+
+  <div class="cards c2">
+    <div class="card">
+      <p class="eyebrow">CRÉATION RAPIDE</p>
+      <h4><span class="dot or"></span>Nouveau cours en 2 minutes</h4>
+      <ul><li>Création manuelle : nom + description → structure vide</li><li>Création par IA : décrire la formation → plan + activités proposés</li><li>Import de contenu existant possible</li></ul>
+    </div>
+    <div class="card">
+      <p class="eyebrow">DEVOIRS</p>
+      <h4><span class="dot nuit"></span>Évaluation des stagiaires</h4>
+      <ul><li>Devoirs attachés aux activités</li><li>Dépôt de fichiers par l'apprenant</li><li>Correction et note par le formateur</li></ul>
+    </div>
+  </div>
+
+  <p class="body"><b>Le plan du cours</b> — chapitres en accordéon, chaque activité avec son état, son verrou d'accès et un clic pour l'éditer :</p>
+  <figure class="shot">
+    <div class="browser-top">
+      <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+      <span class="burl">…/dash/courses/course/b1a0eaf4…/content</span>
+    </div>
+    <img src="screenshots/editeur-contenu.png" alt="Éditeur de contenu du cours : chapitres Bienvenue, Jour 1, Jour 2, Jour 3 avec leurs activités et états publié/brouillon" loading="lazy">
+    <figcaption><b>Onglet Contenu</b> — les 4 journées de la formation RS7200 : chaque activité affiche son état (Publié / Brouillon — seules les publiées comptent), son verrou d'accès (« Accès : ouvert à tous »), et deux liens : le crayon ouvre l'éditeur, l'icône œil l'aperçu apprenant. Les chapitres se réorganisent par glisser-déposer ; « Ajouter une activité » en bas de chaque chapitre.</figcaption>
+  </figure>
+
+  <p class="body"><b>L'éditeur d'activité</b> — un traitement de texte complet plein écran, avec l'IA à portée de main :</p>
+  <figure class="shot">
+    <div class="browser-top">
+      <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+      <span class="burl">…/course/…/activity/94c4ea91…/edit</span>
+    </div>
+    <img src="screenshots/editeur-activite.png" alt="Éditeur d'activité M1 en plein écran : barre d'outils riche en haut, contenu de la page au centre" loading="lazy">
+    <figcaption><b>Éditeur d'activité (module M1)</b> — barre d'outils complète (titres, gras, listes, citations, code, tableaux), insertion de vidéos/images/PDF/fichiers, assistant IA, historique des versions en haut à droite, boutons Brouillon ↔ Publié. Chaque sauvegarde crée une version restaurable.</figcaption>
+  </figure>
+
+  <!-- ══════════════ 6. BACKOFFICE ORGANISATION ══════════════ -->
+  <h2><span class="num">6</span> Backoffice d'organisation <span class="statut st-vert">En place</span></h2>
+  <p class="h2sous">Le poste de pilotage de PROTECH : /orgs/protech/dash — chaque section du menu latéral.</p>
+
+  <table class="inv">
+    <tr><th colspan="2">Menu du backoffice</th></tr>
+    <tr><td>Accueil</td><td>Tableau de bord : stats clés (cours, membres), derniers cours modifiés, raccourcis</td></tr>
+    <tr><td>Cours</td><td>Liste de tous les cours (publiés/brouillons), création, ouverture de l'éditeur (§5)</td></tr>
+    <tr><td>Devoirs</td><td>Vue consolidée des remises de tous les cours, à corriger</td></tr>
+    <tr><td>Library</td><td>Regroupement des cours en dossiers / collections (ex. « RS6776 », « Marketing »)</td></tr>
+    <tr><td>Utilisateurs</td><td>Membres (rôles, retrait), invitations en attente, codes d'invitation, groupes d'utilisateurs</td></tr>
+    <tr><td>Communautés · Podcasts · Tableaux · Playgrounds</td><td>Modules activables : discussions, épisodes audio, kanbans, exercices de code</td></tr>
+    <tr><td>Paiements</td><td>Offres de vente des cours, revenus, gestion Stripe de l'organisation</td></tr>
+    <tr><td>Analytique</td><td>Fréquentation, entonnoir, cours populaires, appareils/pays — propre à l'org</td></tr>
+    <tr><td>Organisation</td><td>Tous les réglages (détail ci-dessous)</td></tr>
+    <tr><td>Developers</td><td>Jetons API de l'organisation pour les intégrations</td></tr>
+  </table>
+
+  <table class="inv">
+    <tr><th colspan="2">Réglages de l'organisation — 14 onglets</th></tr>
+    <tr><td>Général</td><td>Nom, description, coordonnées, logo, miniature</td></tr>
+    <tr><td>Landing</td><td>Éditeur visuel de la page d'accueil : sections (héros, texte+image, stats, logos partenaires, CTA), couleurs, fonds dégradés, images</td></tr>
+    <tr><td>Branding</td><td>Couleur d'accent, police (Inter…), filigrane — appliqués à tout l'espace</td></tr>
+    <tr><td>IA</td><td>Activation de la génération de cours et du copilot, quotas</td></tr>
+    <tr><td>Fonctions</td><td>Interrupteurs par module : communautés, podcasts, tableaux, playgrounds, paiements, mode d'inscription (ouvert / sur invitation)</td></tr>
+    <tr><td>Usage</td><td>Consommation : cours, membres, sièges admin</td></tr>
+    <tr><td>Domaines</td><td>Nom de domaine personnalisé de l'organisation</td></tr>
+    <tr><td>SSO</td><td>Connexion unique d'entreprise (reservation EE)</td></tr>
+    <tr><td>SEO</td><td>Référencement de l'espace organisation</td></tr>
+    <tr><td>Automations</td><td>Webhooks : prévenir vos outils à chaque événement (inscription, certificat…)</td></tr>
+    <tr><td>API</td><td>Jetons et documentation de l'API de l'org</td></tr>
+    <tr><td>Menu</td><td>Ordre et visibilité des entrées du menu public</td></tr>
+    <tr><td>Autres · Danger</td><td>Options diverses · effacement du contenu, suppression de l'organisation (protégé)</td></tr>
+  </table>
+
+  <p class="body"><b>L'accueil du backoffice</b> — la santé de l'organisation en un regard :</p>
+  <figure class="shot">
+    <div class="browser-top">
+      <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+      <span class="burl">learn.ordria.fr/orgs/protech/dash</span>
+    </div>
+    <img src="screenshots/dash-accueil.png" alt="Accueil du backoffice PROTECH : menu latéral complet, statistiques cours et membres, derniers cours modifiés" loading="lazy">
+    <figcaption><b>Tableau de bord</b> — menu latéral (Cours, Devoirs, Library, Utilisateurs, Paiements, Analytique, Organisation…), cartes de statistiques (cours publiés, membres), derniers cours modifiés, bouton « Créer un cours ». Les entrées du menu s'adaptent aux droits du compte connecté.</figcaption>
+  </figure>
+
+  <p class="body"><b>La liste des cours</b> et <b>l'éditeur de la page d'accueil</b> de l'organisation :</p>
+  <div class="shot-duo">
+    <figure class="shot">
+      <div class="browser-top">
+        <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+        <span class="burl">…/orgs/protech/dash/courses</span>
+      </div>
+      <img src="screenshots/dash-cours-liste.png" alt="Liste des cours du backoffice avec la formation RS7200, recherche et bouton Nouveau cours" loading="lazy">
+      <figcaption><b>Cours</b> — liste des formations avec recherche, états, ouverture directe de l'éditeur (§ 5).</figcaption>
+    </figure>
+    <figure class="shot">
+      <div class="browser-top">
+        <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+        <span class="burl">…/dash/org/settings/landing</span>
+      </div>
+      <img src="screenshots/org-landing-editor.png" alt="Éditeur de landing : sections du héros PROTECH avec titre, sous-titre, boutons, mascotte" loading="lazy">
+      <figcaption><b>Réglages → Landing</b> — chaque section de la vitrine s'édite : texte du héros, boutons, images, chiffres clés, logos partenaires, ordre des sections. La capture montre le héros PROTECH avec sa mascotte.</figcaption>
+    </figure>
+  </div>
+
+  <!-- ══════════════ 7. PAIEMENTS ══════════════ -->
+  <h2><span class="num">7</span> Paiements <span class="statut st-or">Prêt · activation à la clé Stripe</span></h2>
+
+  <div class="diagram-frame">
+  <svg viewBox="0 0 1000 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pay-title pay-desc">
+    <title id="pay-title">Flux d'achat d'une formation</title>
+    <desc id="pay-desc">Processus en quatre étapes : offre configurée, page de paiement Stripe, paiement confirmé par webhook, accès automatique au cours.</desc>
+    <defs>
+      <marker id="pay-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#57606b"/></marker>
+      <marker id="pay-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2563eb"/></marker>
+    </defs>
+    <rect width="100%" height="100%" fill="#ffffff"/>
+    <line x1="252" y1="64" x2="296" y2="64" stroke="#57606b" stroke-width="1.2" marker-end="url(#pay-arrow)"/>
+    <line x1="452" y1="64" x2="496" y2="64" stroke="#2563eb" stroke-width="1.2" marker-end="url(#pay-link)"/>
+    <line x1="652" y1="64" x2="696" y2="64" stroke="#57606b" stroke-width="1.2" marker-end="url(#pay-arrow)"/>
+    <rect x="96" y="32" width="156" height="64" rx="6" fill="#fdf6e3" stroke="#c9a227" stroke-width="1"/>
+    <text x="174" y="58" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Offre configurée</text>
+    <text x="174" y="76" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">prix · accès · durée</text>
+    <rect x="352" y="32" width="100" height="64" rx="6" fill="rgba(30,33,40,0.03)" stroke="rgba(30,33,40,0.30)" stroke-width="1"/>
+    <text x="402" y="58" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Stripe</text>
+    <text x="402" y="76" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">page de paiement</text>
+    <rect x="552" y="32" width="100" height="64" rx="6" fill="#ffffff" stroke="#1e2128" stroke-width="1"/>
+    <text x="602" y="58" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Confirmé</text>
+    <text x="602" y="76" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">webhook signé</text>
+    <rect x="752" y="32" width="140" height="64" rx="20" fill="rgba(87,96,107,0.10)" stroke="#9aa0ac" stroke-width="1"/>
+    <text x="822" y="58" fill="#1e2128" font-size="12" font-weight="600" font-family="Inter, sans-serif" text-anchor="middle">Accès ouvert</text>
+    <text x="822" y="76" fill="#57606b" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">automatique</text>
+    <line x1="40" y1="136" x2="960" y2="136" stroke="rgba(30,33,40,0.10)" stroke-width="0.8"/>
+    <text x="40" y="150" fill="#57606b" font-size="8" font-family="Inter, sans-serif" letter-spacing="0.14em">LÉGENDE</text>
+    <text x="140" y="150" fill="#57606b" font-size="8" font-family="Inter, sans-serif">backend natif intégré (34 routes) ; il ne manque que la clé Stripe du compte (5 min)</text>
+  </svg>
+  </div>
+  <p class="fig-cap">Fig. 5 — Achat d'une formation : l'organisation configure, la plateforme encaisse, l'accès s'ouvre seul.</p>
+
+  <!-- ══════════════ 8. IA ══════════════ -->
+  <h2><span class="num">8</span> Intelligence artificielle <span class="statut st-vert">En place</span></h2>
+  <div class="cards c2">
+    <div class="card">
+      <p class="eyebrow">POUR L'ÉQUIPE</p>
+      <h4><span class="dot or"></span>Créer des cours avec l'IA</h4>
+      <ul>
+        <li>Décrire une formation → l'IA propose plan, chapitres et activités</li>
+        <li>Génération de contenu page par page dans l'éditeur</li>
+        <li>Génération en français, éditable avant publication</li>
+        <li>Indexation automatique du contenu pour la recherche</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="eyebrow">POUR L'APPRENANT</p>
+      <h4><span class="dot bleu"></span>Copilot de cours</h4>
+      <ul>
+        <li>Répond à partir du contenu indexé du cours (pas d'invention)</li>
+        <li>Disponible pendant la progression</li>
+        <li>Activable par organisation dans Réglages → IA</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════ 9. ANALYTICS ══════════════ -->
+  <h2><span class="num">9</span> Analytics <span class="statut st-vert">En place</span></h2>
+  <p class="body">Chaque événement d'apprentissage (page vue, activité terminée, cours terminé, visite) alimente des tableaux de bord par organisation : fréquentation, entonnoir d'inscription, cours les plus suivis, pays et appareils des visiteurs, utilisateurs actifs par jour. Trois niveaux : par cours (onglet Analytics du cours), par organisation (menu Analytique), plateforme entière (dashboard superadmin).</p>
+
+  <!-- ══════════════ 10. ADMIN PLATEFORME ══════════════ -->
+  <h2><span class="num">10</span> Administration de la plateforme <span class="statut st-vert">En place</span></h2>
+  <p class="h2sous">Le dashboard superadmin : /admin — réservé à ton compte (clé maîtresse).</p>
+
+  <table class="inv">
+    <tr><th colspan="2">Dashboard superadmin</th></tr>
+    <tr><td>Organisations</td><td>Liste complète (recherche, tri, visites 7 j) · création · détail par org : aperçu (usage), cours, membres (ajout/invitation/rôles/retrait), analytics, fonctions (interrupteurs), réglages</td></tr>
+    <tr><td>Utilisateurs</td><td>Tous les comptes de la plateforme : recherche, filtres, modification (nom, email, promotion superadmin), suppression</td></tr>
+    <tr><td>Analytics globales</td><td>Vue consolidée de toutes les organisations</td></tr>
+    <tr><td>Métiers</td><td>Le référentiel des métiers proposés à l'inscription (recommandations par métier)</td></tr>
+    <tr><td>Developers</td><td>Jetons API superadmin (création, révocation)</td></tr>
+  </table>
+
+  <ul class="feat">
+    <li><b>Gestion des membres par org</b> — ajouter un compte existant, inviter par email, changer les rôles en un clic (effet immédiat), retirer (garde dernier admin)</li>
+    <li><b>22 langues</b> — interface traduite, langue par défaut par organisation</li>
+    <li><b>E-mails transactionnels</b> — invitations, réinitialisation de mot de passe (Cloudflare Email)</li>
+    <li><b>Journal d'audit</b> — qui a fait quoi, quand, dans quelle organisation</li>
+    <li><b>Création d'organisations</b> — depuis /admin ou l'assistant /new</li>
+    <li><b>Sécurité</b> — refus API systématique hors droits, isolation inter-orgs testée, invitations durables en base</li>
+  </ul>
+
+  <p class="body"><b>Le dashboard superadmin</b> — toutes les organisations de la plateforme :</p>
+  <figure class="shot">
+    <div class="browser-top" style="background:#0f0f10">
+      <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+      <span class="burl" style="background:#1a1c22;color:#9aa0ac;border-color:rgba(255,255,255,0.1)">learn.ordria.fr/admin/organizations</span>
+    </div>
+    <img src="screenshots/admin-organizations.png" alt="Dashboard superadmin : table des organisations OrdIA Learning et PROTECH avec users, cours, visites 7 jours, bouton New organization" loading="lazy">
+    <figcaption><b>Organisations (thème sombre)</b> — OrdIA Learning (36 cours, 3 membres) et PROTECH (1 cours, visites 7 j), recherche, tri (utilisateur, cours, visites…), bouton « New organization », et pour chaque ligne le lien direct vers le dashboard de l'org.</figcaption>
+  </figure>
+
+  <p class="body"><b>La gestion des membres d'une organisation</b> — ajouter, inviter, changer les rôles, retirer :</p>
+  <figure class="shot">
+    <div class="browser-top" style="background:#0f0f10">
+      <span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span>
+      <span class="burl" style="background:#1a1c22;color:#9aa0ac;border-color:rgba(255,255,255,0.1)">learn.ordria.fr/admin/organizations/39?tab=users</span>
+    </div>
+    <img src="screenshots/admin-org-users.png" alt="Détail PROTECH onglet Users : membre admin avec sélecteur de rôle Admin/Maintainer/Instructor/User, bouton Ajouter et bouton Retirer" loading="lazy">
+    <figcaption><b>PROTECH → Users</b> — chaque membre avec son sélecteur de rôle en direct (Admin · Maintainer · Instructor · User — changement appliqué à la seconde), le bouton « Ajouter » (compte existant ou invitation par email), les invitations en attente listées avec leur badge ambre et le bouton Annuler. Garde intégrée : impossible de retirer le dernier admin.</figcaption>
+  </figure>
+
+  <div class="note-box" style="margin-top:28px"><b>Option à la demande — file de candidatures :</b> une 4ᵉ porte « Demander à rejoindre » (formulaire spontané → file dans le backoffice → approuver/refuser en un clic) est prête à être développée ; elle réutiliserait le stockage durable des invitations.</div>
+
+  <footer>
+    <span>Ordria Learning · documentation fonctionnelle complète · captures réelles du 27/09/2026</span>
+    <span>learn.ordria.fr · état vérifié en production</span>
+  </footer>
+
+</div>
+</body>
+</html>

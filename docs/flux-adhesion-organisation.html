@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flux d'adhésion · PROTECH / Ordria</title>
+<style>
+  :root {
+    --or: #c9a227;
+    --or-clair: #e3c766;
+    --nuit: #1e2128;
+    --nuit2: #2e323b;
+    --creme: #f7f5f0;
+    --vert: #16a34a;
+    --vert-bg: #f0fdf4;
+    --rouge: #dc2626;
+    --rouge-bg: #fef2f2;
+    --orange: #ea580c;
+    --orange-bg: #fff7ed;
+    --bleu: #2563eb;
+    --bleu-bg: #eff6ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--creme); color: var(--nuit); padding: 40px 20px; line-height: 1.5; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .sous { color: #57606b; margin-bottom: 32px; font-size: 14px; }
+  h2 { font-size: 17px; font-weight: 800; margin: 36px 0 4px; display: flex; align-items: center; gap: 8px; }
+  h2 .num { background: var(--nuit); color: var(--or-clair); width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .h2sous { color: #57606b; font-size: 13px; margin-bottom: 16px; }
+
+  .voie { background: #fff; border: 1px solid #e5e1d8; border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(30,33,40,0.04); }
+  .voie-titre { font-weight: 800; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 999px; }
+  .b-vert { background: var(--vert-bg); color: var(--vert); border: 1px solid #bbf7d0; }
+  .b-orange { background: var(--orange-bg); color: var(--orange); border: 1px solid #fed7aa; }
+  .b-or { background: #fdf6e3; color: #a1872a; border: 1px solid #eadfa8; }
+
+  .flux { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
+  .etape { flex: 1 1 130px; min-width: 122px; background: var(--creme); border: 1px solid #e5e1d8; border-radius: 10px; padding: 10px 12px; font-size: 12.5px; display: flex; flex-direction: column; justify-content: center; }
+  .etape b { font-size: 12.5px; }
+  .etape .detail { color: #57606b; font-size: 11.5px; margin-top: 3px; }
+  .etape.acteur { background: var(--bleu-bg); border-color: #bfdbfe; }
+  .etape.protech { background: #fdf6e3; border-color: #eadfa8; }
+  .etape.ok { background: var(--vert-bg); border-color: #bbf7d0; }
+  .etape.bloque { background: var(--rouge-bg); border-color: #fecaca; }
+  .etape.option { background: var(--orange-bg); border-color: #fed7aa; }
+  .fleche { align-self: center; padding: 0 7px; color: #9aa0ac; font-size: 16px; font-weight: 700; flex: 0 0 auto; }
+  .note { font-size: 11.5px; color: #57606b; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e5e1d8; }
+  .note b { color: var(--nuit); }
+
+  /* Pyramide rôles */
+  .roles { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .role { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid #e5e1d8; border-radius: 12px; padding: 12px 16px; }
+  .role .niveau { width: 130px; flex: 0 0 130px; text-align: center; font-weight: 800; font-size: 12.5px; padding: 8px 6px; border-radius: 8px; }
+  .r1 .niveau { background: var(--vert-bg); color: var(--vert); }
+  .r2 .niveau { background: var(--bleu-bg); color: var(--bleu); }
+  .r3 .niveau { background: #fdf6e3; color: #a1872a; }
+  .r4 .niveau { background: var(--nuit); color: var(--or-clair); }
+  .role .droits { font-size: 12.5px; color: #374151; }
+  .role .droits .sep { color: #c9c4b8; margin: 0 6px; }
+  .role .qui { font-size: 11px; color: #9aa0ac; margin-top: 2px; }
+
+  .legende { margin-top: 40px; padding: 14px 18px; background: #fff; border: 1px solid #e5e1d8; border-radius: 12px; font-size: 12.5px; color: #57606b; display: flex; flex-wrap: wrap; gap: 18px; }
+  .pastille { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  @media (max-width: 640px) {
+    .fleche { transform: rotate(90deg); padding: 6px 0; width: 100%; text-align: center; }
+    .flux { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Comment on rejoint une organisation · tous les flux</h1>
+  <p class="sous">Plateforme learn.ordria.fr · Organisation PROTECH (mode « sur invitation ») · établi le 27/09/2026</p>
+
+  <!-- ══════════ SECTION 1 ══════════ -->
+  <h2><span class="num">1</span> Les 3 portes pour entrer aujourd'hui</h2>
+  <p class="h2sous">PROTECH est en mode fermé : personne n'entre sans y avoir été invité ou sans un code.</p>
+
+  <!-- Voie 1 -->
+  <div class="voie">
+    <div class="voie-titre">🚪 Porte 1 · Invitation par email <span class="badge b-vert">En place</span></div>
+    <div class="flux">
+      <div class="etape protech"><b>Backoffice PROTECH</b><div class="detail">Utilisateurs → Ajouter → « Inviter par email »</div></div>
+      <div class="fleche">→</div>
+      <div class="etape"><b>Email reçu</b><div class="detail">Lien d'invitation personnel (expire après 60 jours)</div></div>
+      <div class="fleche">→</div>
+      <div class="etape acteur"><b>La personne clique</b><div class="detail">Crée son compte (ou se connecte si elle en a un)</div></div>
+      <div class="fleche">→</div>
+      <div class="etape ok"><b>✓ Membre apprenant</b><div class="detail">Accès immédiat aux cours</div></div>
+    </div>
+    <div class="note">📍 Pendant l'attente, l'invitation apparaît dans la liste des membres avec le badge ambre <b>« Invitation en attente »</b> — elle disparaît dès que la personne rejoint. Tout survit aux redéploiements (stockage en base).</div>
+  </div>
+
+  <!-- Voie 2 -->
+  <div class="voie">
+    <div class="voie-titre">🚪 Porte 2 · Code de formation <span class="badge b-vert">En place</span> <span class="badge b-or">Le plus pratique pour un groupe</span></div>
+    <div class="flux">
+      <div class="etape protech"><b>Backoffice PROTECH</b><div class="detail">Codes d'invitation → Générer (ex. <b>RS6776-SEP</b>)</div></div>
+      <div class="fleche">→</div>
+      <div class="etape protech"><b>PROTECH diffuse le code</b><div class="detail">Par email, WhatsApp, oralement… le canal choisi</div></div>
+      <div class="fleche">→</div>
+      <div class="etape acteur"><b>Le stagiaire s'inscrit</b><div class="detail">learn.ordria.fr → s'inscrit → colle son code</div></div>
+      <div class="fleche">→</div>
+      <div class="etape ok"><b>✓ Membre apprenant</b><div class="detail">Chaque code peut être lié à un groupe</div></div>
+    </div>
+    <div class="note">💡 Un code par promotion = une seule manipulation pour toute une session. Utilisable aussi bien à l'inscription qu'un compte existant (page « Rejoindre l'organisation »).</div>
+  </div>
+
+  <!-- Voie 3 -->
+  <div class="voie">
+    <div class="voie-titre">🚪 Porte 3 · Spontané (sans invitation) <span class="badge b-vert">En place</span></div>
+    <div class="flux">
+      <div class="etape acteur"><b>Visiteur de la landing</b><div class="detail">Voit « Rejoindre l'organisation »</div></div>
+      <div class="fleche">→</div>
+      <div class="etape"><b>Page d'inscription</b><div class="detail">Un code d'invitation est exigé</div></div>
+      <div class="fleche">→</div>
+      <div class="etape bloque"><b>✗ Sans code : bloqué</b><div class="detail">C'est voulu — PROTECH garde le contrôle</div></div>
+      <div class="fleche">⇢</div>
+      <div class="etape"><b>Détour : « Nous contacter »</b><div class="detail">Envoie un mail à support@protech-formation.fr</div></div>
+      <div class="fleche">→</div>
+      <div class="etape protech"><b>PROTECH invite</b><div class="detail">Retour à la porte 1 après accord</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION 2 ══════════ -->
+  <h2><span class="num">2</span> Une fois entré · qui voit quoi</h2>
+  <p class="h2sous">Le rôle est attribué PAR organisation — la personne entre toujours comme apprenante, PROTECH la promeut ensuite si besoin (effet immédiat).</p>
+
+  <div class="roles">
+    <div class="role r1">
+      <div class="niveau">🎓 Apprenant</div>
+      <div class="droits">
+        Cours, progression, certificats, boards
+        <div class="qui">Rôle à l'entrée · pas d'accès au backoffice (les données protégées sont refusées par l'API)</div>
+      </div>
+    </div>
+    <div class="role r2">
+      <div class="niveau">✏️ Instructor</div>
+      <div class="droits">
+        Ce que voit l'apprenant <span class="sep">+</span> création et édition des cours
+        <div class="qui">Le formateur · pas de gestion des membres</div>
+      </div>
+    </div>
+    <div class="role r3">
+      <div class="niveau">🛠 Maintainer</div>
+      <div class="droits">
+        Ce que voit l'Instructor <span class="sep">+</span> gestion étendue du contenu
+        <div class="qui">Gestionnaire de contenu</div>
+      </div>
+    </div>
+    <div class="role r4">
+      <div class="niveau">👑 Admin org</div>
+      <div class="droits">
+        Tout PROTECH <span class="sep">+</span> membres, rôles, réglages, analytics, codes d'invitation
+        <div class="qui">L'équipe PROTECH</div>
+      </div>
+    </div>
+    <div class="role r4">
+      <div class="niveau">🔑 Superadmin</div>
+      <div class="droits">
+        Toute la plateforme, toutes les organisations
+        <div class="qui">Ton compte (anthony@ordria.fr) · dashboard /admin · clé maîtresse</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION 3 ══════════ -->
+  <h2><span class="num">3</span> Option B · file de demandes dans le backoffice <span class="badge b-orange">À développer — sur demande</span></h2>
+  <p class="h2sous">Pour laisser les gens se manifester spontanément et valider en un clic, en plus des 3 portes.</p>
+
+  <div class="voie">
+    <div class="voie-titre">🟠 Demande à valider par PROTECH</div>
+    <div class="flux">
+      <div class="etape acteur option"><b>Visiteur spontané</b><div class="detail">Bouton « Demander à rejoindre » (à la place du blocage)</div></div>
+      <div class="fleche">→</div>
+      <div class="etape option"><b>Mini-formulaire</b><div class="detail">Nom, email, métier (2 champs déjà connus de l'inscription)</div></div>
+      <div class="fleche">→</div>
+      <div class="etape protech option"><b>📥 File « Demandes »</b><div class="detail">Nouvel onglet dans Utilisateurs du backoffice PROTECH</div></div>
+      <div class="fleche">→</div>
+      <div class="etape protech option"><b>✓ Approuver / ✗ Refuser</b><div class="detail">Approuver = membre immédiat + email de bienvenue</div></div>
+    </div>
+    <div class="note">🧱 Réutilise la table des invitations rendue durable ce jour — évolution légère, pas de refonte. Recommandé si PROTECH veut capter des candidatures spontanées (site vitrine → demande → validation).</div>
+  </div>
+
+  <div class="legende">
+    <span><span class="pastille" style="background:#fdf6e3;border:1px solid #eadfa8"></span>Action côté PROTECH (backoffice)</span>
+    <span><span class="pastille" style="background:var(--bleu-bg);border:1px solid #bfdbfe"></span>Action côté personne / stagiaire</span>
+    <span><span class="pastille" style="background:var(--vert-bg);border:1px solid #bbf7d0"></span>Résultat : entrée réussie</span>
+    <span><span class="pastille" style="background:var(--rouge-bg);border:1px solid #fecaca"></span>Blocage volontaire</span>
+    <span><span class="pastille" style="background:var(--orange-bg);border:1px solid #fed7aa"></span>À développer (option B)</span>
+  </div>
+
+</div>
+</body>
+</html>

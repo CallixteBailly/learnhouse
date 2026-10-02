@@ -1,0 +1,73 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ordria-learning-api",
+  "account_id": "74858fb12cfbc4a8a0ef2b33c2d6ff36",
+  "main": "dist/worker.js",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  // Keep the Container permanently warm — a cron ping every 2 minutes
+  // prevents the 5-minute sleepAfter from triggering, eliminating cold
+  // starts (502 for ~55s on first visitor), AND doubles the retry rate
+  // when the platform's instance acquisition stalls (cloudflare/containers
+  // #257 — the DO retries getContainer() on every request; observed
+  // recovery 15 min at */4, halved at */2). Cost: negligible (cron
+  // triggers are included in the Workers Paid plan).
+  "triggers": {
+    "crons": ["*/2 * * * *"],
+  },
+  "containers": [
+    {
+      "class_name": "LearnHouseApiContainer",
+      // Built & pushed to the Cloudflare registry automatically on deploy.
+      "image": "./Dockerfile",
+      "image_build_context": "../..",
+      // basic = 1/4 vCPU / 1 GiB RAM / 4 GB disk (per current CF instance-type
+      // table). Bump to standard-1+ (4 GiB) for heavy video workloads.
+      "instance_type": "basic",
+      // Physical-instance cap. The LOGICAL singleton is already guaranteed by
+      // the DO named-instance pattern (getContainer → one DO id → one live
+      // container). Keeping this at 1 deadlocks rollouts: while a replaced
+      // instance lingers in the scheduler's count (2026-10-01 outage: dead
+      // instance counted against the cap → "reached max concurrent instances"
+      // → no replacement could ever start → 503 for 2h). 3 gives replacement
+      // windows headroom; the DO still runs exactly one container.
+      "max_instances": 3
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "API_CONTAINER",
+        "class_name": "LearnHouseApiContainer"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["LearnHouseApiContainer"]
+    }
+  ],
+  // Secrets (one-time setup):
+  //   wrangler secret put LEARNHOUSE_SQL_CONNECTION_STRING   # Neon Postgres URL
+  //   wrangler secret put LEARNHOUSE_AUTH_JWT_SECRET_KEY
+  //   wrangler secret put NEXTAUTH_SECRET
+  //   wrangler secret put COLLAB_INTERNAL_KEY
+  //   wrangler secret put LEARNHOUSE_AI_API_KEY
+  //   wrangler secret put AWS_ENDPOINT_URL_S3                 # https://<account>.r2.cloudflarestorage.com
+  //   wrangler secret put AWS_ACCESS_KEY_ID                   # R2 token
+  //   wrangler secret put AWS_SECRET_ACCESS_KEY
+  //   wrangler secret put LEARNHOUSE_INITIAL_ADMIN_EMAIL
+  //   wrangler secret put LEARNHOUSE_INITIAL_ADMIN_PASSWORD
+  //
+  // Zone routes — MORE SPECIFIC than the frontend's learn.ordria.fr/* catch-all,
+  // so they take precedence (same-origin: no CORS needed):
+  "routes": [
+    { "pattern": "learn.ordria.fr/api/v1*", "zone_name": "ordria.fr" },
+    { "pattern": "learn.ordria.fr/content*", "zone_name": "ordria.fr" },
+    { "pattern": "learn.ordria.fr/collab*", "zone_name": "ordria.fr" }
+  ]
+}

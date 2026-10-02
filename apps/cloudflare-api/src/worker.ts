@@ -1,0 +1,238 @@
+/**
+ * Cloudflare Container worker — OrdIA Learning API.
+ *
+ * Routes ALL traffic (HTTP + WebSocket) to a single Container instance
+ * running FastAPI (:9000), the Hocuspocus collab server (:4000), a local
+ * Redis (:6379) and nginx (:8080, the container's defaultPort).
+ *
+ * Zone routes point here for:
+ *   ordria.app/api/v1*, ordria.app/content*, ordria.app/collab*
+ */
+import { Container, getContainer, type StopParams } from "@cloudflare/containers";
+
+export interface Env {
+  API_CONTAINER: DurableObjectNamespace<LearnHouseApiContainer>;
+
+  // ── Secrets (wrangler secret put <NAME>) ─────────────────────────────
+  /** Neon (or any managed) Postgres URL — postgresql://… */
+  LEARNHOUSE_SQL_CONNECTION_STRING?: string;
+  LEARNHOUSE_AUTH_JWT_SECRET_KEY?: string;
+  NEXTAUTH_SECRET?: string;
+  COLLAB_INTERNAL_KEY?: string;
+  LEARNHOUSE_AI_API_KEY?: string;
+  /** R2 S3 API credentials */
+  AWS_ENDPOINT_URL_S3?: string;
+  AWS_ACCESS_KEY_ID?: string;
+  AWS_SECRET_ACCESS_KEY?: string;
+  LEARNHOUSE_INITIAL_ADMIN_EMAIL?: string;
+  LEARNHOUSE_INITIAL_ADMIN_PASSWORD?: string;
+  /** Stripe platform account (Ordria payments) — restricted key preferred */
+  STRIPE_SECRET_KEY?: string;
+  /** Stripe webhook signing secret for /payments/stripe/webhook */
+  STRIPE_WEBHOOK_SECRET?: string;
+
+  // ── Non-secret overrides (optional) ──────────────────────────────────
+  LEARNHOUSE_IS_AI_ENABLED?: string;
+  LEARNHOUSE_CONTENT_DELIVERY_TYPE?: string;
+  AWS_STORAGE_BUCKET_NAME?: string;
+  [key: string]: string | DurableObjectNamespace<LearnHouseApiContainer> | undefined;
+}
+
+export class LearnHouseApiContainer extends Container {
+  /** nginx port inside the container image */
+  defaultPort = 8080;
+  /**
+   * Keep the instance warm 5 minutes after the last request. Raise to "1h"
+   * (or override onActivityExpired to never sleep) to trade compute cost for
+   * zero cold starts.
+   */
+  sleepAfter = "5m";
+  /** nginx answers 200 on /ping — used by the class startup readiness check */
+  pingEndpoint = "ping";
+
+  // ── Incident diagnostics (2026-10-01 crash-loop) ─────────────────────────
+  // The DO outlives container restarts, so lastStop survives the loop and
+  // /api/v1/_container-debug reports WHY the previous instance died
+  // (exitCode 137 + reason runtime_signal = OOM kill; 143 = SIGTERM…).
+  lastStop: { exitCode: number; reason: string; at: number } | null = null;
+  stops: Array<{ exitCode: number; reason: string; at: number }> = [];
+
+  override async onStop(params: StopParams): Promise<void> {
+    const entry = {
+      exitCode: params.exitCode,
+      reason: params.reason,
+      at: Date.now(),
+    };
+    this.lastStop = entry;
+    this.stops = [...this.stops.slice(-20), entry];
+    console.log("CONTAINER-STOP " + JSON.stringify(entry));
+    // DO isolates are evicted between container restarts — persist so the
+    // debug route reports the cause across the crash loop.
+    try {
+      await this.ctx.storage.put("lastContainerStop", entry);
+      const prev = (await this.ctx.storage.get<Array<typeof entry>>("containerStops")) ?? [];
+      await this.ctx.storage.put("containerStops", [...prev.slice(-20), entry]);
+    } catch (e) {
+      console.log("CONTAINER-STOP persist failed: " + String(e));
+    }
+    await super.onStop(params);
+  }
+
+  override async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname.endsWith("/_container-debug")) {
+      let persisted: unknown = null;
+      let stops: unknown = [];
+      try {
+        persisted = await this.ctx.storage.get("lastContainerStop");
+        stops = (await this.ctx.storage.get("containerStops")) ?? [];
+      } catch {
+        // storage unavailable — fall back to in-memory
+      }
+      return new Response(
+        JSON.stringify(
+          {
+            lastStop: this.lastStop ?? persisted,
+            recentStops: this.stops.length ? this.stops : stops,
+            now: Date.now(),
+          },
+          null,
+          2,
+        ),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    // Incident tooling: force-stop the container so the next request starts a
+    // fresh one from the application's CURRENT image (used when a rollout
+    // leaves a stale process serving old code — 2026-10-01).
+    if (url.pathname.endsWith("/_container-restart")) {
+      try {
+        await this.stop();
+        return new Response(JSON.stringify({ restarting: true, at: Date.now() }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+      }
+    }
+    return super.fetch(request);
+  }
+
+  envVars: Record<string, string> = {
+    LEARNHOUSE_API_URL: "http://127.0.0.1:9000",
+    LEARNHOUSE_PORT: "9000",
+    COLLAB_PORT: "4000",
+    HOSTNAME: "0.0.0.0",
+    LEARNHOUSE_DEVELOPMENT_MODE: "False",
+    LEARNHOUSE_OSS: "true",
+    LEARNHOUSE_COOKIE_DOMAIN: "",
+    LEARNHOUSE_INITIAL_ORG_NAME: "OrdIA Learning",
+    LEARNHOUSE_INITIAL_ORG_SLUG: "default",
+    // Multi-tenant LMS: each client company gets its own org space. Activates
+    // the web middleware's multi-org resolver (org picker + LH_org cookie) and
+    // the API-side multi-org paths. The EE gates themselves are unlocked for
+    // this self-hosted deployment (ee_hooks.is_multi_org_allowed + the
+    // LEARNHOUSE_TENANCY_ALLOW_OSS override in config.py).
+    LEARNHOUSE_TENANCY: "multi",
+    LEARNHOUSE_TENANCY_ALLOW_OSS: "1",
+    LEARNHOUSE_DOMAIN: "learn.ordria.fr",
+    // Public frontend origin — used for links inside emails (password reset,
+    // invitations, email verification). Without this the API falls back to
+    // its "localhost:3000" default and sends dead links in production.
+    LEARNHOUSE_FRONTEND_DOMAIN: "learn.ordria.fr",
+    LEARNHOUSE_SSL: "true",
+    // The container sits behind the Cloudflare Worker proxy — trust XFF for
+    // the collab rate limiter.
+    COLLAB_TRUST_PROXY: "true",
+    // AI (z.ai / OpenAI-compatible) — key is a secret, injected below
+    LEARNHOUSE_IS_AI_ENABLED: "True",
+    LEARNHOUSE_AI_PROVIDER: "openai",
+    LEARNHOUSE_AI_BASE_URL: "https://api.z.ai/api/coding/paas/v4/",
+    LEARNHOUSE_AI_MODEL_FAST: "GLM-5-Turbo",
+    LEARNHOUSE_AI_MODEL_STANDARD: "glm-5.2",
+    LEARNHOUSE_AI_MODEL_PRO: "GLM-5",
+    // Media on R2 via the S3-compatible API (credentials are secrets)
+    LEARNHOUSE_CONTENT_DELIVERY_TYPE: "s3api",
+    AWS_STORAGE_BUCKET_NAME: "learnhouse-content",
+    // The API reads THIS name (config/config.py) — without it the storage code
+    // falls back to its "learnhouse-media" default and every upload 500s
+    // (NoSuchBucket).
+    LEARNHOUSE_S3_API_BUCKET_NAME: "learnhouse-content",
+    // HLS pipeline (adaptive renditions + hover sprites). Without the enable
+    // flag, uploads stay progressive-only (playable, no quality ladder).
+    // In-process consumer: the single container instance runs the queue
+    // consumer alongside the API (ffmpeg runs as subprocesses).
+    LEARNHOUSE_HLS_ENABLED: "true",
+    LEARNHOUSE_HLS_INPROCESS_WORKER: "true",
+    // Local Redis started by the image's entrypoint
+    LEARNHOUSE_REDIS_CONNECTION_STRING: "redis://127.0.0.1:6379/0",
+    LEARNHOUSE_REDIS_URL: "redis://127.0.0.1:6379",
+  };
+
+  constructor(ctx: DurableObjectState, env: Cloudflare.Env) {
+    // `as never`: the global DurableObjectState (wrangler types) and the
+    // cloudflare:workers module type disagree on the Props generic default.
+    super(ctx as never, env);
+
+    // Forward Worker secrets (and optional var overrides) into the container
+    const vars = env as unknown as Record<string, string | undefined>;
+    const forwarded: Record<string, string> = {};
+    for (const key of FORWARD_TO_CONTAINER) {
+      const value = vars[key];
+      if (typeof value === "string" && value !== "") forwarded[key] = value;
+    }
+    this.envVars = { ...this.envVars, ...forwarded };
+  }
+}
+
+/** Worker env keys forwarded into the container environment (secrets + overrides). */
+const FORWARD_TO_CONTAINER = [
+  "LEARNHOUSE_SQL_CONNECTION_STRING",
+  "LEARNHOUSE_AUTH_JWT_SECRET_KEY",
+  "NEXTAUTH_SECRET",
+  "COLLAB_INTERNAL_KEY",
+  "LEARNHOUSE_AI_API_KEY",
+  "TYPESAFE_API_KEY",
+  // Stripe (Ordria payments — platform account)
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+  "AWS_ENDPOINT_URL_S3",
+  "AWS_ACCESS_KEY_ID",
+  "AWS_SECRET_ACCESS_KEY",
+  "AWS_STORAGE_BUCKET_NAME",
+  "LEARNHOUSE_INITIAL_ADMIN_EMAIL",
+  "LEARNHOUSE_INITIAL_ADMIN_PASSWORD",
+  "LEARNHOUSE_IS_AI_ENABLED",
+  "LEARNHOUSE_CONTENT_DELIVERY_TYPE",
+  // Email (Cloudflare Email Service SMTP: smtp.mx.cloudflare.net:465 implicit TLS)
+  "LEARNHOUSE_EMAIL_PROVIDER",
+  "LEARNHOUSE_SYSTEM_EMAIL_ADDRESS",
+  "LEARNHOUSE_SMTP_HOST",
+  "LEARNHOUSE_SMTP_PORT",
+  "LEARNHOUSE_SMTP_USERNAME",
+  "LEARNHOUSE_SMTP_PASSWORD",
+  "LEARNHOUSE_SMTP_USE_TLS",
+  // Analytics (Tinybird — events ingest + dashboard queries)
+  "LEARNHOUSE_TINYBIRD_API_URL",
+  "LEARNHOUSE_TINYBIRD_INGEST_TOKEN",
+  "LEARNHOUSE_TINYBIRD_READ_TOKEN",
+] as const;
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    // Single named instance (singleton) — consistent in-memory collab state
+    // and local Redis. max_instances is pinned to 1 in wrangler.jsonc.
+    const container = getContainer(env.API_CONTAINER);
+    return container.fetch(request);
+  },
+
+  // Cron trigger (every 4 min, see wrangler.jsonc "triggers.crons") —
+  // keeps the Container awake so users never hit a cold-start 502.
+  async scheduled(_controller: unknown, env: Env): Promise<void> {
+    const container = getContainer(env.API_CONTAINER);
+    // /ping is answered directly by nginx (no upstream) — enough to keep
+    // the container instance from sleeping.
+    await container.fetch(new Request("https://warmup/ping"));
+  },
+} satisfies ExportedHandler<Env>;

@@ -1,0 +1,31 @@
+# Workers Assets serves everything with `max-age=0, must-revalidate` by
+# default. Next.js fingerprinted bundles (hash in the filename) never change
+# content for a given name — cache them immutably in the browser for instant
+# repeat visits (per Cloudflare Workers Assets docs recommendation).
+/_next/static/*
+  Cache-Control: public, max-age=31556952, immutable
+
+# Public brand/site assets (logos, landing images, OPCO/Qualiopi marks) have
+# no content hash in their names, so immutable is wrong — but serving them
+# uncached makes every page load revalidate a dozen images. One day of
+# freshness + a week of stale-while-revalidate keeps repeat visits instant
+# while picks up brand changes within a day.
+/brands/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Self-hosted font files (stable names, only change across deploys).
+/fonts/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Root-level public images/icons (favicon, fallback logos/thumbnails).
+# Extension-scoped so dynamic files (runtime-config.js) are NOT caught.
+/*.png
+  Cache-Control: public, max-age=86400
+/*.svg
+  Cache-Control: public, max-age=86400
+/*.jpg
+  Cache-Control: public, max-age=86400
+/*.webp
+  Cache-Control: public, max-age=86400
+/*.ico
+  Cache-Control: public, max-age=86400

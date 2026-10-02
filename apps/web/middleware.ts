@@ -1,0 +1,646 @@
+import { getEdgeAPIUrl as getAPIUrl } from './services/config/edgeConfig'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { isLocalhost as isLocalhostCheck } from './services/utils/ts/hostUtils'
+
+// =============================================================================
+// Tenancy
+// =============================================================================
+//
+// Three runtime behaviors selected by `instance.tenancy`:
+//
+//   1. multi (EE-only):   slug.{LEARNHOUSE_DOMAIN} subdomain detection +
+//                         per-org custom domains. The detection logic lives in
+//                         `./ee/services/tenancy/...` and is dynamic-imported
+//                         here — OSS middleware never references subdomain or
+//                         custom-domain helpers directly.
+//   2. single (localhost): always serves the default org. Host-only cookies.
+//   3. single (VPS):       any domain on a self-hosted VPS. Same as #2 — we
+//                         trust the incoming Host header.
+//
+// Modes 2 and 3 share `tenancy === "single"`. The OSS code path returns the
+// default org without ever calling subdomain extraction.
+//
+// NOTE: this file is named `middleware.ts` (not Next 16's `proxy.ts`) on
+// purpose: proxy.ts forces the Node.js runtime, which Cloudflare Workers
+// (OpenNext) does not support. middleware.ts + runtime: 'edge' is the
+// Cloudflare-compatible combination. All imports are Web-standard APIs.
+
+interface InstanceInfo {
+  multi_org_enabled: boolean
+  default_org_slug: string
+  mode: 'saas' | 'oss' | 'ee'
+  tenancy: 'multi' | 'single'
+  frontend_domain: string
+  top_domain: string
+}
+
+// Cached instance info from backend — STALE-WHILE-REVALIDATE:
+//   fresh (< 30 s)      → served instantly
+//   stale (30 s..5 min) → served instantly, refreshed in the BACKGROUND
+//   very stale (> 5 min → long-idle isolate) → synchronous refresh, keeping
+//                        the stale value if the backend is unreachable
+// Previously every isolate re-fetched every 30 s, and a cold isolate added
+// the full container round-trip to the page's TTFB before ANY response.
+let _instanceCache: { data: InstanceInfo; ts: number } | null = null
+let _instanceRefreshInFlight = false
+const INSTANCE_FRESH_TTL = 30 * 1000
+const INSTANCE_STALE_MAX_AGE = 5 * 60 * 1000
+
+const INSTANCE_FALLBACK: InstanceInfo = {
+  multi_org_enabled: false,
+  default_org_slug: 'default',
+  mode: 'oss' as const,
+  tenancy: 'single',
+  frontend_domain: 'localhost:3000',
+  top_domain: 'localhost',
+}
+
+async function fetchInstanceInfo(): Promise<InstanceInfo | null> {
+  try {
+    const apiUrl = getAPIUrl()
+    const res = await fetch(`${apiUrl}instance/info`, { signal: AbortSignal.timeout(3000) })
+    if (res.ok) {
+      const raw = await res.json()
+      // Older backends only return `multi_org_enabled`; derive `tenancy`.
+      const tenancy: 'multi' | 'single' =
+        raw.tenancy === 'multi' || raw.multi_org_enabled ? 'multi' : 'single'
+      _instanceCache = { data: { ...raw, tenancy }, ts: Date.now() }
+      return _instanceCache.data
+    }
+  } catch {
+    // Backend unavailable — callers fall back (stale cache > defaults)
+  }
+  return null
+}
+
+async function getInstanceInfo(): Promise<InstanceInfo> {
+  if (_instanceCache) {
+    const age = Date.now() - _instanceCache.ts
+    if (age < INSTANCE_FRESH_TTL) {
+      return _instanceCache.data
+    }
+    if (age < INSTANCE_STALE_MAX_AGE) {
+      if (!_instanceRefreshInFlight) {
+        _instanceRefreshInFlight = true
+        void fetchInstanceInfo().finally(() => {
+          _instanceRefreshInFlight = false
+        })
+      }
+      return _instanceCache.data
+    }
+    return (await fetchInstanceInfo()) ?? _instanceCache.data
+  }
+  return (await fetchInstanceInfo()) ?? INSTANCE_FALLBACK
+}
+
+// =============================================================================
+// Resolver
+// =============================================================================
+
+interface ResolvedTenant {
+  slug: string
+  customDomain?: string
+  source: 'custom-domain' | 'subdomain' | 'cookie' | 'default'
+}
+
+/**
+ * Resolve the active tenant for this request.
+ *
+ * In `single` tenancy this is unconditionally the default org — no EE code
+ * loaded, no custom-domain lookup, no subdomain extraction. In `multi`
+ * tenancy we delegate to the EE resolver via dynamic import; if the import
+ * or resolver throws (e.g. EE folder removed at deploy time), we log and
+ * fall back to the default org so the site stays up.
+ */
+async function resolveTenant(req: NextRequest, instance: InstanceInfo): Promise<ResolvedTenant> {
+  if (instance.tenancy === 'single') {
+    return { slug: instance.default_org_slug, source: 'default' }
+  }
+
+  try {
+    const mod = await import('./ee/services/tenancy/resolveMulti.middleware')
+    return await mod.resolveMultiFromRequest(req, instance)
+  } catch (err) {
+    console.warn('[middleware] EE multi-tenant resolver unavailable; falling back to default org', err)
+    return { slug: instance.default_org_slug, source: 'default' }
+  }
+}
+
+/**
+ * In `multi` tenancy, ask the EE module whether this Host is a custom domain
+ * (used by the `/redirect_from_auth` handler). Always false in `single`.
+ */
+async function hostIsCustomDomain(host: string | null, instance: InstanceInfo): Promise<boolean> {
+  if (instance.tenancy === 'single' || !host) return false
+  try {
+    const mod = await import('./ee/services/tenancy/resolveMulti.middleware')
+    return mod.isCustomDomain(host, instance.frontend_domain)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Detect the admin subdomain (multi tenancy only). In single mode there is no
+ * admin subdomain — operators reach admin via /admin path.
+ */
+async function isAdminSubdomain(host: string | null, instance: InstanceInfo): Promise<boolean> {
+  if (instance.tenancy === 'single' || !host) return false
+  try {
+    const mod = await import('./ee/services/tenancy/resolveMulti.middleware')
+    return mod.extractOrgSubdomain(host, instance.frontend_domain) === 'admin'
+      // The EE helper filters out reserved subdomains; check raw too:
+      || host.split(':')[0] === `admin.${instance.frontend_domain.split(':')[0]}`
+      || host.startsWith('admin.')
+  } catch {
+    return host.startsWith('admin.')
+  }
+}
+
+// =============================================================================
+// Cookies
+// =============================================================================
+
+/**
+ * Compute the cookie `domain` attribute given the current tenant.
+ * - single tenancy → '' (host-only cookie)
+ * - multi tenancy + custom domain → '' (host-only cookie)
+ * - multi tenancy + apex/subdomain → '.{top_domain}' (cross-subdomain auth)
+ * - localhost in either mode → '' (browsers refuse `Domain=.localhost`)
+ */
+function cookieDomainFor(instance: InstanceInfo, customDomain?: string): string {
+  if (instance.tenancy === 'single') return ''
+  if (customDomain) return ''
+  if (instance.top_domain === 'localhost') return ''
+  return `.${instance.top_domain}`
+}
+
+function setOrgCookies(
+  response: NextResponse,
+  resolved: ResolvedTenant,
+  instance: InstanceInfo,
+) {
+  const domain = cookieDomainFor(instance, resolved.customDomain)
+  response.cookies.set({
+    name: 'LH_org',
+    value: resolved.slug,
+    domain,
+    path: '/',
+  })
+  if (resolved.customDomain) {
+    response.cookies.set({
+      name: 'LH_custom_domain',
+      value: resolved.customDomain,
+      path: '/',
+    })
+    response.headers.set('x-custom-domain', resolved.customDomain)
+  }
+}
+
+function setInstanceCookies(response: NextResponse, info: InstanceInfo) {
+  response.cookies.set({ name: 'LH_tenancy', value: info.tenancy, path: '/' })
+  response.cookies.set({ name: 'LH_default_org', value: info.default_org_slug, path: '/' })
+  response.cookies.set({ name: 'LH_frontend_domain', value: info.frontend_domain, path: '/' })
+  response.cookies.set({ name: 'LH_top_domain', value: info.top_domain, path: '/' })
+  response.cookies.set({ name: 'LH_mode', value: info.mode, path: '/' })
+  return response
+}
+
+/**
+ * Build a request-header bag that propagates tenancy context to downstream
+ * Server Components on THIS request. Cookies set in the response only become
+ * visible to RSC on the *next* request, so server-side helpers like
+ * `getCanonicalUrl` can't rely on them on the first cold load. Reading the
+ * `x-lh-*` headers via `next/headers` gives them an immediately-available
+ * source of truth.
+ */
+function tenantRequestHeaders(
+  req: NextRequest,
+  resolved: ResolvedTenant,
+  instance: InstanceInfo,
+): Headers {
+  const headers = new Headers(req.headers)
+  headers.set('x-lh-tenancy', instance.tenancy)
+  headers.set('x-lh-org', resolved.slug)
+  headers.set('x-lh-top-domain', instance.top_domain)
+  headers.set('x-lh-frontend-domain', instance.frontend_domain)
+  headers.set('x-lh-mode', instance.mode)
+  if (resolved.customDomain) {
+    headers.set('x-lh-custom-domain', resolved.customDomain)
+  }
+  return headers
+}
+
+// =============================================================================
+// Middleware
+// =============================================================================
+
+export const config = {
+  // This file deliberately keeps the LEGACY `middleware.ts` name: Next 16's
+  // `proxy.ts` convention forces the Node.js runtime, which Cloudflare
+  // Workers (OpenNext) does not support. middleware.ts defaults to the Edge
+  // runtime — do NOT set `runtime` explicitly ('edge' is rejected as
+  // experimental, 'nodejs' breaks the Cloudflare build).
+  matcher: [
+    /*
+     * Match all paths except for:
+     * 1. /api routes
+     * 2. /_next (Next.js internals)
+     * 3. /fonts (inside /public)
+     * 4. Umami Analytics
+     * 5. /examples (inside /public)
+     * 6. all root files inside /public (e.g. /favicon.ico)
+     * 7. /embed (activity embeds)
+     * 8. /ingest (PostHog reverse proxy — must reach the next.config rewrite
+     *    untouched; otherwise the middleware mis-routes it and ingestion 404s)
+     * 9. /brands (charte Ordria — SVG/PNG servis depuis /public, dont le logo
+     *    des emails ; ne doit jamais être réécrit en chemin d'org)
+     */
+    '/((?!api|_next|fonts|umami|ingest|examples|embed|monitoring|brands|[\\w-]+\\.\\w+).*)',
+    '/sitemap.xml',
+    '/robots.txt',
+    '/payments/stripe/connect/oauth',
+    '/podcast/:path*/feed',
+  ],
+}
+
+export default async function middleware(req: NextRequest) {
+  const instance = await getInstanceInfo()
+  const { pathname, search } = req.nextUrl
+  const fullhost = req.headers.get('host')
+
+  // SEO: canonicalize mixed-case top-level route names (/Login → /login). Scoped
+  // to KNOWN static routes only so it never lowercases data-bearing segments
+  // (org slugs, course/activity UUIDs, media paths).
+  const CANONICAL_LOWER = new Set([
+    '/login', '/signup', '/forgot', '/reset', '/verify-email',
+    '/home', '/billing', '/new', '/account', '/organizations', '/subscriptions',
+  ])
+  if (pathname !== pathname.toLowerCase() && CANONICAL_LOWER.has(pathname.toLowerCase())) {
+    return NextResponse.redirect(new URL(`${pathname.toLowerCase()}${search}`, req.url), 308)
+  }
+
+  // -------------------------------------------------------------------------
+  // 1. Admin subdomain (multi only) → rewrite to /admin route group.
+  //    Idempotent: if the path already starts with /admin (e.g. internal nav
+  //    uses /admin/organizations so it works in both subdomain and path mode),
+  //    don't double-prefix.
+  // -------------------------------------------------------------------------
+  if (await isAdminSubdomain(fullhost, instance)) {
+    const target = pathname === '/admin' || pathname.startsWith('/admin/')
+      ? pathname
+      : `/admin${pathname}`
+    const response = NextResponse.rewrite(new URL(`${target}${search}`, req.url))
+    setInstanceCookies(response, instance)
+    return response
+  }
+
+  // -------------------------------------------------------------------------
+  // 1b. Admin path — direct /admin access works in any tenancy mode.
+  //     In single mode this is the only way to reach the admin panel; in
+  //     multi mode it's an alternative to the admin.{domain} subdomain.
+  // -------------------------------------------------------------------------
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    const response = NextResponse.rewrite(new URL(`${pathname}${search}`, req.url))
+    setInstanceCookies(response, instance)
+    return response
+  }
+
+  // -------------------------------------------------------------------------
+  // 1b. Legacy /dashboard/* → hub redirects
+  //
+  //    The old platform (learnhouse.app) used /dashboard/{slug}/plan, /dashboard/
+  //    new, /dashboard/account, etc. Those paths do NOT exist on .io and would
+  //    404. Old bookmarks, emails, and — critically — URLs Stripe has already
+  //    stored on live checkout sessions can still point here, so permanently map
+  //    them onto the hub instead of dead-ending. SaaS/multi only.
+  // -------------------------------------------------------------------------
+  if (instance.tenancy === 'multi' && pathname.startsWith('/dashboard')) {
+    let dest = '/home'
+    const planMatch = pathname.match(/^\/dashboard\/([^/]+)\/plan\/?$/)
+    if (planMatch && planMatch[1] !== 'new') {
+      dest = `/billing?org=${planMatch[1]}`
+    } else if (pathname === '/dashboard/new' || pathname.startsWith('/dashboard/new/')) {
+      dest = '/new'
+    } else if (pathname === '/dashboard/subscriptions') {
+      dest = '/subscriptions'
+    } else if (pathname === '/dashboard/account' || pathname.startsWith('/dashboard/account/')) {
+      dest = '/account'
+    }
+    // Preserve query markers (checkout=cancelled, session_id, …). /billing?org=
+    // already carries a query, so merge with & in that case.
+    const extraQuery = search ? (dest.includes('?') ? `&${search.slice(1)}` : search) : ''
+    return NextResponse.redirect(new URL(`${dest}${extraQuery}`, req.url), 308)
+  }
+
+  // -------------------------------------------------------------------------
+  // 2. Standard out-of-org paths (root hub)
+  //
+  //    These render at the apex/root and must NEVER fall into the tenant
+  //    catch-all (which would rewrite them to /orgs/{slug}/...). `/home` is the
+  //    org picker and works in every tenancy. The rest form the central
+  //    account + org-management hub (create / upgrade / delete an org, billing,
+  //    account) and only exist in `multi` tenancy (SaaS); the (hub) route-group
+  //    layout additionally enforces SaaS gating. We set instance cookies so the
+  //    hub's client components can read tenancy/mode/top-domain.
+  // -------------------------------------------------------------------------
+  const HUB_ROOT_PATHS = ['/home', '/organizations', '/account', '/billing', '/subscriptions', '/new']
+  const isHubRoot = HUB_ROOT_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  )
+
+  // -------------------------------------------------------------------------
+  // 2b. Org entry bridge (/enter/{slug}) — path-based org selection.
+  //
+  //     Multi-tenancy normally routes orgs on subdomains ({slug}.domain), but
+  //     a second-level wildcard certificate is a paid Cloudflare option. This
+  //     central-LMS deployment instead keeps every org on the SAME hostname:
+  //     visiting /enter/{slug} pins the org via the LH_org cookie and bounces
+  //     to /home, which the tenant catch-all then rewrites to that org.
+  //     Shareable per-client URL: https://learn.ordria.fr/enter/protech
+  // -------------------------------------------------------------------------
+  const enterMatch = pathname.match(/^\/enter\/([a-z0-9-]+)\/?$/i)
+  if (enterMatch) {
+    const slug = enterMatch[1].toLowerCase()
+    // Land on the org's own landing page under its explicit org-scoped URL
+    // (/orgs/{slug}/) — the organization stays visible in the address bar
+    // (multi-tenant best practice) instead of living only in a cookie. The
+    // /orgs/... handler below re-pins LH_org from the path.
+    const url = new URL(`/orgs/${slug}/`, req.url)
+    const search = req.nextUrl.search
+    if (search) url.search = search
+    const response = NextResponse.redirect(url)
+    // Same name AND domain scope as setOrgCookies below — otherwise the
+    // host-only and domain cookies coexist and the domain one wins on read.
+    response.cookies.set({
+      name: 'LH_org',
+      value: slug,
+      domain: cookieDomainFor(instance, undefined),
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    })
+    return response
+  }
+
+  if (pathname === '/home' || (instance.tenancy === 'multi' && isHubRoot)) {
+    // Org-pinned /home: when the visitor has explicitly chosen a non-default
+    // org (LH_org from /enter/{slug} or the profile switcher), `/home` renders
+    // THAT org's landing page instead of the global picker — members stay
+    // inside their organization. The full org picker remains at
+    // /organizations and in the profile dropdown's Organizations submenu.
+    if (pathname === '/home') {
+      const pinnedSlug = req.cookies.get('LH_org')?.value
+      if (pinnedSlug && pinnedSlug !== instance.default_org_slug) {
+        const response = NextResponse.rewrite(new URL(`/orgs/${pinnedSlug}/`, req.url))
+        setInstanceCookies(response, instance)
+        return response
+      }
+    }
+
+    // `/account/*` ALSO exists as an org-scoped dashboard route
+    // (/orgs/{slug}/account/[subpage] — general/security/purchases). On an org
+    // subdomain or custom domain it must resolve there, NOT the apex hub (which
+    // has no /account subpages), so let it fall through to the tenant catch-all.
+    let onOrgHost = false
+    if ((pathname === '/account' || pathname.startsWith('/account/')) && instance.tenancy === 'multi') {
+      const resolved = await resolveTenant(req, instance)
+      onOrgHost = resolved.source === 'subdomain' || resolved.source === 'custom-domain'
+    }
+    if (!onOrgHost) {
+      const response = NextResponse.rewrite(new URL(`${pathname}${search}`, req.url))
+      setInstanceCookies(response, instance)
+      return response
+    }
+    // account on an org host → fall through to the tenant-scoped rewrite below.
+  }
+
+  // -------------------------------------------------------------------------
+  // 3. Auth pages — resolve tenant for cookie context, rewrite to /auth
+  // -------------------------------------------------------------------------
+  const authPaths = ['/login', '/signup', '/reset', '/forgot', '/verify-email']
+  if (authPaths.includes(pathname)) {
+    // A logged-in user has no business on /login or /signup — bounce them to the
+    // hub (the page itself re-verifies, so this is a best-effort UX shortcut).
+    // EXCEPT invitation links: /signup?inviteCode=X must stay reachable for
+    // signed-in invitees so the "Join <org>" screen can run (org memberships
+    // are granted to existing accounts there).
+    const hasInviteCode = !!req.nextUrl.searchParams.get('inviteCode')
+    if (
+      !hasInviteCode
+      && (pathname === '/login' || pathname === '/signup')
+      && req.cookies.get('LH_session')?.value
+    ) {
+      return NextResponse.redirect(new URL('/home', req.url))
+    }
+    const resolved = await resolveTenant(req, instance)
+    const requestHeaders = tenantRequestHeaders(req, resolved, instance)
+    const response = NextResponse.rewrite(
+      new URL(`/auth${pathname}${search}`, req.url),
+      { request: { headers: requestHeaders } },
+    )
+    setOrgCookies(response, resolved, instance)
+    setInstanceCookies(response, instance)
+    return response
+  }
+
+  // -------------------------------------------------------------------------
+  // 4. Auth callbacks — pass through without org rewrite
+  // -------------------------------------------------------------------------
+  if (
+    pathname.startsWith('/auth/sso/')
+    || pathname.startsWith('/auth/callback/')
+    || pathname.startsWith('/auth/token-exchange')
+  ) {
+    const response = NextResponse.rewrite(new URL(`${pathname}${search}`, req.url))
+    setInstanceCookies(response, instance)
+    return response
+  }
+
+  // -------------------------------------------------------------------------
+  // 5. Standalone editors / boards — bypass org rewrite
+  // -------------------------------------------------------------------------
+  if (pathname.match(/^\/course\/[^/]+\/activity\/[^/]+\/edit$/)) {
+    return NextResponse.rewrite(new URL(`/editor${pathname}`, req.url))
+  }
+  if (pathname.startsWith('/board/')) {
+    const response = NextResponse.rewrite(new URL(pathname + search, req.url))
+    setInstanceCookies(response, instance)
+    return response
+  }
+  if (pathname.startsWith('/editor/playground/')) {
+    const response = NextResponse.rewrite(new URL(pathname + search, req.url))
+    setInstanceCookies(response, instance)
+    return response
+  }
+
+  // -------------------------------------------------------------------------
+  // 6. Stripe Connect OAuth callback — preserve search params + add orgslug
+  // -------------------------------------------------------------------------
+  if (req.nextUrl.pathname.startsWith('/payments/stripe/connect/oauth')) {
+    const searchParams = req.nextUrl.searchParams
+    const orgslug = searchParams.get('state')?.split('_')[0]
+    const redirectUrl = new URL('/payments/stripe/connect/oauth', req.url)
+    searchParams.forEach((value, key) => {
+      redirectUrl.searchParams.append(key, value)
+    })
+    if (orgslug) {
+      redirectUrl.searchParams.set('orgslug', orgslug)
+    }
+    return NextResponse.rewrite(redirectUrl)
+  }
+
+  // -------------------------------------------------------------------------
+  // 7. Health check
+  // -------------------------------------------------------------------------
+  if (pathname.startsWith('/health')) {
+    return NextResponse.rewrite(new URL(`/api/health`, req.url))
+  }
+
+  // -------------------------------------------------------------------------
+  // 8. Auth redirect bridge (cross-domain return path)
+  // -------------------------------------------------------------------------
+  if (pathname === '/redirect_from_auth') {
+    const queryString = req.nextUrl.searchParams.toString()
+    const customDomain = req.cookies.get('LH_custom_domain')?.value
+
+    let redirectUrl: URL
+    if (customDomain) {
+      const protocol = req.nextUrl.protocol + '//'
+      redirectUrl = new URL(`${protocol}${customDomain}/`)
+    } else {
+      redirectUrl = new URL('/', req.url)
+    }
+    if (queryString) {
+      redirectUrl.search = queryString
+    }
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // -------------------------------------------------------------------------
+  // 9. Per-org metadata endpoints (sitemap, robots, podcast feed)
+  // -------------------------------------------------------------------------
+  if (pathname.match(/^\/podcast\/([^/]+)\/feed$/)) {
+    const resolved = await resolveTenant(req, instance)
+    const feedUrl = new URL(`/api${pathname}`, req.url)
+    const response = NextResponse.rewrite(feedUrl)
+    response.headers.set('X-Feed-Orgslug', resolved.slug)
+    return response
+  }
+  if (pathname.startsWith('/sitemap.xml')) {
+    const resolved = await resolveTenant(req, instance)
+    const sitemapUrl = new URL(`/api/sitemap`, req.url)
+    const response = NextResponse.rewrite(sitemapUrl)
+    response.headers.set('X-Sitemap-Orgslug', resolved.slug)
+    return response
+  }
+  if (pathname === '/robots.txt') {
+    const resolved = await resolveTenant(req, instance)
+    const robotsUrl = new URL(`/api/robots`, req.url)
+    const response = NextResponse.rewrite(robotsUrl)
+    response.headers.set('X-Robots-Orgslug', resolved.slug)
+    return response
+  }
+
+  // -------------------------------------------------------------------------
+  // 10. Apex root (multi tenancy only) — login-first, then org picker.
+  //
+  //     The bare apex (learnhouse.io) is NOT org-scoped. An unauthenticated
+  //     visitor lands on the login page; once signed in they get the /home org
+  //     picker and choose an org — which lives on its own subdomain
+  //     ({slug}.learnhouse.io) or custom domain. Org content is ONLY served on
+  //     a subdomain/custom domain, never at the apex. Mirrors the platform's
+  //     "log in, then choose an org" flow. We branch on the non-httpOnly
+  //     LH_session marker cookie (best-effort; the page itself re-verifies).
+  // -------------------------------------------------------------------------
+  if (
+    instance.tenancy === 'multi'
+    && pathname === '/'
+    && fullhost
+    && !isLocalhostCheck(fullhost)
+    && !(await hostIsCustomDomain(fullhost, instance))
+  ) {
+    const resolved = await resolveTenant(req, instance)
+    if (resolved.source === 'default') {
+      const hasSession = !!req.cookies.get('LH_session')?.value
+      const target = hasSession ? `/home${search}` : `/auth/login${search}`
+      const requestHeaders = tenantRequestHeaders(req, resolved, instance)
+      const response = NextResponse.rewrite(new URL(target, req.url), {
+        request: { headers: requestHeaders },
+      })
+      setOrgCookies(response, resolved, instance)
+      setInstanceCookies(response, instance)
+      return response
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // 10b. Explicit org-scoped path (/orgs/{slug}/...) — serve as-is.
+  //
+  //     These URLs are the shareable, org-visible form. Multi-tenant best
+  //     practice puts the organization in the URL rather than in an invisible
+  //     cookie: a link opened by someone else lands on the right org, browser
+  //     history shows where you are, and there is no "silent" org context.
+  //     Without this rule the catch-all would double-prefix the path
+  //     (/orgs/{slug}/orgs/{slug}/...) and 404. The cookie is still refreshed
+  //     from the path so org-relative links (/courses, /course/{uuid}) keep
+  //     resolving through the catch-all.
+  // -------------------------------------------------------------------------
+  const explicitOrgMatch = pathname.match(/^\/orgs\/([a-z0-9-]+)(?:\/|$)/i)
+  if (explicitOrgMatch) {
+    const slug = explicitOrgMatch[1].toLowerCase()
+
+    // Org-scoped auth links (/orgs/{slug}/signup, /login, /reset, /forgot,
+    // /verify-email) are built by getUriWithOrg in the app AND by the API's
+    // email link builder (get_org_signup_base_url) for invitations, password
+    // resets and email verification — but the physical auth pages live at the
+    // root (/signup → /auth/signup rewrite). Redirect them to the root path
+    // while re-pinning LH_org from the slug so the auth page resolves and
+    // brands the right org (query strings — ?inviteCode, ?resetCode,
+    // ?token — are preserved).
+    const authPage = pathname.match(
+      /^\/orgs\/[a-z0-9-]+\/(signup|login|reset|forgot|verify-email)(\/.*)?$/i,
+    )
+    if (authPage) {
+      const rest = authPage[2] || ''
+      const target = new URL(`/${authPage[1]}${rest}${search}`, req.url)
+      const redirectResponse = NextResponse.redirect(target)
+      redirectResponse.cookies.set({
+        name: 'LH_org',
+        value: slug,
+        domain: cookieDomainFor(instance, undefined),
+        path: '/',
+        maxAge: 60 * 60 * 24 * 365,
+      })
+      setInstanceCookies(redirectResponse, instance)
+      return redirectResponse
+    }
+
+    const requestHeaders = tenantRequestHeaders(req, { slug, source: 'cookie' }, instance)
+    const response = NextResponse.rewrite(new URL(`${pathname}${search}`, req.url), {
+      request: { headers: requestHeaders },
+    })
+    response.cookies.set({
+      name: 'LH_org',
+      value: slug,
+      domain: cookieDomainFor(instance, undefined),
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    })
+    setInstanceCookies(response, instance)
+    return response
+  }
+
+  // -------------------------------------------------------------------------
+  // 11. Tenant-scoped rewrite — the catch-all that puts us under /orgs/{slug}
+  // -------------------------------------------------------------------------
+  const resolved = await resolveTenant(req, instance)
+  const requestHeaders = tenantRequestHeaders(req, resolved, instance)
+  const response = NextResponse.rewrite(
+    new URL(`/orgs/${resolved.slug}${pathname}`, req.url),
+    { request: { headers: requestHeaders } },
+  )
+  setOrgCookies(response, resolved, instance)
+  setInstanceCookies(response, instance)
+  return response
+}

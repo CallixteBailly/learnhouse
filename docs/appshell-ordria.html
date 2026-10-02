@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ordria Learning · Documentation complète — toutes les fonctionnalités, tous les écrans</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --paper: #f7f5f0; --ink: #1e2128; --muted: #57606b; --soft: #9aa0ac;
+    --accent: #c9a227; --accent-tint: #fdf6e3; --link: #2563eb;
+    --vert: #16a34a; --rouge: #dc2626;
+    --sans: 'Inter', system-ui, sans-serif;
+    --sidebar-w: 264px;
+  }
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); line-height: 1.5; }
+
+  /* ══ Layout ══ */
+  .app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+  @media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { position: static !important; height: auto !important; } }
+
+  /* ══ Sidebar ══ */
+  .sidebar { background: var(--ink); color: #d5d8de; padding: 24px 0 40px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sidebar .brand { padding: 0 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 14px; }
+  .sidebar .brand .t { font-weight: 800; color: #fff; font-size: 15px; letter-spacing: -0.01em; }
+  .sidebar .brand .s { font-size: 10.5px; color: var(--soft); letter-spacing: 0.14em; text-transform: uppercase; margin-top: 3px; }
+  .sidebar nav { display: flex; flex-direction: column; gap: 1px; }
+  .sidebar nav a { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: #b9bec7; text-decoration: none; font-size: 12.5px; font-weight: 500; border-left: 3px solid transparent; transition: all .15s; }
+  .sidebar nav a:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .sidebar nav a.active { background: rgba(201,162,39,0.12); color: #fff; border-left-color: var(--accent); }
+  .sidebar nav a .n { font-family: ui-monospace, monospace; font-size: 10px; color: var(--accent); width: 16px; flex: 0 0 16px; }
+  .sidebar .group { padding: 16px 20px 6px; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--soft); }
+
+  /* ══ Main ══ */
+  .main { padding: 40px 48px 80px; max-width: 1060px; }
+  @media (max-width: 900px) { .main { padding: 24px 16px 60px; } }
+  .eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 10px; }
+  .intro { color: var(--muted); font-size: 13.5px; max-width: 640px; margin-bottom: 12px; }
+  .hint { display: flex; gap: 10px; align-items: flex-start; background: var(--accent-tint); border: 1px solid #eadfa8; border-radius: 8px; padding: 12px 16px; font-size: 12.5px; color: #374151; margin: 18px 0 40px; }
+  .hint b { color: var(--ink); }
+
+  /* ══ Écran (section) ══ */
+  section.ecran { padding-top: 56px; margin-top: -32px; }
+  section.ecran:first-of-type { padding-top: 0; margin-top: 0; }
+  .ecran-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .ecran-num { background: var(--ink); color: var(--accent); width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex: 0 0 30px; }
+  h2 { font-size: 19px; font-weight: 800; letter-spacing: -0.015em; }
+  .ecran-url { font-size: 11px; color: var(--soft); font-family: ui-monospace, monospace; background: rgba(30,33,40,0.05); padding: 2px 8px; border-radius: 4px; margin: 4px 0 14px 42px; display: inline-block; }
+  .statut { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 3px 9px; border-radius: 999px; margin-left: 8px; vertical-align: 2px; }
+  .st-vert { background: #f0fdf4; color: var(--vert); border: 1px solid #bbf7d0; }
+
+  /* Flux */
+  .flux { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0 18px; }
+  @media (max-width: 700px) { .flux { grid-template-columns: 1fr; } }
+  .flux .box { background: #fff; border: 1px solid rgba(30,33,40,0.12); border-radius: 8px; padding: 14px 16px; }
+  .flux .box.arrivee { border-left: 3px solid var(--link); }
+  .flux .box.sortie { border-left: 3px solid var(--vert); }
+  .flux .lbl { font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .flux .box.arrivee .lbl { color: var(--link); }
+  .flux .box.sortie .lbl { color: var(--vert); }
+  .flux ul { list-style: none; font-size: 12.5px; color: #374151; }
+  .flux li { padding-left: 14px; position: relative; margin-bottom: 4px; }
+  .flux .arrivee li::before { content: "→"; position: absolute; left: 0; color: var(--link); font-weight: 700; }
+  .flux .sortie li::before { content: "→"; position: absolute; left: 0; color: var(--vert); font-weight: 700; }
+
+  /* Capture + POI */
+  .shot-wrap { position: relative; margin: 8px 0 6px; cursor: zoom-in; }
+  .shot-wrap img { width: 100%; display: block; border: 1px solid rgba(30,33,40,0.16); border-radius: 8px; }
+  .browser-top { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #eceae4; border: 1px solid rgba(30,33,40,0.16); border-bottom: none; border-radius: 8px 8px 0 0; }
+  .browser-top.dark { background: #0f0f10; }
+  .browser-top .burl { flex: 1; background: #fff; border: 1px solid rgba(30,33,40,0.10); border-radius: 5px; padding: 3px 10px; font-size: 10.5px; color: var(--muted); font-family: ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .browser-top.dark .burl { background: #1a1c22; color: #9aa0ac; border-color: rgba(255,255,255,0.1); }
+  .browser-top .bdot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 8px; }
+  .browser-top + .shot-wrap { border-radius: 0 0 8px 8px; margin-top: 0; }
+  .browser-top + .shot-wrap img { border-radius: 0 0 8px 8px; border-top: none; }
+  .zoom-hint { position: absolute; bottom: 10px; right: 10px; background: rgba(30,33,40,0.82); color: #fff; font-size: 10.5px; padding: 4px 10px; border-radius: 999px; pointer-events: none; letter-spacing: 0.02em; }
+
+  .poi { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; color: var(--ink); font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 0 1px rgba(30,33,40,0.3); transition: transform .12s; z-index: 3; }
+  .poi:hover { transform: scale(1.18); }
+  .poi.hot { background: var(--rouge); color: #fff; animation: pulse 1s infinite alternate; }
+  @keyframes pulse { from { box-shadow: 0 0 0 0 rgba(220,38,38,0.5);} to { box-shadow: 0 0 0 8px rgba(220,38,38,0);} }
+
+  /* Légende POI */
+  ul.poi-legende { list-style: none; margin: 14px 0 8px; display: grid; gap: 8px; }
+  ul.poi-legende li { display: flex; gap: 12px; background: #fff; border: 1px solid rgba(30,33,40,0.10); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #374151; transition: border-color .15s, background .15s; }
+  ul.poi-legende li.hl { border-color: var(--accent); background: var(--accent-tint); }
+  ul.poi-legende .pnum { flex: 0 0 26px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--ink); font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  ul.poi-legende b { color: var(--ink); }
+
+  .detail { font-size: 13px; color: #374151; background: #fff; border: 1px dashed rgba(30,33,40,0.18); border-radius: 8px; padding: 14px 16px; margin: 14px 0 8px; }
+  .detail b { color: var(--ink); }
+
+  /* ══ Lightbox zoom ══ */
+  #lightbox { position: fixed; inset: 0; background: rgba(14,15,19,0.94); z-index: 100; display: none; align-items: center; justify-content: center; flex-direction: column; }
+  #lightbox.on { display: flex; }
+  #lb-stage { position: relative; width: 100%; height: calc(100% - 56px); overflow: hidden; cursor: grab; display: flex; align-items: center; justify-content: center; }
+  #lb-stage.drag { cursor: grabbing; }
+  #lb-img { max-width: 94%; max-height: 94%; transition: transform .08s linear; user-select: none; -webkit-user-drag: none; border-radius: 4px; }
+  #lb-bar { width: 100%; height: 56px; display: flex; align-items: center; justify-content: center; gap: 18px; color: #d5d8de; font-size: 12px; background: rgba(255,255,255,0.04); }
+  #lb-bar .cap { max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--soft); }
+  #lb-bar button { background: rgba(255,255,255,0.10); color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  #lb-bar button:hover { background: rgba(255,255,255,0.2); }
+  #lb-bar .zlvl { font-family: ui-monospace, monospace; min-width: 44px; text-align: center; }
+
+  footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid rgba(30,33,40,0.12); font-size: 11px; color: var(--soft); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="t">Ordria Learning</div>
+      <div class="s">AppShell · Visite guidée</div>
+    </div>
+    <nav id="nav">
+      <div class="group">Parcours apprenant</div>
+      <a href="#e1" class="active"><span class="n">01</span>Vitrine de l'organisation</a>
+      <a href="#e2"><span class="n">02</span>Rejoindre (invitation)</a>
+      <a href="#e3"><span class="n">03</span>Catalogue des cours</a>
+      <a href="#e4"><span class="n">04</span>Page de cours</a>
+      <a href="#e5"><span class="n">05</span>Lecture d'une activité</a>
+      <div class="group">Atelier formateur</div>
+      <a href="#e6"><span class="n">06</span>Éditeur · plan du cours</a>
+      <a href="#e7"><span class="n">07</span>Éditeur d'activité</a>
+      <div class="group">Backoffice organisation</div>
+      <a href="#e8"><span class="n">08</span>Accueil du backoffice</a>
+      <a href="#e9"><span class="n">09</span>Gestion des cours</a>
+      <a href="#e10"><span class="n">10</span>Éditeur de vitrine</a>
+      <a href="#e10b"><span class="n">10b</span>Certification</a>
+      <a href="#e10c"><span class="n">10c</span>Membres org</a>
+      <a href="#e10d"><span class="n">10d</span>Analytics</a>
+      <a href="#e10e"><span class="n">10e</span>Fonctions</a>
+      <div class="group">Plateforme</div>
+      <a href="#e11"><span class="n">11</span>Superadmin · organisations</a>
+      <a href="#e12"><span class="n">12</span>Superadmin · membres</a>
+      <a href="#e13"><span class="n">13</span>Superadmin · users plateforme</a>
+    </nav>
+  </aside>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main class="main">
+    <p class="eyebrow">Visite guidée interactive · 12 écrans</p>
+    <h1>Toutes les fonctionnalités, écran par écran</h1>
+    <p class="intro">17 captures réelles de la plateforme Ordria (production, 27/09/2026) — parcours apprenant, atelier formateur, backoffice, administration plateforme. Les pastilles dorées <b>numérotées</b> pointent les zones clés — survolez-les ou cliquez leur légende. Le flux entrant (comment on arrive sur cet écran) et le flux sortant (où chaque action mène) encadrent chaque écran.</p>
+    <div class="hint">🔍 <span><b>Cliquer une capture pour l'agrandir</b> — puis molette pour zoomer (jusqu'à ×5), glisser pour explorer, double-clic pour recentrer, Échap pour fermer.</span></div>
+
+    <!-- ══ 01 VITRINE ══ -->
+    <section class="ecran" id="e1">
+      <div class="ecran-head"><span class="ecran-num">01</span><h2>La vitrine de l'organisation <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">learn.ordria.fr/orgs/protech/</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Lien partagé par PROTECH (carte de visite, réseau, emailing)</li>
+          <li>Depuis /enter/protech ou le sélecteur d'organisations</li>
+          <li>Chaque organisation a sa propre vitrine personnalisable</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>« Découvrir nos formations » → le catalogue (écran 03)</li>
+          <li>« Voir la formation » → direct sur la page du cours RS7200 (écran 04)</li>
+          <li>« Nous contacter » → email à support@protech-formation.fr</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">learn.ordria.fr/orgs/protech/</span></div>
+      <div class="shot-wrap" data-src="screenshots/app-landing.png" data-cap="Écran 01 — Vitrine PROTECH">
+        <img src="screenshots/app-landing.png" alt="Vitrine PROTECH" loading="lazy">
+        <span class="poi" style="left:8%; top:13%" data-p="p1-1">1</span>
+        <span class="poi" style="left:30%; top:33%" data-p="p1-2">2</span>
+        <span class="poi" style="left:16%; top:52%" data-p="p1-3">3</span>
+        <span class="poi" style="left:76%; top:34%" data-p="p1-4">4</span>
+        <span class="poi" style="left:34%; top:76%" data-p="p1-5">5</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p1-1"><span class="pnum">1</span><span><b>Navigation publique</b> — logo PROTECH, liens Cours et Formations, recherche unifiée (cours + membres), bouton Tableau de bord (visible seulement si le compte a les droits), avatar et menu compte. Le bandeau ambré au-dessus invite les nouveaux comptes à compléter leur métier.</span></li>
+        <li id="p1-2"><span class="pnum">2</span><span><b>Badge de confiance</b> — « Organisme de formation certifié Qualiopi » : pastille dorée au-dessus du titre, configurée dans le backoffice (écran 10). Le titre est en grande typographie display, dégradé nuit conforme à la charte PROTECH.</span></li>
+        <li id="p1-3"><span class="pnum">3</span><span><b>Appels à l'action</b> — bouton plein or (« Découvrir nos formations ») + bouton contour (« Nous contacter ») ; le survol fait glisser une flèche. Les couleurs viennent du réglage Branding de l'organisation.</span></li>
+        <li id="p1-4"><span class="pnum">4</span><span><b>Mascotte animée</b> — image détourée qui flotte doucement (7 s), fond dégradé exact du site vitrine protech-formation.com. L'animation se coupe automatiquement si la personne a activé « réduire les animations ».</span></li>
+        <li id="p1-5"><span class="pnum">5</span><span><b>Chiffres clés</b> — 98 % de stagiaires satisfaits · 2 formations certifiantes RS · 100 % éligibles CPF : bande de stats intégrée au héros avec séparateurs dorés. Plus bas : cartes des 2 formations, 7 logos OPCO, bandeau Qualiopi avec n° NDA, et section contact finale.</span></li>
+      </ul>
+      <div class="detail"><b>Personnalisation :</b> chaque section (héros, chiffres, cartes formation, partenaires, certification, contact) s'ajoute, se réordonne et s'édite depuis Réglages → Landing (écran 10) : textes, images, fonds dégradés ou pleins, boutons, liens — sans code.</div>
+    </section>
+
+    <!-- ══ 02 REJOINDRE ══ -->
+    <section class="ecran" id="e2">
+      <div class="ecran-head"><span class="ecran-num">02</span><h2>Rejoindre l'organisation <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">learn.ordria.fr/signup?inviteCode=…</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Clic sur le lien reçu par email d'invitation (valable 60 jours)</li>
+          <li>Ou inscription avec un code de formation partagé</li>
+          <li>Le lien porte l'organisation : la page affiche déjà PROTECH</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>« Rejoindre l'organisation » → membre apprenant immédiat → vitrine (écran 01)</li>
+          <li>L'invitation « en attente » disparaît du backoffice automatiquement</li>
+          <li>Sans code valide : la porte reste fermée (mode sur invitation)</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">learn.ordria.fr/signup?inviteCode=…</span></div>
+      <div class="shot-wrap" data-src="screenshots/app-signup-join.png" data-cap="Écran 02 — Rejoindre l'organisation">
+        <img src="screenshots/app-signup-join.png" alt="Écran rejoindre" loading="lazy">
+        <span class="poi" style="left:26%; top:30%" data-p="p2-1">1</span>
+        <span class="poi" style="left:24%; top:62%" data-p="p2-2">2</span>
+        <span class="poi" style="left:74%; top:46%" data-p="p2-3">3</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p2-1"><span class="pnum">1</span><span><b>Identité reconnue</b> — la personne arrive connectée (ou crée son compte ici) : l'écran affiche son pseudo et son avatar ; nul besoin de re-saisir quoi que ce soit.</span></li>
+        <li id="p2-2"><span class="pnum">2</span><span><b>Le bouton décisif</b> — « Rejoindre l'organisation » crée l'adhésion à la seconde (rôle apprenant), puis redirige vers la vitrine. L'invitation consommée disparaît de la file « en attente » du backoffice.</span></li>
+        <li id="p2-3"><span class="pnum">3</span><span><b>Carte organisation</b> — logo et nom PROTECH à droite : impossible de se tromper d'organisation, le lien d'invitation est nominatif à l'org.</span></li>
+      </ul>
+      <div class="detail"><b>Sécurité :</b> l'organisation est en mode « sur invitation » — les 3 portes possibles sont l'email d'invitation, le code de formation (ex. RS6776-SEP, diffusable par WhatsApp/oralement) et… rien d'autre : un visiteur sans code est poliment bloqué et orienté vers « Nous contacter ». Invitations et codes sont stockés en base : ils survivent aux redéploiements.</div>
+    </section>
+
+    <!-- ══ 03 CATALOGUE ══ -->
+    <section class="ecran" id="e3">
+      <div class="ecran-head"><span class="ecran-num">03</span><h2>Le catalogue des cours <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">learn.ordria.fr/orgs/protech/courses</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Depuis la vitrine (« Découvrir nos formations »)</li>
+          <li>Menu Cours de la navigation</li>
+          <li>Après connexion : c'est la porte d'entrée des contenus</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>Clic sur une carte → page du cours (écran 04)</li>
+          <li>Recherche en haut → résultats cours + membres</li>
+          <li>« Reprendre » → reprise exacte de la dernière activité</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">learn.ordria.fr/orgs/protech/courses</span></div>
+      <div class="shot-wrap" data-src="screenshots/app-catalogue.png" data-cap="Écran 03 — Catalogue des cours">
+        <img src="screenshots/app-catalogue.png" alt="Catalogue" loading="lazy">
+        <span class="poi" style="left:50%; top:12%" data-p="p3-1">1</span>
+        <span class="poi" style="left:30%; top:46%" data-p="p3-2">2</span>
+        <span class="poi" style="left:70%; top:60%" data-p="p3-3">3</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p3-1"><span class="pnum">1</span><span><b>Barre de recherche</b> — recherche unifiée : tapez « post » et la formation RS7200 remonte, avec les membres dont le profil correspond. Suggestions instantanées.</span></li>
+        <li id="p3-2"><span class="pnum">2</span><span><b>Carte de formation</b> — miniature, titre complet « Réseaux sociaux pour salon de coiffure · Community Manager (21 h) », chips de tags métier (community manager, instagram, TikTok…), et le bouton d'action.</span></li>
+        <li id="p3-3"><span class="pnum">3</span><span><b>État adapté</b> — le bouton change selon la personne : « Commencer » (jamais entamé), « Reprendre · 17 % » (en cours), « Revoir » (terminé). Les cours non publiés n'apparaissent jamais ici.</span></li>
+      </ul>
+      <div class="detail"><b>Catalogue ou Library :</b> le menu « Formations » regroupe les cours en dossiers thématiques configurés par l'équipe (ex. « Réseaux sociaux », « Bureautique ») ; « Cours » reste la vue plate et filtrable.</div>
+    </section>
+
+    <!-- ══ 04 PAGE DE COURS ══ -->
+    <section class="ecran" id="e4">
+      <div class="ecran-head"><span class="ecran-num">04</span><h2>La page de cours <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">learn.ordria.fr/orgs/protech/course/b1a0eaf4…</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Depuis le catalogue ou la carte de la vitrine</li>
+          <li>Bouton « Reprendre » du catalogue</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>« Reprendre · M2 » → l'activité en cours (écran 05)</li>
+          <li>Clic sur un module du plan → ouverture directe</li>
+          <li>À 13/13 → le certificat se débloque (téléchargement PDF)</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">learn.ordria.fr/orgs/protech/course/b1a0eaf4…</span></div>
+      <div class="shot-wrap" data-src="screenshots/app-cours-page.png" data-cap="Écran 04 — Page de cours RS7200">
+        <img src="screenshots/app-cours-page.png" alt="Page de cours" loading="lazy">
+        <span class="poi" style="left:22%; top:16%" data-p="p4-1">1</span>
+        <span class="poi" style="left:50%; top:24%" data-p="p4-2">2</span>
+        <span class="poi" style="left:30%; top:47%" data-p="p4-3">3</span>
+        <span class="poi" style="left:60%; top:80%" data-p="p4-4">4</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p4-1"><span class="pnum">1</span><span><b>Fil d'Ariane + titre</b> — Cours › la formation ; titre H1, description courte, chips de tags ; en non-membre : bandeau « Vous consultez en tant qu'invité » + « Adhésion à l'organisation requise ».</span></li>
+        <li id="p4-2"><span class="pnum">2</span><span><b>Carte de progression</b> — anneau « 15 % », 2/13 activités terminées, module en cours (M2 · Le post et les bons outils) et gros bouton « Reprendre ». Mobile : la même information en bandeau vertical à segments.</span></li>
+        <li id="p4-3"><span class="pnum">3</span><span><b>Plan du cours</b> — 4 journées dépliables ; chaque module affiche son état (Revoir / Reprendre / Ouvrir). « Ce que vous allez apprendre » liste les 8 objectifs avec pictogrammes ; stats (4 modules · 13 activités · 2/13) au-dessus.</span></li>
+        <li id="p4-4"><span class="pnum">4</span><span><b>Certificat verrouillé</b> — « se débloque à 13/13 activités » : compteur visible en bas du plan. À la complétion, la page de fin affiche le certificat PDF nominatif (mention Qualiopi + n° NDA) téléchargeable et vérifiable publiquement par son numéro.</span></li>
+      </ul>
+      <div class="detail"><b>Règle de complétion :</b> seules les activités <b>publiées</b> comptent dans le 13/13 — une activité brouillon ajoutée n'allonge jamais le parcours des apprenants déjà en cours.</div>
+    </section>
+
+    <!-- ══ 05 ACTIVITÉ ══ -->
+    <section class="ecran" id="e5">
+      <div class="ecran-head"><span class="ecrain-num-spacer"></span><span class="ecran-num">05</span><h2>Lecture d'une activité <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/course/b1a0eaf4…/activity/94c4ea91…</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Bouton « Reprendre » ou clic sur un module du plan</li>
+          <li>Navigation précédent/suivant entre activités</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>Fin de page → marquage « terminé » automatique + barre de progression</li>
+          <li>« Activité suivante » → module suivant du chapitre</li>
+          <li>Quiz → note enregistrée dans la progression</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/course/…/activity/94c4ea91…</span></div>
+      <div class="shot-wrap" data-src="screenshots/app-activite.png" data-cap="Écran 05 — Activité M1 en lecture">
+        <img src="screenshots/app-activite.png" alt="Activité" loading="lazy">
+        <span class="poi" style="left:12%; top:40%" data-p="p5-1">1</span>
+        <span class="poi" style="left:55%; top:14%" data-p="p5-2">2</span>
+        <span class="poi" style="left:60%; top:55%" data-p="p5-3">3</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p5-1"><span class="pnum">1</span><span><b>Sommaire latéral</b> — le plan du chapitre avec votre position ; chaque module terminé se coche. Se replie sur mobile en bandeau de segments noir/bleu.</span></li>
+        <li id="p5-2"><span class="pnum">2</span><span><b>Titre et état</b> — « M1 · Comprendre la communication » ; la barre supérieure suit la progression du cours en temps réel (2/13 → 3/13…).</span></li>
+        <li id="p5-3"><span class="pnum">3</span><span><b>Contenu riche</b> — texte structuré, images, vidéos (lecture adaptative), PDF intégrés, quiz. Le bouton Copilot IA (activable par l'organisation) répond aux questions <i>à partir du contenu du cours</i>. Le marquage « terminé » est automatique en fin de lecture.</span></li>
+      </ul>
+      <div class="detail"><b>Types d'activités :</b> pages riches, quiz notés, vidéos, devoirs à remettre (dépôt de fichier + correction par le formateur). Chaque activité peut être publique, payante ou déverrouillée par une précédente (verrous d'accès).</div>
+    </section>
+
+    <!-- ══ 06 ÉDITEUR CONTENU ══ -->
+    <section class="ecran" id="e6">
+      <div class="ecran-head"><span class="ecran-num">06</span><h2>Éditeur — le plan du cours <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/dash/courses/course/b1a0eaf4…/content</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Backoffice → Cours → ouvrir un cours → onglet Contenu</li>
+          <li>Précédé de l'onglet Général (nom, miniature, tags, objectifs)</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>Crayon → l'éditeur d'activité plein écran (écran 07)</li>
+          <li>Œil → aperçu apprenant exact</li>
+          <li>Basculer Publié ↔ Brouillon d'un clic (état par activité)</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/dash/courses/course/b1a0eaf4…/content</span></div>
+      <div class="shot-wrap" data-src="screenshots/editeur-contenu.png" data-cap="Écran 06 — Plan du cours (onglet Contenu)">
+        <img src="screenshots/editeur-contenu.png" alt="Éditeur contenu" loading="lazy">
+        <span class="poi" style="left:50%; top:9%" data-p="p6-1">1</span>
+        <span class="poi" style="left:78%; top:26%" data-p="p6-2">2</span>
+        <span class="poi" style="left:82%; top:40%" data-p="p6-3">3</span>
+        <span class="poi" style="left:24%; top:60%" data-p="p6-4">4</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p6-1"><span class="pnum">1</span><span><b>Onglets du cours</b> — Général · Contenu · Accès · Contributeurs · SEO · Certification · Analytics : tout le cours se gère depuis cette barre (les onglets se filtent selon les droits du compte).</span></li>
+        <li id="p6-2"><span class="pnum">2</span><span><b>État par activité</b> — badge « Publié » vert / « Brouillon » : clic pour basculer. Seules les publiées comptent pour la complétion et apparaissent aux apprenants.</span></li>
+        <li id="p6-3"><span class="pnum">3</span><span><b>Actions par activité</b> — le crayon ouvre l'éditeur complet (écran 07), l'icône œil l'aperçu apprenant, « Accès : ouvert à tous » règle le verrou (public / payant / séquentiel).</span></li>
+        <li id="p6-4"><span class="pnum">4</span><span><b>Chapitres dynamiques</b> — « Jour 1 · Comprendre & publier », etc. : se réorganisent par glisser-déposer ; « Ajouter une activité » en bas de chaque chapitre ; création de chapitre en un clic.</span></li>
+      </ul>
+      <div class="detail"><b>Création rapide :</b> bouton « Créer un cours » (écran 09) en 2 minutes — manuellement (nom + description) ou par IA : décrivez « formation community manager pour salon de coiffure, 3 jours » et le plan + les activités sont proposés, prêts à ajuster.</div>
+    </section>
+
+    <!-- ══ 07 ÉDITEUR ACTIVITÉ ══ -->
+    <section class="ecran" id="e7">
+      <div class="ecran-head"><span class="ecran-num">07</span><h2>L'éditeur d'activité <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/course/…/activity/94c4ea91…/edit</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Crayon d'une activité depuis le plan (écran 06)</li>
+          <li>Ouverture plein écran, éditeur type traitement de texte</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>Enregistrer → chaque sauvegarde crée une version restaurable</li>
+          <li>Publier → visible immédiatement côté apprenant</li>
+          <li>Assistant IA → génère/complete le contenu de la page</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/course/…/activity/94c4ea91…/edit</span></div>
+      <div class="shot-wrap" data-src="screenshots/editeur-activite.png" data-cap="Écran 07 — Éditeur d'activité (module M1)">
+        <img src="screenshots/editeur-activite.png" alt="Éditeur activité" loading="lazy">
+        <span class="poi" style="left:50%; top:7%" data-p="p7-1">1</span>
+        <span class="poi" style="left:88%; top:7%" data-p="p7-2">2</span>
+        <span class="poi" style="left:50%; top:45%" data-p="p7-3">3</span>
+        <span class="poi" style="left:6%; top:7%" data-p="p7-4">4</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p7-1"><span class="pnum">1</span><span><b>Barre d'outils complète</b> — titres, gras/italique, listes, citations, tableaux, code, séparateurs ; insertion d'images, vidéos, PDF, audio, fichiers téléchargeables et blocs quiz. Le tout en clic, sans HTML.</span></li>
+        <li id="p7-2"><span class="pnum">2</span><span><b>Versioning + état</b> — l'horloge ouvre l'historique : chaque sauvegarde est datée, consultable et restaurable. Boutons Brouillon ↔ Publié : la publication est instantanée pour les apprenants.</span></li>
+        <li id="p7-3"><span class="pnum">3</span><span><b>Zone d'édition</b> — page riche WYSIWYG : ce que vous tapez est exactement ce que l'apprenant verra (écran 05). Coller depuis Word/Docs conserve la mise en forme.</span></li>
+        <li id="p7-4"><span class="pnum">4</span><span><b>Assistant IA intégré</b> — dans la barre : « rédige une intro sur les algorithmes des réseaux sociaux » → le contenu se génère dans la page, éditable avant publication.</span></li>
+      </ul>
+      <div class="detail"><b>Quiz :</b> bloc dédié — questions à choix, bonne réponse, explication ; la note remonte dans la progression et l'analytics du cours.</div>
+    </section>
+
+    <!-- ══ 08 BACKOFFICE ACCUEIL ══ -->
+    <section class="ecran" id="e8">
+      <div class="ecran-head"><span class="ecran-num">08</span><h2>Accueil du backoffice <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">learn.ordria.fr/orgs/protech/dash</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Bouton « Tableau de bord » de la navigation (droits requis)</li>
+          <li>PROTECH y arrive avec le rôle Admin ou Instructor</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>Menu complet : Cours, Devoirs, Library, Utilisateurs…</li>
+          <li>« Créer un cours » → assistant de création</li>
+          <li>Dernier cours modifié → éditeur (écran 06)</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">learn.ordria.fr/orgs/protech/dash</span></div>
+      <div class="shot-wrap" data-src="screenshots/dash-accueil.png" data-cap="Écran 08 — Accueil du backoffice PROTECH">
+        <img src="screenshots/dash-accueil.png" alt="Backoffice accueil" loading="lazy">
+        <span class="poi" style="left:9%; top:22%" data-p="p8-1">1</span>
+        <span class="poi" style="left:40%; top:15%" data-p="p8-2">2</span>
+        <span class="poi" style="left:40%; top:42%" data-p="p8-3">3</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p8-1"><span class="pnum">1</span><span><b>Menu latéral</b> — Accueil · Cours · Devoirs · Library · Utilisateurs · Communautés · Podcasts · Tableaux · Playgrounds · Paiements · Analytique · Organisation · Developers. Chaque entrée se filtre selon les droits (un Instructor ne voit pas Paiements ni Utilisateurs).</span></li>
+        <li id="p8-2"><span class="pnum">2</span><span><b>En-tête de contexte</b> — « Bienvenue, [prénom] » + badge OSS/PROTECH : vous êtes toujours dans l'organisation courante ; le sélecteur (icone organisations) bascule d'une org à l'autre en un clic.</span></li>
+        <li id="p8-3"><span class="pnum">3</span><span><b>Cartes de statistiques</b> — cours publiés/brouillons, membres totaux, tableaux actifs ; plus bas : derniers cours modifiés avec ouverture directe de l'éditeur, et le bouton « Créer un cours ».</span></li>
+      </ul>
+      <div class="detail"><b>Chargé par rôle :</b> ce que voit un Instructor (créer/éditer les cours) est différent d'un Admin (tout, incl. Utilisateurs et Réglages) — vérifié : toute action hors droits est refusée par l'API même en forçant l'URL.</div>
+    </section>
+
+    <!-- ══ 09 GESTION COURS ══ -->
+    <section class="ecran" id="e9">
+      <div class="ecran-head"><span class="ecran-num">09</span><h2>Gestion des cours <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/orgs/protech/dash/courses</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Menu Cours du backoffice</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>Carte de cours → les 7 onglets d'édition (écran 06)</li>
+          <li>« Nouveau cours » → création manuelle ou par IA</li>
+          <li>Filtres publiés/brouillons, recherche</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/orgs/protech/dash/courses</span></div>
+      <div class="shot-wrap" data-src="screenshots/dash-cours-liste.png" data-cap="Écran 09 — Liste des cours du backoffice">
+        <img src="screenshots/dash-cours-liste.png" alt="Liste cours backoffice" loading="lazy">
+        <span class="poi" style="left:82%; top:16%" data-p="p9-1">1</span>
+        <span class="poi" style="left:30%; top:38%" data-p="p9-2">2</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p9-1"><span class="pnum">1</span><span><b>« Nouveau cours »</b> — ouvre l'assistant : nom, description, miniature, ou génération IA complète du plan. Le cours naît en brouillon : rien n'est visible des apprenants avant publication.</span></li>
+        <li id="p9-2"><span class="pnum">2</span><span><b>Carte de cours</b> — miniature, titre, état publié/brouillon, derniers chapitres modifiés ; un clic ouvre la fiche à 7 onglets (Général · Contenu · Accès · Contributeurs · SEO · Certification · Analytics).</span></li>
+      </ul>
+      <div class="detail"><b>Les 7 onglets en bref :</b> <b>Général</b> (nom, description, miniature, tags, objectifs d'apprentissage affichés aux apprenants) · <b>Contenu</b> (écran 06) · <b>Accès</b> (visible au catalogue ou privé ; groupes autorisés) · <b>Contributeurs</b> (co-auteurs) · <b>SEO</b> (titre/description moteurs) · <b>Certification</b> (activer le certificat : nom, formateur, n° de série, mention Qualiopi + NDA) · <b>Analytics</b> (vues, inscriptions, complétions de ce cours).</div>
+    </section>
+
+    <!-- ══ 10 LANDING ÉDITEUR ══ -->
+    <section class="ecran" id="e10">
+      <div class="ecran-head"><span class="ecran-num">10</span><h2>Éditeur de la vitrine <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/dash/org/settings/landing</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Backoffice → Organisation → Réglages → onglet Landing</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>Enregistrer → la vitrine (écran 01) se met à jour</li>
+          <li>Ajouter/réordonner/supprimer des sections</li>
+          <li>Variants : fond uni ou dégradé, image pleine largeur, chiffres clés, logos partenaires</li>
+        </ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/dash/org/settings/landing</span></div>
+      <div class="shot-wrap" data-src="screenshots/org-landing-editor.png" data-cap="Écran 10 — Éditeur de vitrine (section héros)">
+        <img src="screenshots/org-landing-editor.png" alt="Éditeur landing" loading="lazy">
+        <span class="poi" style="left:12%; top:30%" data-p="p10-1">1</span>
+        <span class="poi" style="left:50%; top:20%" data-p="p10-2">2</span>
+        <span class="poi" style="left:50%; top:88%" data-p="p10-3">3</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p10-1"><span class="pnum">1</span><span><b>Sections</b> — la vitrine se compose de blocs : héros, chiffres clés, texte+image (les cartes formations), logos partenaires (OPCO), certification (Qualiopi), contact. Chaque section se plie/déplie, se réordonne, se supprime.</span></li>
+        <li id="p10-2"><span class="pnum">2</span><span><b>Champs du héros</b> — titre, sous-titre, badge de confiance, deux boutons (texte + lien + style plein/contour), image/mascotte (téléversée), fond (dégradé personnalisable : direction + couleurs exactes de la charte).</span></li>
+        <li id="p10-3"><span class="pnum">3</span><span><b>Aperçu et publication</b> — l'aperçu reflète les changements ; Enregistrer applique immédiatement la vitrine publique. Onglets voisins : Branding (couleur d'accent, police), Fonctions (interrupteurs modules), Utilisateurs (invitations/codes), Automations (webhooks)…</span></li>
+      </ul>
+      <div class="detail"><b>Les 14 onglets de Réglages :</b> Général · Landing · Branding · IA · Fonctions · Usage · Domaines · SSO · SEO · Automations · API · Menu · Autres · Danger (effacement, protégé).</div>
+    </section>
+
+    <!-- ══ 11 ADMIN ORGS ══ -->
+    <section class="ecran" id="e11">
+      <div class="ecran-head"><span class="ecran-num">11</span><h2>Superadmin — organisations <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">learn.ordria.fr/admin/organizations</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>learn.ordria.fr/admin — connexion compte plateforme (toit)</li>
+          <li>Réservé au superadmin : accès à toutes les organisations</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>« New organization » → création (nom, slug, email)</li>
+          <li>Ligne d'org → détail 7 onglets (écran 12 pour Users)</li>
+          <li>« Dashboard » → backoffice de cette org (écran 08)</li>
+        </ul></div>
+      </div>
+      <div class="browser-top dark"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">learn.ordria.fr/admin/organizations</span></div>
+      <div class="shot-wrap" data-src="screenshots/admin-organizations.png" data-cap="Écran 11 — Superadmin : organisations">
+        <img src="screenshots/admin-organizations.png" alt="Admin organisations" loading="lazy">
+        <span class="poi" style="left:84%; top:12%" data-p="p11-1">1</span>
+        <span class="poi" style="left:40%; top:34%" data-p="p11-2">2</span>
+        <span class="poi" style="left:96%; top:44%" data-p="p11-3">3</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p11-1"><span class="pnum">1</span><span><b>Créer une organisation</b> — « New organization » : nom, slug (l'adresse /orgs/slug/), email du responsable. L'org naît avec sa vitrine éditable et son espace de cours.</span></li>
+        <li id="p11-2"><span class="pnum">2</span><span><b>Vue consolidée</b> — chaque ligne : nom + description, URL, mini-courbe des visites 7 jours, membres, cours, admins (info-bulle), statut. Recherche, tri par visites/cours/membres/admins, pagination.</span></li>
+        <li id="p11-3"><span class="pnum">3</span><span><b>Accès direct</b> — « Dashboard » ouvre le backoffice de l'organisation dans son contexte. Le menu gauche du superadmin : Organizations · Users · Analytics · Job titles · Developers.</span></li>
+      </ul>
+      <div class="detail"><b>Vue Users (plateforme) :</b> tous les comptes toutes orgs confondues — recherche, filtres (superadmin, nb d'orgs), édition (nom, email, promotion superadmin), suppression (jamais son propre compte).</div>
+    </section>
+
+    <!-- ══ 12 ADMIN MEMBRES ══ -->
+    <section class="ecran" id="e12">
+      <div class="ecran-head"><span class="ecran-num">12</span><h2>Superadmin — membres d'une organisation <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">learn.ordria.fr/admin/organizations/39?tab=users</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul>
+          <li>Superadmin → Organizations → PROTECH → onglet Users</li>
+        </ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>« Ajouter » → compte existant OU invitation par email</li>
+          <li>Changement de rôle dans le menu → effet immédiat</li>
+          <li>« Retirer » → sortie de l'org (garde : dernier admin)</li>
+        </ul></div>
+      </div>
+      <div class="browser-top dark"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">learn.ordria.fr/admin/organizations/39?tab=users</span></div>
+      <div class="shot-wrap" data-src="screenshots/admin-org-users.png" data-cap="Écran 12 — Membres de PROTECH (superadmin)">
+        <img src="screenshots/admin-org-users.png" alt="Admin membres" loading="lazy">
+        <span class="poi" style="left:88%; top:13%" data-p="p12-1">1</span>
+        <span class="poi" style="left:50%; top:30%" data-p="p12-2">2</span>
+        <span class="poi" style="left:62%; top:40%" data-p="p12-3">3</span>
+        <span class="poi" style="left:22%; top:52%" data-p="p12-4">4</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="p12-1"><span class="pnum">1</span><span><b>« Ajouter »</b> — deux modes : <b>Compte existant</b> (tapez l'email ou le pseudo, le membre rejoint à la seconde) ou <b>Inviter par email</b> (la personne reçoit un lien ; l'invitation apparaît « en attente » jusqu'à ce qu'elle rejoigne).</span></li>
+        <li id="p12-2"><span class="pnum">2</span><span><b>Membre avec rôle en direct</b> — chaque ligne affiche le sélecteur : Admin · Maintainer · Instructor · User. Changer la valeur prend effet immédiatement (le membre voit ses menus évoluer sans se reconnecter).</span></li>
+        <li id="p12-3"><span class="pnum">3</span><span><b>« Retirer »</b> — sortie de l'organisation avec confirmation ; garde intégrée : impossible de retirer le dernier admin d'une org.</span></li>
+        <li id="p12-4"><span class="pnum">4</span><span><b>Invitations en attente</b> — les emails invités qui n'ont pas encore rejoint s'affichent avec badge ambre « Invitation en attente », état d'envoi de l'email (envoyé / échec), et bouton « Annuler ». La ligne disparaît automatiquement quand la personne rejoint.</span></li>
+      </ul>
+      <div class="detail"><b>Matrice des rôles :</b> Apprenant (suivre, progresser, certificats) → Instructor (+ créer/éditer les cours) → Maintainer (+ gestion contenu étendue) → Admin org (+ membres, invitations, réglages, analytics) → Superadmin (plateforme entière). Testé : refus API systématique hors droits, isolation totale entre organisations.</div>
+    </section>
+
+    <!-- CERTIFICATION -->
+    <section class="ecran" id="e10b">
+      <div class="ecran-head"><span class="ecran-num">06</span><h2>Certification du cours <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/dash/courses/course/…/certification</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul><li>Backoffice → Cours → ouvrir → onglet Certification</li></ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul><li>Activer → certificat à 100 % des activités</li><li>Mention Qualiopi sur le PDF</li></ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/dash/courses/course/…/certification</span></div>
+      <div class="shot-wrap" data-src="screenshots/cours-certification.png" data-cap="Certification RS7200">
+        <img src="screenshots/cours-certification.png" alt="Certification" loading="lazy">
+        <span class="poi" style="left:30%; top:24%" data-p="pb1">1</span>
+        <span class="poi" style="left:70%; top:42%" data-p="pb2">2</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="pb1"><span class="pnum">1</span><span><b>Certificat activé</b> — nom, formateur (« PROTECH Formation »), n° de série. Obtenu automatiquement à 13/13 activités publiées.</span></li>
+        <li id="pb2"><span class="pnum">2</span><span><b>Mention Qualiopi</b> — toggle + n° NDA (11911019391) : logo et mention légale sur le PDF nominatif, vérifiable en ligne.</span></li>
+      </ul>
+      <div class="detail"><b>Le certificat PDF :</b> nominatif, daté, logo PROTECH, mention Qualiopi, n° NDA, numéro unique vérifiable publiquement.</div>
+    </section>
+
+    <!-- MEMBRES ORG -->
+    <section class="ecran" id="e10c">
+      <div class="ecran-head"><span class="ecran-num">12</span><h2>Gérer vos membres <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/dash/users/settings/users</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul><li>Backoffice → Utilisateurs</li></ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul><li>Changer un rôle → effet immédiat</li><li>Retirer (garde dernier admin)</li><li>Onglet « Inscriptions » → codes</li></ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/dash/users/settings/users</span></div>
+      <div class="shot-wrap" data-src="screenshots/dash-users-org.png" data-cap="Membres PROTECH">
+        <img src="screenshots/dash-users-org.png" alt="Membres" loading="lazy">
+        <span class="poi" style="left:50%; top:26%" data-p="pc1">1</span>
+        <span class="poi" style="left:82%; top:16%" data-p="pc2">2</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="pc1"><span class="pnum">1</span><span><b>Liste des membres</b> — avatar, nom, email, rôle (cliquer pour changer), date d'arrivée, icône poubelle pour retirer.</span></li>
+        <li id="pc2"><span class="pnum">2</span><span><b>Ajouter / Inviter</b> — compte existant ou invitation par email ; l'onglet « Inscriptions » gère les codes d'invitation.</span></li>
+      </ul>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="ecran" id="e10d">
+      <div class="ecran-head"><span class="ecran-num">13</span><h2>Analytics <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/orgs/protech/dash/analytics</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul><li>Backoffice → Analytique</li></ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul><li>Filtre 7/30/90 jours</li><li>Graphiques → hover pour valeurs</li></ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/orgs/protech/dash/analytics</span></div>
+      <div class="shot-wrap" data-src="screenshots/dash-analytics.png" data-cap="Analytics PROTECH">
+        <img src="screenshots/dash-analytics.png" alt="Analytics" loading="lazy">
+        <span class="poi" style="left:50%; top:14%" data-p="pd1">1</span>
+        <span class="poi" style="left:30%; top:42%" data-p="pd2">2</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="pd1"><span class="pnum">1</span><span><b>Vues d'ensemble</b> — utilisateurs actifs, pages vues, inscriptions, complétions ; période filtrable 7/30/90 jours.</span></li>
+        <li id="pd2"><span class="pnum">2</span><span><b>Graphiques détaillés</b> — actifs/jour, entonnoir d'inscription, cours populaires, pays et appareils des stagiaires.</span></li>
+      </ul>
+      <div class="detail"><b>Trois niveaux :</b> par cours (onglet Analytics de l'éditeur), par organisation (cet écran), par activité.</div>
+    </section>
+
+    <!-- FONCTIONS -->
+    <section class="ecran" id="e10e">
+      <div class="ecran-head"><span class="ecran-num">14</span><h2>Fonctions on/off <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">…/dash/org/settings/features</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul><li>Backoffice → Organisation → Réglages → Fonctions</li></ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul><li>Interrupteur ON/OFF → module activé/masqué</li><li>Effet immédiat</li></ul></div>
+      </div>
+      <div class="browser-top"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">…/dash/org/settings/features</span></div>
+      <div class="shot-wrap" data-src="screenshots/org-features.png" data-cap="Interrupteurs de fonctions">
+        <img src="screenshots/org-features.png" alt="Fonctions" loading="lazy">
+        <span class="poi" style="left:30%; top:30%" data-p="pe1">1</span>
+        <span class="poi" style="left:60%; top:60%" data-p="pe2">2</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="pe1"><span class="pnum">1</span><span><b>Modules on/off</b> — communautés, podcasts, tableaux, playgrounds, paiements : désactiver masque sans supprimer.</span></li>
+        <li id="pe2"><span class="pnum">2</span><span><b>Mode d'inscription</b> — <b>ouvert</b> ou <b>sur invitation</b> (configuration actuelle de PROTECH).</span></li>
+      </ul>
+    </section>
+
+    <!-- ADMIN USERS PLATEFORME -->
+    <section class="ecran" id="e13">
+      <div class="ecran-head"><span class="ecran-num">13</span><h2>Superadmin — tous les comptes plateforme <span class="statut st-vert">En place</span></h2></div>
+      <span class="ecran-url">learn.ordria.fr/admin/users</span>
+      <div class="flux">
+        <div class="box arrivee"><div class="lbl">Comment on arrive ici</div><ul><li>Superadmin → Users</li></ul></div>
+        <div class="box sortie"><div class="lbl">Où mènent les actions</div><ul>
+          <li>« Modifier » → username, email, nom, prénom, superadmin on/off, supprimer</li>
+          <li>Recherche + filtres (superadmin, nb d'orgs)</li>
+          <li>Info-bulle organisations → liste des orgs de ce compte</li>
+        </ul></div>
+      </div>
+      <div class="browser-top dark"><span class="bdot" style="background:#f87171"></span><span class="bdot" style="background:#fbbf24"></span><span class="bdot" style="background:#34d399"></span><span class="burl">learn.ordria.fr/admin/users</span></div>
+      <div class="shot-wrap" data-src="screenshots/admin-users.png" data-cap="Superadmin — comptes plateforme">
+        <img src="screenshots/admin-users.png" alt="Admin users" loading="lazy">
+        <span class="poi" style="left:40%; top:26%" data-p="pu1">1</span>
+        <span class="poi" style="left:90%; top:34%" data-p="pu2">2</span>
+        <span class="zoom-hint">🔍 cliquer pour zoomer</span>
+      </div>
+      <ul class="poi-legende">
+        <li id="pu1"><span class="pnum">1</span><span><b>Vue plateforme</b> — tous les comptes de toutes les organisations : username, email, nom complet, badge Superadmin ou User, nombre d'organisations avec info-bulle détaillée.</span></li>
+        <li id="pu2"><span class="pnum">2</span><span><b>Bouton « Modifier »</b> — ouvre le modal complet : username, email, prénom/nom, interrupteur Superadmin (donner/retirer la clé maîtresse), bouton Supprimer avec confirmation (jamais son propre compte).</span></li>
+      </ul>
+      <div class="detail"><b>Gestion complète :</b> promouvoir un co-administrateur plateforme en un clic, corriger un email, supprimer un compte de test — tout depuis cet écran, effet immédiat.</div>
+    </section>
+
+    <footer>Ordria Learning · documentation complète · 17 captures réelles · learn.ordria.fr</footer>
+  </main>
+</div>
+
+<!-- Lightbox zoom -->
+<div id="lightbox" aria-hidden="true">
+  <div id="lb-stage"><img id="lb-img" src="" alt=""></div>
+  <div id="lb-bar">
+    <button id="lb-out">−</button>
+    <span class="zlvl" id="lb-z">×1</span>
+    <button id="lb-in">+</button>
+    <span class="cap" id="lb-cap"></span>
+    <button id="lb-reset">Recentrer</button>
+    <button id="lb-close">Fermer ✕</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ── Lightbox avec zoom molette + drag ──
+  var lb = document.getElementById('lightbox');
+  var img = document.getElementById('lb-img');
+  var stage = document.getElementById('lb-stage');
+  var zEl = document.getElementById('lb-z');
+  var capEl = document.getElementById('lb-cap');
+  var z = 1, tx = 0, ty = 0, drag = null;
+
+  function apply() {
+    img.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + z + ')';
+    zEl.textContent = '×' + (Math.round(z * 10) / 10);
+  }
+  function open(src, cap) {
+    img.src = src; capEl.textContent = cap || '';
+    z = 1; tx = 0; ty = 0; apply();
+    lb.classList.add('on'); lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    lb.classList.remove('on'); lb.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.shot-wrap').forEach(function (w) {
+    w.addEventListener('click', function (e) {
+      if (e.target.closest('.poi')) return;
+      open(w.getAttribute('data-src'), w.getAttribute('data-cap'));
+    });
+  });
+  document.getElementById('lb-close').onclick = close;
+  lb.addEventListener('click', function (e) { if (e.target === lb || e.target === stage) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  document.getElementById('lb-in').onclick = function () { z = Math.min(5, z * 1.3); apply(); };
+  document.getElementById('lb-out').onclick = function () { z = Math.max(1, z / 1.3); if (z === 1) { tx = 0; ty = 0; } apply(); };
+  document.getElementById('lb-reset').onclick = function () { z = 1; tx = 0; ty = 0; apply(); };
+  img.addEventListener('dblclick', function () { z = 1; tx = 0; ty = 0; apply(); });
+  stage.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    z = e.deltaY < 0 ? Math.min(5, z * 1.15) : Math.max(1, z / 1.15);
+    if (z === 1) { tx = 0; ty = 0; }
+    apply();
+  }, { passive: false });
+  stage.addEventListener('mousedown', function (e) { drag = { x: e.clientX - tx, y: e.clientY - ty }; stage.classList.add('drag'); });
+  window.addEventListener('mousemove', function (e) { if (drag) { tx = e.clientX - drag.x; ty = e.clientY - drag.y; apply(); } });
+  window.addEventListener('mouseup', function () { drag = null; stage.classList.remove('drag'); });
+  img.addEventListener('touchstart', function (e) { if (e.touches.length === 1) drag = { x: e.touches[0].clientX - tx, y: e.touches[0].clientY - ty }; }, { passive: true });
+  img.addEventListener('touchmove', function (e) { if (drag && e.touches.length === 1) { tx = e.touches[0].clientX - drag.x; ty = e.touches[0].clientY - drag.y; apply(); } }, { passive: true });
+  img.addEventListener('touchend', function () { drag = null; });
+
+  // ── POI : survol/clic de la pastille ⇄ légende ──
+  document.querySelectorAll('.poi').forEach(function (p) {
+    var target = document.getElementById(p.getAttribute('data-p'));
+    if (!target) return;
+    p.addEventListener('mouseenter', function () { target.classList.add('hl'); p.classList.add('hot'); });
+    p.addEventListener('mouseleave', function () { target.classList.remove('hl'); p.classList.remove('hot'); });
+    p.addEventListener('click', function (e) {
+      e.stopPropagation();
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.classList.add('hl'); setTimeout(function () { target.classList.remove('hl'); }, 1600);
+    });
+    target.addEventListener('mouseenter', function () { p.classList.add('hot'); });
+    target.addEventListener('mouseleave', function () { p.classList.remove('hot'); });
+  });
+
+  // ── Nav active au scroll ──
+  var links = document.querySelectorAll('#nav a');
+  var secs = document.querySelectorAll('section.ecran');
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) {
+        links.forEach(function (l) { l.classList.toggle('active', l.getAttribute('href') === '#' + en.target.id); });
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  secs.forEach(function (s) { obs.observe(s); });
+})();
+</script>
+</body>
+</html>
