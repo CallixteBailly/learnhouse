@@ -32,6 +32,13 @@ RUN bun run build
 # ───────────────────────────────────────────────
 FROM python:3.14-slim-bookworm AS runner
 
+# Force HTTPS for apt sources: some networks (transparent proxies, relays,
+# hotspots) corrupt plain-HTTP InRelease downloads, making every build fail
+# with "At least one invalid signature was encountered". HTTPS can't be
+# altered in transit (observed 2026-10-02 on the build host's network).
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' \
+        /etc/apt/sources.list.d/debian.sources /etc/apt/sources.list 2>/dev/null || true
+
 # nginx (front door) + curl (healthchecks) + netcat (DB wait) +
 # redis-server (local cache) + ffmpeg (HLS transcoding) + node (collab)
 # + procps (pgrep/pkill — the health watchdog restarts a hung uvicorn).

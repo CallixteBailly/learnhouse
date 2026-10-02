@@ -49,6 +49,12 @@ WORKER_NAME="ordria-learning-api"
 MODE="${1:-api}"
 
 # ── Cloudflare API plumbing ──────────────────────────────────────────────────
+# Refresh the OAuth token FIRST: the token in the wrangler config expires
+# hourly and is only rewritten by wrangler itself — a stale token makes the
+# API calls below 401 with empty bodies (crashed the script once mid-deploy
+# window). Any wrangler command refreshes it as a side effect.
+npx wrangler whoami > /dev/null 2>&1 || true
+
 CF_TOKEN="${CF_API_TOKEN:-}"
 if [ -z "$CF_TOKEN" ]; then
     CF_TOKEN=$(sed -n 's/^oauth_token = "\(.*\)"/\1/p' \
