@@ -148,6 +148,8 @@ function LandingCustom({ landing, orgslug }: LandingCustomProps) {
             <img
               src={section.illustration!.image.url}
               alt={section.illustration!.image.alt}
+              fetchPriority="high"
+              decoding="async"
               className="landing-float w-full max-w-[560px] object-contain drop-shadow-[0_28px_44px_rgba(0,0,0,0.5)]"
             />
           </div>
@@ -204,13 +206,15 @@ function LandingCustom({ landing, orgslug }: LandingCustomProps) {
           <div className="flex items-center justify-center">
             {section.image.fit === 'contain' ? (
               <div className="w-full max-w-[380px] rounded-xl bg-white p-5 shadow-[0_2px_10px_rgba(20,22,27,0.12)]">
-                <img src={section.image.url} alt={section.image.alt} className="h-auto w-full object-contain" />
+                <img src={section.image.url} alt={section.image.alt} loading="lazy" decoding="async" className="h-auto w-full object-contain" />
               </div>
             ) : (
               <div className="group relative w-full max-w-[440px] overflow-hidden rounded-xl ring-1 ring-black/10">
                 <img
                   src={section.image.url}
                   alt={section.image.alt}
+                  loading="lazy"
+                  decoding="async"
                   className="aspect-[3/4] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
                 />
               </div>
@@ -301,6 +305,8 @@ function LandingCustom({ landing, orgslug }: LandingCustomProps) {
                     <img
                       src={logo.url}
                       alt={logo.alt}
+                      loading="lazy"
+                      decoding="async"
                       className="h-10 w-auto max-w-[140px] object-contain opacity-65 transition-opacity duration-200 hover:opacity-100 sm:h-11"
                     />
                   </div>

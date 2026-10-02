@@ -57,9 +57,17 @@ export default function RootLayout({
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src="/runtime-config.js" />
         {/* Prevent white flash on embed routes: set html+body bg before body is painted.
-            Reads the optional ?bgcolor param (hex-validated) or defaults to dark. */}
+            INLINED on purpose — as a file it was a synchronous render-blocking
+            fetch on EVERY page for an /embed/*-only concern, delaying first
+            paint by a full round-trip. Reads the optional ?bgcolor param
+            (hex-validated) or defaults to dark. */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <script src="/embed-bg.js" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){if(!/^\\/embed\\//.test(location.pathname))return;var p=new URLSearchParams(location.search);var c=p.get(\'bgcolor\');var bg=c&&/^[0-9a-fA-F]{3,8}$/.test(c)?\'#\'+c:\'#09090b\';var s=document.createElement(\'style\');s.textContent=\'html,body{background-color:\'+bg+\'!important}\';document.head.appendChild(s);})();',
+          }}
+        />
       </head>
       <body suppressHydrationWarning>
         <Providers>

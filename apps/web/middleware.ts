@@ -35,15 +35,28 @@ interface InstanceInfo {
   top_domain: string
 }
 
-// Cached instance info from backend (30-second TTL)
+// Cached instance info from backend — STALE-WHILE-REVALIDATE:
+//   fresh (< 30 s)      → served instantly
+//   stale (30 s..5 min) → served instantly, refreshed in the BACKGROUND
+//   very stale (> 5 min → long-idle isolate) → synchronous refresh, keeping
+//                        the stale value if the backend is unreachable
+// Previously every isolate re-fetched every 30 s, and a cold isolate added
+// the full container round-trip to the page's TTFB before ANY response.
 let _instanceCache: { data: InstanceInfo; ts: number } | null = null
-const INSTANCE_CACHE_TTL = 30 * 1000
+let _instanceRefreshInFlight = false
+const INSTANCE_FRESH_TTL = 30 * 1000
+const INSTANCE_STALE_MAX_AGE = 5 * 60 * 1000
 
-async function getInstanceInfo(): Promise<InstanceInfo> {
-  if (_instanceCache && Date.now() - _instanceCache.ts < INSTANCE_CACHE_TTL) {
-    return _instanceCache.data
-  }
+const INSTANCE_FALLBACK: InstanceInfo = {
+  multi_org_enabled: false,
+  default_org_slug: 'default',
+  mode: 'oss' as const,
+  tenancy: 'single',
+  frontend_domain: 'localhost:3000',
+  top_domain: 'localhost',
+}
 
+async function fetchInstanceInfo(): Promise<InstanceInfo | null> {
   try {
     const apiUrl = getAPIUrl()
     const res = await fetch(`${apiUrl}instance/info`, { signal: AbortSignal.timeout(3000) })
@@ -56,16 +69,29 @@ async function getInstanceInfo(): Promise<InstanceInfo> {
       return _instanceCache.data
     }
   } catch {
-    // Backend unavailable — use safe defaults
+    // Backend unavailable — callers fall back (stale cache > defaults)
   }
-  return {
-    multi_org_enabled: false,
-    default_org_slug: 'default',
-    mode: 'oss' as const,
-    tenancy: 'single',
-    frontend_domain: 'localhost:3000',
-    top_domain: 'localhost',
+  return null
+}
+
+async function getInstanceInfo(): Promise<InstanceInfo> {
+  if (_instanceCache) {
+    const age = Date.now() - _instanceCache.ts
+    if (age < INSTANCE_FRESH_TTL) {
+      return _instanceCache.data
+    }
+    if (age < INSTANCE_STALE_MAX_AGE) {
+      if (!_instanceRefreshInFlight) {
+        _instanceRefreshInFlight = true
+        void fetchInstanceInfo().finally(() => {
+          _instanceRefreshInFlight = false
+        })
+      }
+      return _instanceCache.data
+    }
+    return (await fetchInstanceInfo()) ?? _instanceCache.data
   }
+  return (await fetchInstanceInfo()) ?? INSTANCE_FALLBACK
 }
 
 // =============================================================================

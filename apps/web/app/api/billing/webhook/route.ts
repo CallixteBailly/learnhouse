@@ -104,13 +104,42 @@ export async function POST(request: Request) {
   }
 }
 
+// Stripe object IDs are strictly prefixed alphanumerics (cs_test_/cs_live_/
+// cs_…, sub_…, cus_…). Validating the shape before they ride into SDK
+// requests fails fast on malformed events and keeps the webhook's input
+// surface explicit — defense in depth on top of the signature check (the
+// SDK pins its own api.stripe.com host; event data never controls it).
+const STRIPE_ID_RE = /^[a-z]{2,6}_(?:test_)?[A-Za-z0-9]{8,247}$/;
+function assertStripeId(value: unknown, kind: string): string {
+  if (typeof value !== "string" || !STRIPE_ID_RE.test(value)) {
+    throw new Error(`webhook: invalid ${kind} id`);
+  }
+  return value;
+}
+
+// org_id subscription metadata is OUR id set at checkout-creation time; it
+// must be a positive integer. It interpolates into internal API paths
+// (internal/packs/${orgId}/…), so it is re-derived via parseInt and
+// re-serialized to its canonical decimal form at the boundary — any path
+// tricks in the raw value ("39/../../x") collapse to plain "39".
+function assertOrgId(value: unknown): string {
+  const n = Number.parseInt(String(value ?? ""), 10);
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new Error("webhook: invalid org_id in subscription metadata");
+  }
+  return String(n);
+}
+
 async function handleCheckoutCompleted(session: any) {
   if (session.payment_status !== "paid") return;
 
   // Retrieve session with expanded subscription to get metadata
-  const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
-    expand: ["subscription"],
-  });
+  const fullSession = await stripe.checkout.sessions.retrieve(
+    assertStripeId(session.id, "checkout session"),
+    {
+      expand: ["subscription"],
+    },
+  );
   const subscription = fullSession.subscription;
   const customerEmail = fullSession.customer_details?.email || session.customer_email;
 
@@ -119,11 +148,7 @@ async function handleCheckoutCompleted(session: any) {
     return;
   }
 
-  const orgId = subscription.metadata.org_id;
-  if (!orgId) {
-    console.warn("checkout.session.completed: no org_id in metadata", session.id);
-    return;
-  }
+  const orgId = assertOrgId(subscription.metadata.org_id);
 
   const isPack = subscription.metadata.type === "pack";
 
@@ -161,11 +186,7 @@ async function handleCheckoutCompleted(session: any) {
 }
 
 async function handleSubscriptionEvent(eventType: string, subscription: any) {
-  const orgId = subscription.metadata?.org_id;
-  if (!orgId) {
-    console.log(`Subscription event missing org_id for customer ${subscription.customer}`);
-    return;
-  }
+  const orgId = assertOrgId(subscription.metadata?.org_id);
 
   const isPack = subscription.metadata.type === "pack";
   const status = subscription.status;
@@ -215,7 +236,9 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
       } else if (status === "past_due" || status === "unpaid") {
         // Payment failed · notify user but keep plan active for grace period
         console.warn(`Plan subscription ${subscription.id} is ${status} for org ${orgId}`);
-        const customer = await stripe.customers.retrieve(subscription.customer);
+        const customer = await stripe.customers.retrieve(
+          assertStripeId(subscription.customer, "customer"),
+        );
         if (customer?.email) {
           await sendPaymentFailedMail({
             email: customer.email,
