@@ -8,15 +8,16 @@
   "observability": {
     "enabled": true
   },
-  // Keep the Container permanently warm — a cron ping every 2 minutes
-  // prevents the 5-minute sleepAfter from triggering, eliminating cold
-  // starts (502 for ~55s on first visitor), AND doubles the retry rate
-  // when the platform's instance acquisition stalls (cloudflare/containers
-  // #257 — the DO retries getContainer() on every request; observed
-  // recovery 15 min at */4, halved at */2). Cost: negligible (cron
-  // triggers are included in the Workers Paid plan).
+  // Keep-warm DURING BUSINESS HOURS ONLY — a ping every 2 minutes prevents
+  // the 5-minute sleepAfter from firing (no 502 cold start for learners)
+  // and doubles the DO retry rate during platform acquisition stalls
+  // (cloudflare/containers#257). Outside the window the instance sleeps →
+  // containers are billed per vCPU/GiB-SECOND awake, so nights are free;
+  // the only cost is a ~55s cold start for a rare night visitor.
+  // Window: 5-21 UTC = 7h-22h Paris summer AND 6h-23h Paris winter (the
+  // union of both DST offsets — slightly over-covered on purpose).
   "triggers": {
-    "crons": ["*/2 * * * *"],
+    "crons": ["*/2 5-21 * * *"],
   },
   "containers": [
     {
@@ -24,9 +25,11 @@
       // Built & pushed to the Cloudflare registry automatically on deploy.
       "image": "./Dockerfile",
       "image_build_context": "../..",
-      // basic = 1/4 vCPU / 1 GiB RAM / 4 GB disk (per current CF instance-type
-      // table). Bump to standard-1+ (4 GiB) for heavy video workloads.
-      "instance_type": "basic",
+      // Instance size: standard-1 (4 GiB RAM) since 2026-10-02 — basic's
+      // 1 GiB was an OOM risk when ffmpeg video-transcoding spikes while a
+      // class is live (whole academy = one container). Paid for by pairing
+      // with the business-hours keep-warm below (asleep = unbilled).
+      "instance_type": "standard-1",
       // Physical-instance cap. The LOGICAL singleton is already guaranteed by
       // the DO named-instance pattern (getContainer → one DO id → one live
       // container). Keeping this at 1 deadlocks rollouts: while a replaced
