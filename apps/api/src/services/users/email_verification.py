@@ -11,7 +11,7 @@ import secrets
 import redis
 from fastapi import HTTPException, Request
 from pydantic import EmailStr
-from sqlmodel import select
+from sqlmodel import select, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.organization_config import OrganizationConfig
 from src.db.organizations import Organization, OrganizationRead
@@ -304,7 +304,7 @@ async def resend_verification_email(
         "If an account with this email exists, a verification email has been sent"
     )
 
-    statement = select(User).where(User.email == email)
+    statement = select(User).where(func.lower(User.email) == email.lower())
     user = (await db_session.execute(statement)).scalars().first()
 
     if user and not user.email_verified:

@@ -18,23 +18,44 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
   const session = await getServerSession()
   const access_token = session?.tokens?.access_token || null
 
-  const [org, course_meta, activity] = await Promise.all([
-    getOrganizationContextInfo(params.orgslug, {
-      revalidate: 120,
-      tags: ['organizations'],
-    }),
-    getCourseMetadata(params.courseuuid, { revalidate: 120, tags: ['courses'] }, access_token || null, { slim: true }),
-    getActivityWithAuthHeader(
-      params.activityid,
-      { revalidate: 120, tags: ['activities'] },
-      access_token || null
-    ),
-  ])
+  // A draft course/activity 403s for an anonymous server session (expired
+  // browser token, rotated refresh token…). Throwing here would crash the
+  // whole route into the generic error page · degrade to minimal metadata
+  // instead and let the client-side fetches render the proper "no access"
+  // state.
+  let org: any = null
+  let course_meta: any = { name: '' }
+  let activity: any = { name: '' }
+  try {
+    [org, course_meta, activity] = await Promise.all([
+      getOrganizationContextInfo(params.orgslug, {
+        revalidate: 120,
+        tags: ['organizations'],
+      }),
+      getCourseMetadata(params.courseuuid, { revalidate: 120, tags: ['courses'] }, access_token || null, { slim: true }),
+      getActivityWithAuthHeader(
+        params.activityid,
+        { revalidate: 120, tags: ['activities'] },
+        access_token || null
+      ),
+    ])
+  } catch {
+    // Unpublished/forbidden or backend hiccup · fall back to org-only
+    // metadata so the page still renders.
+    try {
+      org = await getOrganizationContextInfo(params.orgslug, {
+        revalidate: 120,
+        tags: ['organizations'],
+      })
+    } catch {
+      org = null
+    }
+  }
 
   // Check if this is the course end page
   const isCourseEnd = params.activityid === 'end';
   const seoConfig = getOrgSeoConfig(org)
-  const rawTitle = isCourseEnd ? `Congratulations — ${course_meta.name} Course` : `${activity.name} — ${course_meta.name} Course`
+  const rawTitle = isCourseEnd ? `Congratulations · ${course_meta.name} Course` : `${activity.name} · ${course_meta.name} Course`
   const pageTitle = seoConfig.default_meta_title_suffix ? `${rawTitle}${seoConfig.default_meta_title_suffix}` : rawTitle
 
   const orgOgImageUrl = seoConfig.default_og_image

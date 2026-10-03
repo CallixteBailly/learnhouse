@@ -1,17 +1,19 @@
 from fastapi import APIRouter, Depends
 from src.routers import admin as admin_router_module
 from src.routers import analytics as analytics_router_module
+from src.routers import audit_logs as audit_logs_router_module
 from src.routers import code_execution
 from src.routers import code_submissions
 from src.routers import health
 from src.routers import instance
 from src.routers import plans
 from src.routers import usergroups
-from src.routers import dev, trail, users, auth, orgs, roles, search
+from src.routers import dev, trail, users, auth, orgs, roles, search, job_titles
 from src.routers import monitoring
 from src.routers import stream
 from src.routers import api_tokens
 from src.routers import webhooks
+from src.routers.payments import payments as payments_router_module
 from src.routers.integrations import zapier as zapier_integration
 from src.routers.ai import ai, magicblocks, courseplanning, rag, images, quiz, assignment_gen, scenario, audio
 from src.routers.boards import boards_playground
@@ -66,6 +68,11 @@ v1_router.include_router(
     prefix="/users",
     tags=["users"],
     dependencies=[Depends(get_non_api_token_user)]
+)
+v1_router.include_router(
+    job_titles.router,
+    prefix="/job-titles",
+    tags=["job-titles"],
 )
 v1_router.include_router(
     usergroups.router,
@@ -164,6 +171,15 @@ def _mount_saas_only_routers(target_router: APIRouter) -> None:
 
 
 _mount_saas_only_routers(v1_router)
+# Ordria OSS payments (offers / checkout / enrollments / Stripe webhook).
+# Mixed router: public endpoints (public-listing, public offer, by-resource,
+# webhook) are anonymous; admin endpoints enforce org-admin via
+# require_org_admin inside the router module.
+v1_router.include_router(
+    payments_router_module.router,
+    prefix="/payments",
+    tags=["payments"],
+)
 v1_router.include_router(
     blocks.router,
     prefix="/blocks",
@@ -327,6 +343,13 @@ v1_router.include_router(
     prefix="/analytics",
     tags=["analytics"],
     dependencies=[Depends(require_authenticated_user)],
+)
+
+v1_router.include_router(
+    audit_logs_router_module.router,
+    prefix="/audit-logs",
+    tags=["audit-logs"],
+    dependencies=[Depends(require_authenticated_user), Depends(require_plan("enterprise", "Audit Logs"))],
 )
 
 v1_router.include_router(

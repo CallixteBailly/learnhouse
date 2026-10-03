@@ -66,7 +66,7 @@ function extractPreviewText(raw: string | undefined | null): string {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Types mirror the backend SearchResult shape — kept flexible on purpose so
+// Types mirror the backend SearchResult shape · kept flexible on purpose so
 // the backend stays the source of truth.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -176,7 +176,7 @@ type ResourceKey =
 type TabKey = 'all' | ResourceKey
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section registry — each resource type provides its own card renderer and
+// Section registry · each resource type provides its own card renderer and
 // metadata. Adding a new type means one entry here, not scattered JSX.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -491,7 +491,7 @@ function SearchPage() {
             placeholder={t('search.search_placeholder')}
             className="w-full h-12 pl-12 pr-24 rounded-xl bg-white nice-shadow
                        focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-1
-                       text-sm placeholder:text-black/40 transition-all"
+                       text-sm placeholder:text-[var(--ordria-muted)] transition-all"
           />
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <SearchIcon

@@ -13,7 +13,7 @@ import {
 import * as React from 'react'
 
 // Shared transactional email layout (React Email). One flexible template drives
-// every message — welcome, purchase, plan change, payment failed, etc. — via an
+// every message · welcome, purchase, plan change, payment failed, etc. · via an
 // accent color plus optional card / transition / bullet blocks. Ported from the
 // platform repo's templates/shared.tsx and kept provider-agnostic (rendered to
 // HTML by services/emails/resend.ts).
@@ -46,7 +46,7 @@ export interface LearnHouseEmailProps {
   cta?: { label: string; href: string }
 }
 
-const LOGO_URL = 'https://www.learnhouse.io/learnhouse-dark.svg'
+const LOGO_URL = 'https://learn.ordria.fr/brands/ordria/ordria-horizontal-dark.svg'
 
 export function LearnHouseEmail({
   accentColor,
@@ -62,13 +62,13 @@ export function LearnHouseEmail({
     <Html>
       <Head />
       <Preview>{subtitle}</Preview>
-      <Body style={{ backgroundColor: '#f5f5f5', fontFamily: 'Inter, Helvetica, Arial, sans-serif', margin: 0, padding: '24px 0' }}>
+      <Body style={{ backgroundColor: '#f7f9f9', fontFamily: 'Satoshi, Helvetica, Arial, sans-serif', margin: 0, padding: '24px 0' }}>
         <Container style={{ backgroundColor: '#ffffff', borderRadius: 16, overflow: 'hidden', maxWidth: 560, margin: '0 auto', border: '1px solid #eee' }}>
           {/* Accent bar */}
           <div style={{ height: 6, backgroundColor: accentColor }} />
 
           <Section style={{ padding: '32px 40px 8px' }}>
-            <Img src={LOGO_URL} alt="LearnHouse" height={28} style={{ marginBottom: 24 }} />
+            <Img src={LOGO_URL} alt="Ordria Learning" height={28} style={{ marginBottom: 24 }} />
             <Heading style={{ fontSize: 24, fontWeight: 800, color: '#171717', margin: '0 0 8px', lineHeight: 1.25 }}>
               {heading}
             </Heading>
@@ -133,7 +133,7 @@ export function LearnHouseEmail({
           <Hr style={{ borderColor: '#eee', margin: '24px 40px 0' }} />
           <Section style={{ padding: '16px 40px 32px' }}>
             <Text style={{ fontSize: 12, color: '#a3a3a3', margin: 0 }}>
-              LearnHouse — the open-source learning platform.
+              Ordria Learning · the learning platform.
             </Text>
           </Section>
         </Container>

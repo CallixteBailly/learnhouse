@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 
-/** Horizontal usage meter — ports the platform plan page's UsageBar. */
+/** Horizontal usage meter · ports the platform plan page's UsageBar. */
 export default function UsageBar({
   label,
   icon,
@@ -56,9 +56,9 @@ export default function UsageBar({
           }`}
         >
           {isFull
-            ? 'Limit reached — upgrade to continue'
+            ? 'Limit reached · upgrade to continue'
             : isHigh
-              ? `${numericLimit - usage} remaining — nearing limit`
+              ? `${numericLimit - usage} remaining · nearing limit`
               : `${numericLimit - usage} remaining`}
         </p>
       )}

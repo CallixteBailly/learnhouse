@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useCallback, useRef, useEffect } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion, type Transition, type TargetAndTransition } from 'motion/react'
 import {
@@ -24,6 +23,7 @@ import { queryKeys } from '@/lib/query/keys'
 import { startPlaygroundSession, iteratePlayground } from '@services/playgrounds/generator'
 import { updatePlayground, Playground } from '@services/playgrounds/playgrounds'
 import { useLHAnalytics, AnalyticsEvent } from '@services/analytics'
+import Logo from '@components/Objects/Brand/Logo'
 
 interface Course {
   course_uuid: string
@@ -68,7 +68,7 @@ const EditorLearnHouseLogo = () => {
         animate={animation.animate}
         transition={animation.transition}
       >
-        <Image src="/lrn.svg" alt="LearnHouse" width={14} height={14} className="invert" />
+        <Logo variant="mark" size={25} ariaLabel="Ordria Learning" />
       </motion.div>
     </div>
   )
@@ -420,7 +420,7 @@ export default function PlaygroundEditor({
           minHeight: 'calc(100vh - 120px)',
         }}
       >
-        {/* Preview — takes all space in fullscreen */}
+        {/* Preview · takes all space in fullscreen */}
         <div
           className="flex-1 flex overflow-hidden"
           style={{ borderRight: isFullscreen ? 'none' : '1px solid rgba(229,231,235,0.8)' }}
@@ -433,7 +433,7 @@ export default function PlaygroundEditor({
           />
         </div>
 
-        {/* Chat panel — hidden in fullscreen */}
+        {/* Chat panel · hidden in fullscreen */}
         {!isFullscreen && (
           <div className="flex-shrink-0 flex flex-col overflow-hidden" style={{ width: 320 }}>
             <PlaygroundChatPanel

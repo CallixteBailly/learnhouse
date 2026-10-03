@@ -28,13 +28,13 @@ import {
 const ITEMS_PER_PAGE = 10
 
 function formatShortDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return '—'
+  if (!dateStr) return '·'
   try {
     const date = new Date(dateStr)
-    if (isNaN(date.getTime())) return '—'
+    if (isNaN(date.getTime())) return '·'
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
   } catch {
-    return '—'
+    return '·'
   }
 }
 
@@ -529,6 +529,19 @@ function OrgUsers() {
                                   {user.user.email}
                                 </span>
                               )}
+                              {(user.user.profile?.job?.label || user.user.profile?.job?.other || user.user.profile?.phone) && (
+                                <div className="text-xs text-gray-400 flex items-center gap-1.5 mt-0.5">
+                                  {user.user.profile?.job?.label && (
+                                    <span>{user.user.profile.job.label}</span>
+                                  )}
+                                  {user.user.profile?.job?.other && !user.user.profile?.job?.label && (
+                                    <span>{user.user.profile.job.other}</span>
+                                  )}
+                                  {user.user.profile?.phone && (
+                                    <span>· {user.user.profile.phone}</span>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -549,7 +562,7 @@ function OrgUsers() {
                               ))}
                             </div>
                           ) : (
-                            <span className="text-xs text-gray-400">—</span>
+                            <span className="text-xs text-gray-400">·</span>
                           )}
                         </td>
 

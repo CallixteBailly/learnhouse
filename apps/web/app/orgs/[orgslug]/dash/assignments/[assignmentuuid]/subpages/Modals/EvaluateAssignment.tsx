@@ -218,7 +218,7 @@ function EvaluateAssignment({ user_id }: any) {
 
     // Build a uuid → per-task breakdown map from the backend's `tasks` array
     // so we can render "85%" badges next to each task header. Memoizing with
-    // useMemo would be overkill here — the array is tiny.
+    // useMemo would be overkill here · the array is tiny.
     const taskBreakdownByUuid: Record<string, any> = {};
     if (gradePreview?.tasks) {
         for (const tb of gradePreview.tasks) {

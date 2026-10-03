@@ -49,6 +49,7 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
   // Get previous and next activities
   const prevActivity = currentIndex > 0 ? allActivities[currentIndex - 1] : null;
   const nextActivity = currentIndex < allActivities.length - 1 ? allActivities[currentIndex + 1] : null;
+  const isLastActivity = currentIndex === allActivities.length - 1;
   
   // Navigate to an activity
   const navigateToActivity = (activity: any) => {
@@ -56,6 +57,11 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
     
     const cleanCourseUuid = props.course.course_uuid?.replace('course_', '');
     router.push(getUriWithOrg(props.orgslug, '') + `/course/${cleanCourseUuid}/activity/${activity.cleanUuid}`);
+  };
+
+  const navigateToEnd = () => {
+    const cleanCourseUuid = props.course.course_uuid?.replace('course_', '');
+    router.push(getUriWithOrg(props.orgslug, '') + `/course/${cleanCourseUuid}/activity/end`);
   };
 
   // Set up intersection observer to detect when bottom nav is out of viewport
@@ -103,10 +109,10 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
           <>
             <button
               onClick={() => navigateToActivity(prevActivity)}
-              className={`flex items-center space-x-1.5 p-2 rounded-md transition-all duration-200 cursor-pointer ${
-                prevActivity 
-                  ? 'text-gray-700' 
-                  : 'opacity-50 text-gray-400 cursor-not-allowed'
+              className={`flex items-center space-x-1.5 p-2 min-h-[44px] rounded-xl transition-all duration-200 cursor-pointer ${
+                prevActivity
+                  ? 'text-[var(--ordria-foreground)]'
+                  : 'opacity-50 text-[var(--ordria-muted)] cursor-not-allowed'
               }`}
               disabled={!prevActivity}
               title={prevActivity ? `${t('common.previous')}: ${prevActivity.name}` : t('activities.no_previous_activity')}
@@ -121,19 +127,19 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
             </button>
             
             <button
-              onClick={() => navigateToActivity(nextActivity)}
-              className={`flex items-center space-x-1.5 p-2 rounded-md transition-all duration-200 cursor-pointer ${
-                nextActivity 
-                  ? 'text-gray-700' 
-                  : 'opacity-50 text-gray-400 cursor-not-allowed'
+              onClick={() => isLastActivity ? navigateToEnd() : navigateToActivity(nextActivity)}
+              className={`flex items-center space-x-1.5 p-2 min-h-[44px] rounded-xl transition-all duration-200 cursor-pointer ${
+                (nextActivity || isLastActivity)
+                  ? 'text-[var(--ordria-foreground)]'
+                  : 'opacity-50 text-[var(--ordria-muted)] cursor-not-allowed'
               }`}
-              disabled={!nextActivity}
-              title={nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity')}
+              disabled={!nextActivity && !isLastActivity}
+              title={isLastActivity ? t('courses.finish_course') : (nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity'))}
             >
               <div className="flex flex-col items-end">
-                <span className="text-xs text-gray-500">{t('common.next')}</span>
+                <span className="text-xs text-gray-500">{isLastActivity ? t('common.complete') : t('common.next')}</span>
                 <span className="text-sm capitalize font-semibold text-right">
-                  {nextActivity ? nextActivity.name : t('activities.no_next_activity')}
+                  {isLastActivity ? t('courses.certificate_badge') : (nextActivity ? nextActivity.name : t('activities.no_next_activity'))}
                 </span>
               </div>
               <ChevronRight size={20} className="text-gray-800 shrink-0" />
@@ -145,17 +151,17 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
             <div className="justify-self-start">
               <button
                 onClick={() => navigateToActivity(prevActivity)}
-                className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-md transition-all duration-200 cursor-pointer ${
+                className={`flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-xl transition-all duration-200 cursor-pointer ${
                   prevActivity 
-                    ? 'bg-white nice-shadow text-gray-700' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    ? 'bg-[var(--ordria-surface)] text-[var(--ordria-foreground)] border border-[var(--ordria-border)]' 
+                    : 'bg-gray-100 text-[var(--ordria-muted)] border border-[var(--ordria-border)] cursor-not-allowed'
                 }`}
                 disabled={!prevActivity}
                 title={prevActivity ? `${t('common.previous')}: ${prevActivity.name}` : t('activities.no_previous_activity')}
               >
                 <ChevronLeft size={16} className="shrink-0" />
                 <div className="flex flex-col items-start">
-                  <span className="text-xs text-gray-500">{t('common.previous')}</span>
+                <span className="text-xs text-[var(--ordria-muted)]">{t('common.previous')}</span>
                   <span className="text-sm capitalize font-semibold text-left">
                     {prevActivity ? prevActivity.name : t('activities.no_previous_activity')}
                   </span>
@@ -163,25 +169,25 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
               </button>
             </div>
             
-            <div className="text-sm text-gray-500 justify-self-center">
+            <div className="text-sm text-[var(--ordria-muted)] justify-self-center" style={{ fontFamily: 'var(--ordria-font-mono)' }}>
               {currentIndex + 1} {t('common.of')} {allActivities.length}
             </div>
             
             <div className="justify-self-end">
               <button
-                onClick={() => navigateToActivity(nextActivity)}
-                className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-md transition-all duration-200 cursor-pointer ${
-                  nextActivity 
-                    ? 'bg-white nice-shadow text-gray-700' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                onClick={() => isLastActivity ? navigateToEnd() : navigateToActivity(nextActivity)}
+                className={`flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-xl transition-all duration-200 cursor-pointer ${
+                  (nextActivity || isLastActivity) 
+                    ? 'duo-btn-success' 
+                    : 'bg-gray-100 text-[var(--ordria-muted)] border border-[var(--ordria-border)] cursor-not-allowed'
                 }`}
-                disabled={!nextActivity}
-                title={nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity')}
+                disabled={!nextActivity && !isLastActivity}
+                title={isLastActivity ? t('courses.finish_course') : (nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity'))}
               >
                 <div className="flex flex-col items-end">
-                  <span className="text-xs text-gray-500">{t('common.next')}</span>
+                <span className="text-xs text-[var(--ordria-muted)]">{isLastActivity ? t('common.complete') : t('common.next')}</span>
                   <span className="text-sm capitalize font-semibold text-right">
-                    {nextActivity ? nextActivity.name : t('activities.no_next_activity')}
+                    {isLastActivity ? t('courses.certificate_badge') : (nextActivity ? nextActivity.name : t('activities.no_next_activity'))}
                   </span>
                 </div>
                 <ChevronRight size={16} className="shrink-0" />
@@ -196,7 +202,7 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
   return (
     <>
       {/* Bottom navigation (in-place) */}
-      <div ref={bottomNavRef} className="mt-6 mb-2 w-full">
+      <div ref={bottomNavRef} className="sticky bottom-0 bg-white border-t border-gray-200 p-3 z-50 md:relative md:border-0 md:bg-transparent md:p-0 md:z-auto mt-6 mb-2 w-full">
         <NavigationButtons isFloating={false} />
       </div>
       
@@ -204,7 +210,8 @@ export default function ActivityNavigation(props: ActivityNavigationProps): Reac
       {!isBottomNavVisible && (
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-sticky-header w-[85%] sm:w-auto sm:min-w-[350px] max-w-lg transition-all duration-300 ease-in-out">
           <div 
-            className="bg-white/90 backdrop-blur-xl rounded-full py-1.5 px-2.5 shadow-xs animate-in fade-in slide-in-from-bottom duration-300"
+            className="bg-[var(--ordria-background)] rounded-full py-1.5 px-2.5 border border-[var(--ordria-border)] animate-in fade-in slide-in-from-bottom duration-300"
+            style={{ boxShadow: 'var(--shadow-soft)' }}
           >
             <NavigationButtons isFloating={true} />
           </div>

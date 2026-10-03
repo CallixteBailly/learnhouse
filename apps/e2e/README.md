@@ -89,6 +89,33 @@ bunx playwright test 06-manual-grading            # one spec by name
   caches tokens per email + retries on 429. A full run does only a handful of
   logins (the API rate-limits logins to **30 / 5 min / IP**).
 
+## Feature coverage — orgs, courses & formations
+
+Three additional feature modules cover organization management, course
+management and the learner journey end-to-end. They follow the same pattern
+(API seeding + REST read-backs, UI driving where the journey is visible):
+
+| Module | Spec | What it proves |
+| --- | --- | --- |
+| `features/orgs` | `01-org-crud` | Create / read (slug + uuid) / update / delete an org |
+| | `02-members-roles` | Member listing, search, role changes, custom roles, member removal, CSV export |
+| | `03-signup-invites` | Signup mechanism toggle, invite codes CRUD, join-by-code, email invites, leaving |
+| | `04-config-branding` | Feature toggles (AI, communities, courses, …), branding configs, usage |
+| `features/courses` | `01-course-crud` | Create / update metadata / toggle visibility / delete a course |
+| | `02-chapters` | Create / rename / reorder / delete chapters, restricted lock type |
+| | `03-activities` | All activity types, rename, unpublish/republish, delete |
+| | `04-discovery` | Catalog listing, count, full-text search, full meta read |
+| | `05-clone` | Clone a course with its structure; clone edits don't leak |
+| | `06-course-updates` | Course announcements CRUD |
+| `features/formations` | `01-enrollment` | Add/remove a course to a learner trail; run creation |
+| | `02-progression` | Step-by-step completion, no double-count, unmark |
+| | `03-completion-certification` | Full completion flips the run and auto-awards the certificate |
+| | `04-learner-ui` | Browser journey: catalog → course page → video activity player |
+
+The orgs module runs its mutations on a **dedicated scratch org** so role
+changes, signup toggles and invite-pool consumption never affect the shared
+`default` org used by the other modules.
+
 ## Feature coverage — assignments (32 tests)
 
 Driven through the UI, verified against the REST API (`features/assignments/verify.ts`):
@@ -135,3 +162,32 @@ server-verify dispatch, CODE grading, retry caps, due dates, permissions).
 > instance (it passes against `learnhouse dev` / a branch-built image).
 > CODE task type is covered by backend tests only (Judge0 isn't available on a
 > self-host).
+
+## Known gaps against the published image (2026-09-26 run)
+
+Full fresh-boot run: **127 passed / 9 skipped / 11 failed**. The skips and
+failures are all characterized, none are new regressions:
+
+- **assignments** (6 failures): manual-grading / partial-credit / grading
+  display / file-submission specs assert fixes that only exist on this
+  branch, not in the published image (see above).
+- **scorm** (5 failures): `POST /courses/import/analyze` returns 404 on the
+  published image — SCORM import ships only with this branch's code.
+- **skips (9)**: multi-org CRUD specs (org creation is Enterprise-locked on
+  the published image — the orgs module degrades to the shared default org)
+  and course-update edit/delete (RBAC cannot resolve `courseupdate_` UUIDs,
+  see below).
+- **courseupdate RBAC bug (found by `courses/06`)**:
+  `update_update`/`delete_update` call `check_resource_access` with the raw
+  `courseupdate_…` UUID, which `resource_access.py` cannot map to a resource
+  type → 403 "Unknown resource type" even for the course author. Creating and
+  listing course updates works; editing/deleting is skipped until fixed.
+- Session bootstrap fix: `global-setup` now logs in through the web's
+  `/api/auth/login` proxy so the real `LH_access`/`LH_refresh` httpOnly
+  cookies are captured in the shared storageStates (the previous injected
+  `lh_session` cookie/localStorage never authenticated the published image —
+  every UI spec relying on the shared sessions used to render anonymous).
+- Login-rate-limit hardening: API tokens are cached on disk per run
+  (`.auth/token-cache.json`, cleared on each fresh boot) because Playwright
+  runs each spec file in its own process; `login` also honors the server's
+  `retry_after` on 429.

@@ -12,11 +12,19 @@ from src.services.ai.schemas.courseplanning import (
     CoursePlanningSessionData,
     CoursePlanningMessage,
     AttachmentData,
+    DocumentText,
 )
 
 logger = logging.getLogger(__name__)
 
 LH_CONFIG = get_learnhouse_config()
+
+# Cap on document text injected into LLM prompts (per document). PDFs can hold
+# far more than any planning prompt needs; extraction itself caps at 100k chars
+# (rag.content_extraction.MAX_PDF_CHARS), this trims further for prompt budget.
+MAX_DOCUMENT_PROMPT_CHARS = 15_000
+# Max number of extracted documents kept on a session / injected downstream.
+MAX_SESSION_DOCUMENTS = 5
 
 # Redis key pattern for course planning sessions
 COURSE_PLANNING_SESSION_KEY = "course_planning_session:{session_uuid}"
@@ -28,6 +36,19 @@ MAX_PLANNING_ITERATIONS = 10
 MAX_ACTIVITY_ITERATIONS = 6
 # Feature flag: Enable activity content generation (disabled for now)
 ENABLE_ACTIVITY_CONTENT_GENERATION = True
+
+# Ordria house style: the em dash (U+2014) is banned from all generated course
+# content. The system prompts forbid it; this sanitizer guarantees it even if
+# the model disobeys. String chunks carry whole code points, so a per-chunk
+# replace can never split the character across chunks.
+EM_DASH = "\u2014"
+
+
+def sanitize_generated_text(text: str) -> str:
+    """Replace em dashes with simple hyphens in generated course content."""
+    if not text:
+        return text
+    return text.replace(EM_DASH, "-")
 
 
 def get_redis_connection():
@@ -98,6 +119,30 @@ def save_course_planning_session(session: CoursePlanningSessionData) -> bool:
         return False
 
 
+def extract_attachment_document_text(attachment: AttachmentData) -> str:
+    """Best-effort text extraction from a 'file' attachment (PDF only for now).
+
+    Returns '' for non-PDF attachments, missing payloads, or extraction
+    failures, so callers can fall back to a filename-only note.
+    """
+    mime = (attachment.mime_type or "").lower()
+    name = (attachment.name or "").lower()
+    if mime != "application/pdf" and not name.endswith(".pdf"):
+        return ""
+    if not attachment.content_base64:
+        return ""
+    try:
+        data = base64.b64decode(attachment.content_base64)
+    except Exception:
+        logger.warning("Skipping document attachment with invalid base64: %s", attachment.name)
+        return ""
+    # Local import to keep pypdf out of hot module-import paths.
+    from src.services.ai.rag.content_extraction import extract_text_from_pdf
+
+    text = extract_text_from_pdf(data)
+    return text[:MAX_DOCUMENT_PROMPT_CHARS]
+
+
 def build_attachment_context(attachments: List[AttachmentData]) -> str:
     """Build context string from attachments for the AI prompt (text-based context)"""
     if not attachments:
@@ -118,6 +163,7 @@ def build_attachment_context(attachments: List[AttachmentData]) -> str:
             images.append(attachment.name)
         elif attachment.type == 'file':
             # Try to extract text content from text-based files
+            text_content = ""
             if attachment.content_base64 and attachment.mime_type:
                 try:
                     if attachment.mime_type in ['text/plain', 'text/markdown', 'application/json']:
@@ -125,11 +171,13 @@ def build_attachment_context(attachments: List[AttachmentData]) -> str:
                         # Limit content length to avoid overwhelming the prompt
                         if len(decoded_content) > 5000:
                             decoded_content = decoded_content[:5000] + "\n... [content truncated]"
-                        documents.append(f"--- Document: {attachment.name} ---\n{decoded_content}")
-                    else:
-                        documents.append(f"[Binary document: {attachment.name}]")
+                        text_content = decoded_content
                 except Exception:
-                    documents.append(f"[Document: {attachment.name}]")
+                    text_content = ""
+            if not text_content:
+                text_content = extract_attachment_document_text(attachment)
+            if text_content:
+                documents.append(f"--- Document: {attachment.name} ---\n{text_content}")
             else:
                 documents.append(f"[Document: {attachment.name}]")
 
@@ -212,6 +260,7 @@ IMPORTANT GUIDELINES:
 - Include practical, hands-on activities when appropriate
 - Make activity descriptions specific and actionable
 - Activity names should be descriptive (e.g., "Introduction to Variables", "Quiz: Testing Your Knowledge")
+- NEVER use the em dash character (the long dash, Unicode U+2014) anywhere in the generated content. Use a comma, a colon, parentheses, or a simple hyphen "-" instead.
 
 ACTIVITY TYPES AND SUGGESTED BLOCKS:
 Activities in LearnHouse use a rich content editor with various block types. For each activity, suggest appropriate blocks:
@@ -272,6 +321,8 @@ def build_activity_content_system_prompt(
     return f"""You are an expert content creator for online courses. Generate educational content for the following context:
 
 IMPORTANT: Generate ALL text content in {language_name}. The user's language is {language_name}, so all paragraphs, headings, quiz questions, answers, flipcard content, and callouts must be written in {language_name}.
+
+TYPOGRAPHY RULE (mandatory): NEVER use the em dash character (the long dash, Unicode U+2014) anywhere in the generated text. Use a comma, a colon, parentheses, or a simple hyphen "-" instead.
 
 COURSE: <user_content>{course_name}</user_content>
 COURSE DESCRIPTION: <user_content>{course_description}</user_content>
@@ -399,7 +450,24 @@ async def generate_course_plan_stream(
 
         # Text description of attachments for the prompt + actual multimodal parts.
         attachment_context = build_attachment_context(attachments) if attachments else ""
-        attachment_parts = attachments_to_parts(attachments) if attachments else []
+        # Documents (PDF etc.) ride the prompt as EXTRACTED TEXT, never as binary
+        # parts: text-only OpenAI-compatible providers (e.g. z.ai GLM) reject
+        # non-text content parts with HTTP 400, which used to fail the whole
+        # planning request. Images/YouTube stay multimodal for vision-capable
+        # providers.
+        non_file_attachments = [a for a in attachments if getattr(a, "type", None) != "file"] if attachments else []
+        attachment_parts = attachments_to_parts(non_file_attachments) if non_file_attachments else []
+
+        # Keep extracted document texts on the session so activity content
+        # generation later can stay faithful to the source material.
+        if attachments:
+            for att in attachments:
+                if getattr(att, "type", None) == "file":
+                    doc_text = extract_attachment_document_text(att)
+                    if doc_text:
+                        kept = [d for d in session.document_texts if d.name != att.name]
+                        kept.append(DocumentText(name=att.name, text=doc_text))
+                        session.document_texts = kept[-MAX_SESSION_DOCUMENTS:]
 
         # Build the user turn (iteration vs first generation).
         if current_plan and session.planning_iteration_count > 0:
@@ -430,16 +498,39 @@ IMPORTANT: You MUST incorporate the materials provided above into the course pla
         user_prompt = [user_text, *attachment_parts] if attachment_parts else user_text
 
         # Stream raw JSON text chunks (parsed into a CoursePlan after completion).
+        # If the provider rejects multimodal parts (some OpenAI-compatible
+        # endpoints only accept text), the request fails before any chunk is
+        # produced; retry once with the text-only prompt so planning still
+        # succeeds with the extracted document context.
         full_response = ""
-        async for chunk in generate_stream(
-            model_name=model_name or model_for_tier("standard"),
-            user_prompt=user_prompt,
-            system_prompt=system_prompt,
-            history=history,
-            timeout=300.0,
-        ):
-            full_response += chunk
-            yield chunk
+        try:
+            async for chunk in generate_stream(
+                model_name=model_name or model_for_tier("standard"),
+                user_prompt=user_prompt,
+                system_prompt=system_prompt,
+                history=history,
+                timeout=300.0,
+            ):
+                chunk = sanitize_generated_text(chunk)
+                full_response += chunk
+                yield chunk
+        except Exception:
+            if attachment_parts and not full_response:
+                logger.warning(
+                    "Planning stream failed with multimodal parts; retrying text-only"
+                )
+                async for chunk in generate_stream(
+                    model_name=model_name or model_for_tier("standard"),
+                    user_prompt=user_text,
+                    system_prompt=system_prompt,
+                    history=history,
+                    timeout=300.0,
+                ):
+                    chunk = sanitize_generated_text(chunk)
+                    full_response += chunk
+                    yield chunk
+            else:
+                raise
 
         # Update session after generation completes
         session.message_history.append(CoursePlanningMessage(role="user", content=prompt))
@@ -493,6 +584,23 @@ async def generate_activity_content_stream(
         # Get iteration count for this activity
         iteration_count = session.activity_iteration_counts.get(activity_uuid, 0)
 
+        # Source material extracted from the user's attachments (PDF etc.) at
+        # planning time: the generated content must be faithful to it instead
+        # of generic knowledge about the topic.
+        document_context = ""
+        if session.document_texts:
+            doc_blocks = []
+            for doc in session.document_texts[:MAX_SESSION_DOCUMENTS]:
+                doc_blocks.append(f"--- Source document: {doc.name} ---\n{doc.text}")
+            document_context = (
+                "\n\n=== REFERENCE SOURCE MATERIAL ===\n"
+                "The course was created from these documents. Base the content of THIS "
+                "activity on their actual substance (facts, data, examples, terminology). "
+                "Do NOT invent generic content that contradicts or ignores them.\n\n"
+                + "\n\n".join(doc_blocks)
+                + "\n=== END OF SOURCE MATERIAL ==="
+            )
+
         # Build the prompt based on whether this is an iteration
         if current_content and iteration_count > 0:
             user_prompt = f"""The user wants to modify the existing activity content.
@@ -504,10 +612,14 @@ CURRENT CONTENT:
 
 USER REQUEST:
 {prompt or "Improve this content"}
+{document_context}
 
 Please modify the content according to the user's request. Output ONLY the complete updated JSON."""
         else:
-            user_prompt = prompt or f"Generate comprehensive educational content for this activity: {activity_name}"
+            user_prompt = (
+                prompt
+                or f"Generate comprehensive educational content for this activity: {activity_name}"
+            ) + document_context
 
         # Stream raw JSON text chunks (parsed downstream).
         full_response = ""
@@ -518,6 +630,7 @@ Please modify the content according to the user's request. Output ONLY the compl
             temperature=0.7,
             timeout=300.0,
         ):
+            chunk = sanitize_generated_text(chunk)
             full_response += chunk
             yield chunk
 

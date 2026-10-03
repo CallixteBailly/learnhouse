@@ -8,11 +8,36 @@ router = APIRouter()
 
 @router.get(
     "",
-    summary="Health check",
-    description="Returns the overall health of the service and its dependencies (e.g. database connectivity).",
+    summary="Liveness check",
+    description=(
+        "Process liveness: answers 200 as long as the API process and its "
+        "event loop are responsive. Deliberately has NO database dependency — "
+        "a cold or suspended Neon must not fail the liveness probe, or "
+        "platforms and rollout windows kill/restart a perfectly healthy "
+        "container (2026-10-01 crash-loop lesson). Database readiness lives "
+        "on GET /health/ready."
+    ),
     responses={
-        200: {"description": "Service is healthy; includes per-dependency status."},
+        200: {"description": "The service process is alive and responsive."},
     },
 )
-async def health(db_session: AsyncSession = Depends(get_db_session)):
-    return await check_health(db_session)
+async def health():
+    return {"status": "ok"}
+
+@router.get(
+    "/ready",
+    summary="Readiness check (database)",
+    description=(
+        "Verifies the service can actually serve traffic: pings the database "
+        "and returns 503 when it cannot. Used by the in-container watchdog "
+        "(start-api.sh) to decide a restart — a DB-dead API should be "
+        "rebooted, while a DB-cold one is left alone to warm up."
+    ),
+    responses={
+        200: {"description": "Service is ready; database connectivity confirmed."},
+        503: {"description": "Database is not reachable — service not ready."},
+    },
+)
+async def readiness(db_session: AsyncSession = Depends(get_db_session)):
+    await check_health(db_session)
+    return {"status": "ok", "database": True}

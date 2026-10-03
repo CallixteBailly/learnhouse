@@ -627,3 +627,57 @@ export function parseActivityContentFromStream(streamContent: string): any | nul
     return null
   }
 }
+
+// ────────────────────────────────────────
+// TypeSafe/Jev plan audit
+// ────────────────────────────────────────
+
+export interface PlanAuditCheck {
+  id: string
+  label: string
+  ok: boolean
+  probability: number | null
+}
+
+export interface PlanAudit {
+  enabled: boolean
+  model: string | null
+  checks: PlanAuditCheck[]
+  completeness: { score: number | null }
+  next_missing: { topic: string | null }
+  recommendation: string | null
+}
+
+const EMPTY_AUDIT: PlanAudit = {
+  enabled: false,
+  model: null,
+  checks: [],
+  completeness: { score: null },
+  next_missing: { topic: null },
+  recommendation: null,
+}
+
+/**
+ * Audit a course plan against the course-creation conventions with
+ * TypeSafe/Jev (typed judgments). Best-effort: returns enabled=false when
+ * the service is unavailable; never throws.
+ */
+export async function auditCoursePlan(
+  plan: CoursePlan,
+  accessToken: string
+): Promise<PlanAudit> {
+  try {
+    const response = await fetch(`${getAPIUrl()}ai/courseplanning/audit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ plan }),
+    })
+    if (!response.ok) return EMPTY_AUDIT
+    return await response.json()
+  } catch {
+    return EMPTY_AUDIT
+  }
+}

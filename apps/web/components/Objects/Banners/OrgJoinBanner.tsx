@@ -41,7 +41,10 @@ export function OrgJoinBanner() {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 bg-gradient-to-r from-yellow-500 to-amber-500 text-white"
+      // pointer-events-none on the bar: only the "join" link is interactive.
+      // The banner is a fixed overlay at the top of the viewport and must
+      // never intercept clicks aimed at the navbar below it.
+      className="pointer-events-none fixed top-0 left-0 right-0 bg-gradient-to-r from-yellow-500 to-amber-500 text-white"
       style={{ zIndex: 'var(--z-nav-menu)', height: JOIN_BANNER_HEIGHT }}
     >
       <div className="w-full max-w-(--breakpoint-2xl) mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-full">
@@ -51,7 +54,7 @@ export function OrgJoinBanner() {
             {t('banner.viewing_as_guest', { name: org?.name })}{' '}
             <a
               href={getUriWithOrg(orgslug, '/signup')}
-              className="underline hover:no-underline font-bold"
+              className="pointer-events-auto underline hover:no-underline font-bold"
             >
               {t('banner.join_organization')}
             </a>{' '}

@@ -8,6 +8,7 @@ import { getUriWithOrg } from '@services/config/config'
 import { deleteCourseFromBackend, cloneCourse } from '@services/courses/courses'
 import { exportCourse, downloadBlob, ExportStatus } from '@services/courses/transfer'
 import { exportToast } from '@components/Objects/StyledElements/Toast/ExportToast'
+import { useTrail } from '@/hooks/queries/useTrail'
 import { getCourseThumbnailMediaDirectory, getUserAvatarMediaDirectory } from '@services/media/media'
 import { useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
@@ -27,6 +28,50 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useLHAnalytics, AnalyticsEvent } from '@services/analytics'
 
+/** Photos Unsplash de fallback quand un cours n'a pas de thumbnail.
+ *  Détection par métier + pool aléatoire déterministe (stable par UUID). */
+const METIER_PHOTOS: { keys: string[]; photo: string; label: string }[] = [
+  { keys: ['restaurant', 'restaurat'], photo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80', label: 'Restaurant' },
+  { keys: ['coiffeur', 'barbier', 'salon'], photo: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80', label: 'Coiffure' },
+  { keys: ['garagist', 'auto', 'mécan'], photo: 'https://images.unsplash.com/photo-1632823471565-1ecdf5c6da77?auto=format&fit=crop&w=800&q=80', label: 'Garage' },
+  { keys: ['artisan', 'btp', 'construct'], photo: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80', label: 'Artisan' },
+  { keys: ['immobilier', 'agent'], photo: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80', label: 'Immobilier' },
+  { keys: ['digital', 'transformation'], photo: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80', label: 'Digital' },
+  { keys: ['marketing', 'communication'], photo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80', label: 'Marketing' },
+  { keys: ['ia', 'intelligence', 'automatisation'], photo: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80', label: 'IA' },
+]
+
+const FALLBACK_POOL = [
+  'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80',
+]
+
+function getFallbackImage(course: any): string {
+  const name = (course?.name || '').toLowerCase()
+  const tags = Array.isArray(course?.tags) ? course.tags.join(' ').toLowerCase() : (course?.tags || '').toLowerCase()
+  const haystack = `${name} ${tags}`
+  for (const m of METIER_PHOTOS) {
+    if (m.keys.some((k) => haystack.includes(k))) return m.photo
+  }
+  const uuid: string = course?.course_uuid || course?.name || ''
+  const idx = uuid.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) % FALLBACK_POOL.length
+  return FALLBACK_POOL[idx]
+}
+
+function getCourseCategoryLabel(course: any): string {
+  const name = (course?.name || '').toLowerCase()
+  const tags = Array.isArray(course?.tags) ? course.tags.join(' ').toLowerCase() : (course?.tags || '').toLowerCase()
+  const haystack = `${name} ${tags}`
+  for (const m of METIER_PHOTOS) {
+    if (m.keys.some((k) => haystack.includes(k))) return m.label
+  }
+  return ''
+}
+
 type Course = {
   course_uuid: string
   name: string
@@ -36,6 +81,7 @@ type Course = {
   update_date: string
   public?: boolean
   published?: boolean
+  tags?: string[]
   authors?: Array<{
     user: {
       id: string
@@ -68,8 +114,40 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
   const session = useLHSession() as any
   const queryClient = useQueryClient()
   const { track } = useLHAnalytics('learner')
+  const { data: trailData } = useTrail(org?.id)
 
   const cleanUuid = removeCoursePrefix(course.course_uuid)
+
+  // Modèle d'état « formation commencée » (refonte) · étendu au catalogue
+  const courseProgress = (() => {
+    if (!trailData?.runs) return { pct: 0, completed: 0, total: 0, started: false }
+    const run = trailData.runs.find((r: any) => {
+      const runUuid = r.course?.course_uuid?.replace('course_', '')
+      return runUuid === cleanUuid
+    })
+    if (!run) return { pct: 0, completed: 0, total: 0, started: false }
+    const completedCount = (run.steps || []).filter((s: any) => s.complete).length
+    const totalActivities = run.course_total_steps || (run.steps || []).length
+    return {
+      pct: totalActivities > 0 ? Math.round((completedCount / totalActivities) * 100) : 0,
+      completed: completedCount,
+      total: totalActivities,
+      started: true,
+    }
+  })()
+
+  // Adaptation catalogue (refonte) · jamais sur les cartes du backoffice (isDashboard)
+  const courseTags: string[] = !isDashboard
+    ? (Array.isArray(course.tags) ? course.tags.join(',') : (course.tags || ''))
+        .split(',').map((s: string) => s.trim()).filter(Boolean).slice(0, 3)
+    : []
+  const ctaLabel = isDashboard
+    ? t('courses.start_learning')
+    : courseProgress.pct >= 100
+      ? t('courses.review_activity', 'Revoir')
+      : courseProgress.started
+        ? t('courses.resume', 'Reprendre')
+        : t('courses.start_learning')
 
   const handleCardOpen = () => {
     track(AnalyticsEvent.CourseCardOpened, {
@@ -149,12 +227,14 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
 
   const thumbnailImage = course.thumbnail_image
     ? getCourseThumbnailMediaDirectory(org?.org_uuid, course.course_uuid, course.thumbnail_image)
-    : '/empty_thumbnail.png'
+    : getFallbackImage(course)
 
   const courseLink = customLink ? customLink : getUriWithOrg(orgslug, `/course/${removeCoursePrefix(course.course_uuid)}`)
 
+  const categoryLabel = getCourseCategoryLabel(course)
+
   return (
-    <div onMouseEnter={handleMouseEnter} className={`group relative flex flex-col bg-white rounded-xl nice-shadow overflow-hidden w-full transition-all duration-300 hover:scale-[1.01] ${isSelected ? 'ring-2 ring-black ring-offset-2' : ''}`}>
+    <div onMouseEnter={handleMouseEnter} className={`group relative flex flex-col bg-white rounded-2xl border-2 border-[var(--ordria-border)] overflow-hidden w-full duo-card-hover ${isSelected ? 'ring-2 ring-[var(--ordria-accent)] ring-offset-2' : ''}`}>
       {/* Selection checkbox - visible on hover or when selected (dashboard only) */}
       {isDashboard && onToggleSelect && (
         <button
@@ -182,6 +262,8 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
         isDashboard={isDashboard}
       />
 
+      <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, var(--ordria-accent), var(--ordria-accent-secondary))' }} />
+
       <Link prefetch={false} href={courseLink} onClick={handleCardOpen} className="block relative aspect-video overflow-hidden bg-gray-50">
         {/* Hidden img gives the browser a real resource hint so it can fetch the background-image early as an LCP candidate */}
         {isPriority && (
@@ -198,6 +280,9 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
           className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
           style={{ backgroundImage: `url(${thumbnailImage})` }}
         />
+        <div className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-semibold shadow-sm">
+          {categoryLabel && <span>{categoryLabel}</span>}
+        </div>
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
         {isDashboard && (
           <div className="absolute bottom-2 left-2">
@@ -220,65 +305,94 @@ function CourseThumbnail({ course, orgslug, customLink, isDashboard = false, isS
             prefetch={false}
             href={courseLink}
             onClick={handleCardOpen}
-            className="text-base font-bold text-gray-900 leading-tight hover:text-black transition-colors line-clamp-1"
+            className="text-base font-bold text-[var(--ordria-foreground)] leading-tight hover:text-black transition-colors line-clamp-1"
+            style={{ fontFamily: 'var(--font-display, Sora)' }}
           >
             {course.name}
           </Link>
         </div>
         
         {course.description && (
-          <p className="text-[11px] text-gray-500 line-clamp-2 min-h-[1.5rem]">
+          <p className="text-[11px] text-[var(--ordria-muted)] line-clamp-2 min-h-[1.5rem]">
             {course.description}
           </p>
         )}
 
-        <div className="pt-1.5 flex items-center justify-between border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            {displayedAuthors.length > 0 && (
-              <div className="flex -space-x-2 items-center">
-                {displayedAuthors.map((author, index) => (
-                  <div 
-                    key={author.user.user_uuid} 
-                    className="relative"
-                    style={{ zIndex: displayedAuthors.length - index }}
-                  >
-                    <UserAvatar
-                      border="border-2"
-                      rounded="rounded-full"
-                      avatar_url={author.user.avatar_image ? getUserAvatarMediaDirectory(author.user.user_uuid, author.user.avatar_image) : ''}
-                      predefined_avatar={author.user.avatar_image ? undefined : 'empty'}
-                      width={20}
-                      showProfilePopup={true}
-                      userId={author.user.id}
-                    />
-                  </div>
-                ))}
-                {hasMoreAuthors && (
-                  <div className="relative z-0">
-                    <div className="flex items-center justify-center w-[20px] h-[20px] text-[8px] font-bold text-gray-600 bg-gray-100 border-2 border-white rounded-full">
-                      +{remainingAuthorsCount}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            {course.update_date && (
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-                {new Date(course.update_date).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric' })}
+        {!isDashboard && courseTags.length > 0 && (
+          <div className="flex flex-wrap gap-1 pt-0.5">
+            {courseTags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+                style={{
+                  background: 'var(--ordria-surface)',
+                  color: 'var(--ordria-muted)',
+                  border: '1px solid var(--ordria-border)',
+                }}
+              >
+                {tag}
               </span>
-            )}
+            ))}
           </div>
-          
-          <Link
-            prefetch={false}
-            href={courseLink}
-            onClick={handleCardOpen}
-            className="text-[10px] font-bold text-gray-400 hover:text-gray-900 transition-colors uppercase tracking-wider"
-          >
-            {t('courses.start_learning')}
-          </Link>
+        )}
+
+        <div className="duo-progress-bar mt-2">
+          <div className="duo-progress-fill" style={{ width: `${courseProgress.pct}%` }}></div>
         </div>
+        {courseProgress.started && (
+          <span
+            className="text-[10px] font-bold mt-1 flex items-center gap-1"
+            style={{ color: courseProgress.pct >= 100 ? 'var(--ordria-foreground)' : 'var(--ordria-accent-secondary)' }}
+          >
+            {courseProgress.pct >= 100 && <CheckSquare className="w-3 h-3" />}
+            {courseProgress.pct >= 100
+              ? t('courses.completed_label', 'Terminé')
+              : `${courseProgress.completed}/${courseProgress.total} · ${courseProgress.pct}%`}
+          </span>
+        )}
+
+        <div className="pt-1.5 flex items-center gap-2 border-t border-[var(--ordria-border)]">
+          {displayedAuthors.length > 0 && (
+            <div className="flex -space-x-2 items-center">
+              {displayedAuthors.map((author, index) => (
+                <div 
+                  key={author.user.user_uuid} 
+                  className="relative"
+                  style={{ zIndex: displayedAuthors.length - index }}
+                >
+                  <UserAvatar
+                    border="border-2"
+                    rounded="rounded-full"
+                    avatar_url={author.user.avatar_image ? getUserAvatarMediaDirectory(author.user.user_uuid, author.user.avatar_image) : ''}
+                    predefined_avatar={author.user.avatar_image ? undefined : 'empty'}
+                    width={20}
+                    showProfilePopup={true}
+                    userId={author.user.id}
+                  />
+                </div>
+              ))}
+              {hasMoreAuthors && (
+                <div className="relative z-0">
+                  <div className="flex items-center justify-center w-[20px] h-[20px] text-[8px] font-bold text-gray-600 bg-gray-100 border-2 border-white rounded-full">
+                    +{remainingAuthorsCount}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {course.update_date && (
+            <span className="text-[9px] font-bold text-[var(--ordria-muted)] uppercase tracking-widest">
+              {new Date(course.update_date).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric' })}
+            </span>
+          )}
+        </div>
+        
+        <Link prefetch={false} href={courseLink} onClick={handleCardOpen} className="block">
+          <button className="duo-btn-success w-full mt-2" style={{ height: '40px', fontSize: '13px' }}>
+            {ctaLabel}
+          </button>
+        </Link>
       </div>
     </div>
   )

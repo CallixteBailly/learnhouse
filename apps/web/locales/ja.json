@@ -46,11 +46,11 @@
     "help": "ヘルプ",
     "help_menu": {
       "documentation": "ドキュメント",
-      "website": "LearnHouse ウェブサイト",
+      "website": "Ordria ウェブサイト",
       "discord": "Discord",
       "report_feedback": "問題の報告またはフィードバック",
       "feedback_title": "フィードバックを送信",
-      "feedback_description": "ご意見の共有、バグの報告、新機能のご提案で LearnHouse の改善にご協力ください。",
+      "feedback_description": "ご意見の共有、バグの報告、新機能のご提案で Ordria の改善にご協力ください。",
       "feedback_placeholder": "お気づきの点をお聞かせください...",
       "feedback_success": "フィードバックありがとうございます！",
       "send_feedback": "フィードバックを送信",
@@ -215,7 +215,7 @@
     "organizations": "組織",
     "billing": "請求",
     "create_organization": "組織を作成",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "この組織を削除できませんでした。もう一度お試しください。",
     "org_actions": "組織の操作",
     "manage_upgrade": "管理 / アップグレード",
@@ -228,7 +228,8 @@
     "leave_organization_title": "組織を退出しますか？",
     "leave_organization_desc": "{{org}} へのアクセス権が失われ、メンバーから削除されます。招待されれば後から再参加できます。",
     "leave_organization_error": "この組織を退出できませんでした。もう一度お試しください。",
-    "leaving": "退出中…"
+    "leaving": "退出中…",
+    "formations": "研修"
   },
   "banner": {
     "viewing_as_guest": "{{name}}をゲストとして閲覧しています。",
@@ -352,17 +353,17 @@
     "try_again_in": "{{minutes}}分後に再試行してください",
     "error_generic": "問題が発生しました。もう一度お試しください。",
     "sign_in": "サインイン",
-    "terms_text": "続行することで、LearnHouse の",
+    "terms_text": "続行することで、Ordria の",
     "terms_of_service": "利用規約",
     "and": "および",
     "privacy_policy": "プライバシーポリシー",
     "image_title_forgot": "パスワードをリセット。",
     "image_subtitle_forgot": "すぐにアカウントへ戻れるようサポートします。",
-    "image_title_login": "LearnHouse へおかえりなさい。",
-    "image_subtitle_login": "続きから再開しましょう — コース、受講者、ツールが待っています。",
+    "image_title_login": "Ordria へおかえりなさい。",
+    "image_subtitle_login": "続きから再開しましょう, コース、受講者、ツールが待っています。",
     "image_title_reset": "あと少しです。",
     "image_subtitle_reset": "アカウントを安全に保つため、強力なパスワードを作成してください。",
-    "image_title_signup": "LearnHouse で教え始めましょう。",
+    "image_title_signup": "Ordria で教え始めましょう。",
     "image_subtitle_signup": "アカウントを作成し、最初のコースを数分で公開しましょう。",
     "image_title_verify": "メールアドレスを確認。",
     "image_subtitle_verify": "アカウントを保護して始めるための、ほんの一手間です。",
@@ -564,14 +565,14 @@
     "import": {
       "scorm_package": "SCORMパッケージ",
       "scorm_description": "SCORM 1.2 または SCORM 2004 パッケージをインポート",
-      "learnhouse_courses": "LearnHouseコース",
-      "learnhouse_description": "LearnHouseからエクスポートしたコースをインポート",
+      "learnhouse_courses": "Ordriaコース",
+      "learnhouse_description": "Ordriaからエクスポートしたコースをインポート",
       "upload_package": "パッケージをアップロード",
       "configure": "設定",
       "complete": "完了",
       "click_to_upload": "クリックしてアップロードまたはドラッグ＆ドロップ",
-      "learnhouse_format": "LearnHouseコースエクスポート (.zip)",
-      "learnhouse_info": "LearnHouseコースエクスポートパッケージ (.zip) をアップロードします。インポートするコースを選択し、インポートオプションを設定できます。",
+      "learnhouse_format": "Ordriaコースエクスポート (.zip)",
+      "learnhouse_info": "Ordriaコースエクスポートパッケージ (.zip) をアップロードします。インポートするコースを選択し、インポートオプションを設定できます。",
       "analyze_package": "パッケージを分析",
       "ready_to_analyze": "分析準備完了",
       "invalid_file_format": ".zip ファイルをアップロードしてください",
@@ -626,7 +627,7 @@
         "plan_generated": "プランが更新されました",
         "plan_generated_hint": "プランタブで確認・編集してください。",
         "describe_course": "コースを説明",
-        "describe_course_hint": "右のチャットで作成したいコースを説明してください — トピック、対象者、目標。",
+        "describe_course_hint": "右のチャットで作成したいコースを説明してください, トピック、対象者、目標。",
         "generating_plan": "コースプランを生成中...",
         "chapters": "チャプター",
         "activities": "アクティビティ",
@@ -675,7 +676,9 @@
     "no_image_in_clipboard": "クリップボードに画像が見つかりません",
     "clipboard_read_error": "クリップボードを読み取れませんでした",
     "sign_in_to_see_courses": "コースを見るにはログインしてください",
-    "sign_in_to_see_courses_description": "このアカデミーのコースは、ログイン後にのみ表示される場合があります。"
+    "sign_in_to_see_courses_description": "このアカデミーのコースは、ログイン後にのみ表示される場合があります。",
+    "certificate_badge": "Certificat",
+    "finish_course": "完了する "
   },
   "communities": {
     "title": "コミュニティ",
@@ -1441,7 +1444,7 @@
           "description": "個人設定、パスワード、メールを構成する"
         }
       },
-      "learnhouse_university": "LearnHouse大学",
+      "learnhouse_university": "Ordria大学",
       "welcome_back": "おかえりなさい",
       "plan": "プラン",
       "create_course": "コースを作成",
@@ -1498,8 +1501,8 @@
       "import_course": "コースをインポート",
       "import_scorm": "SCORMパッケージをインポート",
       "import_scorm_description": "SCORMパッケージをインポートして新しいコースを作成",
-      "import_learnhouse": "LearnHouseコースをインポート",
-      "import_learnhouse_description": "LearnHouseエクスポートパッケージからコースをインポート",
+      "import_learnhouse": "Ordriaコースをインポート",
+      "import_learnhouse_description": "Ordriaエクスポートパッケージからコースをインポート",
       "import_select_type": "インポートするパッケージの種類を選択",
       "no_courses": "コースがまだありません",
       "create_course_placeholder": "コースを作成してコンテンツを追加しましょう",
@@ -2347,9 +2350,9 @@
         "footer_text_desc": "組織ページの下部に表示されるカスタムテキスト",
         "default_language": "デフォルト言語",
         "default_language_desc": "新しい訪問者にデフォルトで表示される言語であり、この組織を代表して送信されるメールに使用される言語です。メンバーは自分のUI言語を引き続き切り替えできます。",
-        "watermark_desc": "組織ページにLearnHouseブランドの透かしを表示",
+        "watermark_desc": "組織ページにOrdriaブランドの透かしを表示",
         "watermark_free_plan": "無料プランでは透かしが常に表示されます",
-        "watermark_label": "\"Made with LearnHouse\"透かし",
+        "watermark_label": "\"Made with Ordria\"透かし",
         "watermark_ee": "Enterprise Editionライセンスによって非表示になっています"
       },
       "images": {
@@ -3589,7 +3592,7 @@
             "auth_required_submit": "認証が必要です。タスクを提出するにはサインインしてください。",
             "hint_optional": "ヒント（任意）",
             "paste_blocked": "この課題ではペーストが無効です",
-            "paste_blocked_hint": "ペーストは無効です — 直接答えを入力してください。",
+            "paste_blocked_hint": "ペーストは無効です, 直接答えを入力してください。",
             "upload_locked_graded": "この提出物は採点済みのため、ファイルを変更できません。",
             "upload_locked_submitted": "この課題は提出済みのため、ファイルを変更できません。"
           },
@@ -3627,13 +3630,13 @@
               "regex": "正規表現"
             },
             "explanation_label": "説明（正解時に表示）",
-            "explanation_placeholder": "任意 — 正解の理由を説明",
+            "explanation_placeholder": "任意, 正解の理由を説明",
             "your_answer_placeholder": "回答を入力...",
             "student_answer_label": "学生の回答",
             "accepted_answers_label": "承認済みの回答",
             "no_answer": "回答なし",
             "correct": "正解",
-            "incorrect": "惜しい — もう一度試してください"
+            "incorrect": "惜しい, もう一度試してください"
           },
           "number_answer": {
             "prompt_label": "問題の文",
@@ -3644,14 +3647,14 @@
             "unit_placeholder": "m/s²、kg、°C...",
             "unit_hint": "回答欄の横に表示されます。強制されません。",
             "explanation_label": "説明（正解時に表示）",
-            "explanation_placeholder": "任意 — 解き方を説明",
+            "explanation_placeholder": "任意, 解き方を説明",
             "preview_label": "受け付け",
             "your_answer_placeholder": "数値を入力...",
             "student_answer_label": "学生の回答",
             "accepted_range_label": "受付範囲",
             "no_answer": "回答なし",
             "correct": "正解",
-            "incorrect": "惜しい — もう一度試してください"
+            "incorrect": "惜しい, もう一度試してください"
           }
         },
         "generate_ai": "AIで課題を生成",
@@ -3760,7 +3763,7 @@
         },
         "tasks": {
           "title": "課題別パフォーマンス",
-          "subtitle": "課題ごとの平均点 — 低い棒は生徒がつまずいている箇所を示します",
+          "subtitle": "課題ごとの平均点, 低い棒は生徒がつまずいている箇所を示します",
           "empty": "採点後に課題別パフォーマンスが表示されます",
           "avg_grade": "平均点",
           "attempts": "回"
@@ -3772,7 +3775,7 @@
         },
         "attention": {
           "title": "サポートが必要かも",
-          "subtitle": "合格しなかった生徒 — 声をかけることを検討してください",
+          "subtitle": "合格しなかった生徒, 声をかけることを検討してください",
           "empty": "採点された全員が合格しました。お見事です!"
         }
       },
@@ -3811,7 +3814,7 @@
             "auto_grading_description": "学生が提出したときに自動的にアクティビティを採点して完了します。すべてのタスクが人間のレビューなしで採点できる場合にのみ機能します。",
             "anti_copy_paste_label": "コピー＆ペーストをブロック",
             "anti_copy_paste_description": "ペーストイベントをブロックしてAI生成の回答の貼り付けを抑制します。注：これは抑止力です。",
-            "auto_grading_disabled_file": "自動採点は利用できません — この課題には人間のレビューが必要なファイル提出タスクがあります。",
+            "auto_grading_disabled_file": "自動採点は利用できません, この課題には人間のレビューが必要なファイル提出タスクがあります。",
             "grading_type_hint": "成績の学生への表示方法",
             "grading_options_hint": "提出時の動作",
             "show_correct_answers_description": "提出物が採点された後、学生に自分の回答と並べて正解を表示します。クイズのどの選択肢が正しかったか、期待される短答や数値、フォームの空欄の正解が表示されます。",
@@ -4194,11 +4197,14 @@
       "video_block": {
         "uploading": "動画をアップロード中...",
         "drop_or_browse": "動画をここにドラッグするか、クリックして参照",
-        "supported_formats": "MP4およびWebM形式をサポート",
-        "unsupported_format": "サポートされている動画形式 (MP4またはWebM) をアップロードしてください",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "ビデオプレーヤー",
         "expand_video": "動画を展開",
-        "download_video": "動画をダウンロード"
+        "download_video": "動画をダウンロード",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "PDFが利用できません",
@@ -4530,7 +4536,7 @@
         "avg_rate": "平均率",
         "needs_attention": "要注意",
         "total_samples": "総サンプル数",
-        "more_expand": "+{{count}}件 — クリックして展開",
+        "more_expand": "+{{count}}件, クリックして展開",
         "activities_count": "{{count}}個のアクティビティ",
         "pct_of_total": "全体の%",
         "bar_width_hint": "バーの幅 = 相対的な閲覧数",
@@ -4650,7 +4656,7 @@
       },
       "activity_dropoff": {
         "title": "離脱ポイント",
-        "subtitle": "学習者が進行を停止する場所 — 最後に完了したアクティビティ",
+        "subtitle": "学習者が進行を停止する場所, 最後に完了したアクティビティ",
         "total_dropoffs": "総離脱数",
         "dropoff_points": "離脱ポイント"
       },
@@ -4684,7 +4690,7 @@
         "avg_between": "完了間の平均 {{unit}}",
         "transitions_tracked": "追跡された遷移",
         "raw_hours_avg": "生の時間平均",
-        "description": "学習者が次のアクティビティにどれだけ速く進むかを測定します。低いほど良い — 学習者がコンテンツをより速く進めていることを意味します。"
+        "description": "学習者が次のアクティビティにどれだけ速く進むかを測定します。低いほど良い, 学習者がコンテンツをより速く進めていることを意味します。"
       },
       "time_to_completion": {
         "title": "完了までの時間",
@@ -5036,15 +5042,15 @@
       },
       "teach_the_world": {
         "title": "学んで成長する",
-        "description": "LearnHouseを最大限に活用するためのリソース。",
+        "description": "Ordriaを最大限に活用するためのリソース。",
         "classroom": "クラスルーム",
         "classroom_desc": "コースの成長と管理の方法を学ぶ",
-        "university": "LearnHouse大学",
+        "university": "Ordria大学",
         "university_desc": "ガイド、ヒント、ベストプラクティス"
       },
       "add_content": {
         "title": "参加する価値のあるレッスン",
-        "description": "動画、ページ、クイズを追加 — 学習者に登録する確かな理由を提供しましょう。",
+        "description": "動画、ページ、クイズを追加, 学習者に登録する確かな理由を提供しましょう。",
         "action": "コンテンツを追加"
       },
       "brand_school": {
@@ -5054,22 +5060,22 @@
       },
       "share_grow": {
         "title": "あなたの学校の入口",
-        "description": "公開して共有リンクを取得 — すべての学習者を案内する場所です。",
+        "description": "公開して共有リンクを取得, すべての学習者を案内する場所です。",
         "action": "学校を開く"
       },
       "invite_learners": {
         "title": "最初の学習者を迎えましょう",
-        "description": "参加リンクを共有するか、人を招待して — 最初の学習者を迎え入れましょう。",
+        "description": "参加リンクを共有するか、人を招待して, 最初の学習者を迎え入れましょう。",
         "action": "学習者を招待"
       },
       "build_community": {
         "title": "学習者に再び戻ってもらう",
-        "description": "コミュニティスペースを開設して、学習者が活発に — そして友達を連れてくるように。",
+        "description": "コミュニティスペースを開設して、学習者が活発に, そして友達を連れてくるように。",
         "action": "コミュニティを開く"
       }
     },
     "welcome": {
-      "title": "LearnHouseへようこそ",
+      "title": "Ordriaへようこそ",
       "subtitle": "コースを作成し、学習者を招待し、世界と知識を共有しましょう。",
       "get_started": "始める",
       "features_title": "必要なものがすべて揃っています",
@@ -5113,7 +5119,7 @@
   "embed": {
     "not_supported_description": "このタイプのアクティビティは認証が必要で、埋め込みできません。",
     "not_supported_title": "このアクティビティはサポートされていません",
-    "powered_by": "Powered by LearnHouse",
+    "powered_by": "Powered by Ordria",
     "visit_activity": "アクティビティページを訪問"
   },
   "migration": {
@@ -5162,7 +5168,7 @@
         "goal": "コースの収益化を始め、学習コミュニティを構築しましょう。",
         "highlights": {
           "courses": "無制限のコース",
-          "courses_desc": "必要なだけコースを作成 — カリキュラムに制限はありません。",
+          "courses_desc": "必要なだけコースを作成, カリキュラムに制限はありません。",
           "members": "最大500メンバー",
           "members_desc": "学習者を増やし、一か所で管理しましょう。",
           "payments": "決済を受付",
@@ -5220,7 +5226,7 @@
       "trigger_authenticated_title": "アクセス:サインイン済みユーザーのみ",
       "trigger_restricted_title": "アクセス:特定のユーザーグループのみ",
       "usergroups_header": "ユーザーグループ",
-      "usergroups_none_assigned": "割り当てられたグループはありません — 管理者のみ開けます。",
+      "usergroups_none_assigned": "割り当てられたグループはありません, 管理者のみ開けます。",
       "usergroups_remove_title": "削除",
       "usergroups_loading": "グループを読み込み中…",
       "usergroups_none_in_org": "この組織にはまだユーザーグループがありません。",
@@ -5484,7 +5490,7 @@
     "recurring_subscription": "定期サブスクリプション",
     "what_youre_getting": "ご利用いただける内容",
     "pack_immediate": "支払い後すぐに有効になります",
-    "pack_cancel_anytime": "いつでも解約可能 — 請求期間の終了まで有効です",
+    "pack_cancel_anytime": "いつでも解約可能, 請求期間の終了まで有効です",
     "pack_credits_reset": "クレジットは請求サイクルごとにリセットされます",
     "after_purchase": "購入後",
     "unlimited": "無制限",
@@ -5620,7 +5626,7 @@
         "title": "お試しをご希望ですか？",
         "body": "代わりに",
         "link": "開発者ページ",
-        "suffix": "で LearnHouse をお試しください。"
+        "suffix": "で Ordria をお試しください。"
       },
       "validation": {
         "required": "必須",
@@ -5651,7 +5657,7 @@
     "toast": {
       "creating": "組織を作成中…",
       "created": "組織を作成しました！",
-      "checkoutFailed": "組織を作成しました — プランと使用状況からアップグレードできます。",
+      "checkoutFailed": "組織を作成しました, プランと使用状況からアップグレードできます。",
       "failed": "組織の作成に失敗しました"
     },
     "steps": {
@@ -5710,5 +5716,21 @@
     "folder_count_one": "{{count}}個のフォルダ",
     "item_count": "{{count}}個の項目",
     "item_count_one": "{{count}}個の項目"
+  },
+  "signup": {
+    "job_label": "Votre métier",
+    "job_choose": "Choisir…",
+    "job_other": "Autre",
+    "job_other_precise": "Précisez votre métier",
+    "job_required": "Veuillez choisir votre métier",
+    "phone_label": "Téléphone",
+    "invalid_phone": "Numéro invalide",
+    "consent_terms": "J'accepte les",
+    "consent_terms_link": "conditions générales",
+    "consent_privacy": "J'accepte la",
+    "consent_privacy_link": "politique de confidentialité",
+    "consent_required": "Vous devez accepter pour continuer",
+    "complete_profile_banner": "Complétez votre profil, indiquez votre métier pour des recommandations sur mesure.",
+    "complete_profile_cta": "Compléter"
   }
 }

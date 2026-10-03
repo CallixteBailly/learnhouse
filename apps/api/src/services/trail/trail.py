@@ -11,6 +11,7 @@ from src.db.trail_runs import TrailRun, TrailRunRead
 from src.db.trail_steps import TrailStep
 from src.db.trails import Trail, TrailCreate, TrailRead
 from src.db.users import AnonymousUser, PublicUser
+from src.security.org_auth import is_org_member
 from src.services.courses.certifications import (
     check_course_completion_and_create_certificate,
     is_course_fully_completed,
@@ -197,6 +198,15 @@ async def get_user_trail_with_orgid(
             detail="Anonymous users cannot access this endpoint",
         )
 
+    # Org membership gate: a trail is a member's learning record. Without this
+    # check any authenticated user could auto-open a trail in any org just by
+    # visiting a public course page (check_trail_presence creates on demand).
+    if not await is_org_member(user.id, org_id, db_session):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You must be a member of this organization to access its courses",
+        )
+
     trail = await check_trail_presence(
         org_id=org_id,
         user_id=user.id,
@@ -243,6 +253,14 @@ async def add_activity_to_trail(
     await check_resource_access(
         request, db_session, user, course.course_uuid, AccessAction.READ
     )
+
+    # Activity-access gate: working through a course requires org membership.
+    # is_org_member lets superadmins through (platform operators).
+    if not await is_org_member(user.id, course.org_id, db_session):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You must be a member of this organization to access its courses",
+        )
 
     trail = await check_trail_presence(
         org_id=course.org_id,
@@ -453,6 +471,14 @@ async def add_course_to_trail(
     await check_resource_access(
         request, db_session, user, course.course_uuid, AccessAction.READ
     )
+
+    # Enrollment gate: starting a course requires belonging to its organization.
+    # is_org_member lets superadmins through (platform operators).
+    if not await is_org_member(user.id, course.org_id, db_session):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You must be a member of this organization to enroll in its courses",
+        )
 
     # check if run already exists
     statement = select(TrailRun).where(

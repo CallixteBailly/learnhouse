@@ -47,11 +47,11 @@
     "help": "Pomoc",
     "help_menu": {
       "documentation": "Dokumentácia",
-      "website": "Webstránka LearnHouse",
+      "website": "Webstránka Ordria",
       "discord": "Discord",
       "report_feedback": "Nahlásiť problém alebo spätnú väzbu",
       "feedback_title": "Odoslať spätnú väzbu",
-      "feedback_description": "Pomôžte nám vylepšiť LearnHouse zdieľaním názorov, nahlásením chýb alebo návrhmi nových funkcií.",
+      "feedback_description": "Pomôžte nám vylepšiť Ordria zdieľaním názorov, nahlásením chýb alebo návrhmi nových funkcií.",
       "feedback_placeholder": "Povedzte nám, čo máte na mysli...",
       "feedback_success": "Ďakujeme za vašu spätnú väzbu!",
       "send_feedback": "Odoslať spätnú väzbu",
@@ -215,7 +215,7 @@
     "organizations": "Organizácie",
     "billing": "Fakturácia",
     "create_organization": "Vytvoriť organizáciu",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "Túto organizáciu sa nepodarilo odstrániť. Skúste to znova.",
     "org_actions": "Akcie organizácie",
     "manage_upgrade": "Spravovať / Inovovať",
@@ -228,7 +228,8 @@
     "leave_organization_title": "Opustiť organizáciu?",
     "leave_organization_desc": "Stratíte prístup k {{org}} a budete odstránení z jej členov. Ak dostanete pozvánku, môžete sa pripojiť znova.",
     "leave_organization_error": "Organizáciu sa nepodarilo opustiť. Skúste to znova.",
-    "leaving": "Opúšťanie…"
+    "leaving": "Opúšťanie…",
+    "formations": "Školenia"
   },
   "banner": {
     "viewing_as_guest": "Prezeráte si {{name}} ako hosť.",
@@ -352,17 +353,17 @@
     "invite_required_desc": "Na pridanie sa do {{org}} je potrebný pozývací kód",
     "invite_code": "Pozývací kód",
     "validate_invite": "Overiť pozvánku",
-    "terms_text": "Pokračovaním súhlasíte s podmienkami LearnHouse",
+    "terms_text": "Pokračovaním súhlasíte s podmienkami Ordria",
     "terms_of_service": "Podmienky používania",
     "and": "a",
     "privacy_policy": "Zásady ochrany osobných údajov",
     "image_title_forgot": "Obnovte si heslo.",
     "image_subtitle_forgot": "Pomôžeme vám rýchlo sa vrátiť do vášho účtu.",
-    "image_title_login": "Vitajte späť v LearnHouse.",
-    "image_subtitle_login": "Pokračujte tam, kde ste skončili — vaše kurzy, študenti a nástroje čakajú.",
+    "image_title_login": "Vitajte späť v Ordria.",
+    "image_subtitle_login": "Pokračujte tam, kde ste skončili, vaše kurzy, študenti a nástroje čakajú.",
     "image_title_reset": "Už takmer hotovo.",
     "image_subtitle_reset": "Vytvorte si silné heslo, aby bol váš účet v bezpečí.",
-    "image_title_signup": "Začnite učiť s LearnHouse.",
+    "image_title_signup": "Začnite učiť s Ordria.",
     "image_subtitle_signup": "Vytvorte si účet a spustite svoj prvý kurz za pár minút.",
     "image_title_verify": "Overte svoj e-mail.",
     "image_subtitle_verify": "Jeden rýchly krok na zabezpečenie účtu a môžete začať.",
@@ -541,14 +542,14 @@
     "import": {
       "scorm_package": "SCORM balík",
       "scorm_description": "Importovať SCORM 1.2 alebo SCORM 2004 balíky",
-      "learnhouse_courses": "LearnHouse kurzy",
-      "learnhouse_description": "Importovať kurzy exportované z LearnHouse",
+      "learnhouse_courses": "Ordria kurzy",
+      "learnhouse_description": "Importovať kurzy exportované z Ordria",
       "upload_package": "Nahrať balík",
       "configure": "Konfigurovať",
       "complete": "Dokončiť",
       "click_to_upload": "Kliknite pre nahranie alebo presuňte súbor",
-      "learnhouse_format": "Export kurzu LearnHouse (.zip)",
-      "learnhouse_info": "Nahrajte exportovaný balík kurzu LearnHouse (.zip). Budete môcť vybrať, ktoré kurzy importovať a nakonfigurovať možnosti importu.",
+      "learnhouse_format": "Export kurzu Ordria (.zip)",
+      "learnhouse_info": "Nahrajte exportovaný balík kurzu Ordria (.zip). Budete môcť vybrať, ktoré kurzy importovať a nakonfigurovať možnosti importu.",
       "analyze_package": "Analyzovať balík",
       "ready_to_analyze": "Pripravené na analýzu",
       "invalid_file_format": "Nahrajte súbor .zip",
@@ -623,7 +624,7 @@
         "plan_generated": "Plán aktualizovaný",
         "plan_generated_hint": "Skontrolujte záložku Plán pre kontrolu a úpravu.",
         "describe_course": "Opíšte svoj kurz",
-        "describe_course_hint": "Použite chat vpravo na opis kurzu — téma, publikum a ciele.",
+        "describe_course_hint": "Použite chat vpravo na opis kurzu, téma, publikum a ciele.",
         "generating_plan": "Generuje sa plán kurzu...",
         "chapters": "Kapitoly",
         "activities": "aktivity",
@@ -665,7 +666,9 @@
     "no_image_in_clipboard": "V schránke sa nenašiel žiadny obrázok",
     "clipboard_read_error": "Schránku sa nepodarilo načítať",
     "sign_in_to_see_courses": "Prihláste sa, aby ste videli svoje kurzy",
-    "sign_in_to_see_courses_description": "Kurzy v tejto akadémii môžu byť viditeľné až po prihlásení."
+    "sign_in_to_see_courses_description": "Kurzy v tejto akadémii môžu byť viditeľné až po prihlásení.",
+    "certificate_badge": "Certificat",
+    "finish_course": "Dokončiť "
   },
   "communities": {
     "title": "Komunity",
@@ -1244,7 +1247,7 @@
     "not_supported_title": "Táto aktivita nie je podporovaná",
     "not_supported_description": "Tento typ aktivity vyžaduje autentifikáciu a nemôže byť vložený.",
     "visit_activity": "Navštíviť stránku aktivity",
-    "powered_by": "Používa technológiu LearnHouse"
+    "powered_by": "Používa technológiu Ordria"
   },
   "assignments": {
     "submit_assignment": "Odovzdať úlohu",
@@ -1277,8 +1280,8 @@
     "retry_assignment_title": "Skúsiť túto úlohu znova?",
     "retry_assignment_confirm": "Vaše aktuálne odovzdanie a odpovede budú vymazané, aby ste mohli začať odznova. Vaša predchádzajúca známka bude nahradená po opätovnom odovzdaní.",
     "retry_assignment_remaining": "Po tomto vám zostáva {{remaining}} pokus{{plural}}.",
-    "retry_assignment_last": "Toto je váš posledný pokus — využite ho naplno.",
-    "retry_assignment_success": "Vaša práca bola vymazaná — skúste to znova.",
+    "retry_assignment_last": "Toto je váš posledný pokus, využite ho naplno.",
+    "retry_assignment_success": "Vaša práca bola vymazaná, skúste to znova.",
     "retry_assignment_failed": "Nepodarilo sa resetovať odovzdanie. Skúste to znova.",
     "retry_no_attempts_left": "Žiadne ďalšie pokusy",
     "quiz": {
@@ -1693,7 +1696,7 @@
           "description": "Konfigurujte osobné nastavenia, heslá, e-mail"
         }
       },
-      "learnhouse_university": "LearnHouse University",
+      "learnhouse_university": "Ordria University",
       "welcome_back": "Vitajte späť",
       "plan": "plán",
       "create_course": "Vytvoriť kurz",
@@ -1750,8 +1753,8 @@
       "import_course": "Importovať kurz",
       "import_scorm": "Importovať SCORM",
       "import_scorm_description": "Importovať SCORM balík pre vytvorenie nového kurzu",
-      "import_learnhouse": "Importovať LearnHouse kurz",
-      "import_learnhouse_description": "Importovať kurz exportovaný z LearnHouse",
+      "import_learnhouse": "Importovať Ordria kurz",
+      "import_learnhouse_description": "Importovať kurz exportovaný z Ordria",
       "import_select_type": "Vyberte typ kurzu na import",
       "no_courses": "Zatiaľ žiadne kurzy",
       "create_course_placeholder": "Vytvorte kurz, aby ste mohli pridať obsah",
@@ -2599,8 +2602,8 @@
         "footer_text_desc": "Vlastný text zobrazený v dolnej časti stránok organizácie",
         "default_language": "Predvolený jazyk",
         "default_language_desc": "Jazyk, ktorý noví návštevníci vidia predvolene, a jazyk používaný pre e-maily odosielané v mene tejto organizácie. Členovia môžu stále prepínať vlastný jazyk rozhrania.",
-        "watermark_label": "Vodoznak \"Made with LearnHouse\"",
-        "watermark_desc": "Zobraziť vodoznak LearnHouse na stránkach organizácie",
+        "watermark_label": "Vodoznak \"Made with Ordria\"",
+        "watermark_desc": "Zobraziť vodoznak Ordria na stránkach organizácie",
         "watermark_free_plan": "Vodoznak je vždy zobrazený na bezplatnom pláne",
         "watermark_ee": "Skrytý vaším Enterprise Edition licenciou"
       },
@@ -3841,7 +3844,7 @@
             "auth_required_submit": "Vyžaduje sa autentifikácia. Pre odovzdanie úlohy sa prihláste.",
             "hint_optional": "Nápoveda (voliteľné)",
             "paste_blocked": "Vkladanie je pre túto úlohu zakázané",
-            "paste_blocked_hint": "Vkladanie je zakázané — napíšte odpoveď priamo.",
+            "paste_blocked_hint": "Vkladanie je zakázané, napíšte odpoveď priamo.",
             "upload_locked_graded": "Táto práca už bola ohodnotená — súbor už nemožno zmeniť.",
             "upload_locked_submitted": "Túto úlohu ste odovzdali — súbor už nemožno zmeniť."
           },
@@ -3860,13 +3863,13 @@
               "regex": "Regulárny výraz"
             },
             "explanation_label": "Vysvetlenie (zobrazené pri správnej odpovedi)",
-            "explanation_placeholder": "Voliteľné — vysvetlite, prečo je odpoveď správna",
+            "explanation_placeholder": "Voliteľné, vysvetlite, prečo je odpoveď správna",
             "your_answer_placeholder": "Napíšte svoju odpoveď...",
             "student_answer_label": "Odpoveď študenta",
             "accepted_answers_label": "Akceptované odpovede",
             "no_answer": "Žiadna odpoveď odovzdaná",
             "correct": "Správne",
-            "incorrect": "Nie celkom — skúste znova"
+            "incorrect": "Nie celkom, skúste znova"
           },
           "number_answer": {
             "prompt_label": "Otázka",
@@ -3875,16 +3878,16 @@
             "tolerance_label": "Tolerancia (±)",
             "unit_label": "Jednotka (voliteľné)",
             "unit_placeholder": "m/s², kg, °C...",
-            "unit_hint": "Zobrazené vedľa poľa odpovede. Nevynucované — študenti zadávajú len čísla.",
+            "unit_hint": "Zobrazené vedľa poľa odpovede. Nevynucované, študenti zadávajú len čísla.",
             "explanation_label": "Vysvetlenie (zobrazené pri správnej odpovedi)",
-            "explanation_placeholder": "Voliteľné — vysvetlite, ako dospieť k odpovedi",
+            "explanation_placeholder": "Voliteľné, vysvetlite, ako dospieť k odpovedi",
             "preview_label": "Akceptuje",
             "your_answer_placeholder": "Zadajte číslo...",
             "student_answer_label": "Odpoveď študenta",
             "accepted_range_label": "Akceptovaný rozsah",
             "no_answer": "Žiadna odpoveď odovzdaná",
             "correct": "Správne",
-            "incorrect": "Nie celkom — skúste znova"
+            "incorrect": "Nie celkom, skúste znova"
           },
           "code": {
             "student_behavior_label": "Správanie študenta",
@@ -4012,7 +4015,7 @@
         },
         "tasks": {
           "title": "Výkon úloh",
-          "subtitle": "Priemerné skóre na úlohu — nízke stĺpce ukazujú, kde majú študenti problémy",
+          "subtitle": "Priemerné skóre na úlohu, nízke stĺpce ukazujú, kde majú študenti problémy",
           "empty": "Výkon na úlohu sa zobrazí po ohodnotení odovzdaní",
           "avg_grade": "Priemerná známka",
           "attempts": "pokusov"
@@ -4024,7 +4027,7 @@
         },
         "attention": {
           "title": "Môžu potrebovať pomoc",
-          "subtitle": "Študenti, ktorí neprešli — zvážte kontaktovanie",
+          "subtitle": "Študenti, ktorí neprešli, zvážte kontaktovanie",
           "empty": "Všetci ohodnotení prešli. Skvelá práca!"
         }
       },
@@ -4111,7 +4114,7 @@
             "auto_grading_label": "Automatické hodnotenie",
             "auto_grading_description": "Ohodnotiť a dokončiť aktivitu automaticky po odovzdaní. Funguje len keď každú úlohu možno ohodnotiť bez človeka.",
             "anti_copy_paste_label": "Blokovať kopírovanie a vkladanie",
-            "anti_copy_paste_description": "Odradiť od vkladania AI odpovedi blokovaním vkladania. Poznámka: toto je odstrašujúci prostriedok — dá sa obísť.",
+            "anti_copy_paste_description": "Odradiť od vkladania AI odpovedi blokovaním vkladania. Poznámka: toto je odstrašujúci prostriedok, dá sa obísť.",
             "show_correct_answers_label": "Zobraziť správne odpovede po hodnotení",
             "show_correct_answers_description": "Po ohodnotení študenti vidia správne odpovede vedľa svojich.",
             "submit": "Vytvoriť aktivitu"
@@ -4466,11 +4469,14 @@
       "video_block": {
         "uploading": "Nahráva sa video...",
         "drop_or_browse": "Presuňte video sem alebo kliknite pre prehliadanie",
-        "supported_formats": "Podporuje formáty MP4 a WebM",
-        "unsupported_format": "Nahrajte podporovaný formát videa (MP4 alebo WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "Prehrávač videa",
         "expand_video": "Rozbaliť video",
-        "download_video": "Stiahnuť video"
+        "download_video": "Stiahnuť video",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "Žiadne PDF nie je dostupné",
@@ -4788,7 +4794,7 @@
         "avg_rate": "Priem. miera",
         "needs_attention": "Vyžaduje pozornosť",
         "total_samples": "Celkové vzorky",
-        "more_expand": "+{{count}} ďalších — kliknite pre rozbalenie",
+        "more_expand": "+{{count}} ďalších, kliknite pre rozbalenie",
         "activities_count": "{{count}} aktivít",
         "pct_of_total": "% z celku",
         "bar_width_hint": "Šírka stĺpca = relatívne zobrazenia",
@@ -5068,15 +5074,15 @@
       },
       "teach_the_world": {
         "title": "Učte sa a rastite",
-        "description": "Zdroje, ktoré vám pomôžu využiť LearnHouse naplno.",
+        "description": "Zdroje, ktoré vám pomôžu využiť Ordria naplno.",
         "classroom": "Učebňa",
         "classroom_desc": "Naučte sa, ako rozvíjať a spravovať kurzy",
-        "university": "LearnHouse University",
+        "university": "Ordria University",
         "university_desc": "Príručky, tipy a osvedčené postupy"
       },
       "add_content": {
         "title": "Lekcia, kvôli ktorej sa oplatí prísť",
-        "description": "Pridajte video, stránku alebo kvíz — dajte študentom skutočný dôvod sa zapísať.",
+        "description": "Pridajte video, stránku alebo kvíz, dajte študentom skutočný dôvod sa zapísať.",
         "action": "Pridať obsah"
       },
       "brand_school": {
@@ -5086,22 +5092,22 @@
       },
       "share_grow": {
         "title": "Vstupné dvere vašej školy",
-        "description": "Spustite ju naživo a získajte zdieľateľný odkaz — miesto, kam pošlete každého študenta.",
+        "description": "Spustite ju naživo a získajte zdieľateľný odkaz, miesto, kam pošlete každého študenta.",
         "action": "Otvoriť moju školu"
       },
       "invite_learners": {
         "title": "Privítajte svojho prvého študenta",
-        "description": "Zdieľajte odkaz na pripojenie alebo pozvite ľudí — dostaňte prvého študenta dnu.",
+        "description": "Zdieľajte odkaz na pripojenie alebo pozvite ľudí, dostaňte prvého študenta dnu.",
         "action": "Pozvať študentov"
       },
       "build_community": {
         "title": "Udržte študentov, aby sa vracali",
-        "description": "Otvorte komunitný priestor, aby vaši študenti zostali aktívni — a priviedli aj svojich priateľov.",
+        "description": "Otvorte komunitný priestor, aby vaši študenti zostali aktívni, a priviedli aj svojich priateľov.",
         "action": "Otvoriť komunitu"
       }
     },
     "welcome": {
-      "title": "Vitajte v LearnHouse",
+      "title": "Vitajte v Ordria",
       "subtitle": "Vytvárajte kurzy, pozývajte študentov a zdieľajte vedomosti so svetom.",
       "get_started": "Začať",
       "features_title": "Všetko, čo potrebujete",
@@ -5152,7 +5158,7 @@
         "goal": "Začnite monetizovať kurzy a budujte vzdelávaciu komunitu.",
         "highlights": {
           "courses": "Neobmedzené kurzy",
-          "courses_desc": "Vytvárajte toľko kurzov, koľko potrebujete — bez obmedzení.",
+          "courses_desc": "Vytvárajte toľko kurzov, koľko potrebujete, bez obmedzení.",
           "members": "Až 500 členov",
           "members_desc": "Rozrastajte svoju základňu študentov a spravujte ich na jednom mieste.",
           "payments": "Prijímajte platby",
@@ -5210,7 +5216,7 @@
       "trigger_authenticated_title": "Prístup: len prihlásení používatelia",
       "trigger_restricted_title": "Prístup: len konkrétne skupiny používateľov",
       "usergroups_header": "Skupiny používateľov",
-      "usergroups_none_assigned": "Žiadne skupiny nie sú priradené — nikto okrem administrátorov to nemôže otvoriť.",
+      "usergroups_none_assigned": "Žiadne skupiny nie sú priradené, nikto okrem administrátorov to nemôže otvoriť.",
       "usergroups_remove_title": "Odstrániť",
       "usergroups_loading": "Načítavajú sa skupiny…",
       "usergroups_none_in_org": "V tejto organizácii zatiaľ neexistujú žiadne skupiny.",
@@ -5474,7 +5480,7 @@
     "recurring_subscription": "opakované predplatné",
     "what_youre_getting": "Čo získate",
     "pack_immediate": "Platí ihneď po zaplatení",
-    "pack_cancel_anytime": "Zrušte kedykoľvek — zostáva aktívne do konca fakturačného obdobia",
+    "pack_cancel_anytime": "Zrušte kedykoľvek, zostáva aktívne do konca fakturačného obdobia",
     "pack_credits_reset": "Kredity sa obnovujú každý fakturačný cyklus",
     "after_purchase": "Po nákupe",
     "unlimited": "Neobmedzené",
@@ -5524,9 +5530,9 @@
     "canceled_desc": "Vaše predplatné bude zrušené na konci aktuálneho fakturačného obdobia. Dovtedy si zachováte plný prístup.",
     "back_to_plan_usage": "Späť na Plán a využitie",
     "back_to_orgs": "Späť na organizácie",
-    "pack_purchased": "Doplnok zakúpený — vaše limity sú aktualizované.",
-    "checkout_success": "Predplatné aktualizované — vitajte na vašom novom pláne!",
-    "checkout_cancelled": "Pokladňa zrušená — neboli vykonané žiadne zmeny.",
+    "pack_purchased": "Doplnok zakúpený, vaše limity sú aktualizované.",
+    "checkout_success": "Predplatné aktualizované, vitajte na vašom novom pláne!",
+    "checkout_cancelled": "Pokladňa zrušená, neboli vykonané žiadne zmeny.",
     "load_failed": "Nepodarilo sa nám načítať vaše organizácie.",
     "no_permission": "Nemáte oprávnenie spravovať fakturáciu tejto organizácie.",
     "no_permission_hint": "Iba správca organizácie môže zobraziť alebo zmeniť plán.",
@@ -5610,7 +5616,7 @@
         "title": "Chcete to len vyskúšať?",
         "body": "Prejdite na",
         "link": "stránku pre vývojárov",
-        "suffix": "a vyskúšajte LearnHouse."
+        "suffix": "a vyskúšajte Ordria."
       },
       "validation": {
         "required": "Povinné",
@@ -5641,7 +5647,7 @@
     "toast": {
       "creating": "Vytvára sa organizácia…",
       "created": "Organizácia vytvorená!",
-      "checkoutFailed": "Organizácia vytvorená — inováciu môžete vykonať v sekcii Plán a využitie.",
+      "checkoutFailed": "Organizácia vytvorená, inováciu môžete vykonať v sekcii Plán a využitie.",
       "failed": "Organizáciu sa nepodarilo vytvoriť"
     },
     "steps": {
@@ -5700,5 +5706,21 @@
     "folder_count_one": "{{count}} priečinok",
     "item_count": "{{count}} položiek",
     "item_count_one": "{{count}} položka"
+  },
+  "signup": {
+    "job_label": "Votre métier",
+    "job_choose": "Choisir…",
+    "job_other": "Autre",
+    "job_other_precise": "Précisez votre métier",
+    "job_required": "Veuillez choisir votre métier",
+    "phone_label": "Téléphone",
+    "invalid_phone": "Numéro invalide",
+    "consent_terms": "J'accepte les",
+    "consent_terms_link": "conditions générales",
+    "consent_privacy": "J'accepte la",
+    "consent_privacy_link": "politique de confidentialité",
+    "consent_required": "Vous devez accepter pour continuer",
+    "complete_profile_banner": "Complétez votre profil, indiquez votre métier pour des recommandations sur mesure.",
+    "complete_profile_cta": "Compléter"
   }
 }

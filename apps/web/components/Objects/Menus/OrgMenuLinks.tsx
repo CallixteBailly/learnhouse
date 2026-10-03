@@ -1,6 +1,6 @@
 import { useOrg } from '@components/Contexts/OrgContext'
 import { getUriWithOrg } from '@services/config/config'
-import { Books, FolderSimple, ChatsCircle, Headphones, Cube, ShoppingBag } from '@phosphor-icons/react'
+import { Books, FolderSimple } from '@phosphor-icons/react'
 import { menuIcon } from '@components/Objects/Menus/menuIcons'
 import Link from 'next/link'
 import React from 'react'
@@ -11,15 +11,10 @@ type Builtin = { feature: string; link: string; labelKey: string; Icon: any }
 
 const BUILTIN: Record<string, Builtin> = {
   courses: { feature: 'courses', link: '/courses', labelKey: 'courses.courses', Icon: Books },
-  library: { feature: 'folders', link: '/library', labelKey: 'library.library', Icon: FolderSimple },
-  podcasts: { feature: 'podcasts', link: '/podcasts', labelKey: 'podcasts.podcasts', Icon: Headphones },
-  communities: { feature: 'communities', link: '/communities', labelKey: 'communities.title', Icon: ChatsCircle },
-  playgrounds: { feature: 'playgrounds', link: '/playgrounds', labelKey: 'common.playgrounds', Icon: Cube },
-  store: { feature: 'payments', link: '/store', labelKey: 'common.store', Icon: ShoppingBag },
+  library: { feature: 'folders', link: '/library', labelKey: 'common.formations', Icon: FolderSimple },
 }
 
-// Default order when an org has no custom menu config.
-const DEFAULT_ORDER = ['courses', 'library', 'podcasts', 'communities', 'playgrounds', 'store']
+const DEFAULT_ORDER = ['courses', 'library']
 
 function MenuLinks(props: { orgslug: string; primaryColor?: string }) {
   const { t } = useTranslation()
@@ -70,7 +65,7 @@ function MenuLinks(props: { orgslug: string; primaryColor?: string }) {
       <ul className="flex space-x-5">
         {rendered.map((it) => {
           const content = (
-            <li className={`flex space-x-2 items-center ${colors.text} font-semibold`}>
+            <li className="flex space-x-2 items-center text-white font-semibold">
               <it.Icon size={20} weight="fill" /> <span>{it.label}</span>
             </li>
           )

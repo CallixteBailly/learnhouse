@@ -18,8 +18,8 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
     tags: ['organizations'],
   }, access_token)
   return {
-    title: 'Copilot — ' + org.name,
-    description: 'Chat with AI about your courses using LearnHouse Copilot.',
+    title: 'Copilot · ' + org.name,
+    description: 'Chat with AI about your courses using Ordria Learning Copilot.',
   }
 }
 

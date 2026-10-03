@@ -53,7 +53,7 @@ function TaskFormObject({ view, assignmentTaskUUID, user_id, onGraded }: TaskFor
     const queryClient = useQueryClient();
     // Reveal correct answers only after the submission is GRADED AND the
     // teacher opted in on the assignment. See TaskQuizObject for the same
-    // pattern — keep these consistent across task types.
+    // pattern · keep these consistent across task types.
     const assignmentSubmission = useAssignmentSubmission() as any;
     const submissionIsGraded = Array.isArray(assignmentSubmission)
         && assignmentSubmission.length > 0
@@ -377,7 +377,7 @@ function TaskFormObject({ view, assignmentTaskUUID, user_id, onGraded }: TaskFor
     }
 
     useEffect(() => {
-        // Used only by grading view — student view hydrates from useAssignments() context
+        // Used only by grading view · student view hydrates from useAssignments() context
         const loadAssignmentTask = async () => {
             if (assignmentTaskUUID) {
                 const res = await getAssignmentTask(assignmentTaskUUID, access_token);

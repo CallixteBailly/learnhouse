@@ -14,7 +14,7 @@ SECURITY:
 import os
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import StreamingResponse, Response
+from fastapi.responses import RedirectResponse, StreamingResponse, Response
 from pathlib import Path
 from sqlmodel import select
 from botocore.exceptions import ClientError
@@ -36,6 +36,28 @@ from src.services.courses.transfer.storage_utils import (
 )
 
 router = APIRouter()
+
+# ── Presigned-redirect delivery (2026-10-02 perf pass) ────────────────────────
+# After the access check, redirect GETs to a presigned R2 URL instead of
+# streaming the object through the container: R2 serves the client directly
+# (free egress, zero container CPU/RAM, no proxied bytes). Kill switch:
+# LEARNHOUSE_CONTENT_PRESIGN_REDIRECT=0 falls back to the streaming path.
+def _presign_redirect_enabled() -> bool:
+    return os.environ.get(
+        "LEARNHOUSE_CONTENT_PRESIGN_REDIRECT", "1"
+    ).lower() in ("1", "true", "yes")
+
+
+def _presign_expiry_seconds() -> int:
+    try:
+        return max(60, int(os.environ.get("LEARNHOUSE_CONTENT_PRESIGN_EXPIRY", "3600")))
+    except ValueError:
+        return 3600
+
+
+# The browser may reuse a cached redirect for this long; it must stay well
+# BELOW the presign expiry so a followed URL is never expired.
+_REDIRECT_CACHE_SECONDS = 300
 
 # MIME type mapping
 MIME_TYPES = {
@@ -255,6 +277,30 @@ async def serve_content_file(
 
     if not s3_client:
         raise HTTPException(status_code=500, detail="Storage not configured")
+
+    # Fast path: presigned redirect — the access check above has already run,
+    # so handing out a short-lived signed URL is equivalent to streaming the
+    # object (which embeds the same credential in every byte it forwards).
+    # The HEAD lookup is skipped here: R2 itself answers 404/403 for bad or
+    # inaccessible keys on the signed request.
+    if _presign_redirect_enabled():
+        try:
+            url = s3_client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": bucket, "Key": s3_key},
+                ExpiresIn=_presign_expiry_seconds(),
+            )
+            # Range/seeking works natively against the signed URL. Redirect
+            # caching stays far below the signature lifetime.
+            return RedirectResponse(
+                url,
+                status_code=302,
+                headers={
+                    "Cache-Control": f"public, max-age={_REDIRECT_CACHE_SECONDS}",
+                },
+            )
+        except Exception:
+            pass  # fall through to the streaming path
 
     # Get file metadata
     try:

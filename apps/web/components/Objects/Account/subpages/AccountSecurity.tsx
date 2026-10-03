@@ -101,7 +101,7 @@ function AccountSecurity() {
               <Monitor className="text-gray-400 shrink-0" size={20} />
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-800 truncate">
-                  {device ? [device.browser, device.os].filter(Boolean).join(' · ') : '—'}
+                  {device ? [device.browser, device.os].filter(Boolean).join(' · ') : '·'}
                 </p>
                 <p className="text-xs text-gray-500">
                   {t('user.settings.security.this_device', { defaultValue: 'This device' })}
@@ -196,7 +196,7 @@ function AccountSecurity() {
       </div>
     </div>
 
-    {/* Danger zone — delete account (also deletes solely-owned orgs + content) */}
+    {/* Danger zone · delete account (also deletes solely-owned orgs + content) */}
     <AccountDangerZone />
     </>
   )

@@ -123,7 +123,7 @@ function CourseOverviewPage(props: { params: Promise<CourseOverviewParams> }) {
     )
   }
 
-  // CourseProvider is always rendered so course meta fetches IN PARALLEL with rights —
+  // CourseProvider is always rendered so course meta fetches IN PARALLEL with rights ·
   // no sequential waterfall. The tab content is gated by hasPermission() which returns
   // false (safe default) until rights finish loading.
   return (
@@ -173,7 +173,7 @@ function CourseOverviewPage(props: { params: Promise<CourseOverviewParams> }) {
               <EditCourseStructure orgslug={params.orgslug} />
             ) : null}
             {!rightsLoading && params.subpage == 'general' && hasPermission('update') ? (
-              <EditCourseGeneral orgslug={params.orgslug} />
+              <EditCourseGeneral orgslug={params.orgslug} course_uuid={courseuuid} />
             ) : null}
             {!rightsLoading && params.subpage == 'access' && hasPermission('manage_access') ? (
               <EditCourseAccess orgslug={params.orgslug} />

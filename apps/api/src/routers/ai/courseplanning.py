@@ -5,6 +5,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from sqlmodel import select
 
 from src.db.organizations import Organization
@@ -43,6 +44,8 @@ from src.services.ai.schemas.courseplanning import (
     FinalizeCoursePlanResponse,
     CoursePlanningMessage,
 )
+from src.services.ai.typesafe import audit_course_plan
+from src.services.ai.schemas.courseplanning import CoursePlan
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +87,33 @@ async def get_org_ai_model(org_id: int, db_session: AsyncSession) -> str:
 async def verify_user_org_membership(user_id: int, org_id: int, db_session: AsyncSession) -> bool:
     """Verify that the user is a member of the organization (superadmins bypass)."""
     return await is_org_member(user_id, org_id, db_session)
+
+
+class AuditCoursePlanRequest(BaseModel):
+    plan: CoursePlan
+
+
+@router.post(
+    "/courseplanning/audit",
+    summary="Audit a course plan with TypeSafe/Jev",
+    description=(
+        "Judges the plan against the course-creation conventions (audience, "
+        "measurable objectives, chapter/activity structure, duration, "
+        "prerequisites, evaluation) and returns a completeness report. "
+        "Best-effort: degrades to enabled=false when TypeSafe is not configured."
+    ),
+    response_description="Structured audit report.",
+    responses={
+        200: {"description": "Audit report (possibly degraded if Jev unavailable)."},
+        401: {"description": "Authentication required"},
+    },
+)
+async def audit_course_plan_endpoint(
+    request: Request,
+    audit_request: AuditCoursePlanRequest,
+    current_user: PublicUser | AnonymousUser | APITokenUser = Depends(get_current_user),
+) -> dict:
+    return audit_course_plan(audit_request.plan.model_dump())
 
 
 @router.post(

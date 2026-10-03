@@ -19,6 +19,6 @@ export function useTrail(orgId: number | undefined) {
     queryKey: queryKeys.trail.org(orgId!),
     queryFn: () => fetchTrail(orgId!, accessToken),
     enabled: !!orgId,
-    staleTime: 30_000,
+    staleTime: 5_000,
   })
 }

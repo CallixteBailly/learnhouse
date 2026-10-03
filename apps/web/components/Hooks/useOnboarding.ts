@@ -1,5 +1,6 @@
 'use client'
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export type OnboardingStep = {
   id: string
@@ -31,8 +32,8 @@ type OnboardingState = {
 
 const STORAGE_KEY = 'lh_onboarding'
 
-// Outcome-framed onboarding: 6 milestones that ladder toward the north-star —
-// your first enrolled learner — then retention. Each title is the WIN; the
+// Outcome-framed onboarding: 6 milestones that ladder toward the north-star ·
+// your first enrolled learner · then retention. Each title is the WIN; the
 // action is just the means. Every step delivers value on the free plan.
 const DEFAULT_STEPS: Omit<OnboardingStep, 'completed'>[] = [
   {
@@ -46,7 +47,7 @@ const DEFAULT_STEPS: Omit<OnboardingStep, 'completed'>[] = [
   {
     id: 'add_content',
     title: 'A lesson worth showing up for',
-    description: 'Add a video, page or quiz — give learners a real reason to enroll.',
+    description: 'Add a video, page or quiz · give learners a real reason to enroll.',
     action: 'Add content',
     href: '/dash/courses',
     completePath: '/dash/courses/course/[^/]+/content',
@@ -62,7 +63,7 @@ const DEFAULT_STEPS: Omit<OnboardingStep, 'completed'>[] = [
   {
     id: 'share_grow',
     title: 'Your school’s front door',
-    description: 'Go live and grab your shareable link — the place you’ll send every learner.',
+    description: 'Go live and grab your shareable link · the place you’ll send every learner.',
     action: 'Open my school',
     href: '/',
     hrefType: 'root',
@@ -71,7 +72,7 @@ const DEFAULT_STEPS: Omit<OnboardingStep, 'completed'>[] = [
   {
     id: 'invite_learners',
     title: 'Welcome your first learner',
-    description: 'Share your join link or invite people — get that first learner through the door.',
+    description: 'Share your join link or invite people · get that first learner through the door.',
     action: 'Invite learners',
     href: '/dash/users/settings/add',
     completePath: '/dash/users/settings/add',
@@ -79,7 +80,7 @@ const DEFAULT_STEPS: Omit<OnboardingStep, 'completed'>[] = [
   {
     id: 'build_community',
     title: 'Keep learners coming back',
-    description: 'Open a community space so your learners stay active — and bring their friends.',
+    description: 'Open a community space so your learners stay active · and bring their friends.',
     action: 'Open community',
     href: '/dash/communities',
     completePath: '/dash/communities',
@@ -116,7 +117,7 @@ function loadState(): OnboardingState {
 function saveState(state: OnboardingState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-    window.dispatchEvent(new Event('lh_onboarding_change'))
+    queueMicrotask(() => window.dispatchEvent(new Event('lh_onboarding_change')))
   } catch {
     /* ignore */
   }
@@ -124,6 +125,9 @@ function saveState(state: OnboardingState) {
 
 export function useOnboarding() {
   const [state, setState] = useState<OnboardingState>(loadState)
+  // Step copy lives in the locale files (onboarding.steps.<id>.*); the English
+  // strings in DEFAULT_STEPS are only the fallback.
+  const { t } = useTranslation()
 
   const applyLocalChange = useCallback(
     (updater: (_prev: OnboardingState) => OnboardingState) => {
@@ -153,6 +157,9 @@ export function useOnboarding() {
 
   const steps: OnboardingStep[] = DEFAULT_STEPS.map((s) => ({
     ...s,
+    title: t(`onboarding.steps.${s.id}.title`, { defaultValue: s.title }),
+    description: t(`onboarding.steps.${s.id}.description`, { defaultValue: s.description }),
+    action: t(`onboarding.steps.${s.id}.action`, { defaultValue: s.action }),
     completed: state.completedSteps.includes(s.id) || state.skippedSteps.includes(s.id),
     skipped: state.skippedSteps.includes(s.id),
   }))

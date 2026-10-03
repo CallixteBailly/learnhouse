@@ -64,7 +64,7 @@ export function shouldGuardNavigationClick(
   // `target="_blank"` (and any non-self target) opens a new browsing context.
   if (anchor.target && anchor.target !== "_self") return false;
   if (!anchor.href) return false;
-  // External links leave the app entirely — `beforeunload` already covers those.
+  // External links leave the app entirely · `beforeunload` already covers those.
   if (anchor.origin !== currentOrigin) return false;
   return true;
 }

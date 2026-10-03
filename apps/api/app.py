@@ -14,7 +14,7 @@ import logging
 import uvicorn
 import sentry_sdk
 from sentry_sdk.integrations.logging import LoggingIntegration
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.gzip import GZipMiddleware
 
 from config.config import LearnHouseConfig, get_learnhouse_config
@@ -24,6 +24,7 @@ from src.core.middleware.cors import configure_cors
 from src.router import v1_router
 from src.routers.content_files import router as content_files_router
 from src.routers.local_content import router as local_content_router
+from src.services.audit.recorder import AuditLogMiddleware
 
 
 learnhouse_config: LearnHouseConfig = get_learnhouse_config()
@@ -53,10 +54,32 @@ app = FastAPI(
     version="1.3.2",
 )
 
+# Unhandled exceptions must be DIAGNOSABLE: the default plain-text
+# "Internal Server Error" hides the cause entirely (no stack reaches
+# wrangler tail on Containers). Return the exception type, message and
+# the tail of the traceback in the response body so the exact failure
+# point is visible to the caller (and log the full trace to stdout).
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    import traceback
+    from fastapi.responses import JSONResponse
+    tb = traceback.format_exc()
+    print(f"UNHANDLED {request.method} {request.url.path}: {tb}", flush=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": f"Unhandled {type(exc).__name__}: {str(exc)[:300]}",
+            "traceback": tb[-1800:],
+        },
+    )
+
 # Middleware
 configure_cors(app)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 register_ee_middlewares(app)
+# Outermost: sees every mutating /api/v1 call, including those short-circuited
+# by inner middlewares, and records after the response has been sent.
+app.add_middleware(AuditLogMiddleware)
 
 # Lifecycle
 app.add_event_handler("startup", startup_app(app))

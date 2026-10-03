@@ -34,6 +34,29 @@ const resources = {
   en: { common: en },
 };
 
+let _hydrationDone = false;
+const _pendingBundles: Array<[string, any]> = [];
+
+/**
+ * Called by I18nProvider right after hydration commits: release any locale
+ * bundles that finished loading during hydration. Safe to call repeatedly.
+ */
+export function i18nHydrationDone() {
+  if (_hydrationDone) return;
+  _hydrationDone = true;
+  let flushed = false;
+  while (_pendingBundles.length) {
+    const [code, bundle] = _pendingBundles.shift()!;
+    i18n.addResourceBundle(code, 'common', bundle, true, true);
+    flushed = true;
+  }
+  if (flushed) {
+    // Resources changed without a language change — force subscribed
+    // components to re-render with the now-available translations.
+    i18n.emit('languageChanged', i18n.language);
+  }
+}
+
 async function loadLocale(lng: string) {
   const code = lng.split('-')[0]
   if (code === 'en' || !LOCALE_LOADERS[code]) return;
@@ -41,7 +64,23 @@ async function loadLocale(lng: string) {
 
   try {
     const mod = await LOCALE_LOADERS[code]();
-    i18n.addResourceBundle(code, 'common', mod.default, true, true);
+    // Hydration safety: the server always renders English (no request-scoped
+    // language detection server-side, only the bundled en resources). If a
+    // cached locale chunk resolves BEFORE React hydrates, applying it
+    // immediately would make the hydration pass render translated text
+    // against English server HTML → React #418 mismatch → full client
+    // re-render. So on the client the bundle is held back until hydration
+    // completes (i18nHydrationDone), then applied with a re-render. The
+    // visible EN→locale swap after mount is unchanged; the mismatch and
+    // double-render are gone.
+    if (typeof window === 'undefined') {
+      i18n.addResourceBundle(code, 'common', mod.default, true, true);
+    } else if (_hydrationDone) {
+      i18n.addResourceBundle(code, 'common', mod.default, true, true);
+      i18n.emit('languageChanged', i18n.language);
+    } else {
+      _pendingBundles.push([code, mod.default]);
+    }
   } catch (e) {
     console.warn(`Failed to load locale: ${lng}`, e);
   }
@@ -69,12 +108,12 @@ i18n
     }
   });
 
-// Load the detected language if it's not English — export the promise
+// Load the detected language if it's not English · export the promise
 // so I18nProvider can wait for resources before rendering
 export const initialLocaleReady = loadLocale(i18n.language.split('-')[0]);
 
 /**
- * Switch language safely — preloads the bundle before switching
+ * Switch language safely · preloads the bundle before switching
  * so the UI never flashes English as a fallback.
  */
 export async function changeLanguage(lng: string) {

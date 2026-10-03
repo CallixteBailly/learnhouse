@@ -36,11 +36,11 @@ async function getServerTenancy(): Promise<'multi' | 'single'> {
 
 /**
  * Resolves the organization context from multiple sources in priority order:
- * 1. Subdomain (multi tenancy only — delegates to the EE resolver)
+ * 1. Subdomain (multi tenancy only · delegates to the EE resolver)
  * 2. `LH_org` cookie
  * 3. Action token (for password reset, email verification links)
  *
- * In single tenancy the subdomain step is skipped — the middleware has
+ * In single tenancy the subdomain step is skipped · the middleware has
  * already pinned the request to the default org.
  */
 export async function resolveOrg(searchParams?: { token?: string }): Promise<OrgResolutionResult> {
@@ -102,7 +102,12 @@ export async function getAuthOrgSlug(): Promise<string | null> {
   const tenancy = await getServerTenancy()
 
   if (tenancy === 'multi') {
-    return await getOrgSlugFromSubdomainViaEE()
+    const slug = await getOrgSlugFromSubdomainViaEE()
+    if (slug) return slug
+    // Central-LMS cookie tenancy: the apex host carries no org subdomain, so
+    // fall back to the LH_org cookie (pinned by /enter/{slug} or an org visit).
+    // Without this, /signup?inviteCode=X resolves no org and a signed-in
+    // invitee gets bounced to /home instead of the "Join <org>" screen.
   }
 
   const cookieStore = await cookies()
@@ -134,7 +139,7 @@ async function getOrgSlugFromSubdomainViaEE(): Promise<string | null> {
       || 'localhost'
     return await mod.getOrgSlugFromHost(frontendDomain)
   } catch {
-    // EE module unavailable — multi tenancy without EE is invalid; the
+    // EE module unavailable · multi tenancy without EE is invalid; the
     // backend would have refused to boot. Stay quiet here.
     return null
   }
@@ -169,7 +174,7 @@ async function resolveFromToken(token: string): Promise<ResolvedOrg | null> {
 
 /**
  * Decode JWT payload without verification. Used only to extract `org_uuid`
- * for display purposes — the action itself is verified by the backend.
+ * for display purposes · the action itself is verified by the backend.
  */
 function decodeTokenPayload(token: string): { org_uuid?: string; email?: string; action?: string } | null {
   try {

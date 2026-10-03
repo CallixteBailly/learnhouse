@@ -52,6 +52,13 @@ def register_ee_routers(v1_router):
     if hooks and hasattr(hooks, "register_routers"):
         hooks.register_routers(v1_router)
 
+    # Ordria self-hosted: mount the OSS-native superadmin API under the same
+    # /ee/superadmin path the admin dashboard already fetches, so org/user
+    # administration works without the Enterprise folder. Requires
+    # is_superadmin on every route (see src.security.superadmin).
+    from src.routers.ee_superadmin import router as ee_superadmin_router
+    v1_router.include_router(ee_superadmin_router)
+
 def run_ee_startup(app):
     """Call EE to run its startup tasks."""
     hooks = get_ee_hooks()
@@ -59,10 +66,15 @@ def run_ee_startup(app):
         hooks.on_startup(app)
 
 def is_multi_org_allowed() -> bool:
-    """Check if multi-org mode is allowed (requires EE or SaaS)."""
-    from src.core.deployment_mode import get_deployment_mode
-    mode = get_deployment_mode()
-    return mode in ('ee', 'saas')
+    """Check if multi-org mode is allowed (requires EE or SaaS).
+
+    Ordria self-hosted deployment: this instance IS a multi-tenant LMS by
+    design (each client company gets its own organization — see the Ordria
+    marketplace vision). Same OSS-native unlock as Audit Logs / Analytics:
+    the multi-org machinery itself is fully present in OSS; only this gate
+    forces Enterprise. Overridden to always allow.
+    """
+    return True
 
 
 async def check_ee_activity_paid_access(request, activity_id, user, db_session) -> bool:

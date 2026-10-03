@@ -46,11 +46,11 @@
     "help": "مساعدة",
     "help_menu": {
       "documentation": "الوثائق",
-      "website": "موقع LearnHouse",
+      "website": "موقع Ordria",
       "discord": "Discord",
       "report_feedback": "الإبلاغ عن مشكلة أو ملاحظات",
       "feedback_title": "إرسال ملاحظات",
-      "feedback_description": "ساعدنا في تحسين LearnHouse من خلال مشاركة أفكارك أو الإبلاغ عن الأخطاء أو اقتراح ميزات جديدة.",
+      "feedback_description": "ساعدنا في تحسين Ordria من خلال مشاركة أفكارك أو الإبلاغ عن الأخطاء أو اقتراح ميزات جديدة.",
       "feedback_placeholder": "أخبرنا بما يدور في ذهنك...",
       "feedback_success": "شكراً لملاحظاتك!",
       "send_feedback": "إرسال ملاحظات",
@@ -215,7 +215,7 @@
     "organizations": "المؤسسات",
     "billing": "الفوترة",
     "create_organization": "إنشاء مؤسسة",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "تعذّر حذف هذه المؤسسة. يرجى المحاولة مرة أخرى.",
     "org_actions": "إجراءات المؤسسة",
     "manage_upgrade": "إدارة / ترقية",
@@ -228,7 +228,8 @@
     "leave_organization_title": "مغادرة المؤسسة؟",
     "leave_organization_desc": "ستفقد إمكانية الوصول إلى {{org}} وستُزال من أعضائها. يمكنك الانضمام مجددًا لاحقًا إذا تلقيت دعوة.",
     "leave_organization_error": "تعذرت مغادرة هذه المؤسسة. يُرجى المحاولة مرة أخرى.",
-    "leaving": "جارٍ المغادرة…"
+    "leaving": "جارٍ المغادرة…",
+    "formations": "الدورات التدريبية"
   },
   "banner": {
     "viewing_as_guest": "أنت تتصفح {{name}} كضيف.",
@@ -358,11 +359,11 @@
     "privacy_policy": "سياسة الخصوصية",
     "image_title_forgot": "أعد تعيين كلمة مرورك.",
     "image_subtitle_forgot": "سنساعدك على العودة إلى حسابك في لمح البصر.",
-    "image_title_login": "مرحبًا بعودتك إلى LearnHouse.",
-    "image_subtitle_login": "تابِع من حيث توقفت — دوراتك وطلابك وأدواتك في انتظارك.",
+    "image_title_login": "مرحبًا بعودتك إلى Ordria.",
+    "image_subtitle_login": "تابِع من حيث توقفت, دوراتك وطلابك وأدواتك في انتظارك.",
     "image_title_reset": "أوشكت على الانتهاء.",
     "image_subtitle_reset": "أنشئ كلمة مرور قوية للحفاظ على أمان حسابك.",
-    "image_title_signup": "ابدأ التدريس مع LearnHouse.",
+    "image_title_signup": "ابدأ التدريس مع Ordria.",
     "image_subtitle_signup": "أنشئ حسابك وأطلق دورتك الأولى في دقائق.",
     "image_title_verify": "تحقّق من بريدك الإلكتروني.",
     "image_subtitle_verify": "خطوة سريعة واحدة لتأمين حسابك والبدء.",
@@ -564,14 +565,14 @@
     "import": {
       "scorm_package": "حزمة SCORM",
       "scorm_description": "استيراد حزم SCORM 1.2 أو SCORM 2004",
-      "learnhouse_courses": "دورات LearnHouse",
-      "learnhouse_description": "استيراد الدورات المصدرة من LearnHouse",
+      "learnhouse_courses": "دورات Ordria",
+      "learnhouse_description": "استيراد الدورات المصدرة من Ordria",
       "upload_package": "رفع الحزمة",
       "configure": "تكوين",
       "complete": "مكتمل",
       "click_to_upload": "انقر للرفع أو اسحب وأفلت",
-      "learnhouse_format": "تصدير دورة LearnHouse (.zip)",
-      "learnhouse_info": "ارفع حزمة تصدير دورات LearnHouse (.zip). ستتمكن من اختيار الدورات للاستيراد وتكوين خيارات الاستيراد.",
+      "learnhouse_format": "تصدير دورة Ordria (.zip)",
+      "learnhouse_info": "ارفع حزمة تصدير دورات Ordria (.zip). ستتمكن من اختيار الدورات للاستيراد وتكوين خيارات الاستيراد.",
       "analyze_package": "تحليل الحزمة",
       "ready_to_analyze": "جاهز للتحليل",
       "invalid_file_format": "يرجى رفع ملف .zip",
@@ -626,7 +627,7 @@
         "plan_generated": "تم تحديث الخطة",
         "plan_generated_hint": "تحقق من علامة تبويب الخطة للمراجعة والتعديل.",
         "describe_course": "صف دورتك",
-        "describe_course_hint": "استخدم المحادثة على اليمين لوصف الدورة التي تريدها — الموضوع والجمهور والأهداف.",
+        "describe_course_hint": "استخدم المحادثة على اليمين لوصف الدورة التي تريدها, الموضوع والجمهور والأهداف.",
         "generating_plan": "جارٍ إنشاء خطة الدورة...",
         "chapters": "الفصول",
         "activities": "الأنشطة",
@@ -1041,8 +1042,8 @@
     "retry_assignment_title": "تريد محاولة هذا الواجب مرة أخرى؟",
     "retry_assignment_confirm": "سيتم إعادة تعيين تقديمك الحالي والإجابات حتى تتمكن من البدء من جديد. سيتم استبدال درجتك السابقة بمجرد إعادة التقديم.",
     "retry_assignment_remaining": "لديك {{remaining}} محاولة{{plural}} متبقية بعد هذه.",
-    "retry_assignment_last": "هذه محاولتك الأخيرة — اجعلها تستحق.",
-    "retry_assignment_success": "تم إعادة تعيين عملك — حاول مرة أخرى.",
+    "retry_assignment_last": "هذه محاولتك الأخيرة, اجعلها تستحق.",
+    "retry_assignment_success": "تم إعادة تعيين عملك, حاول مرة أخرى.",
     "retry_assignment_failed": "تعذر إعادة تعيين تقديمك. يرجى المحاولة مرة أخرى.",
     "retry_no_attempts_left": "لا توجد محاولات متبقية",
     "no_task_submission_to_grade": "لم يرسل هذا الطالب ملفًا لهذه المهمة بعد.",
@@ -1501,8 +1502,8 @@
       "import_course": "استيراد دورة",
       "import_scorm": "استيراد حزمة SCORM",
       "import_scorm_description": "استيراد حزمة SCORM لإنشاء دورة جديدة",
-      "import_learnhouse": "استيراد دورات LearnHouse",
-      "import_learnhouse_description": "استيراد الدورات من حزمة تصدير LearnHouse",
+      "import_learnhouse": "استيراد دورات Ordria",
+      "import_learnhouse_description": "استيراد الدورات من حزمة تصدير Ordria",
       "import_select_type": "اختر نوع الحزمة التي تريد استيرادها",
       "no_courses": "لا توجد دورات بعد",
       "create_course_placeholder": "أنشئ دورة لإضافة محتوى",
@@ -2351,9 +2352,9 @@
         "footer_text_desc": "نص مخصص يظهر في أسفل صفحات منظمتك",
         "default_language": "اللغة الافتراضية",
         "default_language_desc": "اللغة التي يراها الزوار الجدد افتراضيًا واللغة المستخدمة للرسائل المُرسَلة باسم هذه المؤسسة. لا يزال بإمكان الأعضاء تغيير لغة واجهتهم.",
-        "watermark_desc": "إظهار علامة LearnHouse المائية على صفحات منظمتك",
+        "watermark_desc": "إظهار علامة Ordria المائية على صفحات منظمتك",
         "watermark_free_plan": "يتم عرض العلامة المائية دائمًا في الخطة المجانية",
-        "watermark_label": "علامة \"صنع بواسطة LearnHouse\" المائية",
+        "watermark_label": "علامة \"صنع بواسطة Ordria\" المائية",
         "watermark_ee": "مخفي بترخيص الإصدار المؤسسي"
       },
       "images": {
@@ -3593,7 +3594,7 @@
             "auth_required_submit": "المصادقة مطلوبة. يرجى تسجيل الدخول لتسليم المهمة.",
             "hint_optional": "تلميح (اختياري)",
             "paste_blocked": "اللصق معطّل لهذا الواجب",
-            "paste_blocked_hint": "اللصق معطّل — اكتب إجابتك مباشرة.",
+            "paste_blocked_hint": "اللصق معطّل, اكتب إجابتك مباشرة.",
             "upload_locked_graded": "تم تقييم هذا التسليم — لم يعد بإمكانك تغيير ملفك.",
             "upload_locked_submitted": "لقد سلّمت هذا الواجب — لم يعد بإمكانك تغيير ملفك."
           },
@@ -3631,13 +3632,13 @@
               "regex": "تعبير عادي"
             },
             "explanation_label": "شرح (يُعرض عند الإجابة الصحيحة)",
-            "explanation_placeholder": "اختياري — اشرح سبب صحة الإجابة",
+            "explanation_placeholder": "اختياري, اشرح سبب صحة الإجابة",
             "your_answer_placeholder": "اكتب إجابتك...",
             "student_answer_label": "إجابة الطالب",
             "accepted_answers_label": "الإجابات المقبولة",
             "no_answer": "لم تُقدَّم إجابة",
             "correct": "صحيح",
-            "incorrect": "ليس صحيحًا تمامًا — حاول مرة أخرى"
+            "incorrect": "ليس صحيحًا تمامًا, حاول مرة أخرى"
           },
           "number_answer": {
             "prompt_label": "نص السؤال",
@@ -3646,16 +3647,16 @@
             "tolerance_label": "التسامح (±)",
             "unit_label": "الوحدة (اختياري)",
             "unit_placeholder": "م/ث²، كجم، °م...",
-            "unit_hint": "تُعرض بجانب حقل الإجابة. غير مفروضة — يُدخل الطلاب أرقامًا فقط.",
+            "unit_hint": "تُعرض بجانب حقل الإجابة. غير مفروضة, يُدخل الطلاب أرقامًا فقط.",
             "explanation_label": "شرح (يُعرض عند الإجابة الصحيحة)",
-            "explanation_placeholder": "اختياري — اشرح كيفية الوصول للإجابة",
+            "explanation_placeholder": "اختياري, اشرح كيفية الوصول للإجابة",
             "preview_label": "يقبل",
             "your_answer_placeholder": "أدخل رقمًا...",
             "student_answer_label": "إجابة الطالب",
             "accepted_range_label": "النطاق المقبول",
             "no_answer": "لم تُقدَّم إجابة",
             "correct": "صحيح",
-            "incorrect": "ليس صحيحًا تمامًا — حاول مرة أخرى"
+            "incorrect": "ليس صحيحًا تمامًا, حاول مرة أخرى"
           }
         },
         "generate_ai": "إنشاء مهام باستخدام AI",
@@ -3764,7 +3765,7 @@
         },
         "tasks": {
           "title": "أداء المهام",
-          "subtitle": "متوسط الدرجة لكل مهمة — الأعمدة المنخفضة تبرز ما يصعب على الطلاب",
+          "subtitle": "متوسط الدرجة لكل مهمة, الأعمدة المنخفضة تبرز ما يصعب على الطلاب",
           "empty": "سيظهر أداء المهام بعد تصحيح التسليمات",
           "avg_grade": "متوسط الدرجة",
           "attempts": "محاولات"
@@ -3776,7 +3777,7 @@
         },
         "attention": {
           "title": "قد يحتاجون إلى دعم",
-          "subtitle": "الطلاب الذين لم ينجحوا — فكر في التواصل معهم",
+          "subtitle": "الطلاب الذين لم ينجحوا, فكر في التواصل معهم",
           "empty": "جميع من تم تصحيحهم نجحوا. أحسنت!"
         }
       },
@@ -3818,7 +3819,7 @@
             "auto_grading_disabled_file": "التقييم التلقائي غير متاح لأن هذا الواجب يحتوي على مهمة تسليم ملف تحتاج إلى مراجعة بشرية.",
             "grading_type_hint": "كيف تُعرض الدرجات على الطلاب",
             "grading_options_hint": "السلوك عند التسليم",
-            "show_correct_answers_description": "بمجرد تقييم الإرسال، أظهر للطلاب الإجابات الصحيحة بجانب إجاباتهم — أيّ خيارات الاختبار كانت صحيحة، والإجابة القصيرة أو الرقمية المتوقعة، وفراغات النموذج الصحيحة.",
+            "show_correct_answers_description": "بمجرد تقييم الإرسال، أظهر للطلاب الإجابات الصحيحة بجانب إجاباتهم, أيّ خيارات الاختبار كانت صحيحة، والإجابة القصيرة أو الرقمية المتوقعة، وفراغات النموذج الصحيحة.",
             "show_correct_answers_label": "إظهار الإجابات الصحيحة بعد التقييم",
             "allow_retries_label": "السماح بإعادة المحاولة",
             "allow_retries_description": "اسمح للطلاب بإعادة تعيين وإعادة محاولة الواجب بعد تقييمه. كل محاولة تمحو إجاباتهم السابقة وتحتسب كمحاولة جديدة.",
@@ -4230,11 +4231,14 @@
       "video_block": {
         "uploading": "جاري تحميل الفيديو...",
         "drop_or_browse": "اسحب الفيديو الخاص بك هنا أو انقر للاستعراض",
-        "supported_formats": "يدعم صيغ MP4 و WebM",
-        "unsupported_format": "يرجى تحميل صيغة فيديو مدعومة (MP4 أو WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "مشغل الفيديو",
         "expand_video": "توسيع الفيديو",
-        "download_video": "تحميل الفيديو"
+        "download_video": "تحميل الفيديو",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "لا يوجد PDF متاح",
@@ -4342,7 +4346,7 @@
   "embed": {
     "not_supported_description": "هذا النوع من النشاط يتطلب المصادقة ولا يمكن تضمينه.",
     "not_supported_title": "هذا النشاط غير مدعوم",
-    "powered_by": "مدعوم من LearnHouse",
+    "powered_by": "مدعوم من Ordria",
     "visit_activity": "زيارة صفحة النشاط"
   },
   "analytics": {
@@ -4540,7 +4544,7 @@
         "avg_rate": "متوسط المعدل",
         "needs_attention": "يحتاج انتباه",
         "total_samples": "إجمالي العينات",
-        "more_expand": "+{{count}} المزيد — انقر للتوسيع",
+        "more_expand": "+{{count}} المزيد, انقر للتوسيع",
         "activities_count": "{{count}} أنشطة",
         "pct_of_total": "% من الإجمالي",
         "bar_width_hint": "عرض الشريط = المشاهدات النسبية",
@@ -4660,7 +4664,7 @@
       },
       "activity_dropoff": {
         "title": "نقاط التوقف",
-        "subtitle": "أين يتوقف المتعلمون عن التقدم — آخر نشاط مكتمل",
+        "subtitle": "أين يتوقف المتعلمون عن التقدم, آخر نشاط مكتمل",
         "total_dropoffs": "إجمالي حالات التوقف",
         "dropoff_points": "نقاط التوقف"
       },
@@ -4694,7 +4698,7 @@
         "avg_between": "متوسط {{unit}} بين الإنجازات",
         "transitions_tracked": "انتقالات متتبعة",
         "raw_hours_avg": "متوسط الساعات الخام",
-        "description": "يقيس مدى سرعة تقدم المتعلمين من نشاط إلى آخر. الأقل أفضل — يعني أن المتعلمين يتنقلون عبر المحتوى بشكل أسرع."
+        "description": "يقيس مدى سرعة تقدم المتعلمين من نشاط إلى آخر. الأقل أفضل, يعني أن المتعلمين يتنقلون عبر المحتوى بشكل أسرع."
       },
       "time_to_completion": {
         "title": "الوقت حتى الإنجاز",
@@ -5046,15 +5050,15 @@
       },
       "teach_the_world": {
         "title": "تعلّم وانمُ",
-        "description": "موارد لمساعدتك في الاستفادة القصوى من LearnHouse.",
+        "description": "موارد لمساعدتك في الاستفادة القصوى من Ordria.",
         "classroom": "الفصل الدراسي",
         "classroom_desc": "تعلم كيفية تنمية وإدارة دوراتك",
-        "university": "جامعة LearnHouse",
+        "university": "جامعة Ordria",
         "university_desc": "أدلة ونصائح وأفضل الممارسات"
       },
       "add_content": {
         "title": "درس يستحق الحضور",
-        "description": "أضف فيديو أو صفحة أو اختبارًا — امنح المتعلّمين سببًا حقيقيًا للالتحاق.",
+        "description": "أضف فيديو أو صفحة أو اختبارًا, امنح المتعلّمين سببًا حقيقيًا للالتحاق.",
         "action": "إضافة محتوى"
       },
       "brand_school": {
@@ -5064,22 +5068,22 @@
       },
       "share_grow": {
         "title": "بوابة مدرستك",
-        "description": "انطلق واحصل على رابطك القابل للمشاركة — المكان الذي سترسل إليه كل متعلّم.",
+        "description": "انطلق واحصل على رابطك القابل للمشاركة, المكان الذي سترسل إليه كل متعلّم.",
         "action": "افتح مدرستي"
       },
       "invite_learners": {
         "title": "رحّب بأول متعلّم لديك",
-        "description": "شارك رابط الانضمام أو ادعُ الناس — اجعل ذلك المتعلّم الأول يدخل من الباب.",
+        "description": "شارك رابط الانضمام أو ادعُ الناس, اجعل ذلك المتعلّم الأول يدخل من الباب.",
         "action": "دعوة المتعلّمين"
       },
       "build_community": {
         "title": "اجعل المتعلّمين يعودون",
-        "description": "افتح مساحة مجتمعية ليبقى متعلّموك نشطين — ويأتوا بأصدقائهم.",
+        "description": "افتح مساحة مجتمعية ليبقى متعلّموك نشطين, ويأتوا بأصدقائهم.",
         "action": "افتح المجتمع"
       }
     },
     "welcome": {
-      "title": "مرحبًا بك في LearnHouse",
+      "title": "مرحبًا بك في Ordria",
       "subtitle": "أنشئ دورات، وادعُ المتعلمين، وشارك المعرفة مع العالم.",
       "get_started": "ابدأ الآن",
       "features_title": "كل ما تحتاجه",
@@ -5166,7 +5170,7 @@
         "goal": "ابدأ بتحقيق الدخل من دوراتك وبناء مجتمع تعليمي.",
         "highlights": {
           "courses": "دورات غير محدودة",
-          "courses_desc": "أنشئ عدد الدورات التي تحتاجها — بلا حدود على منهجك.",
+          "courses_desc": "أنشئ عدد الدورات التي تحتاجها, بلا حدود على منهجك.",
           "members": "حتى 500 عضو",
           "members_desc": "وسّع قاعدة المتعلمين وأدرهم في مكان واحد.",
           "payments": "قبول المدفوعات",
@@ -5224,7 +5228,7 @@
       "trigger_authenticated_title": "الوصول: للمستخدمين المسجّلين فقط",
       "trigger_restricted_title": "الوصول: مجموعات مستخدمين محدّدة",
       "usergroups_header": "مجموعات المستخدمين",
-      "usergroups_none_assigned": "لا توجد مجموعات مُعيّنة — فقط المسؤولون يمكنهم الفتح.",
+      "usergroups_none_assigned": "لا توجد مجموعات مُعيّنة, فقط المسؤولون يمكنهم الفتح.",
       "usergroups_remove_title": "إزالة",
       "usergroups_loading": "جارٍ تحميل المجموعات…",
       "usergroups_none_in_org": "لا توجد مجموعات مستخدمين في هذه المؤسسة بعد.",
@@ -5488,7 +5492,7 @@
     "recurring_subscription": "اشتراك متكرر",
     "what_youre_getting": "ما الذي ستحصل عليه",
     "pack_immediate": "يسري المفعول فورًا بعد الدفع",
-    "pack_cancel_anytime": "ألغِ في أي وقت — يبقى نشطًا حتى نهاية فترة الفوترة",
+    "pack_cancel_anytime": "ألغِ في أي وقت, يبقى نشطًا حتى نهاية فترة الفوترة",
     "pack_credits_reset": "تُعاد تهيئة الأرصدة كل دورة فوترة",
     "after_purchase": "بعد الشراء",
     "unlimited": "غير محدود",
@@ -5538,9 +5542,9 @@
     "canceled_desc": "سيتم إلغاء اشتراكك في نهاية فترة الفوترة الحالية. ستحتفظ بالوصول الكامل حتى ذلك الحين.",
     "back_to_plan_usage": "العودة إلى الخطة والاستخدام",
     "back_to_orgs": "العودة إلى المؤسسات",
-    "pack_purchased": "تم شراء الإضافة — تم تحديث الحدود الخاصة بك.",
-    "checkout_success": "تم تحديث الاشتراك — مرحباً بك في الخطة الجديدة!",
-    "checkout_cancelled": "تم إلغاء الدفع — لم يتم إجراء أي تغييرات.",
+    "pack_purchased": "تم شراء الإضافة, تم تحديث الحدود الخاصة بك.",
+    "checkout_success": "تم تحديث الاشتراك, مرحباً بك في الخطة الجديدة!",
+    "checkout_cancelled": "تم إلغاء الدفع, لم يتم إجراء أي تغييرات.",
     "load_failed": "تعذر علينا تحميل منظماتك.",
     "no_permission": "ليس لديك إذن لإدارة الفواتير لهذه المنظمة.",
     "no_permission_hint": "فقط مسؤول المنظمة يمكنه عرض أو تغيير الخطة.",
@@ -5624,7 +5628,7 @@
         "title": "تريد التجربة؟",
         "body": "توجّه إلى",
         "link": "صفحة المطوّرين",
-        "suffix": "لتجربة LearnHouse بدلًا من ذلك."
+        "suffix": "لتجربة Ordria بدلًا من ذلك."
       },
       "validation": {
         "required": "مطلوب",
@@ -5655,7 +5659,7 @@
     "toast": {
       "creating": "جارٍ إنشاء المؤسسة…",
       "created": "تم إنشاء المؤسسة!",
-      "checkoutFailed": "تم إنشاء المؤسسة — يمكنك الترقية من الخطة والاستخدام.",
+      "checkoutFailed": "تم إنشاء المؤسسة, يمكنك الترقية من الخطة والاستخدام.",
       "failed": "فشل إنشاء المؤسسة"
     },
     "steps": {
@@ -5714,5 +5718,21 @@
     "folder_count_one": "{{count}} مجلد",
     "item_count": "{{count}} عناصر",
     "item_count_one": "{{count}} عنصر"
+  },
+  "signup": {
+    "job_label": "Votre métier",
+    "job_choose": "Choisir…",
+    "job_other": "Autre",
+    "job_other_precise": "Précisez votre métier",
+    "job_required": "Veuillez choisir votre métier",
+    "phone_label": "Téléphone",
+    "invalid_phone": "Numéro invalide",
+    "consent_terms": "J'accepte les",
+    "consent_terms_link": "conditions générales",
+    "consent_privacy": "J'accepte la",
+    "consent_privacy_link": "politique de confidentialité",
+    "consent_required": "Vous devez accepter pour continuer",
+    "complete_profile_banner": "Complétez votre profil, indiquez votre métier pour des recommandations sur mesure.",
+    "complete_profile_cta": "Compléter"
   }
 }

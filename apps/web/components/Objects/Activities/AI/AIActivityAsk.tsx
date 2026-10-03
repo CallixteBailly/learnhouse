@@ -97,8 +97,8 @@ function ActivityChatMessageBox(props: ActivityChatMessageBoxProps) {
 
   const isInputDisabled = aiChatBotState.isWaitingForResponse || aiChatBotState.isStreaming
   const inputClass = isInputDisabled
-    ? 'ring-1 ring-inset ring-white/10 bg-gray-950/40 w-full rounded-lg outline-hidden px-4 py-2 text-white text-sm placeholder:text-white/30 opacity-30 '
-    : 'ring-1 ring-inset ring-white/10 bg-gray-950/40 w-full rounded-lg outline-hidden px-4 py-2 text-white text-sm placeholder:text-white/30'
+    ? 'ring-1 ring-inset ring-white/10 bg-gray-950/40 w-full rounded-lg outline-hidden px-4 py-2 text-white text-sm placeholder:text-white/70 opacity-30 '
+    : 'ring-1 ring-inset ring-white/10 bg-gray-950/40 w-full rounded-lg outline-hidden px-4 py-2 text-white text-sm placeholder:text-white/70'
 
   useEffect(() => {
     if (aiChatBotState.isModalOpen) {
@@ -720,8 +720,8 @@ function AISidePanelInline(props: AISidePanelProps) {
 
   const isInputDisabled = aiChatBotState?.isWaitingForResponse || aiChatBotState?.isStreaming
   const inputClass = isInputDisabled
-    ? 'ring-1 ring-inset ring-white/10 bg-gray-950/40 w-full rounded-lg outline-hidden px-4 py-2 text-white text-sm placeholder:text-white/30 opacity-30'
-    : 'ring-1 ring-inset ring-white/10 bg-gray-950/40 w-full rounded-lg outline-hidden px-4 py-2 text-white text-sm placeholder:text-white/30'
+    ? 'ring-1 ring-inset ring-white/10 bg-gray-950/40 w-full rounded-lg outline-hidden px-4 py-2 text-white text-sm placeholder:text-white/70 opacity-30'
+    : 'ring-1 ring-inset ring-white/10 bg-gray-950/40 w-full rounded-lg outline-hidden px-4 py-2 text-white text-sm placeholder:text-white/70'
 
   // Mark initial render complete after mount
   useEffect(() => {

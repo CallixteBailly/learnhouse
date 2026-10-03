@@ -6,17 +6,17 @@ import { ChartBar, ChartLine, SquaresFour } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useAnalyticsStatus } from '@components/Dashboard/Analytics/useAnalyticsDashboard'
-import { planMeetsRequirement } from '@services/plans/plans'
+import { isPlanGated, planMeetsRequirement } from '@services/plans/plans'
 import { DashTabBar } from '@components/Dashboard/Shared/DashTabBar/DashTabBar'
 import FeatureGate from '@components/Dashboard/Shared/FeatureGate/FeatureGate'
 import { usePlan } from '@components/Hooks/usePlan'
 import ExportAnalyticsButton from '@components/Dashboard/Analytics/AnalyticsExport'
 
-// Core widgets — dynamic to code-split recharts
+// Core widgets · dynamic to code-split recharts
 const EventOverview = dynamic(() => import('@components/Dashboard/Analytics/EventOverview'))
 const CoreWidgetsRow = dynamic(() => import('@components/Dashboard/Analytics/CoreWidgetsRow'))
 
-// Advanced widgets — only loaded when user clicks the Advanced tab
+// Advanced widgets · only loaded when user clicks the Advanced tab
 const AdvancedGate = dynamic(() => import('@components/Dashboard/Analytics/AdvancedGate').then(m => ({ default: m.AdvancedGate })))
 const CourseDropoffMap = dynamic(() => import('@components/Dashboard/Analytics/CourseDropoffMap'))
 const CohortRetention = dynamic(() => import('@components/Dashboard/Analytics/CohortRetention'))
@@ -62,10 +62,9 @@ export default function AnalyticsDashboard() {
   const [tab, setTab] = useState<Tab>('overview')
   const { data: analyticsStatus } = useAnalyticsStatus()
   const plan = usePlan()
-  // Advanced analytics is the enterprise tier; usePlan() returns the right
-  // pseudo-plan for EE ('enterprise') and OSS ('oss'), so planMeetsRequirement
-  // resolves all modes correctly.
-  const isAdvanced = planMeetsRequirement(plan, 'enterprise')
+  // Advanced analytics ships in self-hosted builds (OSS/EE); only the SaaS
+  // platform gates it behind the enterprise tier.
+  const isAdvanced = !isPlanGated() || planMeetsRequirement(plan, 'enterprise')
   const isConfigured = analyticsStatus?.configured === true
 
   return (

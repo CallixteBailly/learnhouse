@@ -48,11 +48,11 @@
     "help": "راهنما",
     "help_menu": {
       "documentation": "مستندات",
-      "website": "وب‌سایت LearnHouse",
+      "website": "وب‌سایت Ordria",
       "discord": "دیسکورد",
       "report_feedback": "گزارش مشکل یا بازخورد",
       "feedback_title": "ارسال بازخورد",
-      "feedback_description": "با به اشتراک گذاشتن نظرات، گزارش اشکالات یا پیشنهاد ویژگی‌های جدید به ما در بهبود LearnHouse کمک کنید.",
+      "feedback_description": "با به اشتراک گذاشتن نظرات، گزارش اشکالات یا پیشنهاد ویژگی‌های جدید به ما در بهبود Ordria کمک کنید.",
       "feedback_placeholder": "به ما بگویید چه فکری دارید...",
       "feedback_success": "از بازخورد شما متشکریم!",
       "send_feedback": "ارسال بازخورد",
@@ -216,7 +216,7 @@
     "organizations": "سازمان‌ها",
     "billing": "صورت‌حساب",
     "create_organization": "ایجاد سازمان",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "حذف این سازمان ممکن نشد. لطفاً دوباره تلاش کنید.",
     "org_actions": "اقدامات سازمان",
     "manage_upgrade": "مدیریت / ارتقا",
@@ -229,7 +229,8 @@
     "leave_organization_title": "سازمان را ترک می‌کنید؟",
     "leave_organization_desc": "دسترسی شما به {{org}} قطع می‌شود و از اعضای آن حذف خواهید شد. در صورت دعوت، می‌توانید بعداً دوباره عضو شوید.",
     "leave_organization_error": "ترک این سازمان ممکن نشد. لطفاً دوباره تلاش کنید.",
-    "leaving": "در حال ترک…"
+    "leaving": "در حال ترک…",
+    "formations": "آموزش"
   },
   "banner": {
     "viewing_as_guest": "شما در حال مشاهده {{name}} به عنوان مهمان هستید.",
@@ -353,17 +354,17 @@
     "invite_required_desc": "برای پیوستن به {{org}} کد دعوت الزامی است",
     "invite_code": "کد دعوت",
     "validate_invite": "تأیید دعوت",
-    "terms_text": "با ادامه دادن، شما با موارد زیر در LearnHouse موافقت می‌کنید:",
+    "terms_text": "با ادامه دادن، شما با موارد زیر در Ordria موافقت می‌کنید:",
     "terms_of_service": "شرایط استفاده از خدمات",
     "and": "و",
     "privacy_policy": "سیاست حفظ حریم خصوصی",
     "image_title_forgot": "گذرواژه خود را بازنشانی کنید.",
     "image_subtitle_forgot": "در کمترین زمان به شما کمک می‌کنیم به حساب خود بازگردید.",
-    "image_title_login": "به LearnHouse خوش آمدید.",
-    "image_subtitle_login": "از همان‌جا که رها کردید ادامه دهید — دوره‌ها، دانشجویان و ابزارهایتان منتظرند.",
+    "image_title_login": "به Ordria خوش آمدید.",
+    "image_subtitle_login": "از همان‌جا که رها کردید ادامه دهید, دوره‌ها، دانشجویان و ابزارهایتان منتظرند.",
     "image_title_reset": "تقریباً تمام شد.",
     "image_subtitle_reset": "برای حفظ امنیت حساب خود یک گذرواژه قوی بسازید.",
-    "image_title_signup": "تدریس را با LearnHouse آغاز کنید.",
+    "image_title_signup": "تدریس را با Ordria آغاز کنید.",
     "image_subtitle_signup": "حساب خود را بسازید و اولین دوره‌تان را در چند دقیقه راه‌اندازی کنید.",
     "image_title_verify": "ایمیل خود را تأیید کنید.",
     "image_subtitle_verify": "یک گام سریع برای ایمن‌سازی حساب و شروع کار.",
@@ -542,14 +543,14 @@
     "import": {
       "scorm_package": "بسته SCORM",
       "scorm_description": "وارد کردن بسته‌های SCORM 1.2 یا SCORM 2004",
-      "learnhouse_courses": "دوره‌های LearnHouse",
-      "learnhouse_description": "وارد کردن دوره‌های خروجی‌گرفته شده از LearnHouse",
+      "learnhouse_courses": "دوره‌های Ordria",
+      "learnhouse_description": "وارد کردن دوره‌های خروجی‌گرفته شده از Ordria",
       "upload_package": "آپلود بسته",
       "configure": "پیکربندی",
       "complete": "تکمیل",
       "click_to_upload": "برای آپلود کلیک کنید یا بکشید و رها کنید",
-      "learnhouse_format": "خروجی دوره LearnHouse (.zip)",
-      "learnhouse_info": "یک بسته خروجی دوره LearnHouse (.zip) آپلود کنید. می‌توانید انتخاب کنید کدام دوره‌ها را وارد کنید و گزینه‌های واردات را پیکربندی کنید.",
+      "learnhouse_format": "خروجی دوره Ordria (.zip)",
+      "learnhouse_info": "یک بسته خروجی دوره Ordria (.zip) آپلود کنید. می‌توانید انتخاب کنید کدام دوره‌ها را وارد کنید و گزینه‌های واردات را پیکربندی کنید.",
       "analyze_package": "تحلیل بسته",
       "ready_to_analyze": "آماده برای تحلیل",
       "invalid_file_format": "لطفاً یک فایل .zip آپلود کنید",
@@ -624,7 +625,7 @@
         "plan_generated": "برنامه به‌روزرسانی شد",
         "plan_generated_hint": "برگه برنامه را بررسی و ویرایش کنید.",
         "describe_course": "دوره خود را توصیف کنید",
-        "describe_course_hint": "برای توصیف دوره مورد نظر — موضوع، مخاطب و اهداف — از چت سمت راست استفاده کنید.",
+        "describe_course_hint": "برای توصیف دوره مورد نظر, موضوع، مخاطب و اهداف, از چت سمت راست استفاده کنید.",
         "generating_plan": "در حال تولید برنامه دوره شما...",
         "chapters": "فصل‌ها",
         "activities": "فعالیت‌ها",
@@ -1274,7 +1275,7 @@
     "not_supported_title": "این فعالیت پشتیبانی نمی‌شود",
     "not_supported_description": "این نوع فعالیت نیاز به احراز هویت دارد و قابل جاسازی نیست.",
     "visit_activity": "بازدید از صفحه فعالیت",
-    "powered_by": "پشتیبانی شده توسط LearnHouse"
+    "powered_by": "پشتیبانی شده توسط Ordria"
   },
   "assignments": {
     "submit_assignment": "ارسال تکلیف",
@@ -1307,8 +1308,8 @@
     "retry_assignment_title": "دوباره این تکلیف را امتحان می‌کنید؟",
     "retry_assignment_confirm": "ارسال و پاسخ‌های فعلی شما بازنشانی می‌شوند تا بتوانید دوباره شروع کنید. پس از ارسال مجدد، نمره قبلی شما جایگزین می‌شود.",
     "retry_assignment_remaining": "شما پس از این، {{remaining}} تلاش دیگر دارید.",
-    "retry_assignment_last": "این آخرین تلاش شماست — از آن نهایت استفاده را ببرید.",
-    "retry_assignment_success": "کار شما بازنشانی شد — دوباره امتحان کنید.",
+    "retry_assignment_last": "این آخرین تلاش شماست, از آن نهایت استفاده را ببرید.",
+    "retry_assignment_success": "کار شما بازنشانی شد, دوباره امتحان کنید.",
     "retry_assignment_failed": "بازنشانی ارسال شما امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
     "retry_no_attempts_left": "هیچ تلاش مجددی باقی نمانده است",
     "quiz": {
@@ -1724,7 +1725,7 @@
           "description": "پیکربندی تنظیمات شخصی، رمزهای عبور، ایمیل"
         }
       },
-      "learnhouse_university": "دانشگاه LearnHouse",
+      "learnhouse_university": "دانشگاه Ordria",
       "welcome_back": "خوش آمدید",
       "plan": "طرح",
       "create_course": "ایجاد دوره",
@@ -1781,8 +1782,8 @@
       "import_course": "وارد کردن دوره",
       "import_scorm": "وارد کردن SCORM",
       "import_scorm_description": "برای ایجاد یک دوره جدید، یک بسته SCORM وارد کنید",
-      "import_learnhouse": "وارد کردن دوره LearnHouse",
-      "import_learnhouse_description": "وارد کردن یک دوره صادر شده از LearnHouse",
+      "import_learnhouse": "وارد کردن دوره Ordria",
+      "import_learnhouse_description": "وارد کردن یک دوره صادر شده از Ordria",
       "import_select_type": "نوع دوره مورد نظر برای وارد کردن را انتخاب کنید",
       "no_courses": "هنوز دوره‌ای وجود ندارد",
       "create_course_placeholder": "برای افزودن محتوا، یک دوره ایجاد کنید",
@@ -2630,8 +2631,8 @@
         "footer_text_desc": "متن سفارشی که در پایین صفحات سازمان شما نمایش داده می‌شود",
         "default_language": "زبان پیش‌فرض",
         "default_language_desc": "زبانی که بازدیدکنندگان جدید به طور پیش‌فرض می‌بینند و زبانی که برای ایمیل‌های ارسال شده از طرف این سازمان استفاده می‌شود. اعضا همچنان می‌توانند زبان رابط کاربری خود را تغییر دهند.",
-        "watermark_label": "واترمارک \"ساخته شده با LearnHouse\"",
-        "watermark_desc": "نمایش واترمارک برند LearnHouse در صفحات سازمان شما",
+        "watermark_label": "واترمارک \"ساخته شده با Ordria\"",
+        "watermark_desc": "نمایش واترمارک برند Ordria در صفحات سازمان شما",
         "watermark_free_plan": "واترمارک همیشه در طرح رایگان نشان داده می‌شود",
         "watermark_ee": "با مجوز نسخه سازمانی شما پنهان شده است"
       },
@@ -3879,7 +3880,7 @@
             "auth_required_submit": "احراز هویت لازم است. لطفاً برای ارسال وظیفه خود وارد شوید.",
             "hint_optional": "راهنما (اختیاری)",
             "paste_blocked": "جایگذاری برای این تکلیف غیرفعال است",
-            "paste_blocked_hint": "جایگذاری غیرفعال است — پاسخ خود را مستقیماً تایپ کنید.",
+            "paste_blocked_hint": "جایگذاری غیرفعال است, پاسخ خود را مستقیماً تایپ کنید.",
             "upload_locked_graded": "این ارسال نمره‌دهی شده است — دیگر نمی‌توانید فایل خود را تغییر دهید.",
             "upload_locked_submitted": "این تکلیف را ارسال کرده‌اید — دیگر نمی‌توانید فایل خود را تغییر دهید."
           },
@@ -3898,13 +3899,13 @@
               "regex": "عبارت منظم"
             },
             "explanation_label": "توضیحات (در پاسخ صحیح نشان داده می‌شود)",
-            "explanation_placeholder": "اختیاری — توضیح دهید چرا پاسخ صحیح است",
+            "explanation_placeholder": "اختیاری, توضیح دهید چرا پاسخ صحیح است",
             "your_answer_placeholder": "پاسخ خود را تایپ کنید...",
             "student_answer_label": "پاسخ دانش‌آموز",
             "accepted_answers_label": "پاسخ‌های پذیرفته شده",
             "no_answer": "هیچ پاسخی ارسال نشده است",
             "correct": "صحیح",
-            "incorrect": "کاملاً درست نیست — دوباره امتحان کنید"
+            "incorrect": "کاملاً درست نیست, دوباره امتحان کنید"
           },
           "number_answer": {
             "prompt_label": "سوال",
@@ -3913,16 +3914,16 @@
             "tolerance_label": "تحمل (±)",
             "unit_label": "واحد (اختیاری)",
             "unit_placeholder": "m/s², kg, °C...",
-            "unit_hint": "در کنار قسمت پاسخ نشان داده می‌شود. اعمال نمی‌شود — دانش‌آموزان فقط اعداد را تایپ می‌کنند.",
+            "unit_hint": "در کنار قسمت پاسخ نشان داده می‌شود. اعمال نمی‌شود, دانش‌آموزان فقط اعداد را تایپ می‌کنند.",
             "explanation_label": "توضیحات (در پاسخ صحیح نشان داده می‌شود)",
-            "explanation_placeholder": "اختیاری — توضیح دهید چگونه به پاسخ برسید",
+            "explanation_placeholder": "اختیاری, توضیح دهید چگونه به پاسخ برسید",
             "preview_label": "می‌پذیرد",
             "your_answer_placeholder": "یک عدد وارد کنید...",
             "student_answer_label": "پاسخ دانش‌آموز",
             "accepted_range_label": "محدوده پذیرفته شده",
             "no_answer": "هیچ پاسخی ارسال نشده است",
             "correct": "صحیح",
-            "incorrect": "کاملاً درست نیست — دوباره امتحان کنید"
+            "incorrect": "کاملاً درست نیست, دوباره امتحان کنید"
           },
           "code": {
             "student_behavior_label": "رفتار دانش‌آموز",
@@ -4050,7 +4051,7 @@
         },
         "tasks": {
           "title": "عملکرد وظایف",
-          "subtitle": "میانگین نمره هر وظیفه — میله‌های پایین نشان‌دهنده جایی است که دانش‌آموزان در آن مشکل دارند",
+          "subtitle": "میانگین نمره هر وظیفه, میله‌های پایین نشان‌دهنده جایی است که دانش‌آموزان در آن مشکل دارند",
           "empty": "عملکرد هر وظیفه پس از ورود ارسال‌های نمره‌دهی شده ظاهر می‌شود",
           "avg_grade": "میانگین نمره",
           "attempts": "تلاش‌ها"
@@ -4062,7 +4063,7 @@
         },
         "attention": {
           "title": "ممکن است نیاز به حمایت داشته باشند",
-          "subtitle": "دانش‌آموزانی که قبول نشدند — تماس با آنها را در نظر بگیرید",
+          "subtitle": "دانش‌آموزانی که قبول نشدند, تماس با آنها را در نظر بگیرید",
           "empty": "همه کسانی که نمره داده شدند قبول شدند. کار عالی!"
         }
       },
@@ -4100,9 +4101,9 @@
             "auto_grading_description": "هنگامی که دانش‌آموز ارسال می‌کند، به طور خودکار نمره داده و فعالیت را تکمیل کنید. فقط زمانی کار می‌کند که هر وظیفه بدون نیاز به انسان قابل نمره‌دهی باشد (آزمون‌ها، فرم‌ها، کد).",
             "auto_grading_disabled_file": "نمره‌دهی خودکار در دسترس نیست زیرا این تکلیف دارای وظیفه ارسال فایل است که نیاز به بررسی انسانی دارد.",
             "anti_copy_paste_label": "مسدود کردن کپی و جایگذاری",
-            "anti_copy_paste_description": "با مسدود کردن رویدادهای جایگذاری در ویرایشگر کد و ورودی‌های متنی، از جایگذاری پاسخ‌های تولید شده توسط هوش مصنوعی جلوگیری کنید. توجه: این یک بازدارنده است — دانش‌آموزان با مهارت فنی می‌توانند آن را دور بزنند.",
+            "anti_copy_paste_description": "با مسدود کردن رویدادهای جایگذاری در ویرایشگر کد و ورودی‌های متنی، از جایگذاری پاسخ‌های تولید شده توسط هوش مصنوعی جلوگیری کنید. توجه: این یک بازدارنده است, دانش‌آموزان با مهارت فنی می‌توانند آن را دور بزنند.",
             "show_correct_answers_label": "نمایش پاسخ‌های صحیح پس از نمره‌دهی",
-            "show_correct_answers_description": "پس از نمره‌دهی ارسال، پاسخ‌های صحیح را در کنار پاسخ‌های خود به دانش‌آموزان نشان دهید — کدام گزینه‌های آزمون صحیح بودند، پاسخ کوتاه یا عددی مورد انتظار، و جای خالی صحیح فرم.",
+            "show_correct_answers_description": "پس از نمره‌دهی ارسال، پاسخ‌های صحیح را در کنار پاسخ‌های خود به دانش‌آموزان نشان دهید, کدام گزینه‌های آزمون صحیح بودند، پاسخ کوتاه یا عددی مورد انتظار، و جای خالی صحیح فرم.",
             "allow_retries_label": "اجازه تلاش مجدد",
             "allow_retries_description": "به دانش‌آموزان اجازه دهید پس از نمره‌دهی تکلیف، آن را بازنشانی کرده و دوباره تلاش کنند. هر تلاش مجدد پاسخ‌های قبلی آنها را پاک می‌کند و به عنوان یک تلاش جدید محسوب می‌شود.",
             "max_retries_label": "حداکثر تلاش",
@@ -4149,7 +4150,7 @@
             "auto_grading_label": "نمره‌دهی خودکار",
             "auto_grading_description": "هنگامی که دانش‌آموز ارسال می‌کند، به طور خودکار نمره داده و فعالیت را تکمیل کنید. فقط زمانی کار می‌کند که هر وظیفه بدون نیاز به انسان قابل نمره‌دهی باشد.",
             "anti_copy_paste_label": "مسدود کردن کپی و جایگذاری",
-            "anti_copy_paste_description": "با مسدود کردن رویدادهای جایگذاری، از جایگذاری پاسخ‌های تولید شده توسط هوش مصنوعی جلوگیری کنید. توجه: این یک بازدارنده است — می‌توان آن را دور زد.",
+            "anti_copy_paste_description": "با مسدود کردن رویدادهای جایگذاری، از جایگذاری پاسخ‌های تولید شده توسط هوش مصنوعی جلوگیری کنید. توجه: این یک بازدارنده است, می‌توان آن را دور زد.",
             "show_correct_answers_label": "نمایش پاسخ‌های صحیح پس از نمره‌دهی",
             "show_correct_answers_description": "پس از نمره‌دهی، دانش‌آموزان پاسخ‌های صحیح را در کنار پاسخ‌های خود می‌بینند.",
             "submit": "ایجاد فعالیت"
@@ -4505,11 +4506,14 @@
       "video_block": {
         "uploading": "در حال آپلود ویدیو...",
         "drop_or_browse": "ویدیو خود را اینجا رها کنید یا برای مرور کلیک کنید",
-        "supported_formats": "پشتیبانی از فرمت‌های MP4 و WebM",
-        "unsupported_format": "لطفاً یک فرمت ویدیویی پشتیبانی شده آپلود کنید (MP4 یا WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "پخش‌کننده ویدیو",
         "expand_video": "باز کردن ویدیو",
-        "download_video": "دانلود ویدیو"
+        "download_video": "دانلود ویدیو",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "هیچ PDF در دسترس نیست",
@@ -4827,7 +4831,7 @@
         "avg_rate": "نرخ متوسط",
         "needs_attention": "نیاز به توجه",
         "total_samples": "کل نمونه‌ها",
-        "more_expand": "+{{count}} مورد دیگر — برای باز کردن کلیک کنید",
+        "more_expand": "+{{count}} مورد دیگر, برای باز کردن کلیک کنید",
         "activities_count": "{{count}} فعالیت",
         "pct_of_total": "درصد از کل",
         "bar_width_hint": "عرض میله = بازدیدهای نسبی",
@@ -4947,7 +4951,7 @@
       },
       "activity_dropoff": {
         "title": "نقاط ریزش",
-        "subtitle": "جایی که زبان‌آموزان پیشرفت را متوقف می‌کنند — آخرین فعالیت تکمیل شده",
+        "subtitle": "جایی که زبان‌آموزان پیشرفت را متوقف می‌کنند, آخرین فعالیت تکمیل شده",
         "total_dropoffs": "کل ریزش‌ها",
         "dropoff_points": "نقاط ریزش"
       },
@@ -4981,7 +4985,7 @@
         "avg_between": "میانگین {{unit}} بین تکمیل‌ها",
         "transitions_tracked": "انتقال‌های ردیابی شده",
         "raw_hours_avg": "میانگین ساعت خام",
-        "description": "سرعت پیشرفت زبان‌آموزان از یک فعالیت به فعالیت بعدی را اندازه‌گیری می‌کند. کمتر بهتر است — یعنی زبان‌آموزان سریع‌تر محتوا را طی می‌کنند."
+        "description": "سرعت پیشرفت زبان‌آموزان از یک فعالیت به فعالیت بعدی را اندازه‌گیری می‌کند. کمتر بهتر است, یعنی زبان‌آموزان سریع‌تر محتوا را طی می‌کنند."
       },
       "time_to_completion": {
         "title": "زمان تا تکمیل",
@@ -5107,15 +5111,15 @@
       },
       "teach_the_world": {
         "title": "یاد بگیرید و رشد کنید",
-        "description": "منابعی برای کمک به شما در استفاده حداکثری از LearnHouse.",
+        "description": "منابعی برای کمک به شما در استفاده حداکثری از Ordria.",
         "classroom": "کلاس درس",
         "classroom_desc": "نحوه رشد و مدیریت دوره‌های خود را بیاموزید",
-        "university": "دانشگاه LearnHouse",
+        "university": "دانشگاه Ordria",
         "university_desc": "راهنماها، نکات و بهترین روش‌ها"
       },
       "add_content": {
         "title": "درسی که ارزش حضور دارد",
-        "description": "یک ویدیو، صفحه یا آزمون اضافه کنید — به یادگیرندگان دلیلی واقعی برای ثبت‌نام بدهید.",
+        "description": "یک ویدیو، صفحه یا آزمون اضافه کنید, به یادگیرندگان دلیلی واقعی برای ثبت‌نام بدهید.",
         "action": "افزودن محتوا"
       },
       "brand_school": {
@@ -5125,22 +5129,22 @@
       },
       "share_grow": {
         "title": "درِ ورودی مدرسه شما",
-        "description": "آن را منتشر کنید و لینک قابل اشتراک خود را بگیرید — جایی که هر یادگیرنده را به آن می‌فرستید.",
+        "description": "آن را منتشر کنید و لینک قابل اشتراک خود را بگیرید, جایی که هر یادگیرنده را به آن می‌فرستید.",
         "action": "باز کردن مدرسه من"
       },
       "invite_learners": {
         "title": "به اولین یادگیرنده خود خوشامد بگویید",
-        "description": "لینک عضویت خود را به اشتراک بگذارید یا افراد را دعوت کنید — اولین یادگیرنده را وارد کنید.",
+        "description": "لینک عضویت خود را به اشتراک بگذارید یا افراد را دعوت کنید, اولین یادگیرنده را وارد کنید.",
         "action": "دعوت یادگیرندگان"
       },
       "build_community": {
         "title": "یادگیرندگان را به بازگشت ترغیب کنید",
-        "description": "یک فضای اجتماعی باز کنید تا یادگیرندگانتان فعال بمانند — و دوستانشان را هم بیاورند.",
+        "description": "یک فضای اجتماعی باز کنید تا یادگیرندگانتان فعال بمانند, و دوستانشان را هم بیاورند.",
         "action": "باز کردن انجمن"
       }
     },
     "welcome": {
-      "title": "به LearnHouse خوش آمدید",
+      "title": "به Ordria خوش آمدید",
       "subtitle": "دوره ایجاد کنید، زبان‌آموزان را دعوت کنید و دانش را با جهان به اشتراک بگذارید.",
       "get_started": "شروع کنید",
       "features_title": "همه چیزهایی که نیاز دارید",
@@ -5191,7 +5195,7 @@
         "goal": "از دوره‌های خود درآمدزایی کنید و یک جامعه یادگیری بسازید.",
         "highlights": {
           "courses": "دوره‌های نامحدود",
-          "courses_desc": "تعداد دوره‌هایی که نیاز دارید ایجاد کنید — بدون محدودیت در برنامه درسی شما.",
+          "courses_desc": "تعداد دوره‌هایی که نیاز دارید ایجاد کنید, بدون محدودیت در برنامه درسی شما.",
           "members": "تا ۵۰۰ عضو",
           "members_desc": "پایگاه زبان‌آموزان خود را رشد دهید و آنها را در یک مکان مدیریت کنید.",
           "payments": "پذیرش پرداخت",
@@ -5249,7 +5253,7 @@
       "trigger_authenticated_title": "دسترسی: فقط کاربران وارد شده",
       "trigger_restricted_title": "دسترسی: فقط گروه‌های کاربری خاص",
       "usergroups_header": "گروه‌های کاربری",
-      "usergroups_none_assigned": "هیچ گروهی اختصاص داده نشده است — هیچ کس به جز مدیران نمی‌تواند این را باز کند.",
+      "usergroups_none_assigned": "هیچ گروهی اختصاص داده نشده است, هیچ کس به جز مدیران نمی‌تواند این را باز کند.",
       "usergroups_remove_title": "حذف",
       "usergroups_loading": "در حال بارگذاری گروه‌ها…",
       "usergroups_none_in_org": "هنوز هیچ گروه کاربری در این سازمان وجود ندارد.",
@@ -5349,7 +5353,7 @@
     "recurring_subscription": "اشتراک دوره‌ای",
     "what_youre_getting": "آنچه دریافت می‌کنید",
     "pack_immediate": "بلافاصله پس از پرداخت اعمال می‌شود",
-    "pack_cancel_anytime": "هر زمان قابل لغو — تا پایان دوره صورت‌حساب فعال می‌ماند",
+    "pack_cancel_anytime": "هر زمان قابل لغو, تا پایان دوره صورت‌حساب فعال می‌ماند",
     "pack_credits_reset": "اعتبارها در هر دوره صورت‌حساب بازنشانی می‌شوند",
     "after_purchase": "پس از خرید",
     "unlimited": "نامحدود",
@@ -5399,9 +5403,9 @@
     "canceled_desc": "اشتراک شما در پایان دوره صورت‌حساب فعلی لغو خواهد شد. تا آن زمان دسترسی کامل خود را حفظ می‌کنید.",
     "back_to_plan_usage": "بازگشت به طرح و مصرف",
     "back_to_orgs": "بازگشت به سازمان‌ها",
-    "pack_purchased": "افزودنی خریداری شد — حدود شما به‌روزرسانی شد.",
-    "checkout_success": "اشتراک به‌روزرسانی شد — خوش‌آمدید به پلان جدید شما!",
-    "checkout_cancelled": "پرداخت لغو شد — تغییری انجام نشد.",
+    "pack_purchased": "افزودنی خریداری شد, حدود شما به‌روزرسانی شد.",
+    "checkout_success": "اشتراک به‌روزرسانی شد, خوش‌آمدید به پلان جدید شما!",
+    "checkout_cancelled": "پرداخت لغو شد, تغییری انجام نشد.",
     "load_failed": "ما نتوانستیم سازمان‌های شما را بارگذاری کنیم.",
     "no_permission": "شما اجازه مدیریت صورت‌حساب این سازمان را ندارید.",
     "no_permission_hint": "فقط ادمین سازمان می‌تواند پلان را مشاهده یا تغییر دهد.",
@@ -5485,7 +5489,7 @@
         "title": "می‌خواهید امتحان کنید؟",
         "body": "به",
         "link": "صفحه توسعه‌دهندگان",
-        "suffix": "بروید تا LearnHouse را امتحان کنید."
+        "suffix": "بروید تا Ordria را امتحان کنید."
       },
       "validation": {
         "required": "الزامی",
@@ -5516,7 +5520,7 @@
     "toast": {
       "creating": "در حال ایجاد سازمان…",
       "created": "سازمان ایجاد شد!",
-      "checkoutFailed": "سازمان ایجاد شد — می‌توانید از بخش طرح و مصرف ارتقا دهید.",
+      "checkoutFailed": "سازمان ایجاد شد, می‌توانید از بخش طرح و مصرف ارتقا دهید.",
       "failed": "ایجاد سازمان ناموفق بود"
     },
     "steps": {
@@ -5739,5 +5743,21 @@
       "unlink_success": "گروه کاربر قطع‌پیوند شد",
       "unlink_error": "ناموفق در قطع پیوند گروه کاربر"
     }
+  },
+  "signup": {
+    "job_label": "Votre métier",
+    "job_choose": "Choisir…",
+    "job_other": "Autre",
+    "job_other_precise": "Précisez votre métier",
+    "job_required": "Veuillez choisir votre métier",
+    "phone_label": "Téléphone",
+    "invalid_phone": "Numéro invalide",
+    "consent_terms": "J'accepte les",
+    "consent_terms_link": "conditions générales",
+    "consent_privacy": "J'accepte la",
+    "consent_privacy_link": "politique de confidentialité",
+    "consent_required": "Vous devez accepter pour continuer",
+    "complete_profile_banner": "Complétez votre profil, indiquez votre métier pour des recommandations sur mesure.",
+    "complete_profile_cta": "Compléter"
   }
 }

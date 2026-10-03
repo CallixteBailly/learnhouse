@@ -377,7 +377,7 @@ export function CopilotChat({ orgslug }: CopilotProps) {
 
   return (
     <div className="flex h-[calc(100vh-72px)] w-full max-w-(--breakpoint-2xl) mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-      {/* Sidebar — overlay on mobile, inline on desktop */}
+      {/* Sidebar · overlay on mobile, inline on desktop */}
       {sidebarOpen && (
       <>
         {/* Mobile backdrop */}
@@ -435,7 +435,7 @@ export function CopilotChat({ orgslug }: CopilotProps) {
       </>
       )}
 
-      {/* Toggle sidebar button (when closed, desktop only — mobile uses top bar button) */}
+      {/* Toggle sidebar button (when closed, desktop only · mobile uses top bar button) */}
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
@@ -642,7 +642,7 @@ export function CopilotChat({ orgslug }: CopilotProps) {
             aria-label="Ask about your courses"
             placeholder={isLoadingSession ? 'Loading conversation...' : isWaiting ? 'Thinking...' : chatMode === 'general' ? 'Ask anything...' : 'Ask about your courses...'}
             disabled={isInputDisabled}
-            className="flex-1 bg-transparent outline-none text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 disabled:opacity-40"
+            className="flex-1 bg-transparent outline-none text-sm text-neutral-900 dark:text-white placeholder:text-[var(--ordria-muted)] dark:placeholder:text-neutral-500 disabled:opacity-40"
           />
           <button
             onClick={() => sendMessage(input)}
@@ -806,7 +806,7 @@ export function AssistantMessage({ content, sources, orgslug, isStreaming, isWai
         </div>
       )}
 
-      {/* Message bubble — full width, relative for badge positioning */}
+      {/* Message bubble · full width, relative for badge positioning */}
       <div className="relative rounded-2xl px-4 py-3 bg-neutral-50 dark:bg-neutral-800/60 nice-shadow">
         {isWaiting ? (
           <ThinkingIndicator />

@@ -27,6 +27,7 @@ import {
 import UserAvatar from '@components/Objects/UserAvatar'
 import AIImageButton from '@components/Objects/AI/AIImageButton'
 import { updateUserAvatar } from '@services/users/users'
+import { getPublicJobTitles, type JobTitle } from '@services/users/jobTitles'
 import { constructAcceptValue } from '@/lib/constants'
 import * as Yup from 'yup'
 import { Input } from "@components/ui/input"
@@ -84,6 +85,9 @@ interface FormValues {
   last_name: string;
   email: string;
   bio: string;
+  jobTitleId: string;
+  jobOther: string;
+  phone: string;
   details: {
     [key: string]: DetailItem;
   };
@@ -117,6 +121,25 @@ const validationSchema = Yup.object().shape({
   first_name: Yup.string().required('First name is required'),
   last_name: Yup.string().required('Last name is required'),
   bio: Yup.string().max(400, 'Bio must be 400 characters or less'),
+  // Ordria: job is optional here (profile update merges; empty keeps the
+  // signup-collected value), but "Autre" requires a precision, same as signup.
+  jobTitleId: Yup.string(),
+  jobOther: Yup.string().when('jobTitleId', {
+    is: 'other',
+    then: (schema) =>
+      schema
+        .trim()
+        .required('Please specify your job')
+        .max(100, 'Job must be 100 characters or less'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  // Same optional-but-validated rule as the signup form.
+  phone: Yup.string()
+    .trim()
+    .matches(/^\+?[0-9 .()-]{6,20}$/, {
+      excludeEmptyString: true,
+      message: 'Invalid phone number',
+    }),
   details: Yup.object().shape({})
 });
 
@@ -236,17 +259,21 @@ const UserEditForm = ({
   values,
   setFieldValue,
   handleChange,
+  handleBlur,
   errors,
   touched,
   isSubmitting,
+  jobTitles,
   profilePicture
 }: {
   values: FormValues;
   setFieldValue: (_field: string, _value: any) => void;
   handleChange: (_e: React.ChangeEvent<any>) => void;
+  handleBlur: (_e: any) => void;
   errors: any;
   touched: any;
   isSubmitting: boolean;
+  jobTitles: JobTitle[];
   profilePicture: {
     error: string | undefined;
     success: string;
@@ -334,6 +361,65 @@ const UserEditForm = ({
               />
               {touched.last_name && errors.last_name && (
                 <p className="text-red-500 text-sm mt-1">{errors.last_name}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="jobTitleId">
+                {t('signup.job_label', { defaultValue: 'Votre métier' })}
+              </Label>
+              <select
+                id="jobTitleId"
+                name="jobTitleId"
+                value={values.jobTitleId}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="flex h-9 w-full rounded-md border border-gray-200 bg-white px-3 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                <option value="">{t('signup.job_choose', { defaultValue: 'Choisir…' })}</option>
+                {jobTitles.map((j) => (
+                  <option key={j.id} value={String(j.id)}>{j.label}</option>
+                ))}
+                <option value="other">{t('signup.job_other', { defaultValue: 'Autre' })}</option>
+              </select>
+              {touched.jobTitleId && errors.jobTitleId && (
+                <p className="text-red-500 text-sm mt-1">{errors.jobTitleId}</p>
+              )}
+            </div>
+
+            {values.jobTitleId === 'other' && (
+              <div>
+                <Label htmlFor="jobOther">
+                  {t('signup.job_other_precise', { defaultValue: 'Précisez votre métier' })}
+                </Label>
+                <Input
+                  id="jobOther"
+                  name="jobOther"
+                  value={values.jobOther}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  maxLength={100}
+                />
+                {touched.jobOther && errors.jobOther && (
+                  <p className="text-red-500 text-sm mt-1">{errors.jobOther}</p>
+                )}
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="phone">
+                {`${t('signup.phone_label', { defaultValue: 'Téléphone' })} (${t('common.optional', { defaultValue: 'facultatif' })})`}
+              </Label>
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={values.phone}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              {touched.phone && errors.phone && (
+                <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
               )}
             </div>
 
@@ -544,8 +630,19 @@ function AccountGeneral() {
   const [error, setError] = React.useState() as any
   const [success, setSuccess] = React.useState('') as any
   const [userData, setUserData] = useState<any>(null);
+  const [jobTitles, setJobTitles] = React.useState<JobTitle[]>([]);
   const { t } = useTranslation();
   const { track } = useLHAnalytics('learner');
+
+  useEffect(() => {
+    let cancelled = false;
+    getPublicJobTitles().then((titles) => {
+      if (!cancelled) setJobTitles(titles);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -673,6 +770,14 @@ function AccountGeneral() {
           last_name: userData.last_name,
           email: userData.email,
           bio: userData.bio || '',
+          jobTitleId:
+            userData?.profile?.job?.title_id != null
+              ? String(userData.profile.job.title_id)
+              : userData?.profile?.job?.slug === 'other'
+                ? 'other'
+                : '',
+          jobOther: userData?.profile?.job?.other || '',
+          phone: userData?.profile?.phone || '',
           details: userData.details || {},
         }}
         validationSchema={validationSchema}
@@ -680,8 +785,33 @@ function AccountGeneral() {
           const isEmailChanged = values.email !== userData.email
           const loadingToast = toast.loading(t('user.settings.general.saving'))
 
+          // Ordria: profile.job / profile.phone are merged server-side, so we
+          // spread the existing profile and only override what the form owns.
+          // An empty selection / empty phone leaves the stored value untouched.
+          const selectedJob = jobTitles.find((j) => String(j.id) === values.jobTitleId)
+          const job = selectedJob
+            ? { title_id: selectedJob.id, slug: selectedJob.slug, label: selectedJob.label, other: null }
+            : values.jobOther?.trim()
+              ? { title_id: null, slug: 'other', other: values.jobOther.trim() }
+              : null
+          const profile: Record<string, unknown> = { ...(userData?.profile || {}) }
+          if (job) profile.job = job
+          if (values.phone?.trim()) profile.phone = values.phone.trim()
+
           try {
-            await updateProfile(values, userData.id, access_token)
+            await updateProfile(
+              {
+                username: values.username,
+                first_name: values.first_name,
+                last_name: values.last_name,
+                email: values.email,
+                bio: values.bio,
+                details: values.details,
+                profile,
+              },
+              userData.id,
+              access_token
+            )
             toast.dismiss(loadingToast)
             track(AnalyticsEvent.AccountProfileUpdated, {
               email_changed: isEmailChanged,
@@ -704,6 +834,7 @@ function AccountGeneral() {
         {(formikProps) => (
           <UserEditForm
             {...formikProps}
+            jobTitles={jobTitles}
             profilePicture={{
               error,
               success,

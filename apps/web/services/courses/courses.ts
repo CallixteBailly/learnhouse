@@ -143,6 +143,38 @@ export async function cloneCourse(course_uuid: string, access_token: string | nu
   return res
 }
 
+// Cross-org duplicate: same clone, written into another organization the user
+// is a member of. Returns { status, data } — 200 means the new CourseRead.
+export async function duplicateCourseToOrg(
+  course_uuid: string,
+  target_org_id: number,
+  access_token: string | null | undefined
+) {
+  const result: any = await fetch(
+    `${getAPIUrl()}courses/${course_uuid}/clone?target_org_id=${target_org_id}`,
+    RequestBodyWithAuthHeader('POST', null, null, access_token || undefined)
+  )
+  const res = await getResponseMetadata(result)
+  return res
+}
+
+// Move = duplicate into the target org then delete the source (files included).
+// Learner progress does NOT follow; the API answers 409 while learners have
+// progress unless force is set.
+export async function moveCourseToOrg(
+  course_uuid: string,
+  target_org_id: number,
+  access_token: string | null | undefined,
+  force: boolean = false
+) {
+  const result: any = await fetch(
+    `${getAPIUrl()}courses/${course_uuid}/move?target_org_id=${target_org_id}${force ? '&force=true' : ''}`,
+    RequestBodyWithAuthHeader('POST', null, null, access_token || undefined)
+  )
+  const res = await getResponseMetadata(result)
+  return res
+}
+
 export async function getCourseContributors(course_uuid: string, access_token:string | null | undefined) {
   const result: any = await fetch(
     `${getAPIUrl()}courses/${course_uuid}/contributors`,

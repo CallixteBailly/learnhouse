@@ -1,6 +1,6 @@
 from typing import Optional, TYPE_CHECKING
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, model_validator
 from sqlmodel import Field, SQLModel
 from sqlalchemy import JSON, Column, Index
 from sqlalchemy.dialects.postgresql import JSONB
@@ -68,6 +68,12 @@ class UserReadPublic(SQLModel):
     enumerate user ids. ``details`` and ``profile`` ARE included: they are the
     user's own public profile content (bio extension, links, etc.) that the
     public profile page renders, so they are intentionally exposed.
+
+    SECURITY: ``profile`` collected at signup can carry PII — notably ``phone``
+    (Ordria enriched signup). The phone number is private: the owner still sees
+    it through ``UserRead`` (session / own profile endpoints), but it must never
+    leak via this public projection. The validator below strips it defensively
+    on every construction path (model_validate, direct init, ORM refresh).
     """
     id: int
     user_uuid: str
@@ -79,6 +85,16 @@ class UserReadPublic(SQLModel):
     bio: Optional[str] = ""
     details: Optional[dict] = None
     profile: Optional[dict] = None
+
+    @model_validator(mode="after")
+    def _strip_phone_pii(self) -> "UserReadPublic":
+        profile = self.profile
+        if isinstance(profile, dict) and "phone" in profile:
+            sanitized = dict(profile)
+            sanitized.pop("phone", None)
+            self.profile = sanitized
+        # None / non-dict profiles (legacy rows, odd JSON) pass through as-is.
+        return self
 
 
 class UserReadAuthor(SQLModel):

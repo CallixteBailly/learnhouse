@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
-import { getAPIUrl, getDeploymentMode } from '@services/config/config'
+import { getAPIUrl, getDeploymentMode, getUriWithOrg } from '@services/config/config'
 import {
   getOrgLogoMediaDirectory,
   getUserAvatarMediaDirectory,
@@ -33,6 +33,9 @@ import {
   Robot,
   ArrowClockwise,
   SlidersHorizontal,
+  UserPlus,
+  X,
+  EnvelopeSimple,
 } from '@phosphor-icons/react'
 
 function getLogoUrl(orgUuid: string, logoImage: string): string {
@@ -63,7 +66,7 @@ const ALL_TABS = [
 type TabId = (typeof ALL_TABS)[number]['id']
 
 function getTabsForMode(mode: string) {
-  // In non-SaaS modes (EE/OSS) plans don't apply — hide the Plan tab.
+  // In non-SaaS modes (EE/OSS) plans don't apply · hide the Plan tab.
   return mode === 'saas' ? ALL_TABS : ALL_TABS.filter((t) => t.id !== 'plan')
 }
 
@@ -427,8 +430,6 @@ function CoursesTab({
     )
   }
 
-  const protocol = typeof window !== 'undefined' ? window.location.protocol : 'http:'
-
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -446,7 +447,9 @@ function CoursesTab({
         <tbody>
           {items.map((course: any) => {
             const courseId = course.course_uuid.replace(/^course_/, '')
-            const courseUrl = `${protocol}//${orgSlug}.${domain}/course/${courseId}`
+            // Central-LMS cookie tenancy: getUriWithOrg resolves the right URL
+            // shape (/orgs/{slug}/course/... here, subdomain on SaaS/EE).
+            const courseUrl = getUriWithOrg(orgSlug, `/course/${courseId}`)
             return (
               <tr
                 key={course.id}
@@ -520,11 +523,204 @@ function CoursesTab({
 // ---------------------------------------------------------------------------
 // Users Tab
 // ---------------------------------------------------------------------------
+function RoleSelect({
+  value,
+  roles,
+  disabled,
+  onChange,
+}: {
+  value: number
+  roles: { id: number; name: string }[] | undefined
+  disabled: boolean
+  onChange: (roleId: number) => void
+}) {
+  return (
+    <select
+      value={value}
+      disabled={disabled || !roles}
+      onChange={(e) => onChange(Number(e.target.value))}
+      className="bg-white/[0.05] border border-white/[0.08] rounded-md px-2 py-1 text-xs text-white/80 capitalize focus:outline-none focus:border-white/25 disabled:opacity-40"
+    >
+      {(roles || []).map((r) => (
+        <option key={r.id} value={r.id} className="bg-[#14161b] text-white">
+          {r.name}
+        </option>
+      ))}
+    </select>
+  )
+}
+
+function AddMemberModal({
+  orgId,
+  accessToken,
+  roles,
+  onClose,
+}: {
+  orgId: string
+  accessToken: string
+  roles: { id: number; name: string }[] | undefined
+  onClose: () => void
+}) {
+  const queryClient = useQueryClient()
+  const [mode, setMode] = useState<'existing' | 'invite'>('existing')
+  const [identifier, setIdentifier] = useState('')
+  const [emails, setEmails] = useState('')
+  const [roleId, setRoleId] = useState<number>(roles?.[2]?.id ?? roles?.[roles.length - 1]?.id ?? 3)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: [...queryKeys.org.users(Number(orgId)), 'superadmin'] })
+
+  const submit = async () => {
+    setSubmitting(true)
+    setError('')
+    setNotice('')
+    try {
+      const path =
+        mode === 'existing'
+          ? `ee/superadmin/organizations/${orgId}/users`
+          : `ee/superadmin/organizations/${orgId}/users/invite`
+      const body =
+        mode === 'existing'
+          ? { email_or_username: identifier, role_id: roleId }
+          : { emails, role_id: roleId }
+      const res = await fetch(`${getAPIUrl()}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(data?.detail || `Échec (${res.status})`)
+        return
+      }
+      if (mode === 'existing') {
+        await invalidate()
+        onClose()
+      } else {
+        setNotice(data?.message || 'Invitations envoyées')
+        setEmails('')
+        await invalidate()
+      }
+    } catch {
+      setError('Erreur réseau')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const canSubmit =
+    !submitting && (mode === 'existing' ? identifier.trim().length > 0 : emails.trim().length > 3)
+
+  return (
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md bg-[#191b21] border border-white/[0.1] rounded-2xl p-6 space-y-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-white">Ajouter un membre</h3>
+          <button onClick={onClose} className="text-white/40 hover:text-white/70" aria-label="Fermer">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="flex gap-1 bg-white/[0.04] rounded-lg p-1">
+          <button
+            onClick={() => setMode('existing')}
+            className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              mode === 'existing' ? 'bg-white/10 text-white' : 'text-white/45 hover:text-white/70'
+            }`}
+          >
+            <User size={12} weight="fill" className="inline mr-1.5 -mt-0.5" />
+            Compte existant
+          </button>
+          <button
+            onClick={() => setMode('invite')}
+            className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              mode === 'invite' ? 'bg-white/10 text-white' : 'text-white/45 hover:text-white/70'
+            }`}
+          >
+            <EnvelopeSimple size={12} weight="fill" className="inline mr-1.5 -mt-0.5" />
+            Inviter par email
+          </button>
+        </div>
+
+        {mode === 'existing' ? (
+          <div>
+            <label className="block text-xs text-white/50 mb-1.5">
+              Email ou nom d&apos;utilisateur du compte existant
+            </label>
+            <input
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="marie@exemple.fr"
+              className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/25"
+            />
+          </div>
+        ) : (
+          <div>
+            <label className="block text-xs text-white/50 mb-1.5">
+              Emails à inviter (séparés par des virgules) — ils recevront un lien d&apos;invitation
+            </label>
+            <textarea
+              value={emails}
+              onChange={(e) => setEmails(e.target.value)}
+              placeholder="marie@exemple.fr, paul@exemple.fr"
+              rows={3}
+              className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/25 resize-none"
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="block text-xs text-white/50 mb-1.5">Rôle</label>
+          <select
+            value={roleId}
+            onChange={(e) => setRoleId(Number(e.target.value))}
+            className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white capitalize focus:outline-none focus:border-white/25"
+          >
+            {(roles || []).map((r) => (
+              <option key={r.id} value={r.id} className="bg-[#14161b]">
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {error && <p className="text-xs text-red-400">{error}</p>}
+        {notice && <p className="text-xs text-emerald-400">{notice}</p>}
+
+        <div className="flex justify-end gap-2 pt-1">
+          <button onClick={onClose} className="px-4 py-2 text-sm text-white/50 hover:text-white/80">
+            Fermer
+          </button>
+          <button
+            onClick={submit}
+            disabled={!canSubmit}
+            className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm rounded-lg transition-colors disabled:opacity-40"
+          >
+            {submitting ? '…' : mode === 'existing' ? 'Ajouter' : 'Envoyer les invitations'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function UsersTab({ orgId, accessToken }: { orgId: string; accessToken: string }) {
   const { searchParams, updateParams } = useUrlParams()
+  const queryClient = useQueryClient()
   const page = Number(searchParams.get('page')) || 1
   const search = searchParams.get('search') || ''
   const [searchInput, setSearchInput] = useState(search)
+  const [addOpen, setAddOpen] = useState(false)
+  const [busyId, setBusyId] = useState<number | null>(null)
 
   const setPage = (p: number) => updateParams({ tab: 'users', page: p, search })
 
@@ -534,6 +730,74 @@ function UsersTab({ orgId, accessToken }: { orgId: string; accessToken: string }
     enabled: !!accessToken,
     staleTime: 60_000,
   })
+
+  const { data: roles } = useQuery({
+    queryKey: ['superadmin', 'org', orgId, 'roles'],
+    queryFn: () => apiFetch(`${getAPIUrl()}ee/superadmin/organizations/${orgId}/roles`, accessToken),
+    enabled: !!accessToken,
+    staleTime: 300_000,
+  })
+
+  const { data: invited } = useQuery<{ email: string; pending: boolean; email_sent: boolean; created_at?: string }[]>({
+    queryKey: ['superadmin', 'org', orgId, 'invited'],
+    queryFn: () => apiFetch(`${getAPIUrl()}ee/superadmin/organizations/${orgId}/invited-users`, accessToken),
+    enabled: !!accessToken,
+    staleTime: 30_000,
+  })
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: [...queryKeys.org.users(Number(orgId)), 'superadmin'] })
+    queryClient.invalidateQueries({ queryKey: ['superadmin', 'org', orgId, 'invited'] })
+  }
+
+  const changeRole = async (userId: number, roleId: number) => {
+    setBusyId(userId)
+    try {
+      await fetch(`${getAPIUrl()}ee/superadmin/organizations/${orgId}/users/${userId}/role`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({ role_id: roleId }),
+      })
+      await invalidate()
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  const removeMember = async (userId: number, username: string) => {
+    if (!window.confirm(`Retirer ${username} de cette organisation ?`)) return
+    setBusyId(userId)
+    try {
+      const res = await fetch(
+        `${getAPIUrl()}ee/superadmin/organizations/${orgId}/users/${userId}`,
+        { method: 'DELETE', headers: { Authorization: `Bearer ${accessToken}` } }
+      )
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        window.alert(d?.detail || 'Échec du retrait')
+      }
+      await invalidate()
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  const cancelInvite = async (email: string) => {
+    if (!window.confirm(`Annuler l'invitation de ${email} ?`)) return
+    try {
+      const res = await fetch(
+        `${getAPIUrl()}ee/superadmin/organizations/${orgId}/invited-users/${encodeURIComponent(email)}`,
+        { method: 'DELETE', headers: { Authorization: `Bearer ${accessToken}` } }
+      )
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        window.alert(d?.detail || "Échec de l'annulation")
+      }
+      await invalidate()
+    } catch {
+      window.alert('Erreur réseau')
+    }
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -549,25 +813,48 @@ function UsersTab({ orgId, accessToken }: { orgId: string; accessToken: string }
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm text-white/40">{total} user{total !== 1 ? 's' : ''}</span>
-        <form onSubmit={handleSearch} className="flex items-center gap-2">
-          <div className="relative">
-            <MagnifyingGlass
-              size={14}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30"
-            />
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search users..."
-              className="bg-white/[0.05] border border-white/[0.08] rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/20 w-48"
-            />
-          </div>
-        </form>
+        <span className="text-sm text-white/40">
+          {total} user{total !== 1 ? 's' : ''}
+          {(invited || []).length > 0 && (
+            <span className="text-amber-400/80"> · {invited!.length} en attente</span>
+          )}
+        </span>
+        <div className="flex items-center gap-2">
+          <form onSubmit={handleSearch} className="flex items-center gap-2">
+            <div className="relative">
+              <MagnifyingGlass
+                size={14}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30"
+              />
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search users..."
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/20 w-48"
+              />
+            </div>
+          </form>
+          <button
+            onClick={() => setAddOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/15 text-white text-xs font-medium rounded-lg transition-colors"
+          >
+            <UserPlus size={13} weight="bold" />
+            Ajouter
+          </button>
+        </div>
       </div>
 
-      {items.length === 0 && page === 1 ? (
+      {addOpen && (
+        <AddMemberModal
+          orgId={orgId}
+          accessToken={accessToken}
+          roles={roles}
+          onClose={() => setAddOpen(false)}
+        />
+      )}
+
+      {items.length === 0 && page === 1 && (invited || []).length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-white/40">
           <Users size={48} weight="fill" />
           <p className="mt-4">{search ? 'No users match your search' : 'No users in this organization'}</p>
@@ -616,12 +903,62 @@ function UsersTab({ orgId, accessToken }: { orgId: string; accessToken: string }
                     <span className="text-sm text-white/50">{user.email}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-xs text-white/60 capitalize">{user.role_name}</span>
+                    <RoleSelect
+                      value={user.role_id ?? 3}
+                      roles={roles}
+                      disabled={busyId === user.id}
+                      onChange={(roleId) => changeRole(user.id, roleId)}
+                    />
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm text-white/40">
-                      {user.creation_date ? new Date(user.creation_date).toLocaleDateString() : '—'}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-white/40">
+                        {user.creation_date ? new Date(user.creation_date).toLocaleDateString() : '·'}
+                      </span>
+                      <button
+                        onClick={() => removeMember(user.id, user.username)}
+                        disabled={busyId === user.id}
+                        className="text-[11px] text-red-400/70 hover:text-red-400 border border-red-400/25 hover:border-red-400/50 rounded-md px-2 py-0.5 transition-colors disabled:opacity-40"
+                      >
+                        Retirer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {(invited || []).map((invite) => (
+                <tr key={`invite-${invite.email}`} className="border-b border-white/[0.05] bg-amber-400/[0.02]">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-amber-400/10 flex items-center justify-center">
+                        <EnvelopeSimple size={13} weight="fill" className="text-amber-400/80" />
+                      </div>
+                      <p className="text-sm font-medium text-white/80">{invite.email}</p>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`text-xs ${invite.email_sent ? 'text-white/50' : 'text-red-400/80'}`}>
+                      {invite.email_sent ? 'email envoyé' : 'email non envoyé (SMTP à configurer)'}
                     </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-amber-400/10 text-amber-400">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden />
+                      Invitation en attente
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-white/40">
+                        {invite.created_at ? new Date(invite.created_at).toLocaleDateString() : '·'}
+                      </span>
+                      <button
+                        onClick={() => cancelInvite(invite.email)}
+                        className="text-[11px] text-amber-400/80 hover:text-amber-400 border border-amber-400/25 hover:border-amber-400/50 rounded-md px-2 py-0.5 transition-colors"
+                      >
+                        Annuler
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -1121,7 +1458,7 @@ function AICreditsSection({ orgId, accessToken }: { orgId: string; accessToken: 
   }
 
   const fmt = (v: number | string | undefined) =>
-    v === undefined ? '—' : typeof v === 'number' ? v.toLocaleString() : v
+    v === undefined ? '·' : typeof v === 'number' ? v.toLocaleString() : v
 
   return (
     <div>
@@ -1198,7 +1535,7 @@ function AICreditsSection({ orgId, accessToken }: { orgId: string; accessToken: 
 }
 
 // ---------------------------------------------------------------------------
-// Features Tab — per-feature admin toggles (writes to config.admin_toggles)
+// Features Tab · per-feature admin toggles (writes to config.admin_toggles)
 // ---------------------------------------------------------------------------
 
 type FeatureToggle = { disabled: boolean }
@@ -1387,7 +1724,7 @@ function FeaturesTab({
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="text-sm text-white/90 font-medium">{label}</p>
-                      {/* "Available in the org's plan" — separate from the on/off
+                      {/* "Available in the org's plan" · separate from the on/off
                           toggle. On a paid plan these stay enabled regardless. */}
                       {mode === 'saas' && resolvedFeatures[key]?.available && (
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-violet-400/10 text-violet-300 border border-violet-400/20">

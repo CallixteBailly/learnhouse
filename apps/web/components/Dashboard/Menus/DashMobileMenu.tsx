@@ -27,7 +27,6 @@ import {
   MagnifyingGlass,
   Code,
 } from '@phosphor-icons/react'
-import { DiscordIcon } from '@components/Objects/Icons/DiscordIcon'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
@@ -44,6 +43,7 @@ import { usePlan } from '@components/Hooks/usePlan'
 import { planMeetsRequirement } from '@services/plans/plans'
 import { FeedbackModal } from '@components/Objects/Modals/FeedbackModal'
 import { useCommandPalette } from '@components/Dashboard/CommandPalette/CommandPaletteContext'
+import Logo from '@components/Objects/Brand/Logo'
 
 function DashMobileMenu() {
   const org = useOrg() as any
@@ -68,11 +68,23 @@ function DashMobileMenu() {
     plan
 
   const rf = org?.config?.config?.resolved_features
-  const isEnabled = (f: string) => rf?.[f]?.enabled === true
+  // DÉSACTIVÉ · OrdIA Learning : seuls Cours et Library (Formations) sont actifs.
+  // Pour réactiver : remplacer "false" par "rf?.[feature]?.enabled === true"
+  const isEnabled = (f: string) => {
+    if (['communities', 'podcasts', 'boards', 'playgrounds', 'payments'].includes(f)) return rf?.[f]?.enabled === true
+    return rf?.[f]?.enabled === true
+  }
+
+  // Org-aware href so mobile dashboard links never fall back to another org
+  // via the LH_org cookie.
+  const m = (path: string) => getUriWithOrg(org?.slug, path)
 
   const isActive = (path: string) => {
-    if (path === '/dash') return pathname === '/dash' || pathname === '/dash/'
-    return pathname === path || pathname.startsWith(path + '/')
+    // Strip the /orgs/{slug} prefix so active-state matching works on both
+    // org-prefixed and bare dashboard URLs.
+    const bare = pathname.replace(/^\/orgs\/[^/]+/, '') || '/'
+    if (path === '/dash') return bare === '/dash' || bare === '/dash/'
+    return bare === path || bare.startsWith(path + '/')
   }
 
   async function logOutUI() {
@@ -90,52 +102,51 @@ function DashMobileMenu() {
         style={{ bottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
       >
         <div
-          className="flex items-center gap-0.5 px-1.5 py-1.5 bg-[#111113]/90 backdrop-blur-xl rounded-full"
-          style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}
+          className="flex items-center gap-0.5 px-1.5 py-1.5 bg-white/95 backdrop-blur-xl rounded-full border-2 border-[#e5e5e5]"
+          style={{ boxShadow: '0 4px 0 #e5e5e5' }}
         >
-          {/* LearnHouse logo — links to home */}
+          {/* Ordria Learning logo · links to home */}
           <Link
-            href="/dash"
+            href={m('/dash')}
             className="flex items-center justify-center px-2.5 py-2.5 rounded-full transition-all duration-200"
             aria-label="Home"
           >
-            <img
-              src="/lrn-dash.svg"
-              alt="LearnHouse"
-              className="h-[18px] w-[18px] opacity-60 hover:opacity-90 transition-opacity"
-              style={{ filter: 'brightness(0) invert(1)' }}
+            <Logo
+              variant="mark"
+              size={20}
+              ariaLabel="Ordria Learning"
+              className="opacity-70 hover:opacity-100 transition-opacity"
             />
           </Link>
-          {/* Progressive reveal — more icons as viewport widens */}
-          <PillLink href="/dash/courses" icon={<BookOpen size={18} weight="fill" />} active={isActive('/dash/courses')} className="hidden min-[340px]:flex" />
-          <PillLink href="/dash/assignments" icon={<Files size={18} weight="fill" />} active={isActive('/dash/assignments')} className="hidden min-[390px]:flex" />
-          <PillLink href="/dash/users/settings/users" icon={<Users size={18} weight="fill" />} active={isActive('/dash/users')} className="hidden min-[430px]:flex" />
+          {/* Progressive reveal · more icons as viewport widens */}
+          <PillLink href={m('/dash/courses')} icon={<BookOpen size={18} weight="fill" />} active={isActive('/dash/courses')} className="hidden min-[340px]:flex" />
+          <PillLink href={m('/dash/assignments')} icon={<Files size={18} weight="fill" />} active={isActive('/dash/assignments')} className="hidden min-[390px]:flex" />
+          <PillLink href={m('/dash/users/settings/users')} icon={<Users size={18} weight="fill" />} active={isActive('/dash/users')} className="hidden min-[430px]:flex" />
           {isEnabled('communities') && (
-            <PillLink href="/dash/communities" icon={<ChatsCircle size={18} weight="fill" />} active={isActive('/dash/communities')} className="hidden min-[470px]:flex" />
+            <PillLink href={m('/dash/communities')} icon={<ChatsCircle size={18} weight="fill" />} active={isActive('/dash/communities')} className="hidden min-[470px]:flex" />
           )}
           {isEnabled('podcasts') && (
-            <PillLink href="/dash/podcasts" icon={<Headphones size={18} weight="fill" />} active={isActive('/dash/podcasts')} className="hidden min-[510px]:flex" />
+            <PillLink href={m('/dash/podcasts')} icon={<Headphones size={18} weight="fill" />} active={isActive('/dash/podcasts')} className="hidden min-[510px]:flex" />
           )}
           {isEnabled('boards') && (
-            <PillLink href="/dash/boards" icon={<ChalkboardSimple size={18} weight="fill" />} active={isActive('/dash/boards')} className="hidden min-[550px]:flex" />
+            <PillLink href={m('/dash/boards')} icon={<ChalkboardSimple size={18} weight="fill" />} active={isActive('/dash/boards')} className="hidden min-[550px]:flex" />
           )}
           {isEnabled('playgrounds') && (
-            <PillLink href="/dash/playgrounds" icon={<Cube size={18} weight="fill" />} active={isActive('/dash/playgrounds')} className="hidden min-[590px]:flex" />
+            <PillLink href={m('/dash/playgrounds')} icon={<Cube size={18} weight="fill" />} active={isActive('/dash/playgrounds')} className="hidden min-[590px]:flex" />
           )}
-          <PillLink href="/dash/analytics" icon={<ChartBar size={18} weight="fill" />} active={isActive('/dash/analytics')} className="hidden min-[630px]:flex" />
-          <PillLink href="/dash/org/settings/general" icon={<Buildings size={18} weight="fill" />} active={isActive('/dash/org')} className="hidden min-[670px]:flex" />
-          <PillLink href="/dash/developers/api" icon={<Code size={18} weight="fill" />} active={isActive('/dash/developers')} className="hidden min-[710px]:flex" />
+          <PillLink href={m('/dash/analytics')} icon={<ChartBar size={18} weight="fill" />} active={isActive('/dash/analytics')} className="hidden min-[630px]:flex" />
+          <PillLink href={m('/dash/org/settings/general')} icon={<Buildings size={18} weight="fill" />} active={isActive('/dash/org')} className="hidden min-[670px]:flex" />
+          <PillLink href={m('/dash/developers/api')} icon={<Code size={18} weight="fill" />} active={isActive('/dash/developers')} className="hidden min-[710px]:flex" />
           {isEnabled('payments') && (
-            <PillLink href="/dash/payments/overview" icon={<CurrencyCircleDollar size={18} weight="fill" />} active={isActive('/dash/payments')} className="hidden min-[750px]:flex" />
+            <PillLink href={m('/dash/payments/overview')} icon={<CurrencyCircleDollar size={18} weight="fill" />} active={isActive('/dash/payments')} className="hidden min-[750px]:flex" />
           )}
 
-          <span className="w-px h-4 bg-white/[0.15] mx-1 shrink-0" />
+          <span className="w-px h-4 bg-[#e5e5e5] mx-1 shrink-0" />
 
-          {/* Search */}
           <button
             onClick={openSearch}
             aria-label="Search"
-            className="p-2.5 rounded-full transition-all duration-200 text-white/60 hover:text-white hover:bg-white/[0.1]"
+            className="p-2.5 rounded-full transition-all duration-200 text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7]"
           >
             <MagnifyingGlass size={18} weight="bold" />
           </button>
@@ -147,7 +158,7 @@ function DashMobileMenu() {
             aria-expanded={menuOpen}
             className={cn(
               'p-2.5 rounded-full transition-all duration-200 overflow-hidden',
-              menuOpen ? 'bg-white text-[#111113]' : 'text-white/60 hover:text-white hover:bg-white/[0.1]'
+              menuOpen ? 'bg-[#3c3c3c] text-white' : 'text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7]'
             )}
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -181,10 +192,10 @@ function DashMobileMenu() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.97 }}
               transition={{ type: 'spring', damping: 30, stiffness: 360 }}
-              className="fixed left-4 right-4 z-[9998] max-w-sm mx-auto bg-[#0e0e10]/95 backdrop-blur-xl rounded-2xl overflow-hidden"
+              className="fixed left-4 right-4 z-[9998] max-w-sm mx-auto bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden border-2 border-[#e5e5e5]"
               style={{
                 bottom: 'calc(env(safe-area-inset-bottom) + 5.5rem)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                boxShadow: '0 8px 0 #e5e5e5',
               }}
             >
               {/* Org header */}
@@ -196,29 +207,29 @@ function DashMobileMenu() {
                     className="h-7 w-7 object-contain rounded-lg"
                   />
                 ) : (
-                  <div className="h-7 w-7 flex items-center justify-center bg-white/[0.06] rounded-lg">
-                    <img src="/lrn-dash.svg" alt="LearnHouse" className="h-4 w-4" style={{ filter: 'brightness(0) invert(1)' }} />
+                  <div className="h-7 w-7 flex items-center justify-center bg-[#f7f7f7] rounded-lg">
+                    <Logo variant="mark" size={16} ariaLabel="Ordria Learning" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate leading-none mb-0.5">{org?.name}</p>
+                  <p className="text-sm font-bold text-[#3c3c3c] truncate leading-none mb-0.5">{org?.name}</p>
                   <p className={cn(
-                    'text-[10px] font-medium',
-                    mode === 'ee' ? 'text-amber-400' :
-                    mode === 'oss' ? 'text-green-400' :
-                    plan === 'enterprise' ? 'text-amber-400' :
-                    plan === 'pro' ? 'text-purple-400' :
-                    plan === 'standard' ? 'text-blue-400' :
-                    'text-white/30'
+                    'text-[10px] font-bold uppercase tracking-wide',
+                    mode === 'ee' ? 'text-amber-600' :
+                    mode === 'oss' ? 'text-emerald-600' :
+                    plan === 'enterprise' ? 'text-amber-600' :
+                    plan === 'pro' ? 'text-purple-600' :
+                    plan === 'standard' ? 'text-blue-600' :
+                    'text-[#afafaf]'
                   )}>{planLabel}</p>
                 </div>
               </div>
 
-              <div className="h-px bg-white/[0.05] mx-4" />
+              <div className="h-px bg-[#e5e5e5] mx-4" />
 
               {/* Nav items */}
               <div className="py-2 px-2 max-h-[52vh] overflow-y-auto overscroll-contain space-y-px">
-                <PanelItem href="/dash" icon={<House size={15} weight="fill" />} label={t('common.home')} active={isActive('/dash')} onClick={close} />
+                <PanelItem href={m('/dash')} icon={<House size={15} weight="fill" />} label={t('common.home')} active={isActive('/dash')} onClick={close} />
                 <PanelItem href="/dash/courses" icon={<BookOpen size={15} weight="fill" />} label={t('courses.courses')} active={isActive('/dash/courses')} onClick={close} />
                 {isEnabled('folders') && <PanelItem href="/dash/library" icon={<FolderSimple size={15} weight="fill" />} label={t('library.library')} active={isActive('/dash/library')} onClick={close} />}
                 <PanelItem href="/dash/assignments" icon={<Files size={15} weight="fill" />} label={t('common.assignments')} active={isActive('/dash/assignments')} onClick={close} />
@@ -232,68 +243,61 @@ function DashMobileMenu() {
                 <PanelItem href="/dash/org/settings/general" icon={<Buildings size={15} weight="fill" />} label={t('common.organization')} active={isActive('/dash/org')} onClick={close} />
                 <PanelItem href="/dash/developers/api" icon={<Code size={15} weight="fill" />} label={t('dashboard.developers.breadcrumb', { defaultValue: 'Developers' })} active={isActive('/dash/developers')} onClick={close} />
 
-                <div className="h-px bg-white/[0.05] mx-2 my-1.5" />
+                <div className="h-px bg-[#e5e5e5] mx-2 my-1.5" />
 
-                <PanelItem href="/account/general" icon={<Gear size={15} weight="fill" />} label={t('common.settings')} active={isActive('/account')} onClick={close} />
+                <PanelItem href={m('/account/general')} icon={<Gear size={15} weight="fill" />} label={t('common.settings')} active={isActive('/account')} onClick={close} />
 
-                {/* Language picker */}
                 <button
                   onClick={() => setLangExpanded(v => !v)}
-                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"
+                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-all"
                 >
                   <Globe size={15} weight="fill" />
                   <span className="text-sm font-medium flex-1 text-left">{t('common.language')}</span>
                   <CaretDown size={10} weight="bold" className={cn('transition-transform', langExpanded && 'rotate-180')} />
                 </button>
                 {langExpanded && (
-                  <div className="ml-2 pl-3 border-l border-white/[0.05] space-y-px">
+                  <div className="ml-2 pl-3 border-l border-[#e5e5e5] space-y-px">
                     {AVAILABLE_LANGUAGES.map(lang => (
                       <button
                         key={lang.code}
                         onClick={() => { changeLanguage(lang.code); setLangExpanded(false) }}
-                        className="flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-sm text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"
+                        className="flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-sm text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-all"
                       >
                         <span className="font-medium">{lang.nativeName}</span>
-                        {i18n.language.split('-')[0] === lang.code && <Check size={11} weight="bold" className="text-green-500" />}
+                        {i18n.language.split('-')[0] === lang.code && <Check size={11} weight="bold" className="text-[var(--ordria-accent)]" />}
                       </button>
                     ))}
                   </div>
                 )}
 
-                <a href="https://docs.learnhouse.app" target="_blank" rel="noopener noreferrer"
-                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"
+                <a href="https://ordria.fr" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-all"
                 >
                   <Book size={15} weight="fill" />
-                  <span className="text-sm font-medium">{t('common.help_menu.documentation')}</span>
-                </a>
-                <a href="https://discord.gg/learnhouse" target="_blank" rel="noopener noreferrer"
-                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"
-                >
-                  <DiscordIcon size={15} />
-                  <span className="text-sm font-medium">{t('common.help_menu.discord')}</span>
+                  <span className="text-sm font-semibold">{t('common.help_menu.documentation')}</span>
                 </a>
                 <button
                   onClick={() => { setFeedbackModalOpen(true); close() }}
-                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-white/40 hover:text-white/80 hover:bg-white/[0.05] transition-all"
+                  className="flex items-center w-full rounded-lg px-2.5 py-2 gap-2.5 text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7] transition-all"
                 >
                   <ChatCircleDots size={15} weight="fill" />
-                  <span className="text-sm font-medium">{t('common.help_menu.report_feedback')}</span>
+                  <span className="text-sm font-semibold">{t('common.help_menu.report_feedback')}</span>
                 </button>
               </div>
 
               {/* User footer */}
-              <div className="h-px bg-white/[0.05] mx-4" />
+              <div className="h-px bg-[#e5e5e5] mx-4" />
               <div className="px-4 py-3">
                 <div className="flex items-center gap-3">
                   <UserAvatar width={28} rounded="rounded-full" shadow="shadow-none" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white/90 truncate leading-none mb-0.5">{session?.data?.user?.username}</p>
-                    <p className="text-[10px] text-white/30 truncate">{session?.data?.user?.email}</p>
+                    <p className="text-sm font-bold text-[#3c3c3c] truncate leading-none mb-0.5">{session?.data?.user?.username}</p>
+                    <p className="text-[10px] text-[#afafaf] truncate font-semibold">{session?.data?.user?.email}</p>
                   </div>
                   <button
                     onClick={logOutUI}
                     aria-label={t('user.sign_out')}
-                    className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-white/[0.05] transition-all"
+                    className="p-1.5 rounded-lg text-[#afafaf] hover:text-[#ff4b4b] hover:bg-[#ffebeb] transition-all"
                   >
                     <SignOut size={14} weight="fill" />
                   </button>
@@ -307,7 +311,7 @@ function DashMobileMenu() {
       <FeedbackModal
         open={feedbackModalOpen}
         onOpenChange={setFeedbackModalOpen}
-        theme="dark"
+        theme="light"
         userName={session?.data?.user?.username}
         userEmail={session?.data?.user?.email}
       />
@@ -331,7 +335,7 @@ const PillLink = ({
     href={href}
     className={cn(
       'flex items-center justify-center p-2.5 rounded-full transition-all duration-200',
-      active ? 'bg-white/[0.15] text-white' : 'text-white/50 hover:text-white hover:bg-white/[0.08]',
+      active ? 'bg-[#e5f9d8] text-[var(--ordria-accent)]' : 'text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7]',
       className
     )}
   >
@@ -358,17 +362,17 @@ const PanelItem = ({
     aria-current={active ? 'page' : undefined}
     className={cn(
       'relative flex items-center w-full rounded-lg px-2.5 py-2 gap-2 transition-all',
-      active ? 'text-white bg-white/[0.08]' : 'text-white/50 hover:text-white hover:bg-white/[0.06]'
+      active ? 'text-[#3c3c3c] bg-[#e5f9d8]' : 'text-[#777] hover:text-[#3c3c3c] hover:bg-[#f7f7f7]'
     )}
   >
     {active && (
       <span
         aria-hidden="true"
-        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-4 w-[2px] bg-white rounded-full"
+        className="absolute left-0.5 top-1/2 -translate-y-1/2 h-4 w-[2px] bg-[var(--ordria-accent)] rounded-full"
       />
     )}
     {icon}
-    <span className="text-sm font-medium">{label}</span>
+    <span className="text-sm font-bold">{label}</span>
   </Link>
 )
 

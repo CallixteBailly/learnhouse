@@ -51,7 +51,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
   const { track } = useLHAnalytics()
   const colors = getMenuColorClasses(primaryColor)
 
-  // The user's organizations (deduped) from the session roles — used by the
+  // The user's organizations (deduped) from the session roles · used by the
   // "My Organizations" submenu. Only relevant in multi-org (SaaS) mode, where
   // the apex hub (/home, /new, /billing) exists.
   const multiOrg = isMultiOrgModeEnabled()
@@ -243,7 +243,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem asChild>
-                  <Link href="/account/general" className="flex items-center space-x-2">
+                  <Link href={getUriWithOrg(org?.slug, '/account/general')} className="flex items-center space-x-2">
                     <User size={16} weight="fill" />
                     <span>{t('user.user_settings')}</span>
                   </Link>
@@ -278,7 +278,16 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                         <DropdownMenuSubContent className="max-h-72 overflow-auto">
                           {myOrgs.map((o: any) => (
                             <DropdownMenuItem key={o.id} asChild>
-                              <Link href={getUriWithOrg(o.slug, '/')} className="flex items-center space-x-2">
+                              {/* Central-LMS cookie tenancy: getUriWithOrg keeps
+                                  navigation on the current host, so switching to
+                                  a DIFFERENT org must cross to that org's
+                                  explicit /orgs/{slug}/ URL (which re-pins the
+                                  LH_org cookie and keeps the org visible in
+                                  the address bar). Same-org links stay relative. */}
+                              <Link
+                                href={o.slug && o.slug !== org?.slug ? `/orgs/${o.slug}/` : getUriWithOrg(o.slug, '/')}
+                                className="flex items-center space-x-2"
+                              >
                                 {o.logo_image ? (
                                   <img src={getOrgLogoMediaDirectory(o.org_uuid, o.logo_image)} alt="" className="w-5 h-5 rounded object-cover shrink-0 ring-1 ring-inset ring-black/5" />
                                 ) : (
@@ -302,6 +311,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   </>
                 )}
                 <DropdownMenuSeparator />
+                {/* DÉSACTIVÉ · Sélecteur de langue (OrdIA Learning : FR uniquement)
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="flex items-center gap-2 space-x-2">
                     <Globe size={14} weight="fill" />
@@ -310,7 +320,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
                       {AVAILABLE_LANGUAGES.map((language) => (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           key={language.code}
                           onClick={() => changeLanguage(language.code)}
                           className="flex items-center justify-between"
@@ -323,6 +333,7 @@ export const HeaderProfileBox = ({ primaryColor = '' }: { primaryColor?: string 
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
                 <DropdownMenuSeparator />
+                */}
                 <DropdownMenuItem
                   onClick={() => {
                     track(AnalyticsEvent.LogoutClicked, { source: 'header_profile' })

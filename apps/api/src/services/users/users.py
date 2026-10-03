@@ -46,6 +46,10 @@ from src.security.rbac.constants import ADMIN_ROLE_ID
 from src.security.security import security_hash_password, security_verify_password
 from src.services.security.password_validation import validate_password_complexity
 from src.services.security.profile_validation import validate_profile_fields
+from src.services.users.signup_profile import (
+    validate_and_normalize_signup_profile,
+    validate_profile_update,
+)
 from src.services.analytics.analytics import track
 from src.services.analytics import events as analytics_events
 from src.services.webhooks.dispatch import dispatch_webhooks
@@ -150,12 +154,17 @@ async def create_user(
                 },
             )
 
-    # Reject phishing links in display-name fields at signup.
+    # Complementary signup guards: upstream's phishing-URL rejection on
+    # display-name fields + Ordria's enriched-signup contract (job/phone/
+    # consents). OAuth signups skip the contract — the soft banner collects
+    # the profile later.
     _reject_urls_in_profile_fields(
         username=user_object.username,
         first_name=user_object.first_name,
         last_name=user_object.last_name,
     )
+    if not is_oauth:
+        await validate_and_normalize_signup_profile(db_session, user_object)
 
     user = User.model_validate(user_object)
 
@@ -199,7 +208,8 @@ async def create_user(
     # already registered (account enumeration).
     conflict = (await db_session.execute(
         select(User).where(
-            (User.username == user.username) | (User.email == user.email)
+            (User.username == user.username)
+            | (func.lower(User.email) == user.email.lower())
         )
     )).scalars().first()
 
@@ -238,12 +248,21 @@ async def create_user(
 
     await increase_feature_usage("members", org_id, db_session)
 
-    # Track user signup
+    # Track user signup — spec §3.5: the event carries the (already normalized)
+    # job slug. OAuth signups have no job yet (the soft banner collects it
+    # later), so job_slug is None there — the key stays present and consistent
+    # for downstream analytics.
+    signup_job = (
+        user.profile.get("job") if isinstance(user.profile, dict) else None
+    )
+    job_slug = (
+        signup_job.get("slug") if isinstance(signup_job, dict) else None
+    )
     await track(
         event_name=analytics_events.USER_SIGNED_UP,
         org_id=org_id,
         user_id=user.id if user.id else 0,
-        properties={"signup_method": signup_provider},
+        properties={"signup_method": signup_provider, "job_slug": job_slug},
     )
     await dispatch_webhooks(
         event_name=analytics_events.USER_SIGNED_UP,
@@ -292,6 +311,7 @@ async def create_user_with_invite(
     user_object: UserCreate,
     org_id: int,
     invite_code: str,
+    is_oauth: bool = False,
 ):
 
     # Check if invite code exists
@@ -308,9 +328,18 @@ async def create_user_with_invite(
     # Usage check
     await check_limits_with_usage("members", org_id, db_session)
 
-
-
-    user = await create_user(request, db_session, current_user, user_object, org_id, signup_provider="invite")
+    # NOTE: the enriched-signup contract (job/phone/consents) is enforced exactly
+    # once, inside create_user() below — do NOT validate here too: a second pass
+    # over the already-stamped consents would wrongly 400 (CONSENT_REQUIRED).
+    user = await create_user(
+        request,
+        db_session,
+        current_user,
+        user_object,
+        org_id,
+        is_oauth=is_oauth,
+        signup_provider="invite",
+    )
 
     # Check if invite code contains UserGroup
     if inviteCode.get("usergroup_id"): # type: ignore
@@ -384,12 +413,17 @@ async def create_user_without_org(
                 },
             )
 
-    # Reject phishing links in display-name fields at signup.
+    # Complementary signup guards: upstream's phishing-URL rejection on
+    # display-name fields + Ordria's enriched-signup contract (job/phone/
+    # consents). OAuth signups skip the contract — the soft banner collects
+    # the profile later.
     _reject_urls_in_profile_fields(
         username=user_object.username,
         first_name=user_object.first_name,
         last_name=user_object.last_name,
     )
+    if not is_oauth:
+        await validate_and_normalize_signup_profile(db_session, user_object)
 
     user = User.model_validate(user_object)
 
@@ -419,7 +453,8 @@ async def create_user_without_org(
     # prevent account enumeration via this org-less signup endpoint.
     conflict = (await db_session.execute(
         select(User).where(
-            (User.username == user.username) | (User.email == user.email)
+            (User.username == user.username)
+            | (func.lower(User.email) == user.email.lower())
         )
     )).scalars().first()
 
@@ -492,7 +527,10 @@ async def update_user(
     # via the update endpoint to enumerate other accounts.
     conflict = (await db_session.execute(
         select(User).where(
-            ((User.username == user_object.username) | (User.email == user_object.email))
+            (
+                (User.username == user_object.username)
+                | (func.lower(User.email) == user_object.email.lower())
+            )
             & (User.id != user.id)
         )
     )).scalars().first()
@@ -507,7 +545,31 @@ async def update_user(
     # email_verified is also protected so changing the email cannot leave
     # the account appearing "already verified" on the new address.
     _PROTECTED_FIELDS = {"is_superadmin", "id", "user_uuid", "email_verified", "email_verified_at"}
+
+    # Ordria: profile is a JSON column replaced wholesale — merge instead so a
+    # partial update never wipes the signup-collected job/phone, and so the
+    # RGPD consents (extra_metadata.consents) stay append-only (set at signup).
     user_data = user_object.model_dump(exclude_unset=True)
+
+    if "profile" in user_data:
+        merged_profile = dict(user.profile or {})
+        merged_profile.update(user_data["profile"] or {})
+        user_data["profile"] = merged_profile
+        user_object.profile = merged_profile  # validator sees the merged view
+
+    if "extra_metadata" in user_data:
+        merged_extra = dict(user.extra_metadata or {})
+        incoming_extra = dict(user_data["extra_metadata"] or {})
+        incoming_extra.pop("consents", None)  # consents are never editable here
+        merged_extra.update(incoming_extra)
+        user_data["extra_metadata"] = merged_extra
+
+    await validate_profile_update(db_session, user_object)
+    if "profile" in user_data:
+        # The validator normalizes job (slug/label) and phone in place; sync
+        # the validated view back so the setattr loop persists it, not the
+        # pre-validation merged dict.
+        user_data["profile"] = user_object.profile
 
     # SECURITY: if the email actually changed, force re-verification on the
     # new address. SaaS login requires email_verified=True, so this prevents
@@ -907,8 +969,11 @@ async def security_get_user(request: Request, db_session: AsyncSession, email: s
     to allow the caller to handle the "user not found" case appropriately
     and prevent email enumeration vulnerabilities.
     """
-    # Check if user exists
-    statement = select(User).where(User.email == email)
+    # Check if user exists.
+    # Case-insensitive: emails are stored verbatim at signup (e.g. capital
+    # first letter) but users type them in any case at login — an exact
+    # match here would silently lock them out.
+    statement = select(User).where(func.lower(User.email) == email.lower())
     user = (await db_session.execute(statement)).scalars().first()
 
     if not user:

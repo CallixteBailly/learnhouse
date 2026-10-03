@@ -46,11 +46,11 @@
     "help": "Ayuda",
     "help_menu": {
       "documentation": "Documentación",
-      "website": "Sitio web de LearnHouse",
+      "website": "Sitio web de Ordria",
       "discord": "Discord",
       "report_feedback": "Reportar problema o comentario",
       "feedback_title": "Enviar comentarios",
-      "feedback_description": "Ayúdanos a mejorar LearnHouse compartiendo tus opiniones, reportando errores o sugiriendo nuevas funciones.",
+      "feedback_description": "Ayúdanos a mejorar Ordria compartiendo tus opiniones, reportando errores o sugiriendo nuevas funciones.",
       "feedback_placeholder": "Cuéntanos qué piensas...",
       "feedback_success": "¡Gracias por tu comentario!",
       "send_feedback": "Enviar comentarios",
@@ -215,7 +215,7 @@
     "organizations": "Organizaciones",
     "billing": "Facturación",
     "create_organization": "Crear organización",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "No se pudo eliminar esta organización. Inténtalo de nuevo.",
     "org_actions": "Acciones de la organización",
     "manage_upgrade": "Gestionar / Mejorar",
@@ -228,7 +228,8 @@
     "leave_organization_title": "¿Salir de la organización?",
     "leave_organization_desc": "Perderás el acceso a {{org}} y se te eliminará de sus miembros. Podrás volver a unirte más adelante si recibes una invitación.",
     "leave_organization_error": "No se pudo salir de esta organización. Inténtalo de nuevo.",
-    "leaving": "Saliendo…"
+    "leaving": "Saliendo…",
+    "formations": "Formación"
   },
   "banner": {
     "viewing_as_guest": "Estás viendo {{name}} como invitado.",
@@ -358,11 +359,11 @@
     "privacy_policy": "Política de privacidad",
     "image_title_forgot": "Restablece tu contraseña.",
     "image_subtitle_forgot": "Te ayudaremos a recuperar el acceso a tu cuenta en un instante.",
-    "image_title_login": "Bienvenido de nuevo a LearnHouse.",
-    "image_subtitle_login": "Retoma donde lo dejaste — tus cursos, estudiantes y herramientas te esperan.",
+    "image_title_login": "Bienvenido de nuevo a Ordria.",
+    "image_subtitle_login": "Retoma donde lo dejaste, tus cursos, estudiantes y herramientas te esperan.",
     "image_title_reset": "Casi listo.",
     "image_subtitle_reset": "Crea una contraseña segura para mantener tu cuenta protegida.",
-    "image_title_signup": "Empieza a enseñar con LearnHouse.",
+    "image_title_signup": "Empieza a enseñar con Ordria.",
     "image_subtitle_signup": "Crea tu cuenta y lanza tu primer curso en minutos.",
     "image_title_verify": "Verifica tu correo electrónico.",
     "image_subtitle_verify": "Un paso rápido para proteger tu cuenta y empezar.",
@@ -554,14 +555,14 @@
     "import": {
       "scorm_package": "Paquete SCORM",
       "scorm_description": "Importar paquetes SCORM 1.2 o SCORM 2004",
-      "learnhouse_courses": "Cursos de LearnHouse",
-      "learnhouse_description": "Importar cursos exportados desde LearnHouse",
+      "learnhouse_courses": "Cursos de Ordria",
+      "learnhouse_description": "Importar cursos exportados desde Ordria",
       "upload_package": "Subir paquete",
       "configure": "Configurar",
       "complete": "Completado",
       "click_to_upload": "Haz clic para subir o arrastra y suelta",
-      "learnhouse_format": "Exportación de curso LearnHouse (.zip)",
-      "learnhouse_info": "Sube un paquete de exportación de cursos LearnHouse (.zip). Podrás seleccionar qué cursos importar y configurar las opciones de importación.",
+      "learnhouse_format": "Exportación de curso Ordria (.zip)",
+      "learnhouse_info": "Sube un paquete de exportación de cursos Ordria (.zip). Podrás seleccionar qué cursos importar y configurar las opciones de importación.",
       "analyze_package": "Analizar paquete",
       "ready_to_analyze": "Listo para analizar",
       "invalid_file_format": "Por favor sube un archivo .zip",
@@ -616,7 +617,7 @@
         "plan_generated": "Plan actualizado",
         "plan_generated_hint": "Revisa y edita en la pestaña Plan.",
         "describe_course": "Describe tu curso",
-        "describe_course_hint": "Usa el chat de la derecha para describir el curso que deseas — tema, audiencia y objetivos.",
+        "describe_course_hint": "Usa el chat de la derecha para describir el curso que deseas, tema, audiencia y objetivos.",
         "generating_plan": "Generando plan del curso...",
         "chapters": "Capítulos",
         "activities": "actividades",
@@ -1028,8 +1029,8 @@
     "retry_assignment_title": "¿Intentar esta tarea de nuevo?",
     "retry_assignment_confirm": "Tu envío actual y respuestas se restablecerán para que puedas empezar de nuevo. Tu calificación anterior se reemplazará una vez que reenviés.",
     "retry_assignment_remaining": "Te quedan {{remaining}} intento{{plural}} después de este.",
-    "retry_assignment_last": "Este es tu último intento — hazlo contar.",
-    "retry_assignment_success": "Tu trabajo ha sido restablecido — intenta de nuevo.",
+    "retry_assignment_last": "Este es tu último intento, hazlo contar.",
+    "retry_assignment_success": "Tu trabajo ha sido restablecido, intenta de nuevo.",
     "retry_assignment_failed": "No se pudo restablecer tu envío. Por favor, intenta de nuevo.",
     "retry_no_attempts_left": "Sin reintentos disponibles",
     "no_task_submission_to_grade": "Este estudiante aún no ha enviado un archivo para esta tarea.",
@@ -1431,7 +1432,7 @@
           "description": "Configurar sus ajustes personales, contraseñas y correo electrónico"
         }
       },
-      "learnhouse_university": "Universidad LearnHouse",
+      "learnhouse_university": "Universidad Ordria",
       "welcome_back": "Bienvenido de nuevo",
       "plan": "plan",
       "create_course": "Crear curso",
@@ -1488,8 +1489,8 @@
       "import_course": "Importar curso",
       "import_scorm": "Importar paquete SCORM",
       "import_scorm_description": "Importar un paquete SCORM para crear un nuevo curso",
-      "import_learnhouse": "Importar cursos de LearnHouse",
-      "import_learnhouse_description": "Importar cursos desde un paquete de exportación de LearnHouse",
+      "import_learnhouse": "Importar cursos de Ordria",
+      "import_learnhouse_description": "Importar cursos desde un paquete de exportación de Ordria",
       "import_select_type": "Selecciona el tipo de paquete que deseas importar",
       "no_courses": "Aún no hay cursos",
       "create_course_placeholder": "Crea un curso para añadir contenido",
@@ -2337,9 +2338,9 @@
         "footer_text_desc": "Texto personalizado que se muestra en la parte inferior de las páginas de tu organización",
         "default_language": "Idioma predeterminado",
         "default_language_desc": "El idioma que ven los nuevos visitantes por defecto y el que se utiliza para los correos enviados en nombre de esta organización. Los miembros pueden cambiar su propio idioma de la interfaz.",
-        "watermark_desc": "Mostrar la marca de agua de LearnHouse en las páginas de tu organización",
+        "watermark_desc": "Mostrar la marca de agua de Ordria en las páginas de tu organización",
         "watermark_free_plan": "La marca de agua siempre se muestra en el plan gratuito",
-        "watermark_label": "Marca de agua \"Hecho con LearnHouse\"",
+        "watermark_label": "Marca de agua \"Hecho con Ordria\"",
         "watermark_ee": "Oculto por tu licencia Enterprise Edition"
       },
       "images": {
@@ -3579,7 +3580,7 @@
             "auth_required_submit": "Autenticación requerida. Inicia sesión para enviar tu tarea.",
             "hint_optional": "Pista (opcional)",
             "paste_blocked": "Pegar está desactivado para esta tarea",
-            "paste_blocked_hint": "Pegar está desactivado — escribe tu respuesta directamente.",
+            "paste_blocked_hint": "Pegar está desactivado, escribe tu respuesta directamente.",
             "upload_locked_graded": "Esta entrega ha sido calificada — ya no puedes cambiar tu archivo.",
             "upload_locked_submitted": "Has enviado esta tarea — ya no puedes cambiar tu archivo."
           },
@@ -3617,13 +3618,13 @@
               "regex": "Expresión regular"
             },
             "explanation_label": "Explicación (mostrada en respuesta correcta)",
-            "explanation_placeholder": "Opcional — explica por qué la respuesta es correcta",
+            "explanation_placeholder": "Opcional, explica por qué la respuesta es correcta",
             "your_answer_placeholder": "Escribe tu respuesta...",
             "student_answer_label": "Respuesta del estudiante",
             "accepted_answers_label": "Respuestas aceptadas",
             "no_answer": "Sin respuesta enviada",
             "correct": "Correcto",
-            "incorrect": "No exactamente — intenta de nuevo"
+            "incorrect": "No exactamente, intenta de nuevo"
           },
           "number_answer": {
             "prompt_label": "Enunciado de la pregunta",
@@ -3634,14 +3635,14 @@
             "unit_placeholder": "m/s², kg, °C...",
             "unit_hint": "Se muestra junto al campo de respuesta. No obligatoria.",
             "explanation_label": "Explicación (mostrada en respuesta correcta)",
-            "explanation_placeholder": "Opcional — explica cómo llegar a la respuesta",
+            "explanation_placeholder": "Opcional, explica cómo llegar a la respuesta",
             "preview_label": "Acepta",
             "your_answer_placeholder": "Introduce un número...",
             "student_answer_label": "Respuesta del estudiante",
             "accepted_range_label": "Rango aceptado",
             "no_answer": "Sin respuesta enviada",
             "correct": "Correcto",
-            "incorrect": "No exactamente — intenta de nuevo"
+            "incorrect": "No exactamente, intenta de nuevo"
           }
         },
         "generate_ai": "Generar tareas con AI",
@@ -3750,7 +3751,7 @@
         },
         "tasks": {
           "title": "Rendimiento por tarea",
-          "subtitle": "Puntuación media por tarea — las barras bajas destacan dónde les cuesta más",
+          "subtitle": "Puntuación media por tarea, las barras bajas destacan dónde les cuesta más",
           "empty": "El rendimiento por tarea aparecerá tras calificar entregas",
           "avg_grade": "Nota media",
           "attempts": "intentos"
@@ -3762,7 +3763,7 @@
         },
         "attention": {
           "title": "Posible apoyo necesario",
-          "subtitle": "Estudiantes que no aprobaron — considera contactarlos",
+          "subtitle": "Estudiantes que no aprobaron, considera contactarlos",
           "empty": "Todos los calificados aprobaron. ¡Buen trabajo!"
         }
       },
@@ -4216,11 +4217,14 @@
       "video_block": {
         "uploading": "Cargando video...",
         "drop_or_browse": "Suelta tu video aquí o haz clic para examinar",
-        "supported_formats": "Admite formatos MP4 y WebM",
-        "unsupported_format": "Por favor carga un formato de video compatible (MP4 o WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "Reproductor de video",
         "expand_video": "Expandir video",
-        "download_video": "Descargar video"
+        "download_video": "Descargar video",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "No hay PDF disponible",
@@ -4328,7 +4332,7 @@
   "embed": {
     "not_supported_description": "Este tipo de actividad requiere autenticación y no puede ser incrustada.",
     "not_supported_title": "Esta actividad no es compatible",
-    "powered_by": "Desarrollado por LearnHouse",
+    "powered_by": "Desarrollado por Ordria",
     "visit_activity": "Visitar página de actividad"
   },
   "analytics": {
@@ -4526,7 +4530,7 @@
         "avg_rate": "Tasa prom.",
         "needs_attention": "Requiere atención",
         "total_samples": "Muestras totales",
-        "more_expand": "+{{count}} más — clic para expandir",
+        "more_expand": "+{{count}} más, clic para expandir",
         "activities_count": "{{count}} actividades",
         "pct_of_total": "% del total",
         "bar_width_hint": "Ancho de barra = vistas relativas",
@@ -4646,7 +4650,7 @@
       },
       "activity_dropoff": {
         "title": "Puntos de abandono",
-        "subtitle": "Donde los estudiantes dejan de avanzar — última actividad completada",
+        "subtitle": "Donde los estudiantes dejan de avanzar, última actividad completada",
         "total_dropoffs": "Abandonos totales",
         "dropoff_points": "Puntos de abandono"
       },
@@ -4680,7 +4684,7 @@
         "avg_between": "prom. {{unit}} entre finalizaciones",
         "transitions_tracked": "transiciones registradas",
         "raw_hours_avg": "prom. horas brutas",
-        "description": "Mide la rapidez con la que los estudiantes avanzan de una actividad a la siguiente. Menor es mejor — significa que los estudiantes avanzan más rápido por el contenido."
+        "description": "Mide la rapidez con la que los estudiantes avanzan de una actividad a la siguiente. Menor es mejor, significa que los estudiantes avanzan más rápido por el contenido."
       },
       "time_to_completion": {
         "title": "Tiempo hasta la finalización",
@@ -5032,15 +5036,15 @@
       },
       "teach_the_world": {
         "title": "Aprende y crece",
-        "description": "Recursos para ayudarte a sacar el máximo provecho de LearnHouse.",
+        "description": "Recursos para ayudarte a sacar el máximo provecho de Ordria.",
         "classroom": "El aula",
         "classroom_desc": "Aprende a hacer crecer y gestionar tus cursos",
-        "university": "Universidad LearnHouse",
+        "university": "Universidad Ordria",
         "university_desc": "Guías, consejos y mejores prácticas"
       },
       "add_content": {
         "title": "Una lección que valga la pena",
-        "description": "Añade un vídeo, una página o un cuestionario — dale a los estudiantes un motivo real para inscribirse.",
+        "description": "Añade un vídeo, una página o un cuestionario, dale a los estudiantes un motivo real para inscribirse.",
         "action": "Añadir contenido"
       },
       "brand_school": {
@@ -5050,22 +5054,22 @@
       },
       "share_grow": {
         "title": "La puerta de entrada de tu escuela",
-        "description": "Ponla en marcha y obtén tu enlace para compartir — el lugar al que enviarás a cada estudiante.",
+        "description": "Ponla en marcha y obtén tu enlace para compartir, el lugar al que enviarás a cada estudiante.",
         "action": "Abrir mi escuela"
       },
       "invite_learners": {
         "title": "Da la bienvenida a tu primer estudiante",
-        "description": "Comparte tu enlace de acceso o invita a personas — haz que ese primer estudiante entre por la puerta.",
+        "description": "Comparte tu enlace de acceso o invita a personas, haz que ese primer estudiante entre por la puerta.",
         "action": "Invitar estudiantes"
       },
       "build_community": {
         "title": "Haz que los estudiantes vuelvan",
-        "description": "Abre un espacio de comunidad para que tus estudiantes sigan activos — y traigan a sus amigos.",
+        "description": "Abre un espacio de comunidad para que tus estudiantes sigan activos, y traigan a sus amigos.",
         "action": "Abrir comunidad"
       }
     },
     "welcome": {
-      "title": "Bienvenido a LearnHouse",
+      "title": "Bienvenido a Ordria",
       "subtitle": "Crea cursos, invita estudiantes y comparte conocimiento con el mundo.",
       "get_started": "Comenzar",
       "features_title": "Todo lo que necesitas",
@@ -5152,7 +5156,7 @@
         "goal": "Monetiza tus cursos y construye una comunidad de aprendizaje.",
         "highlights": {
           "courses": "Cursos ilimitados",
-          "courses_desc": "Crea tantos cursos como necesites — sin límites en tu plan de estudios.",
+          "courses_desc": "Crea tantos cursos como necesites, sin límites en tu plan de estudios.",
           "members": "Hasta 500 miembros",
           "members_desc": "Haz crecer tu base de estudiantes y gestiónala en un solo lugar.",
           "payments": "Aceptar pagos",
@@ -5210,7 +5214,7 @@
       "trigger_authenticated_title": "Acceso: solo usuarios con sesión iniciada",
       "trigger_restricted_title": "Acceso: grupos de usuarios específicos",
       "usergroups_header": "Grupos de usuarios",
-      "usergroups_none_assigned": "No hay grupos asignados — solo los administradores pueden abrirlo.",
+      "usergroups_none_assigned": "No hay grupos asignados, solo los administradores pueden abrirlo.",
       "usergroups_remove_title": "Quitar",
       "usergroups_loading": "Cargando grupos…",
       "usergroups_none_in_org": "Aún no hay grupos de usuarios en esta organización.",
@@ -5474,7 +5478,7 @@
     "recurring_subscription": "suscripción recurrente",
     "what_youre_getting": "Lo que obtienes",
     "pack_immediate": "Surte efecto inmediatamente después del pago",
-    "pack_cancel_anytime": "Cancela cuando quieras — sigue activo hasta el final del período de facturación",
+    "pack_cancel_anytime": "Cancela cuando quieras, sigue activo hasta el final del período de facturación",
     "pack_credits_reset": "Los créditos se reinician en cada ciclo de facturación",
     "after_purchase": "Después de la compra",
     "unlimited": "Ilimitado",
@@ -5524,9 +5528,9 @@
     "canceled_desc": "Tu suscripción se cancelará al final de tu período de facturación actual. Conservarás el acceso completo hasta entonces.",
     "back_to_plan_usage": "Volver a Plan y uso",
     "back_to_orgs": "Volver a organizaciones",
-    "pack_purchased": "Complemento comprado — tus límites se han actualizado.",
-    "checkout_success": "Suscripción actualizada — ¡bienvenido a tu nuevo plan!",
-    "checkout_cancelled": "Compra cancelada — no se realizaron cambios.",
+    "pack_purchased": "Complemento comprado, tus límites se han actualizado.",
+    "checkout_success": "Suscripción actualizada, ¡bienvenido a tu nuevo plan!",
+    "checkout_cancelled": "Compra cancelada, no se realizaron cambios.",
     "load_failed": "No pudimos cargar tus organizaciones.",
     "no_permission": "No tienes permiso para gestionar la facturación de esta organización.",
     "no_permission_hint": "Solo un administrador de la organización puede ver o cambiar el plan.",
@@ -5610,7 +5614,7 @@
         "title": "¿Quieres probarlo?",
         "body": "Ve a la",
         "link": "página de Desarrolladores",
-        "suffix": "para probar LearnHouse en su lugar."
+        "suffix": "para probar Ordria en su lugar."
       },
       "validation": {
         "required": "Obligatorio",
@@ -5641,7 +5645,7 @@
     "toast": {
       "creating": "Creando organización…",
       "created": "¡Organización creada!",
-      "checkoutFailed": "Organización creada — puedes mejorar tu plan desde Plan y uso.",
+      "checkoutFailed": "Organización creada, puedes mejorar tu plan desde Plan y uso.",
       "failed": "No se pudo crear la organización"
     },
     "steps": {
@@ -5700,5 +5704,21 @@
     "folder_count_one": "{{count}} carpeta",
     "item_count": "{{count}} elementos",
     "item_count_one": "{{count}} elemento"
+  },
+  "signup": {
+    "job_label": "Votre métier",
+    "job_choose": "Choisir…",
+    "job_other": "Autre",
+    "job_other_precise": "Précisez votre métier",
+    "job_required": "Veuillez choisir votre métier",
+    "phone_label": "Téléphone",
+    "invalid_phone": "Numéro invalide",
+    "consent_terms": "J'accepte les",
+    "consent_terms_link": "conditions générales",
+    "consent_privacy": "J'accepte la",
+    "consent_privacy_link": "politique de confidentialité",
+    "consent_required": "Vous devez accepter pour continuer",
+    "complete_profile_banner": "Complétez votre profil, indiquez votre métier pour des recommandations sur mesure.",
+    "complete_profile_cta": "Compléter"
   }
 }

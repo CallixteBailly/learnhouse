@@ -1,5 +1,48 @@
 /* Minimal add-on to the default Video.js skin: icons for the ±15s seek buttons.
    Everything else stays stock. */
+
+/* Stock video.js hides the control bar until the first playback starts
+   (.vjs-has-started), which leaves NO fullscreen access on a video that
+   hasn't been started. Show the bar whenever the user is over the player
+   (vjs-user-active · mouse hover or a tap), YouTube-style. The stock
+   fade-out while playing is untouched: vjs-user-inactive replaces
+   vjs-user-active after the inactivity timeout, so the two never collide. */
+.video-js.vjs-user-active:not(.vjs-controls-disabled, .vjs-using-native-controls, .vjs-error) .vjs-control-bar {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Duration isn't known before the first playback and video.js renders
+   garbage in the time controls (e.g. "-20:6") · hide them until started. */
+.video-js:not(.vjs-has-started) .vjs-current-time,
+.video-js:not(.vjs-has-started) .vjs-time-divider,
+.video-js:not(.vjs-has-started) .vjs-duration,
+.video-js:not(.vjs-has-started) .vjs-remaining-time {
+  display: none;
+}
+
+/* Full-window is video.js's fallback where the Fullscreen API is missing
+   (e.g. an iframe without allow="fullscreen"). Stock z-index (1000) sits
+   below some app chrome (toasts at 300+); raise it above everything. */
+body.vjs-full-window .video-js.vjs-fullscreen {
+  z-index: 2147483000;
+}
+
+/* Video block overlay chips: hover-revealed on pointer devices, always
+   visible on touch (group-hover never fires without hover). */
+.lh-video-overlay {
+  opacity: 1;
+}
+@media (hover: hover) {
+  .lh-video-overlay {
+    opacity: 0;
+  }
+  .group:hover .lh-video-overlay {
+    opacity: 1;
+  }
+}
+
 .video-js .vjs-seek-back-15 .vjs-icon-placeholder::before,
 .video-js .vjs-seek-forward-15 .vjs-icon-placeholder::before {
   content: '';
@@ -12,12 +55,12 @@
   background-size: contain;
 }
 
-/* Rewind 15s — counter-clockwise circular arrow (rotate-ccw) with "15". */
+/* Rewind 15s · counter-clockwise circular arrow (rotate-ccw) with "15". */
 .video-js .vjs-seek-back-15 .vjs-icon-placeholder::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3Ctext x='12.5' y='15.5' font-size='7.5' fill='%23fff' stroke='none' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-weight='700'%3E15%3C/text%3E%3C/svg%3E");
 }
 
-/* Forward 15s — clockwise circular arrow (rotate-cw) with "15". */
+/* Forward 15s · clockwise circular arrow (rotate-cw) with "15". */
 .video-js .vjs-seek-forward-15 .vjs-icon-placeholder::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3Ctext x='11.5' y='15.5' font-size='7.5' fill='%23fff' stroke='none' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-weight='700'%3E15%3C/text%3E%3C/svg%3E");
 }

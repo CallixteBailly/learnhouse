@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import GeneralWrapperStyled from '@components/Objects/StyledElements/Wrappers/GeneralWrapper'
 import { Breadcrumbs } from '@components/Objects/Breadcrumbs/Breadcrumbs'
 import { AccountSidebar } from '@components/Objects/Account/AccountSidebar'
@@ -36,8 +37,21 @@ const AccountClient = ({ orgslug, org_id, subpage }: AccountClientProps) => {
   const isMobile = useMediaQuery('(max-width: 768px)')
   const session = useLHSession() as any
   const user = session?.data?.user
+  const router = useRouter()
   const { t } = useTranslation()
   const { track } = useLHAnalytics('learner')
+
+  // Client-side auth gate (replaces the old server-side redirect). The server
+  // session read can transiently fail while the client session is valid
+  // (token-rotation race), and a server redirect('/login') in that window used
+  // to eject logged-in users from their profile page. Deciding here, with the
+  // same session source the login page uses, means the two never disagree.
+  useEffect(() => {
+    if (session?.status === 'loading' || session?.status === 'authenticated') return
+    if (session?.status === 'unauthenticated') {
+      router.replace(getUriWithOrg(orgslug, `/login?redirect=/account/${subpage}`))
+    }
+  }, [session?.status, orgslug, subpage, router])
 
   // Fire one impression per distinct subpage (component stays mounted across
   // subpage changes, so guard on the value rather than relying on remount).

@@ -1,4 +1,5 @@
 import { stripPort, isSubdomainOf, isSameHost, isLocalhost as isLocalhostCheck } from '@services/utils/ts/hostUtils'
+import { safeBackendUrl } from '@/lib/secure-url'
 
 // Runtime configuration cache
 let runtimeConfig: Record<string, string> | null = null;
@@ -24,27 +25,28 @@ function loadRuntimeConfig(): Record<string, string> {
   if (typeof window === 'undefined') {
     // Server-side: try to read from runtime-config.json
     // Try multiple possible paths for standalone mode
+    //
+    // NOTE: this module must NEVER be imported from the Edge middleware ·
+    // Turbopack rejects these Node APIs in Edge bundles. The middleware
+    // imports ./edgeConfig (Edge-safe subset) instead.
     try {
       const fs = require('fs');
       const path = require('path');
-      
-      // In standalone mode, runtime-config.json is in the same directory as server.js
-      // Try common possible locations relative to the current working directory and module
-      const possiblePaths = [
-        path.join(process.cwd(), 'runtime-config.json'),
-        path.join(__dirname || process.cwd(), 'runtime-config.json'),
-        path.join(__dirname || process.cwd(), '..', 'runtime-config.json'),
-      ];
-      
-      for (const configPath of possiblePaths) {
-        try {
-          if (fs.existsSync(configPath)) {
-            runtimeConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-            break;
-          }
-        } catch {
-          // Continue to next path
+
+      // In standalone mode, server-wrapper.js writes runtime-config.json into
+      // the working directory. The path stays RELATIVE on purpose · any
+      // static reference to process.cwd()/__dirname makes Turbopack reject
+      // this module in the Edge middleware bundle (it reaches the Edge graph
+      // via the EE tenancy resolver's dynamic import). path.resolve()
+      // evaluates against the runtime cwd internally.
+      const configPath = path.resolve('runtime-config.json');
+
+      try {
+        if (fs.existsSync(configPath)) {
+          runtimeConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
         }
+      } catch {
+        // unreadable/invalid JSON · keep the empty config
       }
     } catch {
       // fs/path not available (client-side bundle), skip
@@ -104,7 +106,7 @@ const getLEARNHOUSE_TOP_DOMAIN = () => {
   const domain = getLEARNHOUSE_DOMAIN()
   return domain.split(':')[0]
 }
-// PostHog product analytics — opt-in. Telemetry is OFF unless this key is set
+// PostHog product analytics · opt-in. Telemetry is OFF unless this key is set
 // in the deployment env. No separate enable flag: presence of the key IS the switch.
 const getPOSTHOG_KEY = () => getConfig('NEXT_PUBLIC_POSTHOG_KEY', '');
 const getLEARNHOUSE_PLATFORM_URL = (): string | null => {
@@ -145,9 +147,18 @@ export const isOnCustomDomain = (): boolean => {
 const deriveAPIUrl = (): string => {
   // Backward compat: if explicit API URL is set, use it
   const explicitApiUrl = getConfig('NEXT_PUBLIC_LEARNHOUSE_API_URL')
-  if (explicitApiUrl) return explicitApiUrl
-  // Derive from backend URL
-  const backendUrl = getLEARNHOUSE_BACKEND_URL().replace(/\/+$/, '')
+  if (explicitApiUrl) {
+    if (typeof window === 'undefined') {
+      // Validate server-side without losing the trailing slash callers rely on
+      const base = safeBackendUrl(explicitApiUrl.replace(/\/+$/, ''))
+      return explicitApiUrl.endsWith('/') ? `${base}/` : base
+    }
+    return explicitApiUrl
+  }
+  // Derive from backend URL. Strip any trailing slashes first: the client-side
+  // getBackendUrl() returns the raw env value, where a trailing slash would
+  // produce a double slash (http://host//api/v1/) that the backend 404s.
+  const backendUrl = getBackendUrl().replace(/\/+$/, '')
   return `${backendUrl}/api/v1/`
 }
 
@@ -167,17 +178,24 @@ export const getServerAPIUrl = () => {
   return deriveAPIUrl()
 }
 
-export const getBackendUrl = () => getLEARNHOUSE_BACKEND_URL()
+// Server-to-server backend URL, validated (http/https, no private/reserved
+// hosts) before any fetch · see lib/secure-url for the guard rules.
+export const getBackendUrl = () => {
+  if (typeof window === 'undefined') {
+    return safeBackendUrl(getLEARNHOUSE_BACKEND_URL())
+  }
+  return getLEARNHOUSE_BACKEND_URL()
+}
 
 /**
  * Get the upgrade/plan URL for a given org.
  *
  * In SaaS the billing/upgrade hub lives IN-APP on the apex (learnhouse.io
- * /billing) — see app/(hub)/billing. We return an absolute apex URL so an
+ * /billing) · see app/(hub)/billing. We return an absolute apex URL so an
  * upgrade CTA rendered inside an org subdomain ({slug}.learnhouse.io) crosses
  * to the root hub; the `.{top_domain}`-scoped session cookie carries the login
  * across the hop. Returns null in OSS/EE, where there is no SaaS billing
- * surface — callers MUST treat null as "hide the upgrade CTA".
+ * surface · callers MUST treat null as "hide the upgrade CTA".
  */
 export const getUpgradeUrl = (orgSlug: string, plan?: string | null): string | null => {
   const mode = getDeploymentMode()
@@ -201,14 +219,14 @@ export const getPlatformUrl = (path: string): string | null => {
   return `${platformUrl}${path}`
 }
 
-// Tenancy mode — the authoritative client-side getter.
+// Tenancy mode · the authoritative client-side getter.
 //
 // Reads the `LH_tenancy` cookie set by the middleware on every request. The
 // cookie is sourced from the backend's instance/info endpoint, so it always
 // reflects the current deployment configuration. Defaults to 'single' when
 // the cookie isn't present (e.g. very first request before middleware runs).
 //
-// We deliberately do NOT consult `NEXT_PUBLIC_LEARNHOUSE_MULTI_ORG` here —
+// We deliberately do NOT consult `NEXT_PUBLIC_LEARNHOUSE_MULTI_ORG` here ·
 // stale env vars from older deploys used to override the runtime cookie and
 // produce broken URLs like `default.localhost:3000`. The env var still has
 // effect at backend boot time; that's the only place it should influence
@@ -221,7 +239,7 @@ export const getTenancy = (): TenancyMode => {
   return 'single'
 }
 
-// Backward-compat shim — prefer getTenancy() in new code.
+// Backward-compat shim · prefer getTenancy() in new code.
 export const isMultiOrgModeEnabled = () => getTenancy() === 'multi'
 
 /**
@@ -268,7 +286,7 @@ export const getCustomDomainFromContext = (): string | null => {
 /**
  * Build a URL for a given org's path.
  *
- * Returns a RELATIVE path whenever navigation stays on the current origin —
+ * Returns a RELATIVE path whenever navigation stays on the current origin ·
  * which is always the case in single tenancy and almost always in multi
  * tenancy (the user is already on the right subdomain or custom domain).
  * Only when crossing subdomains in multi tenancy do we build an absolute
@@ -298,10 +316,23 @@ export const getUriWithOrg = (orgslug: string, path: string) => {
       return path
     }
 
+    // Central-LMS cookie tenancy (Ordria): when the user is on the apex base
+    // domain itself, org context is carried by the LH_org cookie (set via the
+    // /enter/{slug} bridge) rather than a per-org subdomain · second-level
+    // wildcard certificates being a paid Cloudflare option. Prefix the path
+    // with the org segment (/orgs/{slug}{path}) so the organization stays
+    // VISIBLE in the URL (multi-tenant best practice: shareable links, honest
+    // browser history) · the middleware serves those paths directly.
+    if (isSameHost(currentHostname, baseDomain)) {
+      // Guard: never double-prefix (path already org-scoped).
+      if (path === '/orgs' || path.startsWith('/orgs/')) return path
+      return `/orgs/${orgslug}${path === '/' ? '/' : path}`
+    }
+
     // Safety net: only synthesize an absolute subdomain URL when the user is
     // on the apex base domain itself (e.g. the org-selection screen) or on
-    // some subdomain of it. On any other host — localhost, a host that
-    // doesn't end in `.{baseDomain}` — building `${slug}.${baseDomain}` would
+    // some subdomain of it. On any other host · localhost, a host that
+    // doesn't end in `.{baseDomain}` · building `${slug}.${baseDomain}` would
     // land them on a hostname that may not resolve (e.g. `default.localhost`),
     // so we return a relative path and keep navigation on the current origin.
     //
@@ -314,7 +345,7 @@ export const getUriWithOrg = (orgslug: string, path: string) => {
       return path
     }
 
-    // Crossing subdomains — build an absolute URL with current scheme/port.
+    // Crossing subdomains · build an absolute URL with current scheme/port.
     const protocol = window.location.protocol + '//'
     const port = window.location.port
     const portSuffix = port && port !== '80' && port !== '443' ? `:${port}` : ''
@@ -406,21 +437,21 @@ export type DeploymentMode = 'saas' | 'oss' | 'ee'
 /**
  * Get the current deployment mode from the LH_mode cookie set by middleware.
  * Single source of truth for mode detection on the frontend.
- * Defaults to 'oss' when cookie is absent (safe fallback — blocks EE features).
+ * Defaults to 'oss' when cookie is absent (safe fallback · blocks EE features).
  */
 export const getDeploymentMode = (): DeploymentMode => {
   return (getCookieValue('LH_mode') as DeploymentMode) || 'oss'
 }
 
 /**
- * OSS mode — thin wrapper over getDeploymentMode() for backward compatibility.
+ * OSS mode · thin wrapper over getDeploymentMode() for backward compatibility.
  */
 export const isOSSMode = (): boolean => {
   return getDeploymentMode() === 'oss'
 }
 
 /**
- * EE (Enterprise Edition) availability — thin wrapper over getDeploymentMode() for backward compatibility.
+ * EE (Enterprise Edition) availability · thin wrapper over getDeploymentMode() for backward compatibility.
  */
 export const isEEAvailable = (): boolean => {
   return getDeploymentMode() === 'ee'

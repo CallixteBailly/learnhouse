@@ -1,7 +1,14 @@
 const { withSentryConfig } = require("@sentry/nextjs");
+const path = require("path");
 
 /** @type {import('common.next').NextConfig} */
 const nextConfig = {
+  // Dev server (turbopack) only: without an explicit root, Next walks up to the
+  // nearest lockfile — a stray ~/package-lock.json makes it pick $HOME as the
+  // workspace root and every route 404s. The repo root is the real workspace.
+  turbopack: {
+    root: path.join(__dirname, "..", ".."),
+  },
   // Required by PostHog's reverse-proxy rewrites below so the trailing-slash
   // handling on /ingest/* doesn't 308-redirect ingestion requests.
   skipTrailingSlashRedirect: true,
@@ -88,7 +95,19 @@ const nextConfig = {
   },
   reactStrictMode: false,
   output: 'standalone',
+  // Skip TypeScript checking during production build when explicitly requested
+  // (e.g. in Docker where the check is RAM-heavy and types are validated in dev/CI).
+  // The check stays ON by default for local `next build`.
+  typescript: {
+    ignoreBuildErrors: process.env.NEXT_IGNORE_TYPECHECK === '1',
+  },
+  eslint: {
+    ignoreDuringBuilds: process.env.NEXT_IGNORE_LINT === '1',
+  },
   images: {
+    // Cloudflare Workers builds (BUILD_FOR_PAGES=1) have no image optimizer
+    // unless the paid Cloudflare Images binding is attached — serve originals.
+    unoptimized: process.env.BUILD_FOR_PAGES === '1',
     remotePatterns: [
       {
         protocol: 'http',
@@ -142,8 +161,8 @@ const nextConfig = {
   },
 }
 
-// Generate runtime config for development
-if (process.env.NODE_ENV === 'development') {
+// Generate runtime config — works for dev AND Cloudflare Pages production builds
+if (process.env.NODE_ENV === 'development' || process.env.BUILD_FOR_PAGES === '1') {
   const fs = require('fs')
   const path = require('path')
   const runtimeConfig = {}

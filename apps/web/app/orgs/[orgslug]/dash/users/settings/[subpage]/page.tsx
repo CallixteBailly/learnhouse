@@ -2,6 +2,7 @@
 import React, { useEffect, use } from 'react';
 import { motion } from 'motion/react'
 import { getUriWithOrg } from '@services/config/config'
+import { isPlanGated } from '@services/plans/plans'
 import { ScanEye, SquareUserRound, UserPlus, Users, Shield } from 'lucide-react'
 import { Breadcrumbs } from '@components/Objects/Breadcrumbs/Breadcrumbs'
 import OrgUsers from '@components/Dashboard/Pages/Users/OrgUsers/OrgUsers'
@@ -100,7 +101,8 @@ function UsersSettingsPage(props: { params: Promise<SettingsParams> }) {
       icon: <ShieldAlert size={16} />,
       href: getUriWithOrg(params.orgslug, '') + `/dash/users/settings/audit-logs`,
       active: params.subpage === 'audit-logs',
-      requiresPlan: 'enterprise',
+      // Ships in self-hosted builds; the enterprise badge only applies on SaaS.
+      requiresPlan: isPlanGated() ? 'enterprise' : undefined,
     },
   ]
 

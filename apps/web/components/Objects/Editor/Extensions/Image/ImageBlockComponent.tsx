@@ -16,7 +16,7 @@ import UnsplashImagePicker, { UnsplashPhotoMeta } from '@components/Dashboard/Pa
 import AIImageButton from '@components/Objects/AI/AIImageButton'
 
 const SUPPORTED_FILES = constructAcceptValue(['jpg', 'png', 'webp', 'gif'])
-const UNSPLASH_UTM = '?utm_source=LearnHouse&utm_medium=referral'
+const UNSPLASH_UTM = '?utm_source=OrdriaLearning&utm_medium=referral'
 const withUtm = (url?: string | null) => (url ? `${url}${UNSPLASH_UTM}` : '')
 
 function ImageBlockComponent(props: any) {
@@ -79,9 +79,9 @@ function ImageBlockComponent(props: any) {
       })
       setImage(null)
     } catch (err: any) {
-      const errorMessage = err?.message || 'Upload failed — please try again'
+      const errorMessage = err?.message || 'Upload failed · please try again'
       setError(errorMessage)
-      toast.error(errorMessage.includes('Upload failed') ? errorMessage : `Upload failed — please try again: ${errorMessage}`)
+      toast.error(errorMessage.includes('Upload failed') ? errorMessage : `Upload failed · please try again: ${errorMessage}`)
     } finally {
       setIsLoading(false)
     }

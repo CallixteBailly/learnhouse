@@ -1,9 +1,9 @@
 'use client'
 // Shared legal/footer bits, ported from the platform's look.
 //
-// AuthFooter   — the "By continuing, you agree to … Terms of Service and
+// AuthFooter   · the "By continuing, you agree to … Terms of Service and
 //                Privacy Policy." line shown under the auth forms.
-// CopyrightFooter — the "© {year} LearnHouse, Inc." line for app surfaces
+// CopyrightFooter · the "© {year} LearnHouse, Inc." line for app surfaces
 //                (the apex /home hub, the onboarding page, …).
 //
 // Legal pages live on the marketing/platform site, so links resolve via
@@ -13,17 +13,17 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { getPlatformUrl } from '@services/config/config'
 
-const TERMS_URL = getPlatformUrl('/terms') || 'https://www.learnhouse.io/terms'
-const PRIVACY_URL = getPlatformUrl('/privacy') || 'https://www.learnhouse.io/privacy'
+const MENTIONS_URL = getPlatformUrl('/mentions-legales') || 'https://ordria.fr/mentions-legales'
+const CGV_URL = getPlatformUrl('/cgv') || 'https://ordria.fr/cgv'
 
 export function AuthFooter({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
   return (
     <div className={`pb-8 pt-6 text-center px-6 ${className}`}>
       <p className="text-[13px] text-black/30 font-medium">
-        {t('auth.terms_text', { defaultValue: "By continuing, you agree to LearnHouse's" })}{' '}
+        {t('auth.terms_text', { defaultValue: "En continuant, vous acceptez les" })}{' '}
         <Link
-          href={TERMS_URL}
+          href={MENTIONS_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="text-black/50 hover:text-black/70 transition-colors"
@@ -32,7 +32,7 @@ export function AuthFooter({ className = '' }: { className?: string }) {
         </Link>{' '}
         {t('auth.and', { defaultValue: 'and' })}{' '}
         <Link
-          href={PRIVACY_URL}
+          href={CGV_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="text-black/50 hover:text-black/70 transition-colors"
@@ -62,24 +62,24 @@ export function CopyrightFooter({
     <footer className={`w-full py-6 px-6 ${className}`}>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-x-5 gap-y-2 text-[13px] font-medium">
         <p className={base}>
-          {t('common.copyright', { defaultValue: '© {{year}} LearnHouse, Inc.', year })}
+          {t('common.copyright', { defaultValue: '© {{year}} Ordria Learning', year })}
         </p>
         <nav className="flex items-center gap-x-5">
           <Link
-            href={TERMS_URL}
+            href={MENTIONS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className={`${link} transition-colors`}
           >
-            {t('auth.terms_of_service', { defaultValue: 'Terms of Service' })}
+            {t('common.mentions_legales', { defaultValue: 'Mentions légales' })}
           </Link>
           <Link
-            href={PRIVACY_URL}
+            href={CGV_URL}
             target="_blank"
             rel="noopener noreferrer"
             className={`${link} transition-colors`}
           >
-            {t('auth.privacy_policy', { defaultValue: 'Privacy Policy' })}
+            {t('common.cgv', { defaultValue: 'CGV' })}
           </Link>
         </nav>
       </div>

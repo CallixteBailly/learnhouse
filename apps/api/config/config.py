@@ -364,7 +364,10 @@ def get_learnhouse_config() -> LearnHouseConfig:
         or "filesystem"
     )  # default to filesystem
 
-    env_bucket_name = os.environ.get("LEARNHOUSE_S3_API_BUCKET_NAME")
+    env_bucket_name = (
+        os.environ.get("LEARNHOUSE_S3_API_BUCKET_NAME")
+        or os.environ.get("AWS_STORAGE_BUCKET_NAME")
+    )
     env_endpoint_url = os.environ.get("LEARNHOUSE_S3_API_ENDPOINT_URL")
     bucket_name = (
         yaml_config.get("hosting_config", {})
@@ -538,12 +541,23 @@ def get_learnhouse_config() -> LearnHouseConfig:
             # an explicit base domain. Localhost is not a routable subdomain
             # parent for browsers in production, so `LEARNHOUSE_DOMAIN=localhost`
             # is rejected here.
+            #
+            # Ordria self-hosted: LEARNHOUSE_TENANCY_ALLOW_OSS=1 opts this
+            # deployment into multi-tenancy without the EE folder — the
+            # multi-org machinery (organizations, memberships, per-org config,
+            # the web middleware resolver in apps/web/ee/) is present in OSS;
+            # only this gate forces Enterprise. Same unlock philosophy as
+            # ee_hooks.is_multi_org_allowed().
+            _tenancy_oss_override = (
+                os.environ.get("LEARNHOUSE_TENANCY_ALLOW_OSS", "").lower()
+                in ("1", "true", "yes")
+            )
             try:
                 from src.core.ee_hooks import is_ee_available
                 ee_available = is_ee_available()
             except Exception:
                 ee_available = False
-            if not (ee_available or saas_mode):
+            if not (ee_available or saas_mode or _tenancy_oss_override):
                 raise ValueError(
                     "LEARNHOUSE_TENANCY=multi requires the Enterprise Edition "
                     "or LEARNHOUSE_SAAS=true. Either install the `ee/` folder, "

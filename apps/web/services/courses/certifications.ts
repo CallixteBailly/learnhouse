@@ -89,6 +89,11 @@ export async function getCertificateByUuid(
       headers: {
         'Content-Type': 'application/json',
       },
+      // Certificate config (instructor, Qualiopi mention…) is editable at any
+      // time; a heuristically-cached GET would keep serving the previous
+      // config forever. Every other API fetch in requests.ts is no-store for
+      // the same reason.
+      cache: 'no-store',
     }
   )
   const res = await getResponseMetadata(result)

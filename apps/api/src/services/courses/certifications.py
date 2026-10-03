@@ -18,6 +18,7 @@ from src.db.courses.certifications import (
 from src.db.courses.courses import Course
 from src.db.courses.activities import Activity
 from src.db.courses.chapter_activities import ChapterActivity
+from src.db.courses.activities import Activity
 from src.db.trail_steps import TrailStep
 from src.db.users import PublicUser, AnonymousUser
 from src.security.rbac import check_resource_access, AccessAction
@@ -551,15 +552,24 @@ async def is_course_fully_completed(
 
     Uses COUNT aggregates instead of fetching all rows so this stays fast
     even on large courses.
+
+    Only PUBLISHED activities count toward completion. Unpublished/draft
+    activities are invisible to learners (they cannot be completed through
+    the app), so counting them would make the course permanently
+    incomplete — e.g. an author drafting the next module would retroactively
+    block certification for learners who finished every visible activity.
     """
     # Only PUBLISHED activities count toward completion — a draft/unpublished
     # activity is never shown to the learner, so counting it in the total would
     # make the course impossible to complete (and permanently withhold the
     # certificate).
     total_activities = (await db_session.execute(
-        select(func.count(ChapterActivity.id))
-        .join(Activity, Activity.id == ChapterActivity.activity_id)
-        .where(ChapterActivity.course_id == course_id, Activity.published == True)
+        select(func.count(func.distinct(ChapterActivity.activity_id)))
+        .join(Activity, Activity.id == ChapterActivity.activity_id)  # type: ignore
+        .where(
+            ChapterActivity.course_id == course_id,
+            Activity.published == True,  # noqa: E712
+        )
     )).scalar_one()
     if not total_activities:
         return False
@@ -571,12 +581,12 @@ async def is_course_fully_completed(
             (ChapterActivity.activity_id == TrailStep.activity_id)
             & (ChapterActivity.course_id == TrailStep.course_id),
         )
-        .join(Activity, Activity.id == ChapterActivity.activity_id)
+        .join(Activity, Activity.id == ChapterActivity.activity_id)  # type: ignore
         .where(
             TrailStep.user_id == user_id,
             TrailStep.course_id == course_id,
-            TrailStep.complete == True,
-            Activity.published == True,
+            TrailStep.complete == True,  # noqa: E712
+            Activity.published == True,  # noqa: E712,
         )
     )).scalar_one()
 

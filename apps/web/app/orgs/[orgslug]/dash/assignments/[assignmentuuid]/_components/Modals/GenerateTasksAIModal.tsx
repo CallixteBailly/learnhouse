@@ -17,7 +17,7 @@ import {
 } from '@services/ai/generation'
 
 // ---------------------------------------------------------------------------
-// "Generate tasks with AI" — teacher-facing entry point on the assignment
+// "Generate tasks with AI" · teacher-facing entry point on the assignment
 // editor. Generates tasks grounded on the assignment's course content, lets
 // the teacher preview + edit them, then saves each one to the current
 // assignment via the existing `createAssignmentTask` client.
@@ -26,7 +26,7 @@ import {
 // because the shared locale files live outside the assignments dashboard area
 // (which this task is scoped to). Everything else mirrors the surrounding
 // LearnHouse design language (neutral palette, nice-shadow, rounded-lg,
-// lucide icons — no AI-gradient styling).
+// lucide icons · no AI-gradient styling).
 // ---------------------------------------------------------------------------
 
 type AssignmentTypeValue =
@@ -97,7 +97,7 @@ function GenerateTasksAIModal({
 
   // Resolve the assignment's course_uuid (used to ground the generation).
   // Shares react-query cache with AssignmentProvider so this is usually a
-  // cache hit — no extra round trip.
+  // cache hit · no extra round trip.
   const { data: assignment } = useQuery({
     queryKey: queryKeys.assignments.detail(assignment_uuid),
     queryFn: () =>
@@ -450,7 +450,7 @@ function GenerateTasksAIModal({
 
               {tasks.length === 0 && (
                 <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/50 px-4 py-8 text-center text-xs text-gray-400">
-                  No tasks left — regenerate to start over.
+                  No tasks left · regenerate to start over.
                 </div>
               )}
 
@@ -871,7 +871,7 @@ function TaskContentEditor({
     )
   }
 
-  // FILE_SUBMISSION — no content to edit.
+  // FILE_SUBMISSION · no content to edit.
   return (
     <p className="text-xs text-gray-400 italic pt-1">
       Students submit a file for this task. No answer key to configure.

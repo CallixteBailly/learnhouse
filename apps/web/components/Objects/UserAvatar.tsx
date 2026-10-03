@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { getUriWithOrg } from '@services/config/config'
-import { useParams } from 'next/navigation'
 import { getUserAvatarMediaDirectory } from '@services/media/media'
 import { useLHSession } from '@components/Contexts/LHSessionContext'
 import UserProfilePopup from './UserProfilePopup'
@@ -24,15 +22,15 @@ type UserAvatarProps = {
 function UserAvatar(props: UserAvatarProps) {
   const session = useLHSession() as any
   const access_token = session?.data?.tokens?.access_token
-  const params = useParams() as any
   const [userData, setUserData] = useState<any>(null)
-  const [erroredUrl, setErroredUrl] = useState<string | null>(null)
+  // Degradation chain: 0 = resolved avatar, 1 = /empty_avatar.png, 2 = inline SVG.
+  const [fallbackStage, setFallbackStage] = useState(0)
 
   useEffect(() => {
     const fetchUserData = async () => {
       // Skip fetching if no access token (user not authenticated)
       if (!access_token) return
-      // Skip fetching if avatar is already determined — the popup will fetch its own data
+      // Skip fetching if avatar is already determined · the popup will fetch its own data
       if (props.avatar_url || props.predefined_avatar) return
 
       if (props.username) {
@@ -69,10 +67,13 @@ function UserAvatar(props: UserAvatarProps) {
   }
 
   const getAvatarUrl = (): string => {
-    // If predefined avatar is specified
+    // If predefined avatar is specified.
+    // Static assets live at the site root (/empty_avatar.png) — never route
+    // them through getUriWithOrg, which prefixes /orgs/{slug} for pages and
+    // would turn the asset URL into a 404 org route.
     if (props.predefined_avatar) {
-      const avatarType = props.predefined_avatar === 'ai' ? 'ai_avatar.png' : 'empty_avatar.png'
-      return getUriWithOrg(params.orgslug, `/${avatarType}`)
+      const avatarType = props.predefined_avatar === 'ai' ? '/ai_avatar.png' : '/empty_avatar.png'
+      return avatarType
     }
 
     // If avatar_url prop is provided
@@ -104,7 +105,7 @@ function UserAvatar(props: UserAvatarProps) {
     // If a specific userId or username was requested but user has no avatar,
     // don't fall back to session avatar - use empty avatar instead
     if (props.userId || props.username) {
-      return getUriWithOrg(params.orgslug, '/empty_avatar.png')
+      return '/empty_avatar.png'
     }
 
     // Only use session avatar when no specific user is requested
@@ -119,26 +120,35 @@ function UserAvatar(props: UserAvatarProps) {
     }
 
     // Fallback to empty avatar
-    return getUriWithOrg(params.orgslug, '/empty_avatar.png')
+    return '/empty_avatar.png'
   }
 
-  const emptyAvatarUrl = getUriWithOrg(params.orgslug, '/empty_avatar.png')
+  // Root static asset — deliberately NOT org-prefixed (see getAvatarUrl).
+  const emptyAvatarUrl = '/empty_avatar.png'
+  // Last-resort inline placeholder so a broken image icon never shows, even
+  // if the static asset itself fails to load.
+  const inlineFallbackAvatar =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#e5e7eb"/><circle cx="32" cy="24" r="10" fill="#9ca3af"/><path d="M12 56c2-11 10-17 20-17s18 6 20 17" fill="#9ca3af"/></svg>`
+    )
   const resolvedAvatarUrl = getAvatarUrl()
-  // Tracking the failed URL (rather than a boolean) resets automatically when
-  // the resolved source changes, avoiding a setState-in-effect.
-  const hasError = erroredUrl === resolvedAvatarUrl
+  // Restart the fallback chain whenever the resolved source changes.
+  useEffect(() => {
+    setFallbackStage(0)
+  }, [resolvedAvatarUrl])
+  const displaySrc =
+    fallbackStage === 0 ? resolvedAvatarUrl : fallbackStage === 1 ? emptyAvatarUrl : inlineFallbackAvatar
 
   const avatarImage = (
     <img
       alt="User Avatar"
       width={props.width ?? 50}
       height={props.width ?? 50}
-      src={hasError ? emptyAvatarUrl : resolvedAvatarUrl}
+      src={displaySrc}
       onError={() => {
-        // Fall back to the empty avatar placeholder when the image fails to load
-        if (resolvedAvatarUrl !== emptyAvatarUrl) {
-          setErroredUrl(resolvedAvatarUrl)
-        }
+        // Advance the fallback chain: user avatar → /empty_avatar.png → inline SVG
+        setFallbackStage((s) => Math.min(s + 1, 2))
       }}
       className={`
         ${props.avatar_url && session?.data?.user?.avatar_image ? '' : 'bg-gray-700'}

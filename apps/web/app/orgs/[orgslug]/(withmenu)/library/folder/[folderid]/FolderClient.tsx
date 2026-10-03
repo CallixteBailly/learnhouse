@@ -120,12 +120,18 @@ function FolderClient({
               )}
 
               {isEmpty && (
-                <div className="col-span-full flex flex-col justify-center items-center py-12 px-4 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50/30">
-                  <div className="p-4 bg-white rounded-full nice-shadow mb-4">
-                    <FolderSimple className="w-8 h-8 text-gray-300" weight="duotone" />
+                <div
+                  className="col-span-full flex flex-col justify-center items-center py-14 px-4 border-2 border-dashed rounded-2xl"
+                  style={{ borderColor: 'var(--ordria-border)', background: 'var(--ordria-surface)' }}
+                >
+                  <div
+                    className="p-4 rounded-full mb-4"
+                    style={{ background: 'var(--ordria-accent-bg)' }}
+                  >
+                    <FolderSimple className="w-8 h-8" weight="duotone" style={{ color: 'var(--ordria-accent-secondary)' }} />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-600 mb-1">
-                    {t('library.empty_folder')}
+                  <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-display, Sora)', color: 'var(--ordria-foreground)' }}>
+                    {t('library.empty_folder', 'Ce dossier est vide')}
                   </h3>
                 </div>
               )}

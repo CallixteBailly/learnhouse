@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 
 // Last-resort boundary: catches errors thrown in the root layout itself, so it
 // renders OUTSIDE every provider (no router, no AuthContext, no i18n). Kept
-// fully self-contained — it classifies the error for a meaningful message and
+// fully self-contained · it classifies the error for a meaningful message and
 // offers reload / home / sign out / report, all via plain DOM + the Sentry SDK.
 
 export default function GlobalError({
@@ -63,7 +63,7 @@ export default function GlobalError({
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
     } catch {
-      // ignore — we redirect to login regardless
+      // ignore · we redirect to login regardless
     }
     window.location.href = '/login'
   }

@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 // ToolbarButtons pulls in @phosphor-icons/react (~360KB) and only renders
-// after the editor is interactive — defer it so it doesn't block first paint.
+// after the editor is interactive · defer it so it doesn't block first paint.
 const ToolbarButtons = dynamic(
   () => import('./Toolbar/ToolbarButtons').then((m) => m.ToolbarButtons),
   { ssr: false, loading: () => null }
@@ -43,7 +43,7 @@ import { getCourseThumbnailMediaDirectory } from '@services/media/media'
 import { getLinkExtension } from './EditorConf'
 import WebPreview from './Extensions/WebPreview/WebPreview'
 
-// Lowlight — slim grammar set; see editorLowlight.ts
+// Lowlight · slim grammar set; see editorLowlight.ts
 import { lowlight } from './editorLowlight'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { CourseProvider } from '@components/Contexts/CourseContext'
@@ -78,6 +78,7 @@ import {
   hasEditorContentChanged,
   shouldGuardNavigationClick,
 } from './unsavedChangesGuard'
+import Logo from '@components/Objects/Brand/Logo'
 
 interface ConflictInfo {
   hasConflict: boolean
@@ -287,7 +288,7 @@ function Editor(props: EditorProps) {
     onCreate: ({ editor }) => {
       // Re-baseline against the editor's own normalized doc. The initial
       // snapshot is taken from props.content (the stored ProseMirror doc),
-      // but onUpdate compares editor.getJSON() — TipTap may normalize the
+      // but onUpdate compares editor.getJSON() · TipTap may normalize the
       // doc on load, so aligning the baseline here avoids a false "unsaved"
       // state before any real edit.
       savedContentSnapshotRef.current = getEditorContentSnapshot(editor.getJSON())
@@ -407,7 +408,7 @@ function Editor(props: EditorProps) {
 
   return (
     <div className="activity-editor-page">
-      {/* Version History Panel — only mount when first opened so the chunk
+      {/* Version History Panel · only mount when first opened so the chunk
           + the versions list fetch don't run on every editor load. */}
       {canUseVersioning && showVersionHistory && (
         <VersionHistoryPanel
@@ -420,7 +421,7 @@ function Editor(props: EditorProps) {
         />
       )}
 
-      {/* Merge Conflict Modal — same: only mount when actually needed. */}
+      {/* Merge Conflict Modal · same: only mount when actually needed. */}
       {editor && showMergeModal && (
         <MergeConflictModal
           isOpen={showMergeModal}
@@ -693,13 +694,7 @@ const EditorLearnHouseLogo = () => {
         animate={animation.animate}
         transition={animation.transition}
       >
-        <Image
-          src="/lrn.svg"
-          alt="LearnHouse"
-          width={14}
-          height={14}
-          className="invert"
-        />
+        <Logo variant="mark" size={25} ariaLabel="Ordria Learning" />
       </motion.div>
     </div>
   )

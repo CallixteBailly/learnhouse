@@ -2,16 +2,16 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import learnhouseIcon from 'public/learnhouse_bigicon_1.png'
 import { getOrgLogoMediaDirectory, getOrgAuthBackgroundMediaDirectory } from '@services/media/media'
 import { getUriWithOrg } from '@services/config/config'
 import { cn } from '@/lib/utils'
 import { usePlan } from '@components/Hooks/usePlan'
+import Logo from '@components/Objects/Brand/Logo'
 
 interface AuthBrandingPanelProps {
   org: any
   welcomeText?: string
-  // No-org (apex) panel copy — platform-style title + subtitle shown at the top
+  // No-org (apex) panel copy · platform-style title + subtitle shown at the top
   // of the illustration. Falls back to the login wording when omitted.
   title?: string
   subtitle?: string
@@ -28,7 +28,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
     unsplash_photographer_url = '',
     unsplash_photo_url = '',
   } = authBranding
-  const UNSPLASH_UTM = '?utm_source=LearnHouse&utm_medium=referral'
+  const UNSPLASH_UTM = '?utm_source=OrdriaLearning&utm_medium=referral'
   const withUtm = (url: string) => (url ? `${url}${UNSPLASH_UTM}` : '')
 
   // Check if org has enterprise plan - hide LearnHouse branding for enterprise users
@@ -75,9 +75,9 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
 
   const displayMessage = welcome_message || welcomeText || ''
   // No-org platform copy (defaults mirror the platform login illustration).
-  const noOrgTitle = title || 'Welcome back to LearnHouse.'
+  const noOrgTitle = title || 'Welcome back to Ordria Learning.'
   const noOrgSubtitle =
-    subtitle || 'Pick up where you left off — your courses, students, and tools are waiting.'
+    subtitle || 'Pick up where you left off, your courses, students, and tools are waiting.'
   // Treat the no-org illustration like a photo background: dark scrim, no
   // blueprint-grid overlay.
   const hasCustomBackground = noOrg || (background_type !== 'gradient' && background_image)
@@ -89,7 +89,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
         {/* Base layer: org's chosen background (gradient | custom | unsplash) */}
         <div className="absolute inset-0" style={getBackgroundStyle()} />
 
-        {/* Blueprint + dot overlays — ONLY for gradient fallback (no photo) */}
+        {/* Blueprint + dot overlays · ONLY for gradient fallback (no photo) */}
         {!hasCustomBackground && (
           <>
             <div
@@ -113,7 +113,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
         )}
 
         {/* Dark scrim for org photo backgrounds (centered text needs it).
-            The no-org illustration stays vivid — it's darkened only at the top. */}
+            The no-org illustration stays vivid, it's darkened only at the top. */}
         {hasCustomBackground && !noOrg && (
           <div className="absolute inset-0 bg-black/30" />
         )}
@@ -145,25 +145,31 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
               and for the no-org apex panel (platform shows no logo on the image). */}
           {!isEnterprise && !noOrg && (
             <div className="login-topbar">
-              <Link prefetch href="https://learnhouse.app" target="_blank">
-                <img
-                  src="/lrn.svg"
-                  alt="LearnHouse"
-                  width={30}
-                  height={30}
+              <a href="https://ordria.fr" target="_blank" rel="noopener noreferrer">
+                <Logo
+                  variant="mark"
+                  size={30}
+                  animated
+                  tone={text_color === 'light' ? 'light' : 'dark'}
                   className={cn(
-                    "transition-opacity hover:opacity-100",
-                    text_color === 'light' ? "opacity-60 invert" : "opacity-40"
+                    'transition-opacity hover:opacity-100',
+                    text_color === 'light' ? 'opacity-70' : 'opacity-50'
                   )}
                 />
-              </Link>
+              </a>
             </div>
           )}
 
           {noOrg ? (
-            /* No-org apex panel — platform layout: heading at the TOP, no logo
-               box, platform copy. */
+            /* No-org apex panel · platform layout: heading at the TOP, no logo
+               box, platform copy. Baseline de la charte Ordria en kicker. */
             <div className="max-w-md text-white">
+              <p
+                className="mb-3 text-[13px] font-medium uppercase"
+                style={{ letterSpacing: '0.16em', color: '#8fa3ff' }}
+              >
+                Mettre de l&rsquo;ordre, simplement
+              </p>
               <h1 className="font-black text-[28px] leading-tight tracking-tight">
                 {noOrgTitle}
               </h1>
@@ -172,7 +178,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
               </p>
             </div>
           ) : (
-            /* Org panel — centered logo + name (unchanged). */
+            /* Org panel · centered logo + name (unchanged). */
             <>
               <div className="flex-1 flex items-center justify-center">
                 <div className={cn(
@@ -189,21 +195,14 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
                           className="w-full h-full object-contain p-3"
                         />
                       ) : (
-                        <Image
-                          quality={100}
-                          width={96}
-                          height={96}
-                          src={learnhouseIcon}
-                          alt="LearnHouse"
-                          className="object-contain"
-                        />
+                        <Logo variant="mark" size={72} animated ariaLabel="Ordria Learning" />
                       )}
                     </div>
                   </Link>
 
                   {/* Text content */}
                   <div className="space-y-1">
-                    <h1 className="font-black text-3xl tracking-tight">{org?.name || 'LearnHouse'}</h1>
+                    <h1 className="font-black text-3xl tracking-tight">{org?.name || 'Ordria Learning'}</h1>
                     {displayMessage && (
                       <p className={cn(
                         "text-lg max-w-sm leading-relaxed",

@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import * as Form from '@radix-ui/react-form'
 import BarLoader from 'react-spinners/BarLoader'
 import { PlayCircle, Upload, YoutubeLogo } from '@phosphor-icons/react'
-import { constructAcceptValue } from '@/lib/constants'
+import { VIDEO_ACCEPT_VALUE } from '@/lib/video-formats'
 import CaptionsSettings, {
   type CaptionsValue,
   EMPTY_CAPTIONS,
 } from '@components/Objects/Activities/Video/CaptionsSettings'
 
-const SUPPORTED_FILES = constructAcceptValue(['mp4', 'webm'])
+const SUPPORTED_FILES = VIDEO_ACCEPT_VALUE
 
 interface VideoDetails {
   startTime: number

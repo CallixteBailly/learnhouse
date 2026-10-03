@@ -7,11 +7,13 @@ import { OrgMenu } from '@components/Objects/Menus/OrgMenu'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { OrgJoinBanner, OrgJoinBannerProvider } from '@components/Objects/Banners/OrgJoinBanner'
 import { PodcastPlayerProvider } from '@components/Contexts/PodcastPlayerContext'
+import Logo from '@components/Objects/Brand/Logo'
 import dynamic from 'next/dynamic'
 const PodcastPlayer = dynamic(() => import('@components/Objects/Podcasts/PodcastPlayer'), { ssr: false })
 import Image from 'next/image'
 import Link from 'next/link'
 import { PageViewTracker } from '@components/Analytics/PageViewTracker'
+import CompleteProfileBanner, { ProfileBannerProvider } from '@components/Objects/Badges/CompleteProfileBanner'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { usePlan } from '@components/Hooks/usePlan'
 import { getGoogleFontUrl, DEFAULT_FONT } from '@/lib/fonts'
@@ -34,19 +36,12 @@ function OrgFooter() {
   const showWatermark = isFree || watermarkConfig !== false
 
   return (
-    <footer className="w-full py-8 mt-12">
-      <div className="flex flex-col items-center justify-center space-y-4">
-        {footerText && <p className="text-sm text-gray-500">{footerText}</p>}
+    <footer className="w-full py-6 sm:py-8 mt-8 sm:mt-12 px-4">
+      <div className="flex flex-col items-center justify-center space-y-3 sm:space-y-4 text-center">
+        {footerText && <p className="text-xs sm:text-sm text-gray-500">{footerText}</p>}
         {showWatermark && (
-          <Link href="https://learnhouse.app" target="_blank" rel="noopener noreferrer">
-            <Image
-              src="/lrn.svg"
-              alt="LearnHouse"
-              width={24}
-              height={24}
-              style={{ height: 'auto' }}
-              className="opacity-15 hover:opacity-40 transition-opacity duration-300 cursor-pointer"
-            />
+          <Link href="https://ordria.fr" target="_blank" rel="noopener noreferrer" className="opacity-50 hover:opacity-80 transition-opacity duration-300">
+            <Logo variant="lockup" size="sm" suffix="Learning" ariaLabel="Ordria Learning" />
           </Link>
         )}
       </div>
@@ -105,22 +100,25 @@ function LayoutContent({ children, orgslug }: { children: ReactNode; orgslug: st
   const isFullBleedPage = noFooterPaths.some((p) => pathParts.includes(p))
 
   return (
-    <div
-      className="flex flex-col min-h-screen"
-      style={{
-        backgroundColor: primaryColor ? hexToRgba(primaryColor, 0.05) : 'transparent',
-        ...(customFont ? { fontFamily: `'${customFont}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif` } : {}),
-      }}
-    >
-      <PageViewTracker />
-      {!chromeless && <OrgJoinBanner />}
-      {!chromeless && <OrgMenu orgslug={orgslug} />}
-      <div className="flex-1 relative" style={{ zIndex: 'var(--z-content)' }}>
-        {children}
+    <ProfileBannerProvider>
+      <div
+        className="flex flex-col min-h-screen"
+        style={{
+          backgroundColor: primaryColor ? hexToRgba(primaryColor, 0.05) : 'transparent',
+          ...(customFont ? { fontFamily: `'${customFont}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif` } : {}),
+        }}
+      >
+        <PageViewTracker />
+        {!chromeless && <CompleteProfileBanner orgslug={orgslug} />}
+        {!chromeless && <OrgJoinBanner />}
+        {!chromeless && <OrgMenu orgslug={orgslug} />}
+        <div className="flex-1 relative" style={{ zIndex: 'var(--z-content)' }}>
+          {children}
+        </div>
+        {!isFullBleedPage && !chromeless && <div className="hidden md:block"><OrgFooter /></div>}
+        {!isFullBleedPage && !chromeless && <div className="hidden md:block"><Watermark /></div>}
       </div>
-      {!isFullBleedPage && !chromeless && <OrgFooter />}
-      {!isFullBleedPage && !chromeless && <Watermark />}
-    </div>
+    </ProfileBannerProvider>
   )
 }
 

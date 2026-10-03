@@ -39,7 +39,7 @@ import { FilePenLine } from 'lucide-react'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { getUriWithOrg } from '@services/config/config'
 import { usePlan } from '@components/Hooks/usePlan'
-import { PlanLevel, planMeetsRequirement } from '@services/plans/plans'
+import { PlanLevel, isPlanGated, planMeetsRequirement } from '@services/plans/plans'
 import PlanBadge from '@components/Dashboard/Shared/PlanRestricted/PlanBadge'
 import WelcomeGlobe from './WelcomeGlobe'
 import { useTranslation } from 'react-i18next'
@@ -119,7 +119,7 @@ const STEP_CONFIG: Record<
   },
 }
 
-// Shared easing — the same curve used across all onboarding animations
+// Shared easing · the same curve used across all onboarding animations
 const ease = [0.25, 0.1, 0.25, 1] as const
 
 export default function OnboardingBar() {
@@ -409,7 +409,11 @@ export default function OnboardingBar() {
                             const Icon = config?.icon || BookOpen
                             const actionHref = getActionHref(step.id)
                             const requiredPlan = step.requiredPlan as PlanLevel | undefined
-                            const isLocked = requiredPlan && !planMeetsRequirement(currentPlan, requiredPlan)
+                            // Ordria : pas de paliers de plan · jamais verrouillé en self-hosted.
+                            const isLocked =
+                              isPlanGated() &&
+                              !!requiredPlan &&
+                              !planMeetsRequirement(currentPlan, requiredPlan)
 
                             return (
                               <motion.div
@@ -603,7 +607,7 @@ export default function OnboardingBar() {
                                       </div>
                                     )}
 
-                                  {/* Editor features guide — shown when user is in the editor */}
+                                  {/* Editor features guide · shown when user is in the editor */}
                                   {step.id === 'experience_editor' &&
                                     !step.completed &&
                                     isInEditor && (
@@ -662,19 +666,19 @@ export default function OnboardingBar() {
                                       </div>
                                     )}
 
-                                  {/* Teach the world — LearnHouse University link */}
+                                  {/* Teach the world · LearnHouse University link */}
                                   {step.id === 'teach_the_world' &&
                                     !step.completed && (
                                       <div className="relative px-3 pb-3 space-y-2">
                                         <a
-                                          href="https://university.learnhouse.io"
+                                          href="https://ordria.fr"
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white nice-shadow hover:bg-gray-50 transition-colors"
                                         >
                                           <img
                                             src="/UNI_LOGO.png"
-                                            alt="LearnHouse University"
+                                            alt="Ordria Learning University"
                                             className="h-9 w-auto shrink-0 rounded"
                                           />
                                           <div className="min-w-0">
@@ -688,7 +692,7 @@ export default function OnboardingBar() {
                                           <span className="text-gray-300 shrink-0 ml-auto">→</span>
                                         </a>
                                         <a
-                                          href="https://classroom.learnhouse.io"
+                                          href="https://ordria.fr"
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white nice-shadow hover:bg-gray-50 transition-colors"

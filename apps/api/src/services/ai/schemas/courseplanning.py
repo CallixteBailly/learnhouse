@@ -41,6 +41,13 @@ class CoursePlanningMessage(BaseModel):
     content: str
 
 
+class DocumentText(BaseModel):
+    """Text extracted from an attached document (e.g. PDF), kept on the
+    session so activity content generation stays faithful to the source."""
+    name: str
+    text: str
+
+
 class CoursePlanningSessionData(BaseModel):
     """Session data stored in Redis"""
     session_uuid: str
@@ -53,6 +60,7 @@ class CoursePlanningSessionData(BaseModel):
     message_history: List[CoursePlanningMessage] = []
     current_plan: Optional[CoursePlan] = None
     course_id: Optional[int] = None  # Set after finalization
+    document_texts: List[DocumentText] = []  # Extracted attachment texts (PDF etc.)
 
 
 class StartCoursePlanningSession(BaseModel):

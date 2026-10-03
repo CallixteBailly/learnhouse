@@ -113,7 +113,7 @@ function OrgPage(props: { params: Promise<OrgParams> }) {
     requiresPlan: tab.requiredPlan,
   }))
 
-  // Legacy developer subpages redirect (above) — render nothing while it happens.
+  // Legacy developer subpages redirect (above) · render nothing while it happens.
   if (movedTo) return null
 
   return (

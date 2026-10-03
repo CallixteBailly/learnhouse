@@ -48,11 +48,11 @@
     "help": "Help",
     "help_menu": {
       "documentation": "Documentation",
-      "website": "LearnHouse Website",
+      "website": "Ordria Website",
       "discord": "Discord",
       "report_feedback": "Report Issue or Feedback",
       "feedback_title": "Send Feedback",
-      "feedback_description": "Help us improve LearnHouse by sharing your thoughts, reporting bugs, or suggesting new features.",
+      "feedback_description": "Help us improve Ordria by sharing your thoughts, reporting bugs, or suggesting new features.",
       "feedback_placeholder": "Tell us what's on your mind...",
       "feedback_success": "Thank you for your feedback!",
       "send_feedback": "Send Feedback",
@@ -215,7 +215,7 @@
     "organizations": "Organizations",
     "billing": "Billing",
     "create_organization": "Create organization",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "Could not delete this organization. Please try again.",
     "org_actions": "Organization actions",
     "manage_upgrade": "Manage / Upgrade",
@@ -228,7 +228,8 @@
     "leave_organization_title": "Leave organization?",
     "leave_organization_desc": "You will lose access to {{org}} and be removed from its members. You can re-join later if invited.",
     "leave_organization_error": "Could not leave this organization. Please try again.",
-    "leaving": "Leaving…"
+    "leaving": "Leaving…",
+    "formations": "Training"
   },
   "banner": {
     "viewing_as_guest": "You're viewing {{name}} as a guest.",
@@ -353,17 +354,17 @@
     "invite_required_desc": "An invite code is required to join {{org}}",
     "invite_code": "Invite Code",
     "validate_invite": "Validate Invite",
-    "terms_text": "By continuing, you agree to LearnHouse's",
+    "terms_text": "By continuing, you agree to Ordria's",
     "terms_of_service": "Terms of Service",
     "and": "and",
     "privacy_policy": "Privacy Policy",
     "image_title_forgot": "Reset your password.",
     "image_subtitle_forgot": "We'll help you get back into your account in no time.",
-    "image_title_login": "Welcome back to LearnHouse.",
-    "image_subtitle_login": "Pick up where you left off — your courses, students, and tools are waiting.",
+    "image_title_login": "Welcome back to Ordria.",
+    "image_subtitle_login": "Pick up where you left off, your courses, students, and tools are waiting.",
     "image_title_reset": "Almost there.",
     "image_subtitle_reset": "Create a strong password to keep your account secure.",
-    "image_title_signup": "Start teaching with LearnHouse.",
+    "image_title_signup": "Start teaching with Ordria.",
     "image_subtitle_signup": "Create your account and launch your first course in minutes.",
     "image_title_verify": "Verify your email.",
     "image_subtitle_verify": "One quick step to secure your account and get started.",
@@ -545,14 +546,14 @@
     "import": {
       "scorm_package": "SCORM Package",
       "scorm_description": "Import SCORM 1.2 or SCORM 2004 packages",
-      "learnhouse_courses": "LearnHouse Courses",
-      "learnhouse_description": "Import courses exported from LearnHouse",
+      "learnhouse_courses": "Ordria Courses",
+      "learnhouse_description": "Import courses exported from Ordria",
       "upload_package": "Upload Package",
       "configure": "Configure",
       "complete": "Complete",
       "click_to_upload": "Click to upload or drag and drop",
-      "learnhouse_format": "LearnHouse course export (.zip)",
-      "learnhouse_info": "Upload a LearnHouse course export package (.zip). You'll be able to select which courses to import and configure import options.",
+      "learnhouse_format": "Ordria course export (.zip)",
+      "learnhouse_info": "Upload a Ordria course export package (.zip). You'll be able to select which courses to import and configure import options.",
       "analyze_package": "Analyze Package",
       "ready_to_analyze": "Ready to analyze",
       "invalid_file_format": "Please upload a .zip file",
@@ -627,7 +628,7 @@
         "plan_generated": "Plan updated",
         "plan_generated_hint": "Check the Plan tab to review and edit.",
         "describe_course": "Describe Your Course",
-        "describe_course_hint": "Use the chat on the right to describe the course you want — topic, audience, and goals.",
+        "describe_course_hint": "Use the chat on the right to describe the course you want, topic, audience, and goals.",
         "generating_plan": "Generating your course plan...",
         "chapters": "Chapters",
         "activities": "activities",
@@ -665,7 +666,27 @@
       "info_description": "Filter courses by user group to see only courses assigned to a specific group. Useful for families or teams sharing the same organization."
     },
     "sign_in_to_see_courses": "Log in to see your courses",
-    "sign_in_to_see_courses_description": "Courses in this academy may only be visible once you are signed in."
+    "sign_in_to_see_courses_description": "Courses in this academy may only be visible once you are signed in.",
+    "modules_completed": "{{completed}} of {{total}} modules completed",
+    "activities_remaining": "{{count}} activity remaining",
+    "activities_remaining_plural": "{{count}} activities remaining",
+    "activities_completed_count": "{{count}} activities completed",
+    "activities_count": "{{count}} activity",
+    "activities_count_plural": "{{count}} activities",
+    "certificate": "Certificate",
+    "certificate_unlocked": "Certificate unlocked!",
+    "certificate_touch": "Tap to get your certificate",
+    "certificate_finish_all_modules": "Complete all modules",
+    "certificate_percent_remaining": "Only {{percent}}% left until your certificate!",
+    "certificate_badge": "🏆 Certificate",
+    "unlock_module_hint": "💡 Complete all activities in a module to unlock the next one.",
+    "created_by": "Created by @{{author}}",
+    "finish_course": "Finish course",
+    "modules": "Modules",
+    "modules_unit": "modules",
+    "instructor": "Instructor",
+    "course_info": "Course information",
+    "certificate_desc": "Earn your certificate by completing all modules"
   },
   "communities": {
     "title": "Communities",
@@ -1410,13 +1431,17 @@
     "autosave_unsaved": "Unsaved changes",
     "autosaved": "Saved",
     "autosaving": "Saving…",
-    "save_answers": "Save answers"
+    "save_answers": "Save answers",
+    "confirm_leave_title": "Leave without reading everything?",
+    "confirm_leave_msg": "You haven't reached the bottom of the page. Do you really want to continue?",
+    "confirm_leave_cta": "Continue anyway",
+    "auto_completed_on_scroll": "Activity automatically marked as read"
   },
   "embed": {
     "not_supported_title": "This activity is not supported",
     "not_supported_description": "This type of activity requires authentication and cannot be embedded.",
     "visit_activity": "Visit Activity Page",
-    "powered_by": "Powered by LearnHouse"
+    "powered_by": "Powered by Ordria"
   },
   "assignments": {
     "submit_assignment": "Submit Assignment",
@@ -1449,8 +1474,8 @@
     "retry_assignment_title": "Try this assignment again?",
     "retry_assignment_confirm": "Your current submission and answers will be reset so you can start over. Your previous grade will be replaced once you resubmit.",
     "retry_assignment_remaining": "You have {{remaining}} attempt{{plural}} left after this one.",
-    "retry_assignment_last": "This is your last attempt — make it count.",
-    "retry_assignment_success": "Your work has been reset — give it another shot.",
+    "retry_assignment_last": "This is your last attempt, make it count.",
+    "retry_assignment_success": "Your work has been reset, give it another shot.",
     "retry_assignment_failed": "Couldn't reset your submission. Please try again.",
     "retry_no_attempts_left": "No retries left",
     "quiz": {
@@ -1497,7 +1522,11 @@
     "workshop_attendance": "Workshop Attendance",
     "specialization": "Specialization",
     "dedication_message": "Your dedication and hard work have paid off. You've mastered all the content in this course.",
-    "download_failed": "Failed to generate PDF. Please try again."
+    "download_failed": "Failed to generate PDF. Please try again.",
+    "pdf_generating": "Generating PDF...",
+    "pdf_error": "Failed to generate PDF. Please try again.",
+    "pdf_downloaded": "Certificate PDF downloaded",
+    "certifies_that": "certifies that"
   },
   "search": {
     "search_placeholder": "Search courses, users, folders...",
@@ -1584,7 +1613,7 @@
       "confirm_label": "Type {{username}} to confirm",
       "deleting": "Deleting…",
       "zone_subtitle": "Permanently delete your account. This cannot be undone.",
-      "zone_body": "This removes your account and access. Any organization you are the sole admin of — and all of its courses and content — will be deleted too. Organizations with other admins are kept; you are simply removed from them."
+      "zone_body": "This removes your account and access. Any organization you are the sole admin of, and all of its courses and content, will be deleted too. Organizations with other admins are kept; you are simply removed from them."
     }
   },
   "user": {
@@ -1865,7 +1894,7 @@
           "description": "Configure your personal settings, passwords, email"
         }
       },
-      "learnhouse_university": "LearnHouse University",
+      "learnhouse_university": "Ordria University",
       "welcome_back": "Welcome back",
       "plan": "plan",
       "create_course": "Create Course",
@@ -1922,8 +1951,8 @@
       "import_course": "Import Course",
       "import_scorm": "Import SCORM",
       "import_scorm_description": "Import a SCORM package to create a new course",
-      "import_learnhouse": "Import LearnHouse Course",
-      "import_learnhouse_description": "Import a course exported from LearnHouse",
+      "import_learnhouse": "Import Ordria Course",
+      "import_learnhouse_description": "Import a course exported from Ordria",
       "import_select_type": "Select the type of course to import",
       "no_courses": "No courses yet",
       "create_course_placeholder": "Create a course to add content",
@@ -2771,8 +2800,8 @@
         "footer_text_desc": "Custom text displayed at the bottom of your organization pages",
         "default_language": "Default Language",
         "default_language_desc": "The language new visitors see by default and the language used for emails sent on behalf of this organization. Members can still switch their own UI language.",
-        "watermark_label": "\"Made with LearnHouse\" watermark",
-        "watermark_desc": "Show the LearnHouse branding watermark on your organization pages",
+        "watermark_label": "\"Made with Ordria\" watermark",
+        "watermark_desc": "Show the Ordria branding watermark on your organization pages",
         "watermark_free_plan": "Watermark is always shown on the free plan",
         "watermark_ee": "Hidden by your Enterprise Edition license"
       },
@@ -3345,7 +3374,7 @@
         "done": "Done"
       },
       "usage": {
-        "plan_resource_usage": "Plan & Resource Usage",
+        "plan_resource_usage": "Resource Usage",
         "courses": "Courses",
         "members_label": "Members",
         "admin_seats": "Admin Seats",
@@ -4013,7 +4042,7 @@
             "auth_required_submit": "Authentication required. Please sign in to submit your task.",
             "hint_optional": "Hint (optional)",
             "paste_blocked": "Pasting is disabled for this assignment",
-            "paste_blocked_hint": "Pasting is disabled — type your answer directly.",
+            "paste_blocked_hint": "Pasting is disabled, type your answer directly.",
             "upload_locked_graded": "This submission has been graded — your file can no longer be changed.",
             "upload_locked_submitted": "You have submitted this assignment — your file can no longer be changed."
           },
@@ -4032,13 +4061,13 @@
               "regex": "Regular expression"
             },
             "explanation_label": "Explanation (shown on correct answer)",
-            "explanation_placeholder": "Optional — explain why the answer is correct",
+            "explanation_placeholder": "Optional, explain why the answer is correct",
             "your_answer_placeholder": "Type your answer...",
             "student_answer_label": "Student's answer",
             "accepted_answers_label": "Accepted answers",
             "no_answer": "No answer submitted",
             "correct": "Correct",
-            "incorrect": "Not quite — try again"
+            "incorrect": "Not quite, try again"
           },
           "number_answer": {
             "prompt_label": "Question prompt",
@@ -4047,16 +4076,16 @@
             "tolerance_label": "Tolerance (±)",
             "unit_label": "Unit (optional)",
             "unit_placeholder": "m/s², kg, °C...",
-            "unit_hint": "Shown next to the answer field. Not enforced — students only type numbers.",
+            "unit_hint": "Shown next to the answer field. Not enforced, students only type numbers.",
             "explanation_label": "Explanation (shown on correct answer)",
-            "explanation_placeholder": "Optional — explain how to arrive at the answer",
+            "explanation_placeholder": "Optional, explain how to arrive at the answer",
             "preview_label": "Accepts",
             "your_answer_placeholder": "Enter a number...",
             "student_answer_label": "Student's answer",
             "accepted_range_label": "Accepted range",
             "no_answer": "No answer submitted",
             "correct": "Correct",
-            "incorrect": "Not quite — try again"
+            "incorrect": "Not quite, try again"
           },
           "code": {
             "student_behavior_label": "Student behavior",
@@ -4184,7 +4213,7 @@
         },
         "tasks": {
           "title": "Task performance",
-          "subtitle": "Average score per task — low bars highlight where students struggle",
+          "subtitle": "Average score per task, low bars highlight where students struggle",
           "empty": "Per-task performance will appear after graded submissions come in",
           "avg_grade": "Average grade",
           "attempts": "attempts"
@@ -4196,7 +4225,7 @@
         },
         "attention": {
           "title": "May need support",
-          "subtitle": "Students who did not pass — consider reaching out",
+          "subtitle": "Students who did not pass, consider reaching out",
           "empty": "Everyone who was graded passed. Nice work!"
         }
       },
@@ -4234,9 +4263,9 @@
             "auto_grading_description": "Grade and complete the activity automatically when the student submits. Only works when every task can be graded without a human (quizzes, forms, code).",
             "auto_grading_disabled_file": "Automatic grading is unavailable because this assignment has a file submission task that needs human review.",
             "anti_copy_paste_label": "Block copy & paste",
-            "anti_copy_paste_description": "Discourage pasting AI-generated answers by blocking paste events in the code editor and text inputs. Note: this is a deterrent — tech-savvy students can bypass it.",
+            "anti_copy_paste_description": "Discourage pasting AI-generated answers by blocking paste events in the code editor and text inputs. Note: this is a deterrent, tech-savvy students can bypass it.",
             "show_correct_answers_label": "Reveal correct answers after grading",
-            "show_correct_answers_description": "Once the submission is graded, show students the right answers alongside their own — which quiz options were correct, the expected short or number answer, and the correct form blanks.",
+            "show_correct_answers_description": "Once the submission is graded, show students the right answers alongside their own, which quiz options were correct, the expected short or number answer, and the correct form blanks.",
             "allow_retries_label": "Allow retries",
             "allow_retries_description": "Let students reset and re-attempt the assignment after it's graded. Each retry wipes their previous answers and counts as a new attempt.",
             "max_retries_label": "Maximum attempts",
@@ -4283,7 +4312,7 @@
             "auto_grading_label": "Automatic grading",
             "auto_grading_description": "Grade and complete the activity automatically when the student submits. Only works when every task can be graded without a human.",
             "anti_copy_paste_label": "Block copy & paste",
-            "anti_copy_paste_description": "Discourage pasting AI-generated answers by blocking paste events. Note: this is a deterrent — it can be bypassed.",
+            "anti_copy_paste_description": "Discourage pasting AI-generated answers by blocking paste events. Note: this is a deterrent, it can be bypassed.",
             "show_correct_answers_label": "Reveal correct answers after grading",
             "show_correct_answers_description": "Once graded, students see the right answers next to their own.",
             "submit": "Create activity"
@@ -4638,11 +4667,14 @@
       "video_block": {
         "uploading": "Uploading video...",
         "drop_or_browse": "Drop your video here or click to browse",
-        "supported_formats": "Supports MP4 and WebM formats",
-        "unsupported_format": "Please upload a supported video format (MP4 or WebM)",
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
         "player_title": "Video Player",
         "expand_video": "Expand video",
-        "download_video": "Download video"
+        "download_video": "Download video",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "pdf_block": {
         "no_pdf": "No PDF available",
@@ -4960,7 +4992,7 @@
         "avg_rate": "Avg Rate",
         "needs_attention": "Needs Attention",
         "total_samples": "Total Samples",
-        "more_expand": "+{{count}} more — click to expand",
+        "more_expand": "+{{count}} more, click to expand",
         "activities_count": "{{count}} activities",
         "pct_of_total": "% of Total",
         "bar_width_hint": "Bar width = relative views",
@@ -5080,7 +5112,7 @@
       },
       "activity_dropoff": {
         "title": "Drop-off Points",
-        "subtitle": "Where learners stop progressing — last completed activity",
+        "subtitle": "Where learners stop progressing, last completed activity",
         "total_dropoffs": "Total Drop-offs",
         "dropoff_points": "Drop-off Points"
       },
@@ -5114,7 +5146,7 @@
         "avg_between": "avg {{unit}} between completions",
         "transitions_tracked": "transitions tracked",
         "raw_hours_avg": "raw hours avg",
-        "description": "Measures how quickly learners progress from one activity to the next. Lower is better — it means learners are moving through content faster."
+        "description": "Measures how quickly learners progress from one activity to the next. Lower is better, it means learners are moving through content faster."
       },
       "time_to_completion": {
         "title": "Time to Completion",
@@ -5240,15 +5272,15 @@
       },
       "teach_the_world": {
         "title": "Learn & grow",
-        "description": "Resources to help you get the most out of LearnHouse.",
+        "description": "Resources to help you get the most out of Ordria.",
         "classroom": "The Classroom",
         "classroom_desc": "Learn how to grow and manage your courses",
-        "university": "LearnHouse University",
+        "university": "Ordria University",
         "university_desc": "Guides, tips and best practices"
       },
       "add_content": {
         "title": "A lesson worth showing up for",
-        "description": "Add a video, page or quiz — give learners a real reason to enroll.",
+        "description": "Add a video, page or quiz, give learners a real reason to enroll.",
         "action": "Add content"
       },
       "brand_school": {
@@ -5258,22 +5290,22 @@
       },
       "share_grow": {
         "title": "Your school’s front door",
-        "description": "Go live and grab your shareable link — the place you’ll send every learner.",
+        "description": "Go live and grab your shareable link, the place you’ll send every learner.",
         "action": "Open my school"
       },
       "invite_learners": {
         "title": "Welcome your first learner",
-        "description": "Share your join link or invite people — get that first learner through the door.",
+        "description": "Share your join link or invite people, get that first learner through the door.",
         "action": "Invite learners"
       },
       "build_community": {
         "title": "Keep learners coming back",
-        "description": "Open a community space so your learners stay active — and bring their friends.",
+        "description": "Open a community space so your learners stay active, and bring their friends.",
         "action": "Open community"
       }
     },
     "welcome": {
-      "title": "Welcome to LearnHouse",
+      "title": "Welcome to Ordria",
       "subtitle": "Create courses, invite learners and share knowledge with the world.",
       "get_started": "Get Started",
       "features_title": "Everything you need",
@@ -5324,7 +5356,7 @@
         "goal": "Start monetizing your courses and build a learning community.",
         "highlights": {
           "courses": "Unlimited courses",
-          "courses_desc": "Create as many courses as you need — no limits on your curriculum.",
+          "courses_desc": "Create as many courses as you need, no limits on your curriculum.",
           "members": "Up to 500 members",
           "members_desc": "Grow your learner base and manage them in one place.",
           "payments": "Accept payments",
@@ -5382,7 +5414,7 @@
       "trigger_authenticated_title": "Access: signed-in users only",
       "trigger_restricted_title": "Access: specific user groups only",
       "usergroups_header": "User groups",
-      "usergroups_none_assigned": "No groups assigned — nobody but admins can open this.",
+      "usergroups_none_assigned": "No groups assigned, nobody but admins can open this.",
       "usergroups_remove_title": "Remove",
       "usergroups_loading": "Loading groups…",
       "usergroups_none_in_org": "No user groups exist yet in this org.",
@@ -5482,7 +5514,7 @@
     "recurring_subscription": "recurring subscription",
     "what_youre_getting": "What you're getting",
     "pack_immediate": "Takes effect immediately after payment",
-    "pack_cancel_anytime": "Cancel anytime — stays active until end of billing period",
+    "pack_cancel_anytime": "Cancel anytime, stays active until end of billing period",
     "pack_credits_reset": "Credits reset each billing cycle",
     "after_purchase": "After purchase",
     "unlimited": "Unlimited",
@@ -5532,9 +5564,9 @@
     "canceled_desc": "Your subscription will be canceled at the end of your current billing period. You'll keep full access until then.",
     "back_to_plan_usage": "Back to Plan & Usage",
     "back_to_orgs": "Back to organizations",
-    "pack_purchased": "Add-on purchased — your limits are updated.",
-    "checkout_success": "Subscription updated — welcome to your new plan!",
-    "checkout_cancelled": "Checkout cancelled — no changes were made.",
+    "pack_purchased": "Add-on purchased, your limits are updated.",
+    "checkout_success": "Subscription updated, welcome to your new plan!",
+    "checkout_cancelled": "Checkout cancelled, no changes were made.",
     "load_failed": "We couldn't load your organizations.",
     "no_permission": "You don't have permission to manage billing for this organization.",
     "no_permission_hint": "Only an organization admin can view or change the plan.",
@@ -5618,7 +5650,7 @@
         "title": "Looking to test?",
         "body": "Head to the",
         "link": "Developers page",
-        "suffix": "to try LearnHouse instead."
+        "suffix": "to try Ordria instead."
       },
       "validation": {
         "required": "Required",
@@ -5649,7 +5681,7 @@
     "toast": {
       "creating": "Creating organization…",
       "created": "Organization created!",
-      "checkoutFailed": "Organization created — you can upgrade from Plan & Usage.",
+      "checkoutFailed": "Organization created, you can upgrade from Plan & Usage.",
       "failed": "Failed to create organization"
     },
     "steps": {
@@ -5700,5 +5732,22 @@
     "subtitle": "Plans and billing across your organizations",
     "opening": "Opening…",
     "manage_billing": "Manage billing"
+  },
+  "signup": {
+    "optional": "optional",
+    "job_label": "Your job",
+    "job_choose": "Choose…",
+    "job_other": "Other",
+    "job_other_precise": "Please specify your job",
+    "job_required": "Please choose your job",
+    "phone_label": "Phone",
+    "invalid_phone": "Invalid phone number",
+    "consent_terms": "I accept the",
+    "consent_terms_link": "terms and conditions",
+    "consent_privacy": "I accept the",
+    "consent_privacy_link": "privacy policy",
+    "consent_required": "You must accept to continue",
+    "complete_profile_banner": "Complete your profile, tell us your job for tailored recommendations.",
+    "complete_profile_cta": "Complete"
   }
 }

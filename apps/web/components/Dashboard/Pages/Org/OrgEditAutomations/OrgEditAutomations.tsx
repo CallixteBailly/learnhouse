@@ -368,7 +368,7 @@ const OrgEditAutomations: React.FC = () => {
                 )}
               </div>
               <p className="text-gray-500 text-xs mt-0.5">
-                Connect LearnHouse to thousands of apps without writing code.
+                Connect Ordria Learning to thousands of apps without writing code.
               </p>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
@@ -1031,7 +1031,7 @@ const EventSelector: React.FC<{
 }
 
 // Compact row used inside the Zapier hero card.
-// Zapier-managed webhooks are read-only from LearnHouse's side — the Zap itself
+// Zapier-managed webhooks are read-only from LearnHouse's side · the Zap itself
 // must be edited inside Zapier. We only expose enable/disable, view logs, and
 // a delete escape hatch for admins who want to force-disconnect a Zap.
 const ZapierRow: React.FC<{

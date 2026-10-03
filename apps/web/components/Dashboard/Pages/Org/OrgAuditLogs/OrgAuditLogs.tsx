@@ -91,7 +91,7 @@ const OrgAuditLogs = () => {
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: logsQueryKey ?? ['audit_logs_disabled'],
-    queryFn: () => apiFetch(`${getAPIUrl()}ee/audit_logs/?${buildQuery()}`, access_token),
+    queryFn: () => apiFetch(`${getAPIUrl()}audit-logs/?${buildQuery()}`, access_token),
     enabled: !!(org?.id && access_token),
     staleTime: 60_000,
   })
@@ -137,7 +137,7 @@ const OrgAuditLogs = () => {
       if (start) params.append('start_date', start)
       if (end) params.append('end_date', end)
 
-      const url = `${getAPIUrl()}ee/audit_logs/export?${params.toString()}`
+      const url = `${getAPIUrl()}audit-logs/export?${params.toString()}`
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${access_token}`
@@ -420,7 +420,7 @@ const OrgAuditLogs = () => {
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-1 text-xs text-gray-400 font-mono">
                       <Globe className="w-3 h-3" />
-                      {log.ip_address || '—'}
+                      {log.ip_address || '·'}
                     </div>
                   </td>
                   <td className="py-3 px-4 text-right">
@@ -450,7 +450,7 @@ const OrgAuditLogs = () => {
                         }
                       />
                     ) : (
-                      <span className="text-gray-300 text-xs">—</span>
+                      <span className="text-gray-300 text-xs">·</span>
                     )}
                   </td>
                 </tr>

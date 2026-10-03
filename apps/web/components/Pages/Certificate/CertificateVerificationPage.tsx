@@ -202,6 +202,8 @@ const CertificateVerificationPage: React.FC<CertificateVerificationPageProps> = 
                     day: 'numeric'
                   })}
                   qrCodeLink={qrCodeLink}
+                  qualiopiEnabled={!!certificateData.certification.config.certification_qualiopi}
+                  qualiopiNda={certificateData.certification.config.certification_qualiopi_nda}
                 />
               </div>
             </div>

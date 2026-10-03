@@ -337,7 +337,7 @@ export default function PlanUsage({
                     ? t('billing.access_until', { defaultValue: 'Access until' })
                     : t('billing.next_payment', { defaultValue: 'Next payment' })}
                 </p>
-                <p className="mt-1 text-sm font-semibold text-black">{periodEnd ?? '—'}</p>
+                <p className="mt-1 text-sm font-semibold text-black">{periodEnd ?? '·'}</p>
               </div>
               <div>
                 <p className="text-[11px] font-semibold text-black/30 uppercase tracking-wider">
@@ -485,7 +485,7 @@ export default function PlanUsage({
             </p>
           </div>
           <div className="px-6 py-6 space-y-6">
-            {/* Active add-ons — read-only (no pack-detail/cancel route in v1) */}
+            {/* Active add-ons · read-only (no pack-detail/cancel route in v1) */}
             {activePacks.length > 0 &&
               (() => {
                 const grouped = activePacks.reduce((acc: Record<string, any[]>, pack: any) => {
@@ -643,7 +643,7 @@ export default function PlanUsage({
                     </li>
                     <li className="text-[12px] text-black/60 flex items-start gap-2">
                       <span className="text-emerald-500 mt-0.5">&#10003;</span>
-                      {t('billing.pack_cancel_anytime', { defaultValue: 'Cancel anytime — stays active until end of billing period' })}
+                      {t('billing.pack_cancel_anytime', { defaultValue: 'Cancel anytime · stays active until end of billing period' })}
                     </li>
                     {disclaimerPack.type === 'ai_credits' && (
                       <li className="text-[12px] text-black/60 flex items-start gap-2">

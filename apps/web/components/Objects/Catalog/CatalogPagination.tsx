@@ -6,7 +6,7 @@ import {
   CATALOG_PAGE_SIZE,
   CatalogPageNumber,
   getCatalogPageNumbers,
-} from './catalogPagination'
+} from './paginationUtils'
 
 const paginationWrapperClassName = 'flex items-center justify-center gap-2'
 const paginationNavButtonClassName =

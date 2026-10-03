@@ -30,7 +30,7 @@ import CodePlayground from './Extensions/CodePlayground/CodePlayground'
 import UserBlock from './Extensions/Users/UserBlock'
 import MagicBlock from './Extensions/MagicBlocks/MagicBlock'
 
-// Lowlight — slim grammar set; see editorLowlight.ts
+// Lowlight · slim grammar set; see editorLowlight.ts
 import { lowlight } from './editorLowlight'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 

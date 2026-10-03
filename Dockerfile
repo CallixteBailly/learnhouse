@@ -19,6 +19,12 @@ COPY apps/web .
 # Disable telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Skip TypeScript check and ESLint during Docker build — they are RAM-heavy
+# (the type check alone can exhaust a 4-8GB builder) and types are already
+# validated in dev/CI. This shaves minutes + ~1.5GB peak RAM off the build.
+ENV NEXT_IGNORE_TYPECHECK=1
+ENV NEXT_IGNORE_LINT=1
+
 # Remove .env files to avoid leaking secrets into the build
 RUN rm -f .env*
 

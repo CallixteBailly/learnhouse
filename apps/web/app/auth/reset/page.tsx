@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const orgslug = await getAuthOrgSlug()
 
   if (!orgslug) {
-    return { title: 'Reset Password — LearnHouse' }
+    return { title: 'Réinitialiser le mot de passe | Ordria Learning' }
   }
 
   let org: any = null
@@ -20,11 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
       tags: ['organizations'],
     })
   } catch {
-    // Stale cookie or unknown org — fall back to generic title
+    // Stale cookie or unknown org · fall back to generic title
   }
 
   return {
-    title: 'Reset Password' + ` — ${org?.name || 'LearnHouse'}`,
+    title: 'Reset Password' + ` · ${org?.name || 'Ordria Learning'}`,
     robots: { index: false, follow: false },
   }
 }

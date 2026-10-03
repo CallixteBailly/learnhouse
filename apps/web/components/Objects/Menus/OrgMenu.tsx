@@ -9,6 +9,7 @@ import { getUriWithOrg } from '@services/config/config'
 import { fetchRAGChatSessions, RAGChatSession } from '@services/ai/ai'
 import { HeaderProfileBox } from '@components/Security/HeaderProfileBox'
 import MenuLinks from './OrgMenuLinks'
+import { OrgSwitcherBadge } from '@components/Objects/Menus/OrgSwitcherBadge'
 import { getOrgLogoMediaDirectory } from '@services/media/media'
 import { useLHSession } from '@components/Contexts/LHSessionContext'
 import { useOrg } from '@components/Contexts/OrgContext'
@@ -25,8 +26,11 @@ import {
   SquaresFour,
   ChalkboardSimple,
   Signpost,
+  Books,
+  FolderSimple,
 } from '@phosphor-icons/react'
-import { DiscordIcon } from '@components/Objects/Icons/DiscordIcon'
+import { menuIcon } from '@components/Objects/Menus/menuIcons'
+import Logo from '@components/Objects/Brand/Logo'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,6 +45,7 @@ import { isFeatureAvailable } from '@services/plans/plans'
 import { getMenuColorClasses } from '@services/utils/ts/colorUtils'
 import AuthenticatedClientElement from '@components/Security/AuthenticatedClientElement'
 import { useJoinBannerVisible, JOIN_BANNER_HEIGHT } from '@components/Objects/Banners/OrgJoinBanner'
+import { useProfileBannerVisible, PROFILE_BANNER_HEIGHT } from '@components/Objects/Badges/CompleteProfileBanner'
 import {
   Tooltip,
   TooltipContent,
@@ -82,7 +87,13 @@ export const OrgMenu = (props: any) => {
     if (sessionUuid) setBubbleSessionToLoad(sessionUuid)
     setBubbleOpen(true)
   }
-  const topOffset = isJoinBannerVisible ? JOIN_BANNER_HEIGHT : 0
+  const isProfileBannerVisible = useProfileBannerVisible()
+  // Both banners are fixed overlays at the top: the navbar must sit below
+  // whichever of them is visible, or they visually cover (and used to swallow
+  // clicks on) the navigation.
+  const topOffset =
+    (isJoinBannerVisible ? JOIN_BANNER_HEIGHT : 0) +
+    (isProfileBannerVisible ? PROFILE_BANNER_HEIGHT : 0)
 
   // Get primary color from org config (v2: customization.general.color, v1: general.color)
   const config = org?.config?.config
@@ -141,17 +152,20 @@ export const OrgMenu = (props: any) => {
 
   return (
     <>
-      <div className="backdrop-blur-lg h-[60px] blur-3xl" style={{ zIndex: 'var(--z-behind)', marginTop: topOffset }}></div>
+      <div style={{ height: 72 + topOffset }} aria-hidden="true" />
       <nav
         aria-label="Top navigation"
-        className={`backdrop-blur-lg fixed left-0 right-0 h-[60px] ${!primaryColor ? 'bg-white/90 nice-shadow' : ''}`}
-        style={{
-          zIndex: 'var(--z-nav)',
-          backgroundColor: primaryColor || undefined,
-          top: topOffset
-        }}
+        className="fixed left-1/2 -translate-x-1/2 w-[calc(100%-1.5rem)] max-w-5xl z-[var(--z-nav)]"
+        style={{ top: 12 + topOffset }}
       >
-        <div className="flex items-center justify-between w-full max-w-(--breakpoint-2xl) mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div
+          className="flex items-center justify-between h-14 px-4 sm:px-5 rounded-2xl backdrop-blur-xl border border-white/10 text-white"
+          style={{
+            backgroundColor: primaryColor ? `${primaryColor}cc` : 'oklch(0.23 0.06 264 / 0.9)',
+            backgroundImage: 'radial-gradient(70% 60% at 50% 0%, oklch(0.8 0.13 213 / 0.18), transparent 60%)',
+            boxShadow: '0 8px 32px -8px oklch(0 0 0 / 0.35), 0 2px 8px -2px oklch(0 0 0 / 0.15)',
+          }}
+        >
           <div className="flex items-center space-x-5 md:w-auto w-full">
             <div className="logo flex md:w-auto w-full justify-center">
               <Link href={getUriWithOrg(orgslug, '/')}>
@@ -159,17 +173,22 @@ export const OrgMenu = (props: any) => {
                   {org?.logo_image ? (
                     <img
                       src={`${getOrgLogoMediaDirectory(org.org_uuid, org?.logo_image)}`}
-                      alt="Learnhouse"
+                      alt={`${org?.name || 'Ordria Learning'} logo`}
                       style={{ width: 'auto', height: '100%' }}
                       className="rounded-md"
                     />
                   ) : (
-                    <LearnHouseLogo logoFilter={colors.logoFilter} />
+                    <Logo variant="lockup" size="sm" animated tone={primaryColor ? 'dark' : 'light'} style={{ filter: colors.logoFilter }} />
                   )}
                 </div>
               </Link>
             </div>
-            <div className="hidden md:flex">
+            {/* Current-org badge + switcher · multi-org users only, so nobody
+                gets "stuck" in an organization without a visible way out. */}
+            <div className="hidden sm:flex shrink-0">
+              <OrgSwitcherBadge />
+            </div>
+            <div className={`hidden md:flex ${colors.text}`}>
               <MenuLinks orgslug={orgslug} primaryColor={primaryColor} />
             </div>
           </div>
@@ -201,7 +220,7 @@ export const OrgMenu = (props: any) => {
                 </TooltipProvider>
               </div>
             </AuthenticatedClientElement>
-            {/* Boards */}
+            {/* Boards · disabled for OrdIA Learning */}
             {rf?.boards?.enabled && (
               <AuthenticatedClientElement checkMethod="authentication">
                 <div className="hidden md:flex">
@@ -271,7 +290,7 @@ export const OrgMenu = (props: any) => {
                       return (
                         <DropdownMenuItem key={item.id} asChild>
                           <Link
-                            href={item.href}
+                            href={getUriWithOrg(orgslug, item.href)}
                             className="flex items-center gap-2"
                             onClick={() => track(AnalyticsEvent.DashboardEntered, { source: 'org_menu' })}
                           >
@@ -315,7 +334,7 @@ export const OrgMenu = (props: any) => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <a
-                        href="https://docs.learnhouse.app"
+                        href="https://ordria.fr/docs"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2"
@@ -326,24 +345,13 @@ export const OrgMenu = (props: any) => {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <a
-                        href="https://learnhouse.app"
+                        href="https://ordria.fr"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2"
                       >
                         <Globe size={16} weight="fill" />
                         <span>{t('common.help_menu.website')}</span>
-                      </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <a
-                        href="https://discord.gg/learnhouse"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2"
-                      >
-                        <DiscordIcon size={16} />
-                        <span>{t('common.help_menu.discord')}</span>
                       </a>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -359,7 +367,7 @@ export const OrgMenu = (props: any) => {
               </div>
             )}
 
-            <div className="hidden md:flex">
+            <div className={`hidden md:flex ${colors.text}`}>
               <HeaderProfileBox primaryColor={primaryColor} />
             </div>
             <button
@@ -380,24 +388,40 @@ export const OrgMenu = (props: any) => {
         </div>
       </nav>
       <div
-        className={`fixed inset-x-0 bg-white/80 backdrop-blur-lg md:hidden shadow-lg transition-all duration-300 ease-in-out ${
-          isMenuOpen ? 'opacity-100' : '-top-full opacity-0'
+        className={`fixed inset-x-0 bg-[var(--ordria-nuit)]/98 backdrop-blur-xl border-b border-white/10 md:hidden transition-all duration-300 ease-in-out ${
+          isMenuOpen ? 'opacity-100' : '-top-full opacity-0 pointer-events-none'
         }`}
         style={{
           zIndex: 'var(--z-nav-menu)',
           top: isMenuOpen ? topOffset + 60 : undefined
         }}
+        aria-hidden={!isMenuOpen}
       >
-        <div className="flex flex-col px-4 py-3 space-y-4 justify-center items-center">
-          {/* Mobile Search */}
-          <div className="w-full px-2">
-            <SearchBar orgslug={orgslug} isMobile={true} />
-          </div>
-          <div className='py-4'>
-            <MenuLinks orgslug={orgslug} />
-          </div>
-          <div className="border-t border-gray-200">
-            <HeaderProfileBox />
+        <div className="flex flex-col px-4 py-4 space-y-5 max-h-[calc(100vh-60px)] overflow-y-auto">
+          {/* Search */}
+          <SearchBar orgslug={orgslug} className="w-full" primaryColor="" />
+
+          {/* Navigation links · stacked vertical for mobile */}
+          <MobileNavLinks orgslug={orgslug} primaryColor={primaryColor} onNavigate={() => setIsMenuOpen(false)} />
+
+          {/* Trail progress */}
+          <AuthenticatedClientElement checkMethod="authentication">
+            <Link
+              href={getUriWithOrg(orgslug, '/trail')}
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center gap-3 text-white/90 font-semibold py-2"
+            >
+              <Signpost size={22} weight="fill" />
+              <span>{t('courses.progress')}</span>
+            </Link>
+          </AuthenticatedClientElement>
+
+          {/* Profile */}
+          <div className="border-t border-white/10 pt-4">
+            <OrgSwitcherBadge />
+            <div className="mt-3">
+              <HeaderProfileBox primaryColor={primaryColor} />
+            </div>
           </div>
         </div>
       </div>
@@ -442,7 +466,7 @@ const CopilotMenuButton = ({
   const accessToken = session?.data?.tokens?.access_token
   const [isOpen, setIsOpen] = useState(false)
 
-  // Only fetch when the dropdown is open — avoids firing on every page load
+  // Only fetch when the dropdown is open · avoids firing on every page load
   const { data: sessions } = useQuery<RAGChatSession[]>({
     queryKey: queryKeys.ai.ragSessions(orgslug),
     queryFn: () => fetchRAGChatSessions(accessToken, orgslug),
@@ -558,13 +582,85 @@ const CopilotMenuButton = ({
 }
 
 const LearnHouseLogo = ({ logoFilter }: { logoFilter: string }) => {
+  // Composant local legacy · désormais délégué au <Logo> unifié.
+  // Conservé temporairement pour les éventuels autres usages inline.
+  return <Logo variant="lockup" size="sm" animated style={{ filter: logoFilter }} />
+}
+
+/**
+ * Menu de navigation mobile · version verticale du MenuLinks desktop.
+ * Rend les mêmes liens (config-driven via le contexte org) en stacked vertical,
+ * avec fermeture du drawer au clic.
+ */
+function MobileNavLinks({
+  orgslug,
+  primaryColor,
+  onNavigate,
+}: {
+  orgslug: string
+  primaryColor: string
+  onNavigate: () => void
+}) {
+  const org = useOrg() as any
+  const { t } = useTranslation()
+
+  const rf = org?.config?.config?.resolved_features
+  const isEnabled = (feature: string) => rf?.[feature]?.enabled === true
+
+  const configItems: any[] | undefined =
+    org?.config?.config?.customization?.menu?.items ?? org?.config?.config?.general?.menu?.items
+
+  const DEFAULT_ORDER = ['courses', 'library']
+  const source =
+    configItems && configItems.length
+      ? [...configItems].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      : DEFAULT_ORDER.map((type, i) => ({ type, enabled: true, order: i, label: '', url: '' }))
+
+  const items = source
+    .map((item: any) => {
+      if (item.type === 'custom') {
+        if (!item.enabled || !item.url) return null
+        const external = /^https?:\/\//i.test(item.url)
+        return {
+          key: `custom-${item.url}`,
+          label: item.label || item.url,
+          Icon: menuIcon(item.icon),
+          href: external ? item.url : getUriWithOrg(orgslug, item.url),
+          external,
+        }
+      }
+      if (item.type === 'courses') {
+        if (!item.enabled || !isEnabled('courses')) return null
+        return { key: 'courses', label: item.label || t('courses.courses'), Icon: Books, href: getUriWithOrg(orgslug, '/courses'), external: false }
+      }
+      if (item.type === 'library') {
+        if (!item.enabled || !isEnabled('folders')) return null
+        return { key: 'library', label: item.label || t('common.formations'), Icon: FolderSimple, href: getUriWithOrg(orgslug, '/library'), external: false }
+      }
+      return null
+    })
+    .filter(Boolean) as { key: string; label: string; Icon: any; href: string; external: boolean }[]
+
+  if (items.length === 0) return null
+
   return (
-    <Image
-      src="/lrn-text.svg"
-      alt="LearnHouse logo"
-      width={133}
-      height={40}
-      style={{ height: 'auto', filter: logoFilter }}
-    />
+    <nav aria-label={t('common.navigation', 'Navigation')} className="flex flex-col">
+      {items.map((it) => {
+        const content = (
+          <span className="flex items-center gap-3 text-white/90 font-semibold py-2">
+            <it.Icon size={22} weight="fill" /> <span>{it.label}</span>
+          </span>
+        )
+        return it.external ? (
+          <a key={it.key} href={it.href} target="_blank" rel="noopener noreferrer" onClick={onNavigate}>
+            {content}
+          </a>
+        ) : (
+          <Link key={it.key} href={it.href} onClick={onNavigate}>
+            {content}
+          </Link>
+        )
+      })}
+    </nav>
   )
 }

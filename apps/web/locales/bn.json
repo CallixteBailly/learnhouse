@@ -46,11 +46,11 @@
     "help": "সহায়তা",
     "help_menu": {
       "documentation": "ডকুমেন্টেশন",
-      "website": "LearnHouse ওয়েবসাইট",
+      "website": "Ordria ওয়েবসাইট",
       "discord": "Discord",
       "report_feedback": "সমস্যা বা মতামত জানান",
       "feedback_title": "মতামত পাঠান",
-      "feedback_description": "আপনার মতামত শেয়ার করে, বাগ রিপোর্ট করে, অথবা নতুন ফিচার সাজেস্ট করে LearnHouse উন্নত করতে সাহায্য করুন।",
+      "feedback_description": "আপনার মতামত শেয়ার করে, বাগ রিপোর্ট করে, অথবা নতুন ফিচার সাজেস্ট করে Ordria উন্নত করতে সাহায্য করুন।",
       "feedback_placeholder": "আপনার মনে কী আছে বলুন...",
       "feedback_success": "আপনার মতামতের জন্য ধন্যবাদ!",
       "send_feedback": "মতামত পাঠান",
@@ -135,7 +135,7 @@
         },
         "api_access": {
           "title": "প্রো ফিচার",
-          "description": "API অ্যাক্সেস একটি প্রিমিয়াম ফিচার যা শুধুমাত্র LearnHouse-এর Pro পরিকল্পনা বা তার উপরের সংস্থাগুলির জন্য উপলব্ধ। আপনার সংস্থার ডেটায় প্রোগ্রামেটিক অ্যাক্সেস আনলক করতে আপগ্রেড করুন।"
+          "description": "API অ্যাক্সেস একটি প্রিমিয়াম ফিচার যা শুধুমাত্র Ordria-এর Pro পরিকল্পনা বা তার উপরের সংস্থাগুলির জন্য উপলব্ধ। আপনার সংস্থার ডেটায় প্রোগ্রামেটিক অ্যাক্সেস আনলক করতে আপগ্রেড করুন।"
         }
       },
       "current_plan": "বর্তমান প্ল্যান",
@@ -215,7 +215,7 @@
     "organizations": "প্রতিষ্ঠান",
     "billing": "বিলিং",
     "create_organization": "প্রতিষ্ঠান তৈরি করুন",
-    "copyright": "© {{year}} LearnHouse, Inc.",
+    "copyright": "© {{year}} Ordria Learning",
     "delete_organization_error": "এই প্রতিষ্ঠানটি মুছে ফেলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
     "org_actions": "প্রতিষ্ঠানের কার্যক্রম",
     "manage_upgrade": "পরিচালনা / আপগ্রেড",
@@ -228,7 +228,8 @@
     "leave_organization_title": "সংস্থা ছাড়বেন?",
     "leave_organization_desc": "আপনি {{org}}-এ অ্যাক্সেস হারাবেন এবং সদস্য তালিকা থেকে সরিয়ে দেওয়া হবে। আমন্ত্রণ পেলে পরে আবার যোগ দিতে পারবেন।",
     "leave_organization_error": "এই সংস্থা ছাড়া যায়নি। আবার চেষ্টা করুন।",
-    "leaving": "ছাড়া হচ্ছে…"
+    "leaving": "ছাড়া হচ্ছে…",
+    "formations": "প্রশিক্ষণ"
   },
   "banner": {
     "viewing_as_guest": "আপনি {{name}} অতিথি হিসেবে দেখছেন।",
@@ -365,17 +366,17 @@
     "verifying_email": "আপনার ইমেল ঠিকানা যাচাই করা হচ্ছে...",
     "error_generic": "কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
     "sign_in": "সাইন ইন করুন",
-    "terms_text": "চালিয়ে গেলে আপনি LearnHouse-এর সাথে সম্মত হচ্ছেন",
+    "terms_text": "চালিয়ে গেলে আপনি Ordria-এর সাথে সম্মত হচ্ছেন",
     "terms_of_service": "পরিষেবার শর্তাবলী",
     "and": "এবং",
     "privacy_policy": "গোপনীয়তা নীতি",
     "image_title_forgot": "আপনার পাসওয়ার্ড রিসেট করুন।",
     "image_subtitle_forgot": "আমরা আপনাকে দ্রুত আপনার অ্যাকাউন্টে ফিরিয়ে আনতে সাহায্য করব।",
-    "image_title_login": "LearnHouse-এ আবার স্বাগতম।",
-    "image_subtitle_login": "যেখানে থেমেছিলেন সেখান থেকে শুরু করুন — আপনার কোর্স, শিক্ষার্থী ও টুল অপেক্ষা করছে।",
+    "image_title_login": "Ordria-এ আবার স্বাগতম।",
+    "image_subtitle_login": "যেখানে থেমেছিলেন সেখান থেকে শুরু করুন, আপনার কোর্স, শিক্ষার্থী ও টুল অপেক্ষা করছে।",
     "image_title_reset": "প্রায় পৌঁছে গেছেন।",
     "image_subtitle_reset": "আপনার অ্যাকাউন্ট নিরাপদ রাখতে একটি শক্তিশালী পাসওয়ার্ড তৈরি করুন।",
-    "image_title_signup": "LearnHouse দিয়ে শেখানো শুরু করুন।",
+    "image_title_signup": "Ordria দিয়ে শেখানো শুরু করুন।",
     "image_subtitle_signup": "আপনার অ্যাকাউন্ট তৈরি করুন এবং কয়েক মিনিটে আপনার প্রথম কোর্স চালু করুন।",
     "image_title_verify": "আপনার ইমেইল যাচাই করুন।",
     "image_subtitle_verify": "আপনার অ্যাকাউন্ট নিরাপদ করতে ও শুরু করতে একটি দ্রুত ধাপ।",
@@ -576,14 +577,14 @@
     "import": {
       "scorm_package": "SCORM প্যাকেজ",
       "scorm_description": "SCORM 1.2 বা SCORM 2004 প্যাকেজ আমদানি করুন",
-      "learnhouse_courses": "LearnHouse কোর্স",
-      "learnhouse_description": "LearnHouse থেকে রপ্তানি করা কোর্স আমদানি করুন",
+      "learnhouse_courses": "Ordria কোর্স",
+      "learnhouse_description": "Ordria থেকে রপ্তানি করা কোর্স আমদানি করুন",
       "upload_package": "প্যাকেজ আপলোড করুন",
       "configure": "কনফিগার করুন",
       "complete": "সম্পূর্ণ",
       "click_to_upload": "আপলোড করতে ক্লিক করুন বা টেনে আনুন",
-      "learnhouse_format": "LearnHouse কোর্স রপ্তানি (.zip)",
-      "learnhouse_info": "LearnHouse কোর্স রপ্তানি প্যাকেজ (.zip) আপলোড করুন। আপনি কোন কোর্স আমদানি করবেন তা নির্বাচন করতে এবং আমদানি বিকল্পগুলি কনফিগার করতে পারবেন।",
+      "learnhouse_format": "Ordria কোর্স রপ্তানি (.zip)",
+      "learnhouse_info": "Ordria কোর্স রপ্তানি প্যাকেজ (.zip) আপলোড করুন। আপনি কোন কোর্স আমদানি করবেন তা নির্বাচন করতে এবং আমদানি বিকল্পগুলি কনফিগার করতে পারবেন।",
       "analyze_package": "প্যাকেজ বিশ্লেষণ করুন",
       "ready_to_analyze": "বিশ্লেষণের জন্য প্রস্তুত",
       "invalid_file_format": "অনুগ্রহ করে একটি .zip ফাইল আপলোড করুন",
@@ -638,7 +639,7 @@
         "plan_generated": "পরিকল্পনা আপডেট হয়েছে",
         "plan_generated_hint": "পর্যালোচনা ও সম্পাদনার জন্য পরিকল্পনা ট্যাব দেখুন।",
         "describe_course": "আপনার কোর্স বর্ণনা করুন",
-        "describe_course_hint": "ডানদিকের চ্যাট ব্যবহার করে আপনি যে কোর্স চান তা বর্ণনা করুন — বিষয়, দর্শক এবং লক্ষ্য।",
+        "describe_course_hint": "ডানদিকের চ্যাট ব্যবহার করে আপনি যে কোর্স চান তা বর্ণনা করুন, বিষয়, দর্শক এবং লক্ষ্য।",
         "generating_plan": "আপনার কোর্স পরিকল্পনা তৈরি হচ্ছে...",
         "chapters": "অধ্যায়",
         "activities": "কার্যকলাপ",
@@ -687,7 +688,9 @@
     "no_image_in_clipboard": "ক্লিপবোর্ডে কোনো ছবি পাওয়া যায়নি",
     "clipboard_read_error": "ক্লিপবোর্ড থেকে পড়া যায়নি",
     "sign_in_to_see_courses": "আপনার কোর্স দেখতে লগ ইন করুন",
-    "sign_in_to_see_courses_description": "এই একাডেমির কোর্সগুলো শুধু সাইন ইন করার পর দেখা যেতে পারে।"
+    "sign_in_to_see_courses_description": "এই একাডেমির কোর্সগুলো শুধু সাইন ইন করার পর দেখা যেতে পারে।",
+    "certificate_badge": "Certificat",
+    "finish_course": "সম্পন্ন "
   },
   "communities": {
     "title": "কমিউনিটি",
@@ -1050,8 +1053,8 @@
     "retry_assignment_title": "এই অ্যাসাইনমেন্টটি আবার চেষ্টা করবেন?",
     "retry_assignment_confirm": "আপনার বর্তমান জমা এবং উত্তরগুলি রিসেট করা হবে যাতে আপনি নতুন করে শুরু করতে পারেন। আপনার পূর্ববর্তী গ্রেড পুনরায় জমা দেওয়ার পরে প্রতিস্থাপিত হবে।",
     "retry_assignment_remaining": "এই একটির পরে আপনার কাছে {{remaining}} প্রচেষ্টা{{plural}} বাকি আছে।",
-    "retry_assignment_last": "এটি আপনার শেষ প্রচেষ্টা — এটি সর্বোচ্চ চেষ্টা করুন।",
-    "retry_assignment_success": "আপনার কাজ রিসেট করা হয়েছে — আবার চেষ্টা করুন।",
+    "retry_assignment_last": "এটি আপনার শেষ প্রচেষ্টা, এটি সর্বোচ্চ চেষ্টা করুন।",
+    "retry_assignment_success": "আপনার কাজ রিসেট করা হয়েছে, আবার চেষ্টা করুন।",
     "retry_assignment_failed": "আপনার জমা রিসেট করতে পারেনি। আবার চেষ্টা করুন।",
     "retry_no_attempts_left": "কোনো পুনঃপ্রচেষ্টা বাকি নেই",
     "no_task_submission_to_grade": "এই শিক্ষার্থী এখনও এই কাজের জন্য কোনো ফাইল জমা দেয়নি।",
@@ -1510,8 +1513,8 @@
       "import_course": "কোর্স আমদানি করুন",
       "import_scorm": "SCORM প্যাকেজ আমদানি করুন",
       "import_scorm_description": "নতুন কোর্স তৈরি করতে SCORM প্যাকেজ আমদানি করুন",
-      "import_learnhouse": "LearnHouse কোর্স আমদানি করুন",
-      "import_learnhouse_description": "LearnHouse রপ্তানি প্যাকেজ থেকে কোর্স আমদানি করুন",
+      "import_learnhouse": "Ordria কোর্স আমদানি করুন",
+      "import_learnhouse_description": "Ordria রপ্তানি প্যাকেজ থেকে কোর্স আমদানি করুন",
       "import_select_type": "আমদানি করতে প্যাকেজের ধরন নির্বাচন করুন",
       "no_courses": "এখনও কোনো কোর্স নেই",
       "create_course_placeholder": "কন্টেন্ট যোগ করতে কোর্স তৈরি করুন",
@@ -2359,9 +2362,9 @@
         "footer_text_desc": "আপনার সংস্থার পৃষ্ঠাগুলির নীচে প্রদর্শিত কাস্টম টেক্সট",
         "default_language": "ডিফল্ট ভাষা",
         "default_language_desc": "নতুন ভিজিটররা ডিফল্টভাবে যে ভাষায় সাইটটি দেখেন এবং এই সংস্থার পক্ষ থেকে পাঠানো ইমেইলে যে ভাষা ব্যবহৃত হয়। সদস্যরা এখনও নিজেদের UI ভাষা পরিবর্তন করতে পারেন।",
-        "watermark_desc": "আপনার সংস্থা পেজে LearnHouse ব্র্যান্ডিং ওয়াটারমার্ক দেখান",
+        "watermark_desc": "আপনার সংস্থা পেজে Ordria ব্র্যান্ডিং ওয়াটারমার্ক দেখান",
         "watermark_free_plan": "ফ্রি প্ল্যানে ওয়াটারমার্ক সর্বদা প্রদর্শিত হয়",
-        "watermark_label": "\"Made with LearnHouse\" ওয়াটারমার্ক",
+        "watermark_label": "\"Made with Ordria\" ওয়াটারমার্ক",
         "watermark_ee": "আপনার এন্টারপ্রাইজ এডিশন লাইসেন্স দ্বারা লুকানো"
       },
       "images": {
@@ -3601,7 +3604,7 @@
             "auth_required_submit": "অথেন্টিকেশন প্রয়োজন। আপনার কাজ জমা দিতে দয়া করে সাইন ইন করুন।",
             "hint_optional": "হিন্ট (ঐচ্ছিক)",
             "paste_blocked": "এই অ্যাসাইনমেন্টের জন্য পেস্ট নিষ্ক্রিয়",
-            "paste_blocked_hint": "পেস্ট নিষ্ক্রিয় — আপনার উত্তর সরাসরি টাইপ করুন।",
+            "paste_blocked_hint": "পেস্ট নিষ্ক্রিয়, আপনার উত্তর সরাসরি টাইপ করুন।",
             "upload_locked_graded": "এই জমাটি মূল্যায়ন করা হয়েছে — আপনার ফাইল আর পরিবর্তন করা যাবে না।",
             "upload_locked_submitted": "আপনি এই অ্যাসাইনমেন্ট জমা দিয়েছেন — আপনার ফাইল আর পরিবর্তন করা যাবে না।"
           },
@@ -3639,13 +3642,13 @@
               "regex": "রেগুলার এক্সপ্রেশন"
             },
             "explanation_label": "ব্যাখ্যা (সঠিক উত্তরে দেখানো হয়)",
-            "explanation_placeholder": "ঐচ্ছিক — কেন উত্তরটি সঠিক তা ব্যাখ্যা করুন",
+            "explanation_placeholder": "ঐচ্ছিক, কেন উত্তরটি সঠিক তা ব্যাখ্যা করুন",
             "your_answer_placeholder": "আপনার উত্তর টাইপ করুন...",
             "student_answer_label": "শিক্ষার্থীর উত্তর",
             "accepted_answers_label": "গৃহীত উত্তরসমূহ",
             "no_answer": "কোন উত্তর জমা হয়নি",
             "correct": "সঠিক",
-            "incorrect": "ঠিক না — আবার চেষ্টা করুন"
+            "incorrect": "ঠিক না, আবার চেষ্টা করুন"
           },
           "number_answer": {
             "prompt_label": "প্রশ্নের বিষয়",
@@ -3656,14 +3659,14 @@
             "unit_placeholder": "m/s², kg, °C...",
             "unit_hint": "উত্তর ক্ষেত্রের পাশে দেখানো হয়েছে। বাধ্যতামূলক নয়।",
             "explanation_label": "ব্যাখ্যা (সঠিক উত্তরে দেখানো হয়)",
-            "explanation_placeholder": "ঐচ্ছিক — উত্তরে পৌঁছানোর উপায় ব্যাখ্যা করুন",
+            "explanation_placeholder": "ঐচ্ছিক, উত্তরে পৌঁছানোর উপায় ব্যাখ্যা করুন",
             "preview_label": "গ্রহণ করে",
             "your_answer_placeholder": "একটি সংখ্যা প্রবেশ করান...",
             "student_answer_label": "শিক্ষার্থীর উত্তর",
             "accepted_range_label": "গৃহীত পরিসর",
             "no_answer": "কোন উত্তর জমা হয়নি",
             "correct": "সঠিক",
-            "incorrect": "ঠিক না — আবার চেষ্টা করুন"
+            "incorrect": "ঠিক না, আবার চেষ্টা করুন"
           }
         },
         "generate_ai": "AI দিয়ে কাজ তৈরি করুন",
@@ -3772,7 +3775,7 @@
         },
         "tasks": {
           "title": "টাস্ক কর্মক্ষমতা",
-          "subtitle": "প্রতি টাস্কের গড় স্কোর — নিচু বারগুলি দেখায় শিক্ষার্থীরা কোথায় সমস্যায় পড়ে",
+          "subtitle": "প্রতি টাস্কের গড় স্কোর, নিচু বারগুলি দেখায় শিক্ষার্থীরা কোথায় সমস্যায় পড়ে",
           "empty": "গ্রেড করা জমা আসার পরে টাস্ক-ভিত্তিক কর্মক্ষমতা দেখাবে",
           "avg_grade": "গড় গ্রেড",
           "attempts": "প্রচেষ্টা"
@@ -3784,7 +3787,7 @@
         },
         "attention": {
           "title": "সহায়তার প্রয়োজন হতে পারে",
-          "subtitle": "যারা উত্তীর্ণ হয়নি — তাদের সাথে যোগাযোগের কথা ভাবুন",
+          "subtitle": "যারা উত্তীর্ণ হয়নি, তাদের সাথে যোগাযোগের কথা ভাবুন",
           "empty": "যারা গ্রেড হয়েছে সবাই উত্তীর্ণ। দুর্দান্ত!"
         }
       },
@@ -3826,7 +3829,7 @@
             "auto_grading_disabled_file": "স্বয়ংক্রিয় গ্রেডিং উপলব্ধ নয় কারণ এই অ্যাসাইনমেন্টে একটি ফাইল জমা কাজ রয়েছে যা মানব পর্যালোচনা প্রয়োজন।",
             "grading_type_hint": "শিক্ষার্থীদের কাছে গ্রেড কীভাবে প্রদর্শিত হয়",
             "grading_options_hint": "জমা দেওয়ার সময় আচরণ",
-            "show_correct_answers_description": "জমা গ্রেড করার পরে, শিক্ষার্থীদের তাদের নিজস্ব উত্তরের পাশাপাশি সঠিক উত্তর দেখান — কোন কুইজ বিকল্পগুলি সঠিক ছিল, প্রত্যাশিত সংক্ষিপ্ত বা সংখ্যাসূচক উত্তর, এবং সঠিক ফর্ম শূন্যস্থান।",
+            "show_correct_answers_description": "জমা গ্রেড করার পরে, শিক্ষার্থীদের তাদের নিজস্ব উত্তরের পাশাপাশি সঠিক উত্তর দেখান, কোন কুইজ বিকল্পগুলি সঠিক ছিল, প্রত্যাশিত সংক্ষিপ্ত বা সংখ্যাসূচক উত্তর, এবং সঠিক ফর্ম শূন্যস্থান।",
             "show_correct_answers_label": "গ্রেডিংয়ের পরে সঠিক উত্তর প্রকাশ করুন",
             "allow_retries_label": "পুনরায় চেষ্টার অনুমতি দিন",
             "allow_retries_description": "ছাত্রদের অ্যাসাইনমেন্টটি গ্রেড করার পরে রিসেট এবং পুনরায় চেষ্টা করতে দিন। প্রতিটি পুনঃপ্রচেষ্টা তাদের পূর্ববর্তী উত্তরগুলি মুছে ফেলে এবং একটি নতুন প্রচেষ্টা হিসাবে গণনা করা হয়।",
@@ -4318,9 +4321,12 @@
         "drop_or_browse": "আপনার ভিডিও এখানে ছেড়ে দিন বা ব্রাউজ করতে ক্লিক করুন",
         "expand_video": "ভিডিও প্রসারিত করুন",
         "player_title": "ভিডিও প্লেয়ার",
-        "supported_formats": "MP4 এবং WebM ফরম্যাট সমর্থন করে",
-        "unsupported_format": "অনুগ্রহ করে একটি সমর্থিত ভিডিও ফরম্যাট আপলোড করুন (MP4 বা WebM)",
-        "uploading": "ভিডিও আপলোড হচ্ছে..."
+        "supported_formats": "Supports MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG and 3GP",
+        "unsupported_format": "Please upload a supported video format (MP4, MOV, WebM, MKV, AVI, WMV, FLV, OGV, MPEG, 3GP)",
+        "uploading": "ভিডিও আপলোড হচ্ছে...",
+        "converting_title": "Video conversion in progress",
+        "converting_description": "Your {{format}} video is being converted for optimal playback in all browsers. It will be ready in a few minutes, this page updates automatically.",
+        "fullscreen_video": "Play in fullscreen"
       },
       "button_block": {
         "enter_link_url": "লিঙ্ক URL লিখুন"
@@ -4542,7 +4548,7 @@
         "avg_rate": "গড় হার",
         "needs_attention": "মনোযোগ প্রয়োজন",
         "total_samples": "মোট নমুনা",
-        "more_expand": "+{{count}} আরও — প্রসারিত করতে ক্লিক করুন",
+        "more_expand": "+{{count}} আরও, প্রসারিত করতে ক্লিক করুন",
         "activities_count": "{{count}} কার্যক্রম",
         "pct_of_total": "মোটের %",
         "bar_width_hint": "বারের প্রস্থ = আপেক্ষিক দর্শন",
@@ -4662,7 +4668,7 @@
       },
       "activity_dropoff": {
         "title": "ঝরে পড়ার স্থান",
-        "subtitle": "শিক্ষার্থীরা কোথায় অগ্রগতি বন্ধ করেন — শেষ সম্পন্ন কার্যক্রম",
+        "subtitle": "শিক্ষার্থীরা কোথায় অগ্রগতি বন্ধ করেন, শেষ সম্পন্ন কার্যক্রম",
         "total_dropoffs": "মোট ঝরে পড়া",
         "dropoff_points": "ঝরে পড়ার স্থান"
       },
@@ -4696,7 +4702,7 @@
         "avg_between": "সম্পন্নতার মধ্যে গড় {{unit}}",
         "transitions_tracked": "রূপান্তর ট্র্যাক করা হয়েছে",
         "raw_hours_avg": "কাঁচা ঘণ্টার গড়",
-        "description": "শিক্ষার্থীরা কত দ্রুত এক কার্যক্রম থেকে পরেরটিতে যান তা পরিমাপ করে। কম ভালো — এর অর্থ শিক্ষার্থীরা দ্রুত বিষয়বস্তুর মধ্য দিয়ে এগোচ্ছেন।"
+        "description": "শিক্ষার্থীরা কত দ্রুত এক কার্যক্রম থেকে পরেরটিতে যান তা পরিমাপ করে। কম ভালো, এর অর্থ শিক্ষার্থীরা দ্রুত বিষয়বস্তুর মধ্য দিয়ে এগোচ্ছেন।"
       },
       "time_to_completion": {
         "title": "সম্পন্নতার সময়",
@@ -5048,15 +5054,15 @@
       },
       "teach_the_world": {
         "title": "শিখুন ও বেড়ে উঠুন",
-        "description": "LearnHouse থেকে সর্বাধিক সুবিধা পেতে সহায়ক রিসোর্স।",
+        "description": "Ordria থেকে সর্বাধিক সুবিধা পেতে সহায়ক রিসোর্স।",
         "classroom": "ক্লাসরুম",
         "classroom_desc": "আপনার কোর্স বৃদ্ধি ও পরিচালনা করতে শিখুন",
-        "university": "LearnHouse বিশ্ববিদ্যালয়",
+        "university": "Ordria বিশ্ববিদ্যালয়",
         "university_desc": "গাইড, টিপস এবং সেরা অনুশীলন"
       },
       "add_content": {
         "title": "উপস্থিত হওয়ার মতো একটি পাঠ",
-        "description": "একটি ভিডিও, পেজ বা কুইজ যোগ করুন — শিক্ষার্থীদের ভর্তি হওয়ার সত্যিকারের কারণ দিন।",
+        "description": "একটি ভিডিও, পেজ বা কুইজ যোগ করুন, শিক্ষার্থীদের ভর্তি হওয়ার সত্যিকারের কারণ দিন।",
         "action": "কনটেন্ট যোগ করুন"
       },
       "brand_school": {
@@ -5066,22 +5072,22 @@
       },
       "share_grow": {
         "title": "আপনার স্কুলের প্রবেশদ্বার",
-        "description": "লাইভ হন এবং আপনার শেয়ারযোগ্য লিঙ্কটি নিন — যেখানে আপনি প্রতিটি শিক্ষার্থীকে পাঠাবেন।",
+        "description": "লাইভ হন এবং আপনার শেয়ারযোগ্য লিঙ্কটি নিন, যেখানে আপনি প্রতিটি শিক্ষার্থীকে পাঠাবেন।",
         "action": "আমার স্কুল খুলুন"
       },
       "invite_learners": {
         "title": "আপনার প্রথম শিক্ষার্থীকে স্বাগত জানান",
-        "description": "আপনার জয়েন লিঙ্ক শেয়ার করুন বা মানুষকে আমন্ত্রণ জানান — প্রথম শিক্ষার্থীকে দরজা পার করান।",
+        "description": "আপনার জয়েন লিঙ্ক শেয়ার করুন বা মানুষকে আমন্ত্রণ জানান, প্রথম শিক্ষার্থীকে দরজা পার করান।",
         "action": "শিক্ষার্থী আমন্ত্রণ করুন"
       },
       "build_community": {
         "title": "শিক্ষার্থীদের বারবার ফিরিয়ে আনুন",
-        "description": "একটি কমিউনিটি স্পেস খুলুন যাতে আপনার শিক্ষার্থীরা সক্রিয় থাকে — এবং তাদের বন্ধুদের নিয়ে আসে।",
+        "description": "একটি কমিউনিটি স্পেস খুলুন যাতে আপনার শিক্ষার্থীরা সক্রিয় থাকে, এবং তাদের বন্ধুদের নিয়ে আসে।",
         "action": "কমিউনিটি খুলুন"
       }
     },
     "welcome": {
-      "title": "LearnHouse-এ স্বাগতম",
+      "title": "Ordria-এ স্বাগতম",
       "subtitle": "কোর্স তৈরি করুন, শিক্ষার্থীদের আমন্ত্রণ জানান এবং বিশ্বের সাথে জ্ঞান ভাগ করুন।",
       "get_started": "শুরু করুন",
       "features_title": "আপনার যা দরকার সব আছে",
@@ -5125,7 +5131,7 @@
   "embed": {
     "not_supported_description": "এই ধরনের কার্যক্রমের জন্য অথেন্টিকেশন প্রয়োজন এবং এটি এমবেড করা যায় না।",
     "not_supported_title": "এই কার্যক্রম সমর্থিত নয়",
-    "powered_by": "Powered by LearnHouse",
+    "powered_by": "Powered by Ordria",
     "visit_activity": "কার্যক্রম পেজে যান"
   },
   "migration": {
@@ -5232,7 +5238,7 @@
       "trigger_authenticated_title": "প্রবেশাধিকার: শুধু সাইন ইন করা ব্যবহারকারী",
       "trigger_restricted_title": "প্রবেশাধিকার: নির্দিষ্ট ব্যবহারকারী গ্রুপ",
       "usergroups_header": "ব্যবহারকারী গ্রুপ",
-      "usergroups_none_assigned": "কোনো গ্রুপ বরাদ্দ নেই — শুধু অ্যাডমিনরাই খুলতে পারে।",
+      "usergroups_none_assigned": "কোনো গ্রুপ বরাদ্দ নেই, শুধু অ্যাডমিনরাই খুলতে পারে।",
       "usergroups_remove_title": "সরান",
       "usergroups_loading": "গ্রুপ লোড হচ্ছে…",
       "usergroups_none_in_org": "এই সংগঠনে এখনও কোনো ব্যবহারকারী গ্রুপ নেই।",
@@ -5496,7 +5502,7 @@
     "recurring_subscription": "নিয়মিত সাবস্ক্রিপশন",
     "what_youre_getting": "আপনি যা পাচ্ছেন",
     "pack_immediate": "পেমেন্টের পর সঙ্গে সঙ্গে কার্যকর হয়",
-    "pack_cancel_anytime": "যেকোনো সময় বাতিল করুন — বিলিং সময়সীমা শেষ পর্যন্ত সক্রিয় থাকে",
+    "pack_cancel_anytime": "যেকোনো সময় বাতিল করুন, বিলিং সময়সীমা শেষ পর্যন্ত সক্রিয় থাকে",
     "pack_credits_reset": "প্রতি বিলিং চক্রে ক্রেডিট রিসেট হয়",
     "after_purchase": "কেনার পর",
     "unlimited": "সীমাহীন",
@@ -5546,9 +5552,9 @@
     "canceled_desc": "আপনার বর্তমান বিলিং সময়সীমা শেষে সাবস্ক্রিপশন বাতিল করা হবে। ততক্ষণ পর্যন্ত আপনি পূর্ণ অ্যাক্সেস পাবেন।",
     "back_to_plan_usage": "প্ল্যান ও ব্যবহারে ফিরে যান",
     "back_to_orgs": "প্রতিষ্ঠানে ফিরে যান",
-    "pack_purchased": "অ্যাড-অন ক্রয় করা হয়েছে — আপনার সীমাগুলি আপডেট করা হয়েছে।",
-    "checkout_success": "সাবস্ক্রিপশন আপডেট করা হয়েছে — আপনার নতুন পরিকল্পনায় স্বাগতম!",
-    "checkout_cancelled": "চেকআউট বাতিল করা হয়েছে — কোনো পরিবর্তন করা হয়নি।",
+    "pack_purchased": "অ্যাড-অন ক্রয় করা হয়েছে, আপনার সীমাগুলি আপডেট করা হয়েছে।",
+    "checkout_success": "সাবস্ক্রিপশন আপডেট করা হয়েছে, আপনার নতুন পরিকল্পনায় স্বাগতম!",
+    "checkout_cancelled": "চেকআউট বাতিল করা হয়েছে, কোনো পরিবর্তন করা হয়নি।",
     "load_failed": "আমরা আপনার সংস্থাগুলি লোড করতে পারিনি।",
     "no_permission": "এই সংস্থার জন্য বিলিং পরিচালনার অনুমতি আপনার নেই।",
     "no_permission_hint": "শুধুমাত্র একটি সংস্থা প্রশাসক পরিকল্পনা দেখতে বা পরিবর্তন করতে পারেন।",
@@ -5632,7 +5638,7 @@
         "title": "পরীক্ষা করে দেখতে চান?",
         "body": "চলে যান",
         "link": "ডেভেলপারস পেজে",
-        "suffix": "এবং বরং LearnHouse পরখ করে দেখুন।"
+        "suffix": "এবং বরং Ordria পরখ করে দেখুন।"
       },
       "validation": {
         "required": "আবশ্যক",
@@ -5663,7 +5669,7 @@
     "toast": {
       "creating": "প্রতিষ্ঠান তৈরি হচ্ছে…",
       "created": "প্রতিষ্ঠান তৈরি হয়েছে!",
-      "checkoutFailed": "প্রতিষ্ঠান তৈরি হয়েছে — আপনি প্ল্যান ও ব্যবহার থেকে আপগ্রেড করতে পারেন।",
+      "checkoutFailed": "প্রতিষ্ঠান তৈরি হয়েছে, আপনি প্ল্যান ও ব্যবহার থেকে আপগ্রেড করতে পারেন।",
       "failed": "প্রতিষ্ঠান তৈরি করা যায়নি"
     },
     "steps": {
@@ -5722,5 +5728,21 @@
     "folder_count_one": "{{count}} ফোল্ডার",
     "item_count": "{{count}} আইটেম",
     "item_count_one": "{{count}} আইটেম"
+  },
+  "signup": {
+    "job_label": "Votre métier",
+    "job_choose": "Choisir…",
+    "job_other": "Autre",
+    "job_other_precise": "Précisez votre métier",
+    "job_required": "Veuillez choisir votre métier",
+    "phone_label": "Téléphone",
+    "invalid_phone": "Numéro invalide",
+    "consent_terms": "J'accepte les",
+    "consent_terms_link": "conditions générales",
+    "consent_privacy": "J'accepte la",
+    "consent_privacy_link": "politique de confidentialité",
+    "consent_required": "Vous devez accepter pour continuer",
+    "complete_profile_banner": "Complétez votre profil, indiquez votre métier pour des recommandations sur mesure.",
+    "complete_profile_cta": "Compléter"
   }
 }

@@ -13,6 +13,7 @@ import { folderTone } from '@components/Dashboard/Library/LibraryToolbar'
 import { shareFolderLink } from '@components/Dashboard/Library/shareFolder'
 import { resourceHref, safeExternalUrl } from '@components/Dashboard/Library/resourceLink'
 import MediaPreview from '@components/Dashboard/Library/MediaPreview'
+import { useTrail } from '@/hooks/queries/useTrail'
 import {
   FolderSimple,
   GraduationCap,
@@ -33,12 +34,12 @@ import {
 type ResourceType = 'courses' | 'podcasts' | 'communities' | 'boards' | 'playgrounds' | 'media'
 
 const TYPE_TONE: Record<string, string> = {
-  courses: 'bg-blue-50 text-blue-500',
-  media: 'bg-amber-50 text-amber-500',
-  podcasts: 'bg-rose-50 text-rose-500',
-  communities: 'bg-emerald-50 text-emerald-500',
-  boards: 'bg-indigo-50 text-indigo-500',
-  playgrounds: 'bg-fuchsia-50 text-fuchsia-500',
+  courses: 'bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)]',
+  media: 'bg-amber-50 text-amber-600',
+  podcasts: 'bg-rose-50 text-rose-600',
+  communities: 'bg-emerald-50 text-emerald-600',
+  boards: 'bg-indigo-50 text-indigo-600',
+  playgrounds: 'bg-fuchsia-50 text-fuchsia-600',
 }
 
 function mediaIcon(resource: any): React.ComponentType<IconProps> {
@@ -63,15 +64,34 @@ function typeIcon(type: string, resource: any): React.ComponentType<IconProps> {
   }
 }
 
-const CARD = 'group relative bg-white nice-shadow rounded-xl p-3 hover:bg-gray-50/50 transition-colors'
+const CARD = 'group relative bg-gradient-to-br from-[var(--ordria-accent-bg)] to-[var(--ordria-surface)] border-2 border-[var(--ordria-accent-border)] rounded-2xl p-4 duo-card-hover'
 
 export function FolderCard({ folder, orgslug }: { folder: any; orgslug: string }) {
   const { t } = useTranslation()
   const org = useOrg() as any
+  const { data: trailData } = useTrail(org?.id)
   const count = folder.total_items ?? ((folder.items?.length || 0) + (folder.subfolders?.length || 0))
   const thumb = folder.thumbnail_image
     ? getFolderThumbnailMediaDirectory(org?.org_uuid, folder.folder_uuid, folder.thumbnail_image)
     : null
+
+  const folderProgress = (() => {
+    if (!trailData?.runs || !folder.items) return 0
+    const courseItems = folder.items.filter((item: any) => item.resource_type === 'courses')
+    if (courseItems.length === 0) return 0
+    let totalProgress = 0
+    for (const item of courseItems) {
+      const courseUuid = item.resource?.course_uuid?.replace('course_', '')
+      const run = trailData.runs.find((r: any) => r.course?.course_uuid?.replace('course_', '') === courseUuid)
+      if (run) {
+        const completed = (run.steps || []).filter((s: any) => s.complete).length
+        const total = run.course_total_steps || (run.steps || []).length || 1
+        totalProgress += Math.round((completed / total) * 100)
+      }
+    }
+    return Math.round(totalProgress / courseItems.length)
+  })()
+
   return (
     <Link href={getUriWithOrg(orgslug, `/library/folder/${removeFolderPrefix(folder.folder_uuid)}`)} className={CARD}>
       <button
@@ -90,13 +110,23 @@ export function FolderCard({ folder, orgslug }: { folder: any; orgslug: string }
         {thumb ? (
           <div className="w-10 h-10 rounded-lg bg-cover bg-center flex-shrink-0 ring-1 ring-inset ring-black/5" style={{ backgroundImage: `url(${thumb})` }} />
         ) : (
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${folderTone(folder.color)}`}>
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-[var(--ordria-accent)] to-[var(--ordria-accent-secondary)] text-[var(--ordria-on-accent)]">
             <FolderSimple size={22} weight="fill" />
           </div>
         )}
-        <div className="flex flex-col min-w-0">
-          <h3 className="text-[15px] font-bold text-gray-900 truncate leading-tight">{folder.name}</h3>
-          <span className="text-xs text-gray-400">{count} {t('library.items')}</span>
+        <div className="flex flex-col min-w-0 flex-1">
+          <h3 className="text-[15px] font-bold text-gray-900 truncate leading-tight" style={{ fontFamily: 'var(--font-display, Sora)' }}>{folder.name}</h3>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">{count} {t('library.items')}</span>
+            {folderProgress > 0 && (
+              <span className="text-[10px] font-bold" style={{ color: 'var(--ordria-accent-secondary)' }}>{folderProgress}%</span>
+            )}
+          </div>
+          {folderProgress > 0 && (
+            <div className="duo-progress-bar mt-1" style={{ height: '4px' }}>
+              <div className="duo-progress-fill" style={{ width: `${folderProgress}%` }}></div>
+            </div>
+          )}
         </div>
       </div>
     </Link>
@@ -158,7 +188,7 @@ export function LibraryItemCard({ item, orgslug }: { item: any; orgslug: string 
     </>
   )
 
-  const BIG = 'group relative flex flex-col bg-white rounded-xl nice-shadow overflow-hidden w-full transition-all hover:bg-gray-50/40'
+  const BIG = 'group relative flex flex-col bg-white rounded-2xl border-2 border-[var(--ordria-border)] overflow-hidden w-full duo-card-hover'
   if (href && external) return <a href={href} target="_blank" rel="noopener noreferrer" className={BIG}>{body}</a>
   if (href) return <Link href={href} className={BIG}>{body}</Link>
   return <div className={BIG}>{body}</div>

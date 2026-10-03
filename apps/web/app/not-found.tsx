@@ -1,19 +1,13 @@
 import { ArrowRight } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
-import learnhouseIcon from 'public/black_logo.png'
+import Logo from '@components/Objects/Brand/Logo'
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center 
+    <div className="flex min-h-screen w-full flex-col items-center justify-center
    bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-200 to-slate-300">
     <div className="nx-flex nx-items-center hover:nx-opacity-75 ltr:nx-mr-auto rtl:nx-ml-auto pb-20">
-        <Image quality={100}
-          width={270}
-          height={100}
-          src={learnhouseIcon}
-          alt="logo"
-        />
+        <Logo variant="lockup" size="xl" animated ariaLabel="Ordria Learning" />
         </div>
       <div className="space-y-6 text-center">
         <h1 className="text-8xl leading-7 font-bold text-black drop-shadow-md">

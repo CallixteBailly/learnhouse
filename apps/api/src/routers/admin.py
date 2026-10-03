@@ -929,7 +929,7 @@ def _support_url() -> str:
     The old `{platform}/dashboard/support` path 404s (the platform dashboard is
     gone on .io), so use a support mailto that can never break.
     """
-    return "mailto:hello@learnhouse.app"
+    return "mailto:contact@ordria.fr"
 
 
 def _render_magic_link_error(title: str, message: str) -> HTMLResponse:
@@ -1513,3 +1513,68 @@ async def api_admin_get_course_analytics(
     await _resolve_org_slug(org_slug, token_user, db_session)
     result = await get_course_analytics(token_user, course_uuid, db_session)
     return CourseAnalyticsResponse(**result)
+
+
+# ── Course org move (superadmin) ──────────────────────────────────────────────
+from src.security.superadmin import require_superadmin  # noqa: E402
+from src.services.admin.move_course import (  # noqa: E402
+    migrate_media_endpoint_service,
+    move_course_to_org,
+)
+
+
+@router.post(
+    "/courses/{course_uuid}/move",
+    summary="Move a course to another organization",
+    description=(
+        "Moves a course and all its chapters, activities and blocks to the "
+        "target organization, in place (same course UUID, same media). "
+        "Thumbnails are copied to the target org's storage path; existing "
+        "media (videos, HLS, documents) keeps streaming from its original "
+        "keys, authorized through the course's new organization. "
+        "Requires superadmin privileges."
+    ),
+    responses={
+        200: {"description": "Course moved"},
+        400: {"description": "Course already belongs to the target organization"},
+        401: {"description": "Authentication required"},
+        403: {"description": "Superadmin access required"},
+        404: {"description": "Course or target organization not found"},
+    },
+)
+async def api_admin_move_course(
+    request: Request,
+    course_uuid: str,
+    org_id: int = Query(..., ge=1, description="Target organization id"),
+    db_session: AsyncSession = Depends(get_db_session),
+    current_user=Depends(require_superadmin),
+) -> dict:
+    return await move_course_to_org(request, course_uuid, org_id, db_session)
+
+
+@router.post(
+    "/courses/{course_uuid}/migrate-media",
+    summary="Re-home a course's media under its current org's storage prefix",
+    description=(
+        "After a course moves to another organization, its storage objects "
+        "(videos, HLS ladders, documents) must exist under the new org's "
+        "content prefix because playback URLs are rebuilt from the session "
+        "org. This copies every object from a source org's prefix to the "
+        "course's current org prefix, server-side (S3 copy). Idempotent; "
+        "use it to retry a migration that failed during the move. "
+        "Requires superadmin privileges."
+    ),
+    responses={
+        200: {"description": "Media migrated"},
+        401: {"description": "Authentication required"},
+        403: {"description": "Superadmin access required"},
+        404: {"description": "Course or organization not found"},
+    },
+)
+async def api_admin_migrate_course_media(
+    course_uuid: str,
+    from_org_id: int = Query(..., ge=1, description="Source organization id"),
+    db_session: AsyncSession = Depends(get_db_session),
+    current_user=Depends(require_superadmin),
+) -> dict:
+    return await migrate_media_endpoint_service(course_uuid, from_org_id, db_session)

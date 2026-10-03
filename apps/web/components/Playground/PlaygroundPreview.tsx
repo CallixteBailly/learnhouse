@@ -31,7 +31,7 @@ export default function PlaygroundPreview({
       doc.write(content)
       doc.close()
     } catch {
-      // cross-origin fallback — shouldn't happen with srcdoc
+      // cross-origin fallback · shouldn't happen with srcdoc
       iframe.srcdoc = content
     }
   }, [])
@@ -53,7 +53,7 @@ export default function PlaygroundPreview({
         }
       }, 300)
     } else {
-      // Final render — write immediately
+      // Final render · write immediately
       if (writeTimeoutRef.current) clearTimeout(writeTimeoutRef.current)
       if (html !== lastRenderedRef.current) {
         lastRenderedRef.current = html
@@ -84,7 +84,7 @@ export default function PlaygroundPreview({
         </div>
       )}
 
-      {/* Streaming indicator — top left */}
+      {/* Streaming indicator · top left */}
       {isStreaming && (
         <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-2.5 py-1.5 bg-black/75 backdrop-blur-sm rounded-full nice-shadow">
           <CircleNotch size={11} weight="bold" className="animate-spin text-sky-400" />
@@ -92,7 +92,7 @@ export default function PlaygroundPreview({
         </div>
       )}
 
-      {/* Fullscreen toggle — top right */}
+      {/* Fullscreen toggle · top right */}
       {onToggleFullscreen && (
         <button
           onClick={onToggleFullscreen}
@@ -106,7 +106,7 @@ export default function PlaygroundPreview({
         </button>
       )}
 
-      {/* iframe — always mounted so writes take effect */}
+      {/* iframe · always mounted so writes take effect */}
       <iframe
         ref={iframeRef}
         className="w-full h-full border-0"

@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { getUriWithOrg } from '@services/config/config'
-import { BookOpenCheck, CheckCircle, ChevronLeft, ChevronRight, MessageSquare, UserRoundPen, Edit2, Loader2, Maximize2, Minimize2, Trophy, Sparkles, XCircle, Lock, RotateCcw, Infinity as InfinityIcon } from 'lucide-react'
+import { BookOpenCheck, CheckCircle, ChevronLeft, ChevronRight, MessageSquare, UserRoundPen, Edit2, Maximize2, Minimize2, Trophy, Sparkles, XCircle, Lock, RotateCcw, Infinity as InfinityIcon } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { markActivityAsComplete, unmarkActivityAsComplete } from '@services/courses/activity'
 import { usePathname, useRouter } from 'next/navigation'
@@ -15,7 +15,6 @@ import { getAssignmentFromActivityUUID, getFinalGrade, retryAssignmentSubmission
 import { AssignmentProvider } from '@components/Contexts/Assignments/AssignmentContext'
 import { AssignmentsTaskProvider } from '@components/Contexts/Assignments/AssignmentsTaskContext'
 import AssignmentSubmissionProvider, { useAssignmentSubmission } from '@components/Contexts/Assignments/AssignmentSubmissionContext'
-import { AssignmentDirtyTasksProvider, useAssignmentDirtyTasks } from '@components/Contexts/Assignments/AssignmentDirtyTasksContext'
 import toast from 'react-hot-toast'
 import { useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
@@ -34,7 +33,7 @@ import FixedActivitySecondaryBar from '@components/Pages/Activity/FixedActivityS
 import CourseEndView from '@components/Pages/Activity/CourseEndView'
 import { motion, AnimatePresence } from 'motion/react'
 import { Breadcrumbs } from '@components/Objects/Breadcrumbs/Breadcrumbs'
-import { BookCopy } from 'lucide-react'
+import { BookCopy, AlertTriangle } from 'lucide-react'
 import MiniInfoTooltip from '@components/Objects/MiniInfoTooltip'
 import GeneralWrapperStyled from '@components/Objects/StyledElements/Wrappers/GeneralWrapper'
 import ActivityIndicators from '@components/Pages/Courses/ActivityIndicators'
@@ -49,11 +48,6 @@ const Canva = lazy(() => import('@components/Objects/Activities/DynamicCanva/Dyn
 const VideoActivity = lazy(() => import('@components/Objects/Activities/Video/Video'))
 const DocumentPdfActivity = lazy(() => import('@components/Objects/Activities/DocumentPdf/DocumentPdf'))
 const AssignmentStudentActivity = lazy(() => import('@components/Objects/Activities/Assignment/AssignmentStudentActivity'))
-// Deadline rule shared with the learner activity view (and mirroring the
-// server's _is_assignment_past_due) so the submit/retry affordances agree with
-// what the API will actually accept. Static import: it's a pure function, and
-// gating render on the lazy chunk would flash the wrong control.
-import { isAssignmentPastDue } from '@components/Objects/Activities/Assignment/AssignmentStudentActivity'
 const AIActivityAsk = lazy(() => import('@components/Objects/Activities/AI/AIActivityAsk'))
 const AISidePanelContentWrapper = lazy(() => import('@components/Objects/Activities/AI/AIActivityAsk').then(mod => ({ default: mod.AISidePanelContentWrapper })))
 const AISidePanelInline = lazy(() => import('@components/Objects/Activities/AI/AIActivityAsk').then(mod => ({ default: mod.AISidePanelInline })))
@@ -204,7 +198,7 @@ function ActivityActions({ activity, activityid, course, orgslug, assignment, sh
             </>
           )}
           {showNavigation && (
-            <NextActivityButton course={course} currentActivityId={activity.id} orgslug={orgslug} />
+            <NextActivityButton course={course} currentActivityId={activity.id} orgslug={orgslug} requireScrollConfirm={activity.activity_type != 'TYPE_ASSIGNMENT'} />
           )}
         </AuthenticatedClientElement>
       )}
@@ -245,9 +239,10 @@ function ActivityClient(props: ActivityClientProps) {
   const session = useLHSession() as any;
   const pathname = usePathname()
   const access_token = session?.data?.tokens?.access_token;
-  const [bgColor, setBgColor] = React.useState('bg-white nice-shadow')
+  const [bgColor, setBgColor] = React.useState('bg-white rounded-2xl border border-[var(--ordria-border)]')
   const [assignment, setAssignment] = React.useState(null) as any;
   const [_markStatusButtonActive, setMarkStatusButtonActive] = React.useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)')
   const [isFocusMode, setIsFocusMode] = React.useState(false);
   const isInitialRender = useRef(true);
   const { contributorStatus } = useContributorStatus(courseuuid);
@@ -285,8 +280,8 @@ function ActivityClient(props: ActivityClientProps) {
 
   const _queryClient = useQueryClient()
 
-  // Fetch trail data — shares cache key with course page trail query
-  const { data: trailData } = useTrail(org?.id)
+  // Fetch trail data · shares cache key with course page trail query
+  const { data: trailData, refetch: refetchTrail } = useTrail(org?.id)
 
   // Memoize activity position calculation
   const { allActivities, currentIndex } = useActivityPosition(course, activityid);
@@ -294,6 +289,15 @@ function ActivityClient(props: ActivityClientProps) {
   // Get previous and next activities
   const prevActivity = currentIndex > 0 ? allActivities[currentIndex - 1] : null;
   const nextActivity = currentIndex < allActivities.length - 1 ? allActivities[currentIndex + 1] : null;
+
+  const isCurrentActivityDone = React.useMemo(() => {
+    if (!trailData?.runs || !activity?.activity_uuid) return false;
+    const run = trailData.runs.find((r: any) => r.course_uuid === course?.course_uuid);
+    if (!run?.steps) return false;
+    return !!run.steps.find((step: any) => step.activity_uuid === activity.activity_uuid && step.complete);
+  }, [trailData, activity, course]);
+
+  const canNavigateNext = !isMobile || isCurrentActivityDone;
 
   // Memoize activity content
   const activityContent = useMemo(() => {
@@ -370,31 +374,23 @@ function ActivityClient(props: ActivityClientProps) {
     }
   }, [activity, course, assignment, orgslug]);
 
-  // Past the last activity lies the course-end screen holding the certificate.
-  const isLastActivity = currentIndex >= 0 && !nextActivity;
-
-  // Navigate to an activity. A null target means "there is nothing after this
-  // one" — on the final activity that means the course-end/certificate screen
-  // rather than a dead end.
+  // Navigate to an activity
   const navigateToActivity = (activity: any) => {
+    if (!activity) return;
+    
     const cleanCourseUuid = course.course_uuid?.replace('course_', '');
-    if (!activity) {
-      if (isLastActivity) {
-        router.push(getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/end`);
-      }
-      return;
-    }
-
     router.push(getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/${activity.cleanUuid}`);
   };
 
-  // Initialize focus mode from localStorage
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('globalFocusMode');
-      setIsFocusMode(saved === 'true');
+      if (saved !== null) {
+        setIsFocusMode(saved === 'true');
+      }
+      // Mobile now uses the same normal mode as desktop · no forced focus mode
     }
-  }, []);
+  }, [isMobile]);
 
   // Save focus mode to localStorage
   React.useEffect(() => {
@@ -429,15 +425,15 @@ function ActivityClient(props: ActivityClientProps) {
   useEffect(() => {
     if (!activity) return;
     if (activity.activity_type == 'TYPE_DYNAMIC' || activity.activity_type == 'TYPE_SCORM') {
-      setBgColor(isFocusMode ? 'bg-white' : 'bg-white nice-shadow');
+      setBgColor(isFocusMode ? 'bg-white' : 'bg-white rounded-2xl border border-[var(--ordria-border)]');
     }
     else if (activity.activity_type == 'TYPE_ASSIGNMENT') {
       setMarkStatusButtonActive(false);
-      setBgColor(isFocusMode ? 'bg-white' : 'bg-white nice-shadow');
+      setBgColor(isFocusMode ? 'bg-white' : 'bg-white rounded-2xl border border-[var(--ordria-border)]');
       getAssignmentUI();
     }
     else {
-      setBgColor(isFocusMode ? 'bg-zinc-950' : 'bg-zinc-950 nice-shadow');
+      setBgColor(isFocusMode ? 'bg-zinc-950' : 'bg-zinc-950 rounded-2xl border border-[var(--ordria-border)]');
     }
   }
     , [activity, pathname, isFocusMode])
@@ -494,6 +490,12 @@ function ActivityClient(props: ActivityClientProps) {
   const displayName = activity?.name ?? activityNameFromCourse
   const displayActivityType = allActivities[currentIndex]?.activity_type
 
+  const currentChapterIdx = course?.chapters?.findIndex((ch: any) =>
+    ch.activities.some((a: any) => a.id === activity?.id)
+  ) ?? -1
+  const completedActivityCount = trailData?.runs?.find((r: any) => r.course_uuid === course?.course_uuid)?.steps?.filter((s: any) => s.complete)?.length ?? 0
+  const totalActivityCount = allActivities.length
+
   if (activity?.is_locked) {
     const isAuthenticated = session?.status === 'authenticated'
     return (
@@ -510,7 +512,7 @@ function ActivityClient(props: ActivityClientProps) {
               ? t('course.locked_restricted', 'You need to be a member of the right user group to access this. Ask a course admin to add you.')
               : t('course.locked_auth_required', 'You need to sign in to access this activity.')}
           </p>
-          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+          <div className="flex flex-col md:flex-row gap-2 justify-center">
             {!isAuthenticated && (
               <Link
                 href={getUriWithOrg(orgslug, '/login')}
@@ -534,10 +536,6 @@ function ActivityClient(props: ActivityClientProps) {
   return (
     <>
       <CourseProvider courseuuid={course?.course_uuid} initialCourseStructure={course}>
-        {/* Common ancestor of BOTH the task editors and the Submit button, which
-            live in disjoint AssignmentSubmissionProvider subtrees. Lets Submit
-            flush unsaved task answers before grading (avoids silent 0%). */}
-        <AssignmentDirtyTasksProvider>
         <Suspense fallback={<LoadingFallback />}>
           <AIChatBotProvider>
             <Suspense fallback={null}>
@@ -563,7 +561,7 @@ function ActivityClient(props: ActivityClientProps) {
                   >
                     <div className="container mx-auto px-4 py-2">
                       <div className="flex items-center justify-between h-14">
-                        {/* Progress Indicator - Moved to left */}
+                        {!isMobile && (
                         <motion.div 
                           initial={isInitialRender.current ? false : { opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -602,8 +600,9 @@ function ActivityClient(props: ActivityClientProps) {
                             {trailData?.runs?.find((run: any) => run.course_uuid === course.course_uuid)?.steps?.filter((step: any) => step.complete)?.length || 0} {t('common.of')} {course.chapters?.reduce((acc: number, chapter: any) => acc + chapter.activities.length, 0) || 0}
                           </div>
                         </motion.div>
+                        )}
                         
-                        {/* Center Course Info */}
+                        {!isMobile && (
                         <motion.div 
                           initial={isInitialRender.current ? false : { opacity: 0, y: -20 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -635,6 +634,19 @@ function ActivityClient(props: ActivityClientProps) {
                             </h1>
                           </div>
                         </motion.div>
+                        )}
+
+                        {isMobile && (
+                          <motion.div
+                            initial={isInitialRender.current ? false : { opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                          >
+                            <Link href={getUriWithOrg(orgslug, '') + `/course/${courseuuid}`}>
+                              <span className="text-sm font-bold text-gray-700">{t('common.back')}</span>
+                            </Link>
+                          </motion.div>
+                        )}
 
                         {/* Minimize and Chapters - Moved to right */}
                         <motion.div
@@ -644,7 +656,7 @@ function ActivityClient(props: ActivityClientProps) {
                           className="flex items-center space-x-2"
                         >
                           {activity && (
-                            <div className="hidden sm:block">
+                            <div className="hidden md:block">
                               <ActivityShareDropdown
                                 activityName={activity.name}
                                 activityUrl={typeof window !== 'undefined' ? window.location.href : ''}
@@ -687,7 +699,7 @@ function ActivityClient(props: ActivityClientProps) {
                               initial={isInitialRender.current ? false : { scale: 0.95, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
                               transition={{ delay: 0.3 }}
-                              className={`${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-7 rounded-lg'} ${bgColor} mt-4`}
+                              className={`${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-7 rounded-2xl border border-[var(--ordria-border)]'} ${bgColor} mt-4`}
                             >
                               {/* Activity Types */}
                               <div className={activity.activity_type === 'TYPE_SCORM' ? 'overflow-hidden' : ''}>
@@ -743,32 +755,26 @@ function ActivityClient(props: ActivityClientProps) {
                               trailData={trailData}
                             />
                             <button
-                              onClick={() => navigateToActivity(nextActivity)}
-                              className={`flex items-center space-x-1.5 p-2 rounded-md transition-all duration-200 cursor-pointer ${
-                                nextActivity || isLastActivity
-                                  ? 'text-gray-700'
+                              onClick={() => canNavigateNext && navigateToActivity(nextActivity)}
+                              className={`flex items-center space-x-1.5 p-2 rounded-md transition-all duration-200 ${
+                                nextActivity && canNavigateNext
+                                  ? 'text-gray-700 cursor-pointer'
                                   : 'opacity-50 text-gray-400 cursor-not-allowed'
                               }`}
-                              disabled={!nextActivity && !isLastActivity}
-                              title={
-                                nextActivity
-                                  ? `${t('common.next')}: ${nextActivity.name}`
-                                  : isLastActivity
-                                    ? t('course.finish_course', 'Finish course')
-                                    : t('activities.no_next_activity')
-                              }
+                              disabled={!nextActivity || !canNavigateNext}
+                              title={!canNavigateNext && nextActivity ? t('activities.complete_to_unlock', 'Complete this activity to unlock the next') : (nextActivity ? `${t('common.next')}: ${nextActivity.name}` : t('activities.no_next_activity'))}
                             >
                               <div className="flex flex-col items-end">
                                 <span className="text-xs text-gray-500">{t('common.next')}</span>
                                 <span className="text-sm capitalize font-semibold text-right">
-                                  {nextActivity
-                                    ? nextActivity.name
-                                    : isLastActivity
-                                      ? t('course.finish_course', 'Finish course')
-                                      : t('activities.no_next_activity')}
+                                  {nextActivity ? nextActivity.name : t('activities.no_next_activity')}
                                 </span>
                               </div>
-                              <ChevronRight size={20} className="text-gray-800 shrink-0" />
+                              {isMobile && nextActivity && !canNavigateNext ? (
+                                <Lock size={16} className="text-gray-400 shrink-0" />
+                              ) : (
+                                <ChevronRight size={20} className="text-gray-800 shrink-0" />
+                              )}
                             </button>
                           </div>
                         </div>
@@ -791,7 +797,41 @@ function ActivityClient(props: ActivityClientProps) {
                   />
                 ) : (
                   <div className="space-y-4 pt-0 relative">
-                    <div className="pt-2 pb-3 sm:pb-6">
+                    {/* Mobile: sticky course info bar · bande de progression (wireframe M2) */}
+                    <div className="md:hidden sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-3 py-2 -mx-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <Link href={getUriWithOrg(orgslug, '') + `/course/${courseuuid}`} className="flex items-center gap-2 min-w-0">
+                          <ChevronLeft size={18} className="text-gray-600 shrink-0" />
+                          <span className="text-sm font-bold text-gray-800 truncate" style={{ fontFamily: 'var(--ordria-font-display)' }}>
+                            {course.name}
+                          </span>
+                        </Link>
+                        {activity && (
+                          <div className="shrink-0">
+                            <ActivityShareDropdown
+                              activityName={activity.name}
+                              activityUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                              orgslug={orgslug}
+                              courseUuid={course.course_uuid}
+                              activityId={activity.activity_uuid ? activity.activity_uuid.replace('activity_', '') : activityid.replace('activity_', '')}
+                              activityType={activity.activity_type}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      {/* Bande de segments groupés par chapitre (variante mobile d'ActivityIndicators) */}
+                      <div className="mt-1.5">
+                        <ActivityIndicators
+                          course_uuid={courseuuid}
+                          current_activity={activityid}
+                          orgslug={orgslug}
+                          course={course}
+                          trailData={trailData}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-2 pb-3 sm:pb-6 hidden md:block">
                       <Breadcrumbs items={[
                         { label: t('courses.courses'), href: getUriWithOrg(orgslug, '/courses'), icon: <BookCopy size={14} /> },
                         { label: course.name, href: getUriWithOrg(orgslug, `/course/${courseuuid}`) },
@@ -799,9 +839,9 @@ function ActivityClient(props: ActivityClientProps) {
                       ]} />
                     </div>
                     <div className="space-y-3 sm:space-y-4 activity-info-section relative" style={{ zIndex: 'var(--z-content)' }}>
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
                           <div className="flex space-x-4 sm:space-x-6 items-center">
-                            <div className="flex shrink-0">
+                            <div className="flex shrink-0 hidden md:block">
                               <Link
                                 href={getUriWithOrg(orgslug, '') + `/course/${courseuuid}`}
                               >
@@ -819,15 +859,15 @@ function ActivityClient(props: ActivityClientProps) {
                                 />
                               </Link>
                             </div>
-                            <div className="flex flex-col -space-y-1">
+                            <div className="flex flex-col -space-y-1 hidden md:flex">
                               <p className="font-bold text-gray-700 text-xs sm:text-md">{t('search.course')} </p>
-                              <h1 className="font-bold text-gray-950 text-lg sm:text-3xl first-letter:uppercase">
+                              <h1 className="font-bold text-gray-950 text-lg sm:text-3xl first-letter:uppercase" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                                 {course.name}
                               </h1>
                             </div>
                           </div>
                           {activity && (
-                            <div className="hidden sm:block">
+                            <div className="hidden md:block">
                               <ActivityShareDropdown
                                 activityName={activity.name}
                                 activityUrl={typeof window !== 'undefined' ? window.location.href : ''}
@@ -840,26 +880,57 @@ function ActivityClient(props: ActivityClientProps) {
                           )}
                         </div>
 
-                        <ActivityIndicators
-                          course_uuid={courseuuid}
-                          current_activity={activityid}
-                          orgslug={orgslug}
-                          course={course}
-                          enableNavigation={true}
-                          trailData={trailData}
-                        />
+                        <div className="hidden md:block">
+                          <ActivityIndicators
+                            course_uuid={courseuuid}
+                            current_activity={activityid}
+                            orgslug={orgslug}
+                            course={course}
+                            enableNavigation={true}
+                            trailData={trailData}
+                          />
+                        </div>
 
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-3">
+                        {!isMobile && (
+                        <div className="flex gap-1 bg-[var(--ordria-surface)] rounded-2xl p-1.5 mb-4">
+                          <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_VIDEO' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)]'}`}>
+                            <span>🎬</span> <span className="hidden sm:inline">Vidéo</span>
+                            {activity?.activity_type === 'TYPE_VIDEO' && <span className="text-[10px] font-mono bg-[var(--ordria-accent)] text-[var(--ordria-on-accent)] px-1.5 py-0.5 rounded">5 min</span>}
+                          </div>
+                          <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_DYNAMIC' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)]'}`}>
+                            <span>📝</span> <span className="hidden sm:inline">Lecture</span>
+                          </div>
+                          <div className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${activity?.activity_type === 'TYPE_ASSIGNMENT' ? 'bg-white shadow-sm text-[var(--ordria-foreground)]' : 'text-[var(--ordria-muted)] opacity-50'}`}>
+                            <span>🎯</span> <span className="hidden sm:inline">Quiz</span>
+                          </div>
+                        </div>
+                        )}
+
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center w-full gap-3">
                           <div className="flex flex-1 items-center space-x-3 min-w-0">
                             <div className="flex flex-col -space-y-1 min-w-0">
-                              <p className="font-bold text-gray-700 text-xs sm:text-md">
+                              <p className="font-bold text-gray-700 text-xs sm:text-md hidden md:block">
                                 {getChapterNameByActivityId(course, activity?.id) ?? chapterNameFromCourse}
                               </p>
-                              <h1 className="font-bold text-gray-950 text-base sm:text-2xl first-letter:uppercase">
+                              <div className="flex flex-col md:flex-row md:items-center sm:gap-2 w-full">
+                              <h1 className="font-bold text-gray-950 text-base sm:text-2xl first-letter:uppercase w-full" style={{ fontFamily: 'var(--ordria-font-display)' }}>
                                 {displayName}
                               </h1>
+                              {activity && activity.activity_type === 'TYPE_VIDEO' && (
+                                <span className="duo-category-badge bg-[var(--ordria-accent-bg)] text-[var(--ordria-accent-secondary)] shrink-0 self-start md:self-auto mt-1 md:mt-0 hidden md:inline-flex">🎬 {t('activities.video')}</span>
+                              )}
+                              {activity && activity.activity_type === 'TYPE_DOCUMENT' && (
+                                <span className="duo-category-badge bg-amber-50 text-[var(--ordria-warning)] shrink-0 self-start md:self-auto mt-1 md:mt-0 hidden md:inline-flex">📝 {t('activities.document')}</span>
+                              )}
+                              {activity && activity.activity_type === 'TYPE_ASSIGNMENT' && (
+                                <span className="duo-category-badge bg-green-50 text-[var(--ordria-success)] shrink-0 self-start md:self-auto mt-1 md:mt-0 hidden md:inline-flex">🎯 {t('activities.assignment')}</span>
+                              )}
+                              {activity && activity.activity_type === 'TYPE_DYNAMIC' && (
+                                <span className="duo-category-badge bg-purple-50 text-purple-600 shrink-0 self-start md:self-auto mt-1 md:mt-0 hidden md:inline-flex">📄 {t('activities.page')}</span>
+                              )}
+                              </div>
                               {/* Authors and Dates Section */}
-                              <div className="flex flex-wrap items-center gap-3 mt-2">
+                              <div className="hidden md:flex flex-wrap items-center gap-3 mt-2">
                                 {/* Avatars */}
                                 {course.authors && course.authors.length > 0 && (
                                   <div className="flex -space-x-3">
@@ -934,7 +1005,7 @@ function ActivityClient(props: ActivityClientProps) {
                               </div>
                             </div>
                           </div>
-                          <div className="hidden sm:flex space-x-2 items-center relative shrink-0" style={{ zIndex: 'var(--z-interactive)' }}>
+                          <div className="hidden md:flex space-x-2 items-center relative shrink-0" style={{ zIndex: 'var(--z-interactive)' }}>
                             {activity && activity.published == true && activity.content.paid_access != false && (
                               <AuthenticatedClientElement checkMethod="authentication">
                                 {activity.activity_type != 'TYPE_ASSIGNMENT' && (
@@ -978,42 +1049,75 @@ function ActivityClient(props: ActivityClientProps) {
                           {activity.content.paid_access == false ? (
                             <PaidCourseActivityDisclaimer course={course} />
                           ) : (
-                            <div className="flex gap-6">
-                              <div className={`flex-1 min-w-0 ${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-3 sm:p-7 rounded-lg'} ${bgColor} relative isolate`} style={{ zIndex: 'var(--z-base)' }}>
-                                <button
-                                  onClick={() => setIsFocusMode(true)}
-                                  className={`absolute ${activity.activity_type === 'TYPE_SCORM' ? 'top-2 right-2' : 'top-4 right-4'} hidden sm:flex bg-white/80 hover:bg-white nice-shadow p-2 rounded-full cursor-pointer transition-all duration-200 group overflow-hidden pointer-events-auto`}
-                                  style={{ zIndex: 'var(--z-interactive)' }}
-                                  title={t('activities.focus_mode')}
-                                >
-                                  <div className="flex items-center">
-                                    <Maximize2 size={16} className="text-gray-700" />
-                                    <span className="text-xs font-bold text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-200 w-0 group-hover:w-auto group-hover:ml-2 whitespace-nowrap">
-                                      {t('activities.focus_mode')}
-                                    </span>
-                                  </div>
-                                </button>
-                                {activityContent}
+                            <>
+                              <div className="flex gap-6">
+                                <div className={`flex-1 min-w-0 ${activity.activity_type === 'TYPE_SCORM' ? 'rounded-xl overflow-hidden' : 'p-3 sm:p-7 rounded-2xl border border-[var(--ordria-border)]'} ${bgColor} relative isolate`} style={{ zIndex: 'var(--z-base)' }}>
+                                  <button
+                                    onClick={() => setIsFocusMode(true)}
+                                    className={`absolute ${activity.activity_type === 'TYPE_SCORM' ? 'top-2 right-2' : 'top-4 right-4'} hidden md:flex bg-[var(--ordria-surface)] hover:bg-[var(--ordria-accent-bg)] border border-[var(--ordria-border)] p-2 rounded-full cursor-pointer transition-all duration-200 group overflow-hidden pointer-events-auto`}
+                                    style={{ zIndex: 'var(--z-interactive)' }}
+                                    title={t('activities.focus_mode')}
+                                  >
+                                    <div className="flex items-center">
+                                      <Maximize2 size={16} className="text-[var(--ordria-foreground)]" />
+                                      <span className="text-xs font-bold text-[var(--ordria-foreground)] opacity-0 group-hover:opacity-100 transition-all duration-200 w-0 group-hover:w-auto group-hover:ml-2 whitespace-nowrap">
+                                        {t('activities.focus_mode')}
+                                      </span>
+                                    </div>
+                                  </button>
+                                  {activityContent}
+                                </div>
+                                <Suspense fallback={null}>
+                                  <AISidePanelInline activity={activity} />
+                                </Suspense>
                               </div>
-                              <Suspense fallback={null}>
-                                <AISidePanelInline activity={activity} />
-                              </Suspense>
-                            </div>
+
+                              {!isMobile && activity && (activity.activity_type === 'TYPE_VIDEO' || activity.activity_type === 'TYPE_DYNAMIC') && (
+                                <div className="mt-4 p-4 rounded-2xl border border-[var(--ordria-accent-border)] bg-[var(--ordria-accent-bg)]">
+                                  <h4 className="flex items-center gap-2 text-sm font-bold text-[var(--ordria-accent-secondary)] mb-3">💡 Ce que vous allez retenir</h4>
+                                  <ul className="space-y-1.5">
+                                    <li className="flex items-start gap-2 text-sm text-[var(--ordria-foreground)]">
+                                      <span className="text-[var(--ordria-success)] font-bold">✓</span>
+                                      <span>Les concepts clés de cette leçon appliqués à votre métier</span>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-[var(--ordria-foreground)]">
+                                      <span className="text-[var(--ordria-success)] font-bold">✓</span>
+                                      <span>Des exemples concrets à reproduire immédiatement</span>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-[var(--ordria-foreground)]">
+                                      <span className="text-[var(--ordria-success)] font-bold">✓</span>
+                                      <span>Une base solide pour l'évaluation qui suit</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              )}
+                            </>
                           )}
                         </>
                       ) : null}
 
                       {/* Activity Actions below the content box */}
                       {activity && activity.published == true && activity.content.paid_access != false && (
-                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mt-4 w-full gap-2 sm:gap-0">
-                          <div className="order-1 sm:order-none">
+                        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-3 z-40 md:relative md:border-0 md:bg-transparent">
+                        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center mt-4 w-full gap-2 md:gap-0">
+                          <div className="order-1 md:order-none">
                             <PreviousActivityButton
                               course={course}
                               currentActivityId={activity.id}
                               orgslug={orgslug}
                             />
                           </div>
-                          <div className="flex items-center justify-between sm:justify-end space-x-2 order-2 sm:order-none">
+                          {/* Position courante (mobile, wireframe M2) */}
+                          {currentIndex >= 0 && totalActivityCount > 0 && (
+                            <div
+                              className="md:hidden order-2 text-center text-xs font-mono font-semibold"
+                              style={{ color: 'var(--ordria-muted)' }}
+                              data-testid="activity-position-indicator"
+                            >
+                              {currentIndex + 1}/{totalActivityCount}
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between md:justify-end space-x-2 order-3 md:order-none">
                             <ActivityActions
                               activity={activity}
                               activityid={activityid}
@@ -1027,8 +1131,10 @@ function ActivityClient(props: ActivityClientProps) {
                               course={course}
                               currentActivityId={activity.id}
                               orgslug={orgslug}
+                              requireScrollConfirm={activity.activity_type != 'TYPE_ASSIGNMENT'}
                             />
                           </div>
+                        </div>
                         </div>
                       )}
 
@@ -1051,7 +1157,6 @@ function ActivityClient(props: ActivityClientProps) {
             </Suspense>
           </AIChatBotProvider>
         </Suspense>
-        </AssignmentDirtyTasksProvider>
       </CourseProvider>
     </>
   )
@@ -1075,6 +1180,51 @@ export function MarkStatus(props: {
   const [isLoading, setIsLoading] = React.useState(false);
   const [showMarkedTooltip, setShowMarkedTooltip] = React.useState(false);
   const [showUnmarkedTooltip, setShowUnmarkedTooltip] = React.useState(false);
+  const [bottomReached, setBottomReached] = React.useState(false);
+  const hasAutoCompleted = React.useRef(false);
+
+  // Scroll tracking : détecte quand l'utilisateur atteint le bas de la page.
+  // On considère "bottom" quand on est à moins de 200px du bas (tolérance).
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const visible = window.innerHeight;
+        const pageHeight = document.documentElement.scrollHeight;
+        // tolérance de 200px
+        const isBottom = scrollY + visible >= pageHeight - 200;
+        if (isBottom && !bottomReached) {
+          setBottomReached(true);
+        }
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Check initial au cas où la page est courte
+    setTimeout(handleScroll, 500);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [bottomReached]);
+
+  // Auto-complete quand l'utilisateur atteint le bas pour la 1re fois
+  // ET que l'activité n'est pas déjà marquée comme complétée.
+  // Sauf pour les TYPE_ASSIGNMENT (qui ont leur propre logique de submit/correction).
+  React.useEffect(() => {
+    const isAssignment = props.activity?.activity_type === 'TYPE_ASSIGNMENT';
+    if (
+      bottomReached &&
+      !hasAutoCompleted.current &&
+      !isActivityCompleted() &&
+      !isLoading &&
+      !isAssignment
+    ) {
+      hasAutoCompleted.current = true;
+      markActivityAsCompleteFront({ silent: true });
+    }
+  }, [bottomReached]);
 
 
   React.useEffect(() => {
@@ -1158,7 +1308,7 @@ export function MarkStatus(props: {
     return currentIndex >= 0 && currentIndex < flat.length - 1 ? flat[currentIndex + 1] : null;
   };
 
-  async function markActivityAsCompleteFront() {
+  async function markActivityAsCompleteFront(options?: { silent?: boolean }) {
     try {
       const willCompleteAll = areAllActivitiesCompleted();
       const nextActivity = findNextActivity();
@@ -1189,6 +1339,17 @@ export function MarkStatus(props: {
 
       const cleanCourseUuid = props.course.course_uuid.replace('course_', '');
       await queryClient.invalidateQueries({ queryKey: queryKeys.courses.meta(cleanCourseUuid) });
+
+      // Mode silencieux (auto-complete au scroll) : on marque comme lu SANS naviguer.
+      // L'utilisateur reste sur la page et peut cliquer Suivant lui-même.
+      if (options?.silent) {
+        toast.success(t('activities.auto_completed_on_scroll', 'Activité marquée comme lue'), {
+          duration: 2500,
+          icon: '✓',
+        });
+        return;
+      }
+
       if (willCompleteAll || !nextActivity) {
         router.push(getUriWithOrg(props.orgslug, '') + `/course/${cleanCourseUuid}/activity/end`);
       } else {
@@ -1303,7 +1464,7 @@ export function MarkStatus(props: {
           <div className="relative">
             <div
               className={`${isLoading ? 'opacity-90' : ''} bg-gray-800 rounded-md px-4 nice-shadow flex flex-col p-2.5 text-white hover:cursor-pointer transition-all duration-200 ${isLoading ? 'cursor-not-allowed' : 'hover:bg-gray-700'}`}
-              onClick={!isLoading ? markActivityAsCompleteFront : undefined}
+              onClick={!isLoading ? () => markActivityAsCompleteFront() : undefined}
             >
               <span className="text-[10px] font-bold mb-1 uppercase">{t('common.status')}</span>
               <div className="flex items-center space-x-2">
@@ -1356,10 +1517,44 @@ export function MarkStatus(props: {
   )
 }
 
-function NextActivityButton({ course, currentActivityId, orgslug }: { course: any, currentActivityId: string, orgslug: string }) {
+function NextActivityButton({ course, currentActivityId, orgslug, requireScrollConfirm = false }: { course: any, currentActivityId: string, orgslug: string, requireScrollConfirm?: boolean }) {
   const { t } = useTranslation();
   const router = useRouter();
   const _isMobile = useMediaQuery('(max-width: 768px)');
+  const [bottomReached, setBottomReached] = React.useState(false);
+  const [showConfirmModal, setShowConfirmModal] = React.useState(false);
+
+  // Scroll tracking local · pour la confirmation "êtes-vous sûr de quitter sans avoir tout lu ?"
+  React.useEffect(() => {
+    if (!requireScrollConfirm) return;
+    if (typeof window === 'undefined') return;
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const visible = window.innerHeight;
+        const pageHeight = document.documentElement.scrollHeight;
+        const isBottom = scrollY + visible >= pageHeight - 200;
+        if (isBottom && !bottomReached) setBottomReached(true);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Check initial seulement pour les pages très courtes (où le bottom est déjà atteint au mount)
+    const initialCheck = () => {
+      const pageHeight = document.documentElement.scrollHeight;
+      const isShortPage = pageHeight <= window.innerHeight + 50;
+      if (isShortPage) setBottomReached(true);
+    };
+    initialCheck();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [requireScrollConfirm, bottomReached]);
+
+  // Si l'utilisateur a scrollé en bas OU si la confirmation n'est pas requise, on navigue direct.
+  // Sinon, on affiche une modal de confirmation.
+  const shouldConfirm = requireScrollConfirm && !bottomReached;
 
   const findNextActivity = () => {
     let allActivities: any[] = [];
@@ -1388,36 +1583,107 @@ function NextActivityButton({ course, currentActivityId, orgslug }: { course: an
 
   const nextActivity = findNextActivity();
 
-  // On the LAST activity, Next advances to the course-end screen (which holds
-  // the certificate) instead of disappearing. Previously the only route there
-  // was the trophy icon on the progress bar, which learners did not find — and
-  // it was unreachable altogether for anyone who had already marked the final
-  // activity complete on an earlier visit.
   const isLastActivity = !nextActivity;
-  const cleanCourseUuid = course.course_uuid?.replace('course_', '');
 
-  const navigateToActivity = () => {
-    router.push(
-      isLastActivity
-        ? getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/end`
-        : getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/${nextActivity.cleanUuid}`
-    );
+  const navigateToEnd = () => {
+    const cleanCourseUuid = course.course_uuid?.replace('course_', '');
+    router.push(getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/end`);
   };
 
-  return (
+  const handleClick = () => {
+    if (shouldConfirm) {
+      setShowConfirmModal(true);
+    } else {
+      if (isLastActivity) navigateToEnd();
+      else navigateToActivity();
+    }
+  };
+
+  const navigateToActivity = () => {
+    const cleanCourseUuid = course.course_uuid?.replace('course_', '');
+    router.push(getUriWithOrg(orgslug, '') + `/course/${cleanCourseUuid}/activity/${nextActivity.cleanUuid}`);
+  };
+
+  const handleConfirm = () => {
+    setShowConfirmModal(false);
+    if (isLastActivity) navigateToEnd();
+    else navigateToActivity();
+  };
+
+  const trigger = (
     <div
-      onClick={navigateToActivity}
-      className="bg-gray-200 rounded-md px-3 sm:px-4 shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] flex flex-col p-2 sm:p-2.5 text-gray-600 hover:cursor-pointer transition delay-150 duration-300 ease-in-out hover:bg-gray-200"
+      onClick={handleClick}
+      className={isLastActivity
+        ? "rounded-xl px-3 sm:px-5 p-2 sm:p-2.5 text-white hover:cursor-pointer transition-all active:translate-y-0.5"
+        : "bg-gray-200 rounded-md px-3 sm:px-4 shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] flex flex-col p-2 sm:p-2.5 text-gray-600 hover:cursor-pointer transition delay-150 duration-300 ease-in-out hover:bg-gray-200"
+      }
+      style={isLastActivity ? { background: 'var(--ordria-accent)', boxShadow: '0 3px 0 var(--ordria-accent-secondary)' } : undefined}
     >
-      <span className="text-[10px] font-bold text-gray-500 mb-1 uppercase">{t('common.next')}</span>
-      <div className="flex items-center space-x-1">
-        <span className="text-xs sm:text-sm font-semibold truncate max-w-[120px] sm:max-w-[200px]">
-          {isLastActivity ? t('course.finish_course', 'Finish course') : nextActivity.name}
-        </span>
-        <ChevronRight size={17} className="shrink-0" />
-      </div>
+      {isLastActivity ? (
+        <>
+          <span className="text-[10px] font-bold mb-1 uppercase block opacity-80">Terminer</span>
+          <div className="flex items-center space-x-1">
+            <span className="text-xs sm:text-sm font-bold">🏆 Certificat</span>
+            <ChevronRight size={17} className="shrink-0" />
+          </div>
+        </>
+      ) : (
+        <>
+          <span className="text-[10px] font-bold text-gray-500 mb-1 uppercase">{t('common.next')}</span>
+          <div className="flex items-center space-x-1">
+            <span className="text-xs sm:text-sm font-semibold truncate max-w-[120px] sm:max-w-[200px]">{nextActivity.name}</span>
+            <ChevronRight size={17} className="shrink-0" />
+          </div>
+        </>
+      )}
     </div>
   );
+
+  // Si la confirmation est requise, on rend le trigger + la modal contrôlée.
+  if (shouldConfirm) {
+    return (
+      <>
+        {trigger}
+        <Modal
+          isDialogOpen={showConfirmModal}
+          onOpenChange={setShowConfirmModal}
+          dialogTitle={t('activities.confirm_leave_title', 'Quitter sans avoir tout lu ?')}
+          dialogContent={
+            <div className="flex space-x-4 tracking-tight p-6 pr-10">
+              <div className="shrink-0 p-6 rounded-xl flex items-center bg-red-100 text-red-600">
+                <AlertTriangle size={35} />
+              </div>
+              <div className="pt-1 w-auto grow">
+                <div className="text-xl font-bold text-[var(--ordria-foreground)]">{t('activities.confirm_leave_title', 'Quitter sans avoir tout lu ?')}</div>
+                <div className="text-md text-[var(--ordria-muted)] leading-tight mt-1">
+                  {t('activities.confirm_leave_msg', 'Vous n\'avez pas atteint le bas de la page. Voulez-vous vraiment passer à la suite ?')}
+                </div>
+                <div className="flex flex-row-reverse mt-4 gap-2">
+                  <button
+                    type="button"
+                    onClick={handleConfirm}
+                    className="rounded-md text-sm px-3 py-2 font-bold flex justify-center items-center cursor-pointer text-white bg-red-500 hover:bg-red-600 hover:shadow-lg transition duration-300 ease-in-out"
+                  >
+                    {t('activities.confirm_leave_cta', 'Continuer quand même')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmModal(false)}
+                    className="rounded-md text-sm px-3 py-2 font-bold flex justify-center items-center cursor-pointer text-[var(--ordria-foreground)] bg-[var(--ordria-surface)] hover:bg-[var(--ordria-border)] transition duration-300 ease-in-out"
+                  >
+                    {t('common.cancel', 'Annuler')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+          noPadding
+          customWidth="sm:max-w-[600px] sm:min-w-[500px]"
+        />
+      </>
+    );
+  }
+  return trigger;
 }
 
 function PreviousActivityButton({ course, currentActivityId, orgslug }: { course: any, currentActivityId: string, orgslug: string }) {
@@ -1484,7 +1750,6 @@ function AssignmentTools(props: {
   const submission = useAssignmentSubmission() as any
   const session = useLHSession() as any;
   const queryClient = useQueryClient();
-  const dirtyTasks = useAssignmentDirtyTasks();
   const [gradeData, setGradeData] = React.useState<any>(null);
   const [isGradeModalOpen, setIsGradeModalOpen] = React.useState(false);
   const { width: windowWidth, height: windowHeight } = useWindowSize();
@@ -1492,40 +1757,19 @@ function AssignmentTools(props: {
   // so the modal doesn't pop back open every time gradeData refreshes.
   const hasAutoOpenedRef = React.useRef(false);
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
   const submitForGradingUI = async () => {
     if (props.assignment) {
-      if (isSubmitting) return
-      setIsSubmitting(true)
-      try {
-        // Persist any answers the learner selected but didn't manually save, so
-        // grading never runs against an empty/stale answer sheet. Abort if a save
-        // fails rather than silently finalizing a 0%.
-        const flushed = await dirtyTasks.flushAll()
-        if (!flushed) {
-          toast.error(t('assignments.failed_submit_assignment'))
-          return
-        }
-        const res = await submitAssignmentForGrading(
-          props.assignment?.assignment_uuid,
-          session.data?.tokens?.access_token
-        )
-        if (res.success) {
-          toast.success(t('assignments.assignment_submitted_success'))
-          queryClient.invalidateQueries({ queryKey: queryKeys.assignments.submission(props.assignment?.assignment_uuid) })
-          queryClient.invalidateQueries({ queryKey: queryKeys.assignments.taskSubmission(props.assignment?.assignment_uuid) })
-          // Submitting may auto-grade the assignment (GRADED), which makes the
-          // answer key eligible to be revealed (show_correct_answers). The task
-          // definitions were fetched pre-grade with the key stripped, so refetch
-          // them — otherwise the reveal renders every option as "incorrect".
-          queryClient.invalidateQueries({ queryKey: queryKeys.assignments.tasks(props.assignment?.assignment_uuid) })
-        }
-        else {
-          toast.error(t('assignments.failed_submit_assignment'))
-        }
-      } finally {
-        setIsSubmitting(false)
+      const res = await submitAssignmentForGrading(
+        props.assignment?.assignment_uuid,
+        session.data?.tokens?.access_token
+      )
+      if (res.success) {
+        toast.success(t('assignments.assignment_submitted_success'))
+        queryClient.invalidateQueries({ queryKey: queryKeys.assignments.submission(props.assignment?.assignment_uuid) })
+        queryClient.invalidateQueries({ queryKey: queryKeys.assignments.taskSubmission(props.assignment?.assignment_uuid) })
+      }
+      else {
+        toast.error(t('assignments.failed_submit_assignment'))
       }
     }
   }
@@ -1541,20 +1785,10 @@ function AssignmentTools(props: {
       );
       if (res.success) {
         toast.success(t('assignments.retry_assignment_success'));
-        // The retry wiped every per-task submission server-side. Clear the
-        // cached batch IMMEDIATELY (before the refetch lands) so the task
-        // editors — which remount on the incremented attempt number — hydrate
-        // from an empty state and don't briefly re-adopt the previous attempt's
-        // answers as their saved baseline (which would submit empty -> 0%).
-        queryClient.setQueryData(queryKeys.assignments.taskSubmission(props.assignment?.assignment_uuid), {});
         // Pull the fresh per-task batch + the user submission so the task
         // editors snap back to an empty state without a hard reload.
         queryClient.invalidateQueries({ queryKey: queryKeys.assignments.submission(props.assignment?.assignment_uuid) });
         queryClient.invalidateQueries({ queryKey: queryKeys.assignments.taskSubmission(props.assignment?.assignment_uuid) });
-        // The submission is back to PENDING, so the answer key must be stripped
-        // again — refetch the task definitions so a revealed key from the graded
-        // attempt isn't left visible during the retry.
-        queryClient.invalidateQueries({ queryKey: queryKeys.assignments.tasks(props.assignment?.assignment_uuid) });
         setGradeData(null);
         setIsGradeModalOpen(false);
         // Re-arm the auto-open on this fresh attempt so the next graded
@@ -1576,7 +1810,7 @@ function AssignmentTools(props: {
     );
     if (res.success) {
       // The backend returns a rich grade object: display_grade, points_summary,
-      // percentage_display, passed, overall_feedback, etc. We just render it —
+      // percentage_display, passed, overall_feedback, etc. We just render it ·
       // no client-side math.
       setGradeData(res.data);
     }
@@ -1617,44 +1851,9 @@ function AssignmentTools(props: {
   const isRetryAttempt = isAwaitingSubmission && submission?.length > 0 && attemptNumber > 1;
 
   if (isAwaitingSubmission) {
-    // Past the deadline the server 403s every write, including the flush that
-    // "Submit for grading" performs. Offering the button anyway produced a
-    // generic failure toast with no explanation of why.
-    if (isAssignmentPastDue(props.assignment?.due_date)) {
-      return (
-        <div className="bg-rose-800 rounded-md px-4 nice-shadow flex flex-col p-2.5 text-white transition delay-150 duration-300 ease-in-out">
-          <span className="text-[10px] font-bold mb-1 uppercase">{t('common.status')}</span>
-          <div className="flex items-center space-x-2">
-            <BookOpenCheck size={17} />
-            <span className="text-xs font-bold">
-              {t('assignments.past_due', { defaultValue: 'Deadline passed' })}
-            </span>
-          </div>
-        </div>
-      )
-    }
-
-    // While the submit runs the trigger itself reports it: saving every pending
-    // answer and grading server-side takes seconds on a long assignment, and
-    // the bar is what the learner is looking at.
-    if (isSubmitting) {
-      return (
-        <div className="bg-cyan-800 rounded-md px-4 nice-shadow flex flex-col p-2.5 text-white transition delay-150 duration-300 ease-in-out">
-          <span className="text-[10px] font-bold mb-1 uppercase">{t('common.status')}</span>
-          <div className="flex items-center space-x-2">
-            <Loader2 size={17} className="animate-spin" />
-            <span className="text-xs font-bold">
-              {t('assignments.submitting', { defaultValue: 'Submitting…' })}
-            </span>
-          </div>
-        </div>
-      )
-    }
-
     return (
       <ConfirmationModal
         confirmationButtonText={t('assignments.submit_assignment')}
-        pendingButtonText={t('assignments.submitting', { defaultValue: 'Submitting…' })}
         confirmationMessage={t('assignments.submit_assignment_confirm')}
         dialogTitle={t('assignments.submit_assignment_title')}
         dialogTrigger={
@@ -1711,17 +1910,11 @@ function AssignmentTools(props: {
     const attemptsRemaining = maxRetries
       ? Math.max(0, maxRetries - currentAttempt)
       : null;
-    // Past the deadline the server refuses a retry — and rightly so: retry wipes
-    // the answers, grade and certificate, and every resubmit path is deadline
-    // gated, so a retry here would destroy graded work with no way back. Mirror
-    // that client-side rather than offering a button that 403s.
-    const retryPastDue = isAssignmentPastDue(props.assignment?.due_date);
-    const canRetry =
-      allowRetries && !retryPastDue && (maxRetries === 0 || currentAttempt < maxRetries);
+    const canRetry = allowRetries && (maxRetries === 0 || currentAttempt < maxRetries);
 
     return (
       <>
-        {/* Compact pill — same footprint and alignment as the Next button */}
+        {/* Compact pill · same footprint and alignment as the Next button */}
         <button
           type="button"
           onClick={() => setIsGradeModalOpen(true)}
@@ -1750,7 +1943,7 @@ function AssignmentTools(props: {
           </div>
         </button>
 
-        {/* Confetti for passing students — fires once each time the modal
+        {/* Confetti for passing students · fires once each time the modal
             opens because react-confetti with recycle={false} plays through
             and the conditional remount restarts it. */}
         {isGradeModalOpen && isPassing && gradeData && (
@@ -1767,7 +1960,7 @@ function AssignmentTools(props: {
           </div>
         )}
 
-        {/* Detail modal — opens on click and auto-opens once when the
+        {/* Detail modal · opens on click and auto-opens once when the
             assignment is auto-graded so students see their result right
             away. */}
         <Modal
@@ -1836,15 +2029,7 @@ function AssignmentTools(props: {
                     <div className="space-y-1.5">
                       {tasks.map((tb: any) => {
                         const pct = Math.max(0, Math.min(100, tb.percentage || 0));
-                        // Use the server's per-task verdict. Hardcoding 60 here
-                        // contradicted the real threshold (50 for most grading
-                        // types, or the teacher's own pass_threshold_percentage),
-                        // so a task at 50% rendered as failing in this modal while
-                        // the hero above it said "Passing" and the page behind it
-                        // showed a green "Task passed" card.
-                        const passedTask = tb.submitted && (
-                          typeof tb.passed === 'boolean' ? tb.passed : pct >= 60
-                        );
+                        const passedTask = tb.submitted && pct >= 60;
                         return (
                           <div
                             key={tb.assignment_task_uuid}
@@ -1870,7 +2055,7 @@ function AssignmentTools(props: {
                                     ? 'text-emerald-700'
                                     : 'text-rose-700'
                               }`}>
-                                {tb.submitted ? tb.percentage_display : '—'}
+                                {tb.submitted ? tb.percentage_display : '·'}
                               </span>
                             </div>
                           </div>

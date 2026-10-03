@@ -84,16 +84,35 @@ else:
     #   statement_cache_size=0           → disable asyncpg's own per-connection LRU
     #   prepared_statement_name_func=""  → force unnamed prepared statements
     #   prepared_statement_cache_size=0  → disable SQLAlchemy's adapter-level LRU
+    #
+    # The two timeouts below ARE genuine asyncpg.connect() kwargs and are
+    # forwarded as-is (2026-09-26 hang fix):
+    #   command_timeout=30 → a query stuck on a silently-dead connection (Neon
+    #     autosuspend/resume dropping it through the pooler) is killed after
+    #     30 s instead of holding a pool slot FOREVER. Without it, ~15 stuck
+    #     queries exhaust the pool and every DB-touching route (incl. /health)
+    #     hangs until the container is manually recreated — observed 3× in one
+    #     night of bulk course writes.
+    #   timeout=15 → connection/handshake timeout so pool growth can't hang
+    #     either. Migrations are unaffected: autoinstall.py builds its own engine.
+    #   server_settings.application_name → labels every pool connection in the
+    #     Neon console (Sessions/monitoring) so app traffic is distinguishable
+    #     from migrations and ad-hoc clients when diagnosing connection storms.
     _connect_args = {
         "statement_cache_size": 0,
         "prepared_statement_name_func": lambda: "",
         "prepared_statement_cache_size": 0,
+        "command_timeout": 30,
+        "timeout": 15,
+        "server_settings": {"application_name": "learnhouse-api"},
     }
 
     # Detect connection poolers (Supavisor, PgBouncer) to use a smaller
     # client-side pool so we don't overwhelm the pooler's upstream limit.
+    # Neon's pooler hostname is <endpoint>-pooler.<region>.aws.neon.tech.
     is_pooled = (
         "pooler.supabase" in sql_url
+        or "-pooler." in sql_url
         or ":6543/" in sql_url
         or ":6432/" in sql_url
         or "pgbouncer" in sql_url.lower()
@@ -354,6 +373,17 @@ async def connect_to_db(app: FastAPI):
         # Create all tables
         if not is_testing:
             await conn.run_sync(SQLModel.metadata.create_all)
+    # Seed the default job-title catalog once (Ordria enriched signup).
+    if not is_testing:
+        try:
+            from src.services.job_titles.job_titles import seed_default_job_titles
+
+            async with _async_session_factory() as session:
+                await seed_default_job_titles(session)
+        except Exception:
+            logging.warning(
+                "Could not seed default job titles", exc_info=True
+            )
     app.db_engine = engine  # type: ignore
     logging.info("LearnHouse database has been started.")
 

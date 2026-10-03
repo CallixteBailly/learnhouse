@@ -51,12 +51,16 @@ def _user_create(
     first_name: str = "New",
     last_name: str = "User",
 ):
+    # Enriched-signup contract: non-OAuth creations must carry a job and both
+    # consents (validate_and_normalize_signup_profile). Harmless for OAuth.
     return UserCreate(
         username=username,
         first_name=first_name,
         last_name=last_name,
         email=email,
         password=password,
+        profile={"job": {"other": "Testeur"}},
+        extra_metadata={"consents": {"terms": True, "privacy": True}},
     )
 
 
@@ -342,6 +346,8 @@ class TestCreateAndUpdateUser:
                     last_name="User",
                     email="newuser@test.com",
                     password="Password123!",
+                    profile={"job": {"other": "Testeur"}},
+                    extra_metadata={"consents": {"terms": True, "privacy": True}},
                 ),
                 org.id,
             )
@@ -365,6 +371,67 @@ class TestCreateAndUpdateUser:
 
         assert created.email_verified is True
         assert updated.username == "updateduser"
+
+    @pytest.mark.asyncio
+    async def test_create_user_tracks_job_slug_in_signup_analytics(
+        self, mock_request, db, admin_user, org
+    ):
+        """USER_SIGNED_UP analytics carries the normalized job slug (spec §3.5).
+
+        Non-OAuth signups ship their job slug; OAuth signups have no job yet
+        (soft banner collects it later) so job_slug is None — key always present.
+        """
+        with patch(
+            "src.services.users.users.validate_password_complexity",
+            return_value=Mock(is_valid=True),
+        ), patch("src.services.users.users.check_limits_with_usage"), patch(
+            "src.services.users.users.increase_feature_usage"
+        ), patch(
+            "src.services.users.users.track",
+            new_callable=AsyncMock,
+        ) as mock_track, patch(
+            "src.services.users.users.dispatch_webhooks",
+            new_callable=AsyncMock,
+        ), patch(
+            "src.services.users.users.send_account_creation_email"
+        ), patch(
+            "src.services.users.users.get_deployment_mode",
+            return_value="oss",
+        ), patch(
+            "src.services.users.users.authorization_verify_based_on_roles_and_authorship",
+            new_callable=AsyncMock,
+        ):
+            await create_user(
+                mock_request,
+                db,
+                admin_user,
+                _user_create("analytics-user", "analytics-user@test.com"),
+                org.id,
+            )
+
+            # OAuth signup: no job collected yet — profile carries no job.
+            await create_user(
+                mock_request,
+                db,
+                admin_user,
+                UserCreate(
+                    username="analytics-oauth",
+                    first_name="OAuth",
+                    last_name="User",
+                    email="analytics-oauth@test.com",
+                    password="Password123!",
+                    profile={},
+                    extra_metadata={},
+                ),
+                org.id,
+                is_oauth=True,
+                signup_provider="google",
+            )
+
+        assert mock_track.await_count == 2
+        tracked_props = [call.kwargs["properties"] for call in mock_track.await_args_list]
+        assert tracked_props[0] == {"signup_method": "email", "job_slug": "other"}
+        assert tracked_props[1] == {"signup_method": "google", "job_slug": None}
 
     @pytest.mark.asyncio
     async def test_create_user_branch_modes_and_duplicate_guards(
@@ -498,6 +565,8 @@ class TestCreateAndUpdateUser:
                     last_name="User",
                     email="solo@test.com",
                     password="Password123!",
+                    profile={"job": {"other": "Testeur"}},
+                    extra_metadata={"consents": {"terms": True, "privacy": True}},
                 ),
             )
 
@@ -512,6 +581,8 @@ class TestCreateAndUpdateUser:
                         last_name="User",
                         email="solo2@test.com",
                         password="Password123!",
+                        profile={"job": {"other": "Testeur"}},
+                        extra_metadata={"consents": {"terms": True, "privacy": True}},
                     ),
                 )
 

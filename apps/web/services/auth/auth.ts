@@ -77,7 +77,7 @@ export async function loginWithOAuthToken(
 }
 
 // Password reset is PLATFORM-level (org-less): the backend finds the user by
-// email, so no org_id is needed — matching how the platform worked and working
+// email, so no org_id is needed · matching how the platform worked and working
 // for org-less accounts created on the apex.
 export async function sendResetLink(email: string) {
   const result = await fetch(
@@ -217,6 +217,9 @@ interface NewAccountBody {
   // Cloudflare Turnstile token collected by the signup form. Optional so OSS /
   // Turnstile-disabled deployments keep working.
   turnstileToken?: string | null
+  // Ordria enriched signup · forwarded as-is by the /api/signup gateway.
+  profile?: Record<string, unknown>
+  extra_metadata?: Record<string, unknown>
 }
 
 // Signup goes through the same-origin gateway (app/api/signup/route.ts), which

@@ -246,7 +246,7 @@ export async function putFinalGrade(
   access_token: string,
   overall_feedback?: string | null
 ) {
-  // Only send a body when the caller actually passed feedback — otherwise the
+  // Only send a body when the caller actually passed feedback · otherwise the
   // backend leaves any existing note alone.
   const body =
     overall_feedback !== undefined && overall_feedback !== null

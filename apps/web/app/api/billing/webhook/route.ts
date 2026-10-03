@@ -2,7 +2,7 @@
 //
 // Faithful port of the platform repo's app/api/payments/route.ts. The webhook
 // self-authenticates by verifying the Stripe signature against
-// STRIPE_WEBHOOK_SECRET, so it does NOT call assertSaaSBilling() — an
+// STRIPE_WEBHOOK_SECRET, so it does NOT call assertSaaSBilling() · an
 // unconfigured deployment simply has no STRIPE_WEBHOOK_SECRET and every event
 // fails signature verification with a 400.
 import { NextResponse } from "next/server";
@@ -21,7 +21,7 @@ import {
   sendPaymentFailedMail,
 } from "@services/billing/emails";
 
-// Lazy Stripe client (see services/billing/stripe.ts) — instantiating at module
+// Lazy Stripe client (see services/billing/stripe.ts) · instantiating at module
 // load without a key throws and breaks `next build` / keyless deployments.
 let _stripeClient: any = null;
 const stripe: any = new Proxy(
@@ -43,14 +43,21 @@ const stripe: any = new Proxy(
 // billing-portal plan changes update the price but NOT metadata.plan, so relying
 // on metadata alone would reconcile the org to the stale (old) plan.
 async function planFromSubscription(subscription: any): Promise<string | undefined> {
-  const derived = await planForPriceId(subscription?.items?.data?.[0]?.price?.id);
+  const rawPriceId = subscription?.items?.data?.[0]?.price?.id;
+  // The price id rides into SDK requests (URL path) — validate its Stripe
+  // shape first instead of passing event data through unchecked.
+  const priceId =
+    typeof rawPriceId === "string" && STRIPE_ID_RE.test(rawPriceId)
+      ? rawPriceId
+      : null;
+  const derived = priceId ? await planForPriceId(priceId) : null;
   if (derived && !derived.isPack) return derived.plan;
   return subscription?.metadata?.plan ?? undefined;
 }
 
 // Simple in-memory idempotency cache (event_id -> timestamp).
 // Stripe retries webhooks, so we skip events we've already processed.
-// TTL: 5 minutes — Stripe won't retry faster than that.
+// TTL: 5 minutes · Stripe won't retry faster than that.
 // NOTE: in-memory, so it does NOT dedupe across serverless instances; the
 // downstream service calls are all idempotent, which covers the gap.
 const processedEvents = new Map<string, number>();
@@ -77,7 +84,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Invalid signature", ok: false }, { status: 400 });
   }
 
-  // Idempotency check — skip duplicate events
+  // Idempotency check · skip duplicate events
   cleanupProcessedEvents();
   if (processedEvents.has(event.id)) {
     return NextResponse.json({ result: "duplicate", ok: true });
@@ -104,13 +111,42 @@ export async function POST(request: Request) {
   }
 }
 
+// Stripe object IDs are strictly prefixed alphanumerics (cs_test_/cs_live_/
+// cs_…, sub_…, cus_…). Validating the shape before they ride into SDK
+// requests fails fast on malformed events and keeps the webhook's input
+// surface explicit — defense in depth on top of the signature check (the
+// SDK pins its own api.stripe.com host; event data never controls it).
+const STRIPE_ID_RE = /^[a-z]{2,6}_(?:test_)?[A-Za-z0-9]{8,247}$/;
+function assertStripeId(value: unknown, kind: string): string {
+  if (typeof value !== "string" || !STRIPE_ID_RE.test(value)) {
+    throw new Error(`webhook: invalid ${kind} id`);
+  }
+  return value;
+}
+
+// org_id subscription metadata is OUR id set at checkout-creation time; it
+// must be a positive integer. It interpolates into internal API paths
+// (internal/packs/${orgId}/…), so it is re-derived via parseInt and
+// re-serialized to its canonical decimal form at the boundary — any path
+// tricks in the raw value ("39/../../x") collapse to plain "39".
+function assertOrgId(value: unknown): string {
+  const n = Number.parseInt(String(value ?? ""), 10);
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new Error("webhook: invalid org_id in subscription metadata");
+  }
+  return String(n);
+}
+
 async function handleCheckoutCompleted(session: any) {
   if (session.payment_status !== "paid") return;
 
   // Retrieve session with expanded subscription to get metadata
-  const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
-    expand: ["subscription"],
-  });
+  const fullSession = await stripe.checkout.sessions.retrieve(
+    assertStripeId(session.id, "checkout session"),
+    {
+      expand: ["subscription"],
+    },
+  );
   const subscription = fullSession.subscription;
   const customerEmail = fullSession.customer_details?.email || session.customer_email;
 
@@ -119,11 +155,7 @@ async function handleCheckoutCompleted(session: any) {
     return;
   }
 
-  const orgId = subscription.metadata.org_id;
-  if (!orgId) {
-    console.warn("checkout.session.completed: no org_id in metadata", session.id);
-    return;
-  }
+  const orgId = assertOrgId(subscription.metadata.org_id);
 
   const isPack = subscription.metadata.type === "pack";
 
@@ -161,11 +193,7 @@ async function handleCheckoutCompleted(session: any) {
 }
 
 async function handleSubscriptionEvent(eventType: string, subscription: any) {
-  const orgId = subscription.metadata?.org_id;
-  if (!orgId) {
-    console.log(`Subscription event missing org_id for customer ${subscription.customer}`);
-    return;
-  }
+  const orgId = assertOrgId(subscription.metadata?.org_id);
 
   const isPack = subscription.metadata.type === "pack";
   const status = subscription.status;
@@ -177,7 +205,7 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
       await deactivatePackInternally(orgId, subscription.id);
     } else if (eventType === "customer.subscription.updated") {
       if (subscription.cancel_at_period_end) {
-        // User requested cancellation — mark as canceling but keep active until period end
+        // User requested cancellation · mark as canceling but keep active until period end
         await markPackCancelingInternally(orgId, subscription.id);
       } else if (status === "active") {
         // Reactivated (e.g. user undid cancellation) or renewed
@@ -185,7 +213,7 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
           await activatePackInternally(orgId, packId, subscription.id);
         }
       } else if (status === "past_due" || status === "unpaid") {
-        // Payment failed — deactivate pack until payment succeeds
+        // Payment failed · deactivate pack until payment succeeds
         console.warn(`Pack subscription ${subscription.id} is ${status} for org ${orgId}`);
         await deactivatePackInternally(orgId, subscription.id);
       } else if (status === "paused") {
@@ -202,7 +230,7 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
       });
     } else if (eventType === "customer.subscription.updated") {
       if (subscription.cancel_at_period_end) {
-        // Plan is canceling — keep current plan until period ends
+        // Plan is canceling · keep current plan until period ends
         console.log(`Plan subscription canceling for org ${orgId}, access continues until period end`);
       } else if (status === "active") {
         // Derive from price so billing-portal plan changes reconcile correctly.
@@ -213,9 +241,11 @@ async function handleSubscriptionEvent(eventType: string, subscription: any) {
           console.warn(`[webhook] could not resolve plan for active subscription ${subscription.id} (org ${orgId}); price id not in catalog?`);
         }
       } else if (status === "past_due" || status === "unpaid") {
-        // Payment failed — notify user but keep plan active for grace period
+        // Payment failed · notify user but keep plan active for grace period
         console.warn(`Plan subscription ${subscription.id} is ${status} for org ${orgId}`);
-        const customer = await stripe.customers.retrieve(subscription.customer);
+        const customer = await stripe.customers.retrieve(
+          assertStripeId(subscription.customer, "customer"),
+        );
         if (customer?.email) {
           await sendPaymentFailedMail({
             email: customer.email,

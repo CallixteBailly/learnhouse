@@ -6,7 +6,7 @@ import redis
 import string
 from fastapi import HTTPException, Request
 from pydantic import EmailStr
-from sqlmodel import select
+from sqlmodel import select, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.organization_config import OrganizationConfig
 from src.db.organizations import Organization, OrganizationRead
@@ -105,7 +105,7 @@ async def send_reset_password_code(
         )
 
     # Get user - SECURITY: Don't reveal if user exists or not
-    statement = select(User).where(User.email == email)
+    statement = select(User).where(func.lower(User.email) == email.lower())
     user = (await db_session.execute(statement)).scalars().first()
 
     # SECURITY FIX: Always return success message to prevent user enumeration
@@ -231,7 +231,7 @@ async def change_password_with_reset_code(
         )
 
     # Get user - SECURITY: Use generic error message
-    statement = select(User).where(User.email == email)
+    statement = select(User).where(func.lower(User.email) == email.lower())
     user = (await db_session.execute(statement)).scalars().first()
 
     # SECURITY FIX: Generic error message to prevent enumeration
@@ -322,7 +322,7 @@ async def send_reset_password_code_platform(
     - Returns generic message to prevent user enumeration
     - Logs attempts for security audit
     """
-    statement = select(User).where(User.email == email)
+    statement = select(User).where(func.lower(User.email) == email.lower())
     user = (await db_session.execute(statement)).scalars().first()
 
     if not user:
@@ -399,7 +399,7 @@ async def change_password_with_reset_code_platform(
             },
         )
 
-    statement = select(User).where(User.email == email)
+    statement = select(User).where(func.lower(User.email) == email.lower())
     user = (await db_session.execute(statement)).scalars().first()
 
     if not user:

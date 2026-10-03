@@ -1,6 +1,6 @@
 // Shared helpers for the billing route handlers.
 //
-// Files prefixed with `_` are private modules — the Next.js App Router never
+// Files prefixed with `_` are private modules · the Next.js App Router never
 // treats them as routes, so this is a safe place for code shared across the
 // sibling route.ts handlers.
 import { cookies } from "next/headers";
@@ -46,7 +46,7 @@ export interface AuthedUser {
 /**
  * Authenticate the caller from the httpOnly LH_access cookie by validating it
  * against the backend session endpoint. Identity (email, roles) is ALWAYS
- * taken from this verified session — never from caller-supplied request fields,
+ * taken from this verified session · never from caller-supplied request fields,
  * which would otherwise allow acting on another user's billing (IDOR).
  *
  * Returns the authenticated user, or a 401 `NextResponse` to return directly.
@@ -109,8 +109,8 @@ export function canManageOrgBilling(
  * On success returns `{ user }` (with the verified session email/roles);
  * otherwise returns `{ error }` with a 401/403 response to return directly.
  *
- * Callers MUST use the returned `user.email` and the validated `orgId` — never
- * the email/orgId from the request body — when invoking billing services.
+ * Callers MUST use the returned `user.email` and the validated `orgId` · never
+ * the email/orgId from the request body · when invoking billing services.
  */
 export async function requireOrgBillingAccess(
   orgId: string | number,

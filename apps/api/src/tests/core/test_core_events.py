@@ -250,8 +250,10 @@ def test_is_multi_org_allowed(monkeypatch):
     monkeypatch.setattr("src.core.deployment_mode.get_deployment_mode", lambda: "ee")
     assert ee_hooks.is_multi_org_allowed() is True
 
+    # Ordria: multi-org is deliberately unlocked on this self-hosted build
+    # (client spaces like PROTECH) — every mode returns True.
     monkeypatch.setattr("src.core.deployment_mode.get_deployment_mode", lambda: "local")
-    assert ee_hooks.is_multi_org_allowed() is False
+    assert ee_hooks.is_multi_org_allowed() is True
 
 
 @pytest.mark.asyncio

@@ -49,7 +49,7 @@ const REFRESH_FAST_PATH_HEADROOM_MS = 2 * 60 * 1000
 // Clear every auth + instance cookie in BOTH its domain-scoped (.{top_domain})
 // and host-only variants. The browser can hold two cookies with the same name
 // but different Domain attributes; clearing only one leaves the stale one to
-// keep being sent — the user appears logged in with a dead token ("cookie
+// keep being sent · the user appears logged in with a dead token ("cookie
 // staling").
 //
 // Crucially, the domain-scoped attribute is derived from env/host (via
@@ -62,7 +62,7 @@ const REFRESH_FAST_PATH_HEADROOM_MS = 2 * 60 * 1000
 // "session exists" marker (LH_session), the current-org marker (LH_org), and the
 // per-session custom-domain marker. We deliberately do NOT clear the instance
 // metadata cookies (LH_tenancy/LH_mode/LH_top_domain/LH_frontend_domain/
-// LH_default_org) — those describe the deployment, are non-sensitive, are needed
+// LH_default_org) · those describe the deployment, are non-sensitive, are needed
 // by anonymous visitors, and the proxy re-sets them on the very next request, so
 // clearing them is both pointless and would briefly break tenancy resolution.
 const CLEAR_HTTPONLY = [ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE, 'LH_custom_domain']
@@ -176,7 +176,7 @@ async function proxyRequest(
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)
 
   // Short-circuit: no refresh token cookie means nothing to refresh. Clear the
-  // stale LH_session marker (and any orphaned cookies) too — otherwise the
+  // stale LH_session marker (and any orphaned cookies) too · otherwise the
   // client keeps seeing "a session exists" and loops on failed refreshes.
   if (pathSegments === 'refresh' && !refreshToken?.value) {
     const response = NextResponse.json({ error: 'No refresh token' }, { status: 401 })
@@ -201,7 +201,7 @@ async function proxyRequest(
     }
   }
 
-  // Handle logout locally — clear cookies and return 200
+  // Handle logout locally · clear cookies and return 200
   // Try backend invalidation but don't fail if it errors
   if (pathSegments === 'logout' || pathSegments.endsWith('/logout')) {
     // Best-effort backend token invalidation
@@ -210,7 +210,7 @@ async function proxyRequest(
       if (refreshToken?.value) {
         logoutHeaders['Cookie'] = `${REFRESH_TOKEN_COOKIE}=${refreshToken.value}`
       }
-      // Backend logout is DELETE /auth/logout — using POST returned 405 and
+      // Backend logout is DELETE /auth/logout · using POST returned 405 and
       // silently skipped server-side session revocation, so revoked tokens
       // stayed valid until natural expiry. Match the contract and surface drift.
       const logoutRes = await fetch(`${BACKEND_URL}/api/v1/auth/logout`, {
@@ -219,10 +219,10 @@ async function proxyRequest(
         signal: AbortSignal.timeout(3000),
       }).catch(() => null)
       if (logoutRes && !logoutRes.ok) {
-        console.warn(`[auth] backend logout returned ${logoutRes.status} — server session may not be revoked`)
+        console.warn(`[auth] backend logout returned ${logoutRes.status} · server session may not be revoked`)
       }
     } catch {
-      // Backend logout failed — that's fine, cookies are cleared below
+      // Backend logout failed · that's fine, cookies are cleared below
     }
 
     const response = NextResponse.json({ ok: true })
