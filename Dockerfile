@@ -1,7 +1,7 @@
 # ───────────────────────────────────────────────
 # Stage 1: Frontend dependency install
 # ───────────────────────────────────────────────
-FROM oven/bun:1-alpine AS frontend-deps
+FROM oven/bun:1.3.14-alpine AS frontend-deps
 RUN apk update && apk add --no-cache libc6-compat && rm -rf /var/cache/apk/*
 WORKDIR /app
 
@@ -11,7 +11,7 @@ RUN bun install --frozen-lockfile
 # ───────────────────────────────────────────────
 # Stage 2: Frontend build
 # ───────────────────────────────────────────────
-FROM oven/bun:1-alpine AS frontend-builder
+FROM oven/bun:1.3.14-alpine AS frontend-builder
 WORKDIR /app
 COPY --from=frontend-deps /app/node_modules ./node_modules
 COPY apps/web .
@@ -50,6 +50,17 @@ RUN mkdir .next && chown nextjs:nodejs .next
 
 # Leverage output traces to reduce image size
 COPY --from=frontend-builder --chown=nextjs:nodejs /app/.next/standalone ./
+
+# Next 16 can nest the whole traced project under ./app (workspace-root
+# inference), leaving server.js at ./app/server.js instead of ./server.js.
+# Normalize to a flat standalone root so server-wrapper.js finds ./server.js.
+RUN set -e; \
+    if [ -f ./app/server.js ] && [ ! -f ./server.js ]; then \
+      mv ./app ./_nested_standalone; \
+      cp -a ./_nested_standalone/. ./; \
+      rm -rf ./_nested_standalone; \
+    fi
+
 COPY --from=frontend-builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Copy server wrapper for runtime environment variable injection
@@ -59,7 +70,7 @@ RUN chmod +x server-wrapper.js
 # ───────────────────────────────────────────────
 # Stage 4: Collab server build
 # ───────────────────────────────────────────────
-FROM oven/bun:1-alpine AS collab-builder
+FROM oven/bun:1.3.14-alpine AS collab-builder
 WORKDIR /app
 
 COPY apps/collab/package.json apps/collab/bun.lock* ./

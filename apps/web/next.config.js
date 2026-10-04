@@ -95,6 +95,14 @@ const nextConfig = {
   },
   reactStrictMode: false,
   output: 'standalone',
+  // Turbopack standalone externalizes Sentry/OTel interop shims with hashed
+  // module aliases (require-in-the-middle-<hash>) that fail to resolve at
+  // runtime in the standalone server. Keep them plain Node externals instead.
+  serverExternalPackages: [
+    '@sentry/nextjs',
+    'require-in-the-middle',
+    'import-in-the-middle',
+  ],
   // Skip TypeScript checking during production build when explicitly requested
   // (e.g. in Docker where the check is RAM-heavy and types are validated in dev/CI).
   // The check stays ON by default for local `next build`.

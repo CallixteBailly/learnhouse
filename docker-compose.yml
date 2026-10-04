@@ -36,7 +36,9 @@ services:
       - LEARNHOUSE_REDIS_URL=redis://redis:6379
       - LEARNHOUSE_PORT=9000
       - LEARNHOUSE_AUTH_JWT_SECRET_KEY=ezr60eWBaqfkom4JoqP3q57UezYI6evWmQ/12oGcFJ4=
-      - LEARNHOUSE_INITIAL_ADMIN_EMAIL=admin@learnhouse.local
+      # NB : éviter les TLD réservés (.local, .test…) — le validateur d'emails
+      # de l'API les rejette et l'admin bootstrap ne serait JAMAIS créé.
+      - LEARNHOUSE_INITIAL_ADMIN_EMAIL=admin@e2e-tests.com
       - LEARNHOUSE_INITIAL_ADMIN_PASSWORD=Admin2026
       - LEARNHOUSE_INITIAL_ORG_NAME=OrdIA Learning
       - LEARNHOUSE_INITIAL_ORG_SLUG=default

@@ -1,4 +1,11 @@
 export async function register() {
+  // Sans DSN configurée, Sentry.init est un no-op : ne pas importer du tout
+  // les configs évite de charger la chaîne OTel (lourde, et son
+  // require-in-the-middle casse le serveur standalone Turbopack — alias
+  // externes hachés introuvables au runtime).
+  const dsn = process.env.SENTRY_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN;
+  if (!dsn) return;
+
   if (process.env.NEXT_RUNTIME === "nodejs") {
     await import("./sentry.server.config");
   }

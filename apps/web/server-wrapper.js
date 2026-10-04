@@ -9,6 +9,24 @@
 const fs = require('fs');
 const path = require('path');
 
+// Turbopack standalone: server bundles reference externals with a dedup
+// suffix (e.g. '@sentry/nextjs-07f01676ce184541') that Node cannot resolve.
+// Fall back to the unsuffixed module id — the package IS traced into the
+// standalone node_modules, only the suffix breaks resolution.
+const Module = require('module');
+const origResolveFilename = Module._resolveFilename;
+Module._resolveFilename = function (request, ...rest) {
+  try {
+    return origResolveFilename.call(this, request, ...rest);
+  } catch (e) {
+    const stripped = request.replace(/-[0-9a-f]{16}$/, '');
+    if (stripped !== request) {
+      return origResolveFilename.call(this, stripped, ...rest);
+    }
+    throw e;
+  }
+};
+
 // Read all NEXT_PUBLIC_* environment variables from the environment
 const env = process.env;
 
