@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "e2e": {
+      "command": "node",
+      "args": [
+        "node_modules/e2e/dist/cli/bin.js",
+        "mcp"
+      ]
+    }
+  }
+}

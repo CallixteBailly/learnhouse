@@ -1,0 +1,23 @@
+# Override pour la stack E2E locale (skill e2e-coverage).
+#
+# - Port hôte 3001 parfois occupé par un serveur dev utilisateur → stack E2E
+#   sur 3009.
+# - Tenancy SINGLE (défaut du produit self-host) : l'API rejette
+#   LEARNHOUSE_TENANCY=multi avec un domaine localhost (« routable parent
+#   domain » exigé), et en multi les cookies émis pour un domaine externe
+#   seraient rejetés par le navigateur sur localhost. Les routes hub SaaS
+#   (/new, /billing, /organizations, /account, /subscriptions) tombent donc
+#   au 404 du catch-all en local — comportement documenté dans la matrice.
+#
+# Usage : docker compose -f docker-compose.yml -f docker-compose.e2ecov.yml -p e2ecov up -d --build
+services:
+  learnhouse-app:
+    ports: !override
+      - "3009:80"
+    environment:
+      # Le client navigateur ET le serveur Next utilisent ces URLs : le port
+      # 3009 écoute aussi DANS le conteneur (nginx.conf) et côté hôte (mapping).
+      # NB : NEXT_PUBLIC_LEARNHOUSE_API_URL a priorité sur BACKEND_URL dans
+      # deriveAPIUrl — il faut l'overrider aussi.
+      - NEXT_PUBLIC_LEARNHOUSE_BACKEND_URL=http://localhost:3009
+      - NEXT_PUBLIC_LEARNHOUSE_API_URL=http://localhost:3009/api/v1/
